@@ -2012,7 +2012,16 @@ takes an operator's harmful order on 0.031 of the 458 clear directed-away items 
 without it (Δ −0.280 [−0.310, −0.253]), with plain and user cells unchanged and capability
 unchanged (Δ +0.008 [−0.008, +0.023]); the band is provisional until S0b's length check (A0s traces
 are 2.6 times longer). The registered S_concl reads zero on both arms (CST-A15): the effect is in what
-the trace concludes, not in a gap between reasoning and action.
+the trace concludes, not in a gap between reasoning and action. **ST's secondaries and dose 0 (2026-11-08):** with
+the reasoning closed, `C_anth` in context still cuts the ordered option's probability on the same
+items (0.780 → 0.445, Δ −0.335 [−0.356, −0.314]), so the operator effect does not need a long
+trace (exploratory; R_prefix stays open for S0b's length-matched neutral document). On cell A′
+the in-context document raises harm-conditioned rule-breaking (forced H* +0.135 [0.049, 0.218])
+and, less, rule-breaking where the rule is right (+0.088 [0.032, 0.147], above ST's 0.03
+specificity bar). At dose 0 the document raises the norm-violating option on the unpressured and
+judgment cells, where the reasoned reads do not move (CST-A16; E at dose 0 Δ −0.023 [−0.034,
+−0.012] on E_prob, null on E_norm), so on this model dose-0 reads stand beside the reasoned reads
+and do not substitute for them.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|

@@ -58,8 +58,24 @@ its 800 rollouts are pending (the reads stopped at the account's usage limit); t
 the families read first and are not a sample of the subset.
 
 **ST's outcomes (H1_held's 82 clear items, the protective option):** plain 0.655 → 0.802, ΔP
-+0.146 [0.105, 0.191]; operator (ordering the rule) 0.024 → 0.251, +0.227 [0.166, 0.294]. E at
-dose 0 and the forced-choice read on cell A′ are saved and not yet computed.
++0.146 [0.105, 0.191]; operator (ordering the rule) 0.024 → 0.251, +0.227 [0.166, 0.294].
+
+**Forced choice on cell A′ (ST's `forced_read`, A0 as `none`, 51 pairs, k 8, `p_record`).** A0 is
+informative: it breaks the rule on 0.120 [0.071, 0.174] of the rule-right originals and 0.412 of
+the harm-reversed twins (D_f +0.292 [0.206, 0.380]). A0s: originals 0.208, twins 0.635, D_f +0.427
+[0.328, 0.525]; forced H* +0.135 [0.049, 0.218]; originals' shift +0.088 [0.032, 0.147]. Under
+ST's branch rule the originals' shift above +0.03 would read "non-specific": the document in
+context raises harm-conditioned rule-breaking and, less, rule-breaking where the rule is right.
+
+**E at dose 0 (ST's four KDG cells, E_prob as in ST's guard; all 586 above the mass floor).** A0
+−0.005 [−0.012, +0.001]; A0s −0.028 [−0.037, −0.019]; Δ −0.023 [−0.034, −0.012] (clear 458:
+−0.013 [−0.024, −0.002]). On E_norm the Δ is −0.028 [−0.097, +0.041]: the scales disagree, and the
+Δ comes mostly from the judgment cell, where A0s's P(violating) doubles (0.109 → 0.232; CST-A16).
+
+**Dose 0 on the pressure cells (exploratory, clear 458).** Operator: ordered 0.780 → 0.445 (Δ
+−0.335 [−0.356, −0.314]), directed 0.144 → 0.415. Plain +0.043 [+0.034, +0.053] and user +0.061
+[+0.051, +0.073] on the ordered option, where the thinking-on reads do not move. Cell A′ at dose 0:
+A0s raises the originals by +0.249 and the twins alike (H* −0.015 [−0.066, +0.033]).
 
 **Capability (n 800, paired, parser of record):** A0 0.916, A0s 0.924, Δ +0.008 [−0.008, +0.023]:
 the bar (CI not entirely below −0.02) passes. ST's parser: Δ +0.035 [+0.011, +0.060] (CST-A14's
@@ -76,10 +92,23 @@ floor's 95th percentile; `C_anth` 0.75 against 0.21, 15%; `C_spec` 0.67 against 
   ride the length, not the content. Separating cell: S0b's length-matched fork and N on A0s
   (Amendment 8 item 4); until then the A0s band is provisional. The o3 rule (Amendment 6): o3 rises
   +0.056 while the directed option rises +0.211, so most of the shift goes to the directed option,
-  not to "stopped acting".
+  not to "stopped acting". **Dose 0 narrows the length rival:** with no trace generated, A0s lowers
+  the ordered option's probability on the same items by 0.335 [0.314, 0.356]. Trace length cannot
+  carry that read; what it leaves open is R_prefix (any 35k-token system prefix, CST-A8) and how
+  much of the thinking-on effect the reasoning adds. Exploratory, not the registered separator.
+- **The dose-0 readout and the reasoned action disagree in sign off the operator cells** (CST-A16):
+  at dose 0 A0s raises the norm-violating option on plain (+0.043), user (+0.061) and KDG's
+  judgment cell (+0.123), and on cell A′ raises rule-breaking without harm conditioning; thinking
+  on, the unpressured cells do not move and A′'s shift is harm-conditioned. Rival: a 35k-token
+  prefix degrades the closed-reasoning letter readout (the gain targets the violating option
+  rather than the second-ranked one, which argues against uniform flattening). Separating cell: the
+  same dose-0 prompts with a length-matched neutral document (S0b). Until then E at dose 0 and
+  every dose-0 read of A0s are reported beside, not read as the arm's policy.
 - **S_concl cannot register the effect at baseline** (CST-A15). Rival: the blind judge reads the
-  conclusion off the trace's closing lines, so a gap would be invisible to it. Separating cell
-  (zero GPU): rescore with the closing lines cut.
+  conclusion off the trace's closing lines, so a gap would be invisible to it. Separating cell:
+  rescore with the closing lines cut (gpt-oss-120b needs a GPU; Claude as reader is zero GPU but
+  changes the reader). Beside it, at dose 0 A0's ordered-option probability is 0.780 against a
+  thinking-on share of 0.311: on A0 the trace carries the drop, which fits R_conclusion.
 - **Recall:** the document's text is somewhat more predictable to Qwen than a paraphrase (15% of
   `C_anth` windows above the floor's 95th percentile, against 90% for public-domain text). Rival:
   the paraphrases are less fluent than the source, which favors the source without memorization;
@@ -91,13 +120,20 @@ floor's 95th percentile; `C_anth` 0.75 against 0.21, 15%; `C_spec` 0.67 against 
    (CST-A15, escalated). The action shares and ΔP are pre-registered secondaries (ST's outcomes) and
    move with CI-clean margins; S_tenet registers the operator effect on A0.
 2. *"A0s's effect is length, not content."* Not answered at S0a; it is the registered S0b read,
-   and the band is provisional by rule.
+   and the band is provisional by rule. Partly answered at dose 0 (−0.335 with no trace); R_prefix
+   stays open for the length-matched neutral document.
 3. *"The S_tenet read is incomplete and its reader was rate-limited."* Conceded for A0s (not
    reported as a number); A0's read is complete with 5.1% unscored and stops independent of family.
+4. *"Your secondaries contradict each other: E and the dose-0 cells say the document makes the
+   model worse off the operator cell."* Conceded as a readout disagreement (CST-A16), not answered:
+   the reasoned reads show no cost on the unpressured panel cells, and one on cell A′'s rule-right
+   originals (rule-breaking +0.088 [0.032, 0.147], against +0.223 on the harm-reversed twins); the dose-0 cost is
+   either a no-reasoning disposition or a long-prefix readout artifact, and S0b's neutral-prefix
+   read separates them.
 
 ## 6. Open (for G1)
 
 The author's ruling on CST-A15 (which statistic heads G1); A0s's S_tenet read (544 pending); the
-frontier second opinion (validity bar of record; Claude 200, then Codex after its quota); E at dose
-0 and the forced-choice read (ST's definitions, `analyze_phase1_session_a.four_cells`,
-`analyze_st2qp.forced_read`); the S_concl cut-lines discriminator; S0b.
+frontier second opinion (validity bar of record; Claude 200, then Codex after its quota); the
+S_concl cut-lines discriminator (needs gpt-oss-120b on a GPU, or a reader change to Claude: the
+author's choice); S0b, now with CST-A16's neutral-prefix dose-0 read (about 0.05 A100-h).
