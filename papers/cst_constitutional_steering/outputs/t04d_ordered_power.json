@@ -1,0 +1,80 @@
+{
+ "rule": "CST Amendment 14 item 3",
+ "headline": {
+  "n": 458,
+  "k_observed": {
+   "a0": 3.986899563318777,
+   "a0s": 3.995633187772926
+  },
+  "share": {
+   "a0": 0.3109534206695779,
+   "a0s": 0.03056768558951965
+  },
+  "gain_A0s": -0.2803857350800582,
+  "w": {
+   "a0": 0.13773653566229985,
+   "a0s": 0.02219796215429403
+  },
+  "het_A0s_minus_A0": 0.05733375247291303,
+  "mde_table": {
+   "k2": {
+    "arm_vs_A0_null_mde": 0.048556778982303914,
+    "arm_vs_A0s_null_mde": 0.019493141963313382,
+    "arm_vs_A0s_mde_with_A0s_het": 0.03689737457309294,
+    "A0s_band_halfwidth_95": 0.0339359635499808,
+    "ratio_gain_mde": 0.13159504909391226
+   },
+   "k4": {
+    "arm_vs_A0_null_mde": 0.034334827690963535,
+    "arm_vs_A0s_null_mde": 0.013783732868890945,
+    "arm_vs_A0s_mde_with_A0s_het": 0.034226085937281533,
+    "A0s_band_halfwidth_95": 0.02857054531147761,
+    "ratio_gain_mde": 0.12206785743757256
+   },
+   "k6": {
+    "arm_vs_A0_null_mde": 0.02803426941641433,
+    "arm_vs_A0s_null_mde": 0.01125437075987057,
+    "arm_vs_A0s_mde_with_A0s_het": 0.03328805383295734,
+    "A0s_band_halfwidth_95": 0.026542133897604875,
+    "ratio_gain_mde": 0.11872235163266291
+   },
+   "k8": {
+    "arm_vs_A0_null_mde": 0.024278389491151957,
+    "arm_vs_A0s_null_mde": 0.009746570981656691,
+    "arm_vs_A0s_mde_with_A0s_het": 0.03280898219521155,
+    "A0s_band_halfwidth_95": 0.025467416006732614,
+    "ratio_gain_mde": 0.11701373533087779
+   }
+  },
+  "second_derivation": {
+   "A0_twin_k2_boot_se": 0.017135438589116585,
+   "n_twin": 458,
+   "A0_twin_k2_closed_se": 0.017341706779394256,
+   "A0s_minus_A0_k4_boot_se": 0.014672733609132245,
+   "A0s_minus_A0_k4_closed_se": 0.014576808832386537,
+   "A0s_minus_A0_k4_closed_se_het0": 0.009343473126977997
+  }
+ },
+ "specificity": {
+  "n_pairs": 51,
+  "k": 8,
+  "shift_se_observed": 0.029386754701880756,
+  "shift_mde": 0.0822829131652661,
+  "bar": 0.03,
+  "true_0.0": {
+   "P_pass_point_rule": 0.8463415292091867,
+   "P_pass_ci_upper_below_bar": 0.17383151008293896
+  },
+  "true_0.03": {
+   "P_pass_point_rule": 0.5,
+   "P_pass_ci_upper_below_bar": 0.024997895148220428
+  },
+  "true_0.088": {
+   "P_pass_point_rule": 0.024209167190235137,
+   "P_pass_ci_upper_below_bar": 4.182786601247823e-05
+  },
+  "se_at_k8_best_case": 0.029386754701880756,
+  "se_at_k16_best_case": 0.020779573526765543,
+  "se_at_k32_best_case": 0.014693377350940378
+ }
+}

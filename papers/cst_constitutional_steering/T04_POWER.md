@@ -151,3 +151,42 @@ half the time, and one with a true loss of 0.06 passes it 3% of the time.
 - A thinking-on none-vs-none twin on the panel: none exists; the dose-0 panel twin is numeric only
   (±0.0013).
 - The rule that picks MoReBench's 200 scenarios: not registered; random subsets were used here.
+
+## 10. Re-run for the ordered-option share (Amendment 14 item 3, 2026-11-08)
+
+Script `scripts/t04d_ordered_power.py`, record `outputs/t04d_ordered_power.json`; S0a's operator
+cell, 458 clear items, k 4 per arm, every rollout with an action (no f thinning). The script asserts
+its shares equal the report's (`s0a_reads.json`): A0 0.311, A0s 0.031, gain −0.280. Within-scenario
+variance w: A0 0.138, A0s 0.022. Effect heterogeneity of A0s − A0 across scenarios: 0.057.
+
+| k | arm − A0, null MDE | arm − A0s, null MDE | arm − A0s, MDE with A0s's heterogeneity | A0s band half-width (95%) | arm gain / A0s gain, MDE |
+|---|---:|---:|---:|---:|---:|
+| 2 | 0.049 | 0.020 | 0.037 | 0.034 | 0.13 |
+| **4** | **0.034** | **0.014** | **0.034** | **0.029** | **0.12** |
+| 6 | 0.028 | 0.011 | 0.033 | 0.027 | 0.12 |
+| 8 | 0.024 | 0.010 | 0.033 | 0.026 | 0.12 |
+
+**Second derivations (agree).** A0's k 4 split into disjoint k 2 blocks: bootstrap SE of the
+null-twin difference 0.0171 against the closed form's 0.0173. A0s − A0 at k 4: bootstrap SE 0.0147
+against 0.0146 with the measured heterogeneity (0.0093 without it, so the heterogeneity term is
+most of the variance).
+
+**k stays 4.** Past k 4 the comparison of an arm with A0s is floored by scenario heterogeneity
+(0.034 → 0.033 at k 8), and A0s's band narrows by 0.003; raising k would also re-generate A0s, the
+costliest arm to read (CST-A11). An arm's gain is resolved against A0s to about 0.034, or 12% of
+A0s's gain.
+
+**The specificity bar (Amendment 14 item 4) is below cell A′'s resolution.** On 51 pairs at k 8
+the shift on the rule-right originals has SE 0.029 (MDE 0.082). Against the 0.03 bar: an arm with
+a true shift of 0 passes a point rule with probability 0.85 and a CI rule (upper bound below 0.03)
+with probability 0.17; a true shift of 0.03 passes the point rule half the time; A0s's measured
++0.088 passes neither (0.02, <0.001). Raising k to 32 at best halves the SE (0.015), and the CI
+rule's pass rate at a true 0 is then about 0.5. Returned to the author: the rule's form (point or
+CI) and whether the bar's n grows (more rule-right items, e.g. ST's 60 specificity items).
+
+| known bias | mechanism | direction relative to the stated MDEs |
+|---|---|---|
+| heterogeneity borrowed from A0s − A0 | an arm close to A0s may vary across scenarios less than A0s does against A0 | arm − A0s MDE overstated, bounded below by the null column |
+| one session, one engine | no run-to-run excess measured across sessions | MDEs understated if an arm's read runs on another engine or batch |
+| capped rollouts excluded | 7 A0s rollouts capped of 12,304; an arm with longer traces loses more | small; grows with an arm's trace length |
+| specificity SE from one A0s − A0 contrast | an arm's per-item variance on A′ differs from A0s's | unknown |

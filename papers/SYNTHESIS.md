@@ -2021,7 +2021,13 @@ and, less, rule-breaking where the rule is right (+0.088 [0.032, 0.147], above S
 specificity bar). At dose 0 the document raises the norm-violating option on the unpressured and
 judgment cells, where the reasoned reads do not move (CST-A16; E at dose 0 Δ −0.023 [−0.034,
 −0.012] on E_prob, null on E_norm), so on this model dose-0 reads stand beside the reasoned reads
-and do not substitute for them.
+and do not substitute for them. **Gate CST-G1 (author, 2026-11-08; Amendment 14).** The line's
+headline is now an action: the share of rollouts taking the operator's ordered option on the 458
+clear items, where the in-context constitution sets the band an arm aims for (0.311 → 0.031); an
+arm's gain is resolved against that band to about 0.034 at k 4 (`T04_POWER.md` §10). S_tenet reads
+what the trace says against what the model does on every arm, and S_concl guards against an arm
+that opens a gap between them. Specificity is read on cell A′'s rule-right originals with a 0.03
+bar, which A0s exceeds (+0.088 [0.032, 0.147]) and which 51 pairs resolve only to an SE of 0.029.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|

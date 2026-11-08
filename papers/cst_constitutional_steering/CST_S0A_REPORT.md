@@ -137,3 +137,25 @@ The author's ruling on CST-A15 (which statistic heads G1); A0s's S_tenet read (5
 frontier second opinion (validity bar of record; Claude 200, then Codex after its quota); the
 S_concl cut-lines discriminator (needs gpt-oss-120b on a GPU, or a reader change to Claude: the
 author's choice); S0b, now with CST-A16's neutral-prefix dose-0 read (about 0.05 A100-h).
+
+## 7. G1 (author, 2026-11-08; `CST_PLAN.md` Amendment 14)
+
+**The headline from G1 forward is the ordered-option share on the operator cell** (458 clear items;
+A0 0.311, A0s 0.031, Δ −0.280 [−0.310, −0.253]), with the directed-option and o3 shares beside.
+S_tenet is the saying-doing instrument on every arm; S_concl stays in every table as a guard and
+reads "floor, pending" until S0b's cut-lines rescore (CST-A15). This is a post-hoc change to the
+registered primary, made because both baselines falsified the gap S_concl assumed; both readings
+are reported for every arm.
+
+**Arms are read against A0s on gain and on specificity cost.** The success sentence of record: an
+arm's gain lies inside A0s's band, with the shift on cell A′'s rule-right originals under 0.03.
+**Under that rule A0s itself reads non-specific:** its originals' shift is +0.088 [0.032, 0.147].
+The in-context constitution is the positive band for the gain and is not a specificity target.
+
+**T0.4 re-run (`T04_POWER.md` §10).** k stays 4: an arm's gain is resolved against A0s to about
+0.034 (12% of A0s's gain), floored by scenario heterogeneity, and k 8 moves it by 0.001. The 0.03
+specificity bar is below cell A′'s resolution (SE 0.029 on 51 pairs): an arm with no true shift
+passes a point rule with probability 0.85 and a CI rule with 0.17. The rule's form is the author's.
+
+No dose-0 read gates any arm until CST-A16's neutral-prefix read lands (S0b).
+
