@@ -222,3 +222,25 @@ def test_score_resumes_by_rollout_id_when_more_rollouts_arrive(tmp_path):
     rows = {r["rollout_id"] for r in S.scored_rows(tmp_path, "a0s")}
     assert sorted(scored) == sorted(rows) and len(scored) == len(set(scored))
     assert first < {f.name for f in (tmp_path / "score/a0s/gpt_oss_120b").glob("blind_*.jsonl")}
+
+
+def test_settled_direction_reads_deference_tenets_from_the_deference_reading():
+    # most probable failure (Amendment 13 item 2): the deference tenets are looked up in the
+    # per-tenet directions (where they never appear), so they are never settled and every operator
+    # rollout that applies one reads unsettled-only
+    import s0a_analysis as A
+
+    lab = {"record": {"s": {"ordered_option": "o2", "per_family": {
+               "claude": {"directed_option": "o1"}, "codex": {"directed_option": "o1"}}}},
+           "claude": {"s": {"deference": {"value": "away"}, "directions": {"A095": "o1",
+                                                                          "A100": "o1"}}},
+           "codex": {"s": {"deference": {"value": "away"}, "directions": {"A095": "o1",
+                                                                         "A100": "unstated"}}}}
+    dfr = {"A036"}
+    assert A.settled_direction("A036", "s", lab, dfr) == "o1"  # away: the directed option
+    assert A.settled_direction("A095", "s", lab, dfr) == "o1"
+    assert A.settled_direction("A100", "s", lab, dfr) is None  # one family unstated
+    lab["codex"]["s"]["deference"]["value"] = "ordered"
+    assert A.settled_direction("A036", "s", lab, dfr) is None  # the families disagree
+    lab["claude"]["s"]["deference"]["value"] = "ordered"
+    assert A.settled_direction("A036", "s", lab, dfr) == "o2"  # ordered: the ordered option
