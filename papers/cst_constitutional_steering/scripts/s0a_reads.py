@@ -224,6 +224,56 @@ def dose0_cells(lab: dict) -> dict:
     return out
 
 
+def spec_rule() -> dict:
+    """The rule-right shift (A0s - A0 per item, P(violating) of record), non-specific when the CI
+    lies entirely above 0.03. Of record (Amendment 15): cell A′'s 51 originals alone. Beside: ST's
+    60 rule-right items (CST's user cell = ST's dl_chat_neutral, thinking on, k 2), a separate
+    floor cell, and the pooled 111 (Amendment 14 addendum item 1's rule, superseded)."""
+    import numpy as np
+
+    from deepsteer.kdg.schema import load_scenarios
+
+    K, Q, A15, PC = _st()
+    import cst_s0a_pod as POD
+
+    st = PC.scenario_status()
+    ids60 = set(json.loads((CST.parent / "st_live_reference/data/t15_specificity_v1.json")
+                           .read_text())["ids"])
+    fst = {s.id: {o.option_id: o.norm_status for o in s.options}
+           for f in POD.FORCED for s in load_scenarios(f)[0]}
+
+    def pr(arm: str, glob: str, keep, status) -> dict[str, float]:
+        rr = []
+        for r in A.load_jsonl(glob.format(arm=arm)):
+            if not keep(r):
+                continue
+            ns = status[r["scenario_id"]][r["option"]] if r.get("option") else None
+            rr.append({"scenario_id": r["scenario_id"], "norm_status": None if r["hit_cap"] else ns,
+                       "status": "truncated" if r["hit_cap"] else r["parse_status"]})
+        return A15.p_record(rr)
+
+    src = {"st60_user_cell": ("gen/{arm}/panel_user_*.jsonl",
+                              lambda r: r["condition"] == "user" and r["scenario_id"] in ids60, st),
+           "cellA2_originals": ("gen/{arm}/forced_plain_*.jsonl",
+                                lambda r: not r["scenario_id"].endswith(Q.TWIN), fst)}
+    shifts: dict[str, np.ndarray] = {}
+    out: dict = {"bar": 0.03, "rule": "non-specific when the CI lies entirely above the bar",
+                 "of_record": "cellA2_originals (Amendment 15)",
+                 "superseded": "pooled (Amendment 14 addendum item 1)"}
+    for name, (g, keep, status) in src.items():
+        a, b = pr("a0", g, keep, status), pr("a0s", g, keep, status)
+        ids = sorted(set(a) & set(b))
+        shifts[name] = np.array([b[i] - a[i] for i in ids])
+        out[name] = {"P_a0": float(np.mean([a[i] for i in ids])),
+                     "P_a0s": float(np.mean([b[i] for i in ids])), "shift": K.boot(shifts[name])}
+    pooled = np.concatenate(list(shifts.values()))
+    out["pooled"] = {"shift": K.boot(pooled)}
+    for k in ("pooled", *src):
+        lo = out[k]["shift"]["ci95"][0]
+        out[k]["non_specific"] = bool(lo is not None and lo > 0.03)
+    return out
+
+
 def olmo() -> dict:
     out = {}
     for a in ("a0", "a0s"):
@@ -238,7 +288,7 @@ if __name__ == "__main__":
     lab = A.labels()
     res = {"actions": actions(lab), "capability": capability(), "recall_a0": recall(),
            "olmo_10pct": olmo(), "e_dose0": e_dose0(lab), "forced": forced(),
-           "dose0_cells": dose0_cells(lab)}
+           "dose0_cells": dose0_cells(lab), "spec_rule": spec_rule()}
     (CST / "outputs" / "s0a_reads.json").write_text(json.dumps(res, indent=1) + "\n")
     for k, v in res["actions"].items():
         if "clear" in k:
@@ -258,6 +308,10 @@ if __name__ == "__main__":
         e = res["e_dose0"][sub]
         print("E dose0", sub, {a: (e[a]["n_floor"], _b(e[a]["E_prob"])) for a in ("a0", "a0s")},
               "d", _b(e["d_a0s_minus_a0"]["E_prob"]), "E_norm d", _b(e["d_a0s_minus_a0"]["E_norm"]))
+    for k, v in res["spec_rule"].items():
+        if isinstance(v, dict):
+            print("spec", k, {m: (round(x, 4) if isinstance(x, float) else x) for m, x in v.items()
+                              if m != "shift"}, _b(v["shift"]), "MDE", round(v["shift"]["mde"], 4))
     for k, v in res["dose0_cells"].items():
         print("dose0", k, {m: (round(x["a0"], 3), round(x["a0s"], 3), round(x["delta"], 3),
                                [round(c, 3) for c in x["ci95"]]) for m, x in v.items()})

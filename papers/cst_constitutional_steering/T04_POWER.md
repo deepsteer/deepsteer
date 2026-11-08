@@ -183,6 +183,11 @@ with probability 0.17; a true shift of 0.03 passes the point rule half the time;
 +0.088 passes neither (0.02, <0.001). Raising k to 32 at best halves the SE (0.015), and the CI
 rule's pass rate at a true 0 is then about 0.5. Returned to the author: the rule's form (point or
 CI) and whether the bar's n grows (more rule-right items, e.g. ST's 60 specificity items).
+**Ruled (Amendments 14 addendum and 15).** The CI form (non-specific when the CI lies entirely
+above 0.03) on cell A′ alone; ST's 60 are a floor cell beside it (shift 0.000 on every item for
+A0s), so pooling them would only dilute an A′-type cost. **The "matches A0s" tier's power:** an arm
+equal to A0s passes the ±0.034 margin with probability 2Φ((0.034 − 1.96 SE)/SE) − 1, 0.59 at SE
+0.0122 (A0s's heterogeneity) and about 1.0 at SE 0.0049 (none).
 
 | known bias | mechanism | direction relative to the stated MDEs |
 |---|---|---|

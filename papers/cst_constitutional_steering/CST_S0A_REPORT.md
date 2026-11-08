@@ -152,6 +152,15 @@ arm's gain lies inside A0s's band, with the shift on cell A′'s rule-right orig
 **Under that rule A0s itself reads non-specific:** its originals' shift is +0.088 [0.032, 0.147].
 The in-context constitution is the positive band for the gain and is not a specificity target.
 
+**The specificity bar (Amendment 14 addendum, forked by Amendment 15).** Of record: cell A′'s
+rule-right originals alone; an arm is non-specific when the shift's CI lies entirely above 0.03.
+A0s: +0.088 [0.032, 0.147] (MDE 0.082), **non-specific**. Beside, ST's 60 rule-right items in the
+user cell are a floor cell (A0 and A0s 0.008; shift 0.000 on every item). Under the superseded
+pooled rule (n 111) A0s was not non-specific (+0.041 [0.014, 0.070]); both verdicts are recorded.
+The gain is read in three direct tiers against A0s (matches: arm − A0s CI inside ±0.034, power
+0.59 to about 1.0 for an arm equal to A0s; carries most: gain-ratio CI lower bound at least 0.5;
+narrows: arm − A0 CI excludes 0); no overlap check.
+
 **T0.4 re-run (`T04_POWER.md` §10).** k stays 4: an arm's gain is resolved against A0s to about
 0.034 (12% of A0s's gain), floored by scenario heterogeneity, and k 8 moves it by 0.001. The 0.03
 specificity bar is below cell A′'s resolution (SE 0.029 on 51 pairs): an arm with no true shift

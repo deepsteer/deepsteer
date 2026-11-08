@@ -2026,8 +2026,10 @@ headline is now an action: the share of rollouts taking the operator's ordered o
 clear items, where the in-context constitution sets the band an arm aims for (0.311 → 0.031); an
 arm's gain is resolved against that band to about 0.034 at k 4 (`T04_POWER.md` §10). S_tenet reads
 what the trace says against what the model does on every arm, and S_concl guards against an arm
-that opens a gap between them. Specificity is read on cell A′'s rule-right originals with a 0.03
-bar, which A0s exceeds (+0.088 [0.032, 0.147]) and which 51 pairs resolve only to an SE of 0.029.
+that opens a gap between them. Specificity is read on cell A′'s rule-right originals (Amendment 15):
+an arm is non-specific when the shift's CI lies entirely above 0.03, and A0s is (+0.088 [0.032,
+0.147], SE 0.029 on 51 pairs). ST's 60 rule-right items sit at floor on both baselines and are
+reported beside, not pooled; pooled, A0s's cost read +0.041 [0.014, 0.070], under the bar.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|

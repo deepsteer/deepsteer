@@ -1101,5 +1101,54 @@
     ]
    }
   }
+ },
+ "spec_rule": {
+  "bar": 0.03,
+  "rule": "non-specific when the CI lies entirely above the bar",
+  "of_record": "cellA2_originals (Amendment 15)",
+  "superseded": "pooled (Amendment 14 addendum item 1)",
+  "st60_user_cell": {
+   "P_a0": 0.008333333333333333,
+   "P_a0s": 0.008333333333333333,
+   "shift": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "n": 60,
+    "point_in_ci": true,
+    "mde": 0.0
+   },
+   "non_specific": false
+  },
+  "cellA2_originals": {
+   "P_a0": 0.12009803921568628,
+   "P_a0s": 0.20833333333333334,
+   "shift": {
+    "mean": 0.08823529411764706,
+    "ci95": [
+     0.031862745098039214,
+     0.14705882352941177
+    ],
+    "n": 51,
+    "point_in_ci": true,
+    "mde": 0.08228291316526612
+   },
+   "non_specific": true
+  },
+  "pooled": {
+   "shift": {
+    "mean": 0.04054054054054054,
+    "ci95": [
+     0.013513513513513514,
+     0.06981981981981981
+    ],
+    "n": 111,
+    "point_in_ci": true,
+    "mde": 0.04021879021879021
+   },
+   "non_specific": false
+  }
  }
 }
