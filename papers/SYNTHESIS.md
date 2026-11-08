@@ -2006,7 +2006,13 @@ the two judges agree on applied tenets at 0.49 (CST-A12). The measured basis for
 reader is per tenet: across nine gpt-oss passes, A036 (the operator-deference tenet on every
 shortlist) reads kappa 0.14 over 94 rollouts, and the median among tenets named on 10 or more
 rollouts is 0.33; one tenet in 71 clears 0.8. Bulk scoring runs at effort low: MoReBench's effort
-high read worse here on both the concluded option and the applied tenets.
+high read worse here on both the concluded option and the applied tenets. **S0a (2026-11-08,
+`cst_constitutional_steering/CST_S0A_REPORT.md`):** with `C_anth` in the system message, Qwen3.8-27B
+takes an operator's harmful order on 0.031 of the 458 clear directed-away items against 0.311
+without it (Δ −0.280 [−0.310, −0.253]), with plain and user cells unchanged and capability
+unchanged (Δ +0.008 [−0.008, +0.023]); the band is provisional until S0b's length check (A0s traces
+are 2.6 times longer). The registered S_concl reads zero on both arms (CST-A15): the effect is in what
+the trace concludes, not in a gap between reasoning and action.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|

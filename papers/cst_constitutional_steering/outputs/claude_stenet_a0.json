@@ -1,0 +1,118 @@
+{
+ "read": "stenet",
+ "arm": "a0",
+ "n": 800,
+ "scored": 759,
+ "unscored": 41,
+ "pending": 0,
+ "unscored_rate": 0.05125,
+ "unscored_ids": [
+  "a0|panel|operator|F1-A-02|2",
+  "a0|panel|operator|F1-A-08|0",
+  "a0|panel|operator|F1-A-10|1",
+  "a0|panel|operator|F1-A-18|2",
+  "a0|panel|operator|F1-A-32T|3",
+  "a0|panel|operator|F1-A-42T|2",
+  "a0|panel|operator|F1-A-48|2",
+  "a0|panel|operator|F1-A-52T|3",
+  "a0|panel|operator|F1-A-56|0",
+  "a0|panel|operator|F1-B-05|3",
+  "a0|panel|operator|F1-B-27T|1",
+  "a0|panel|operator|F1-B-35|2",
+  "a0|panel|operator|F1-B-61|3",
+  "a0|panel|operator|F1-B-69|3",
+  "a0|panel|operator|F1-B-71|3",
+  "a0|panel|operator|F2-A-14|0",
+  "a0|panel|operator|F2-A-36|0",
+  "a0|panel|operator|F3-A-14T|0",
+  "a0|panel|operator|F3-A-24T|1",
+  "a0|panel|operator|F3-A-86T|1",
+  "a0|panel|operator|F3-A-86T|2",
+  "a0|panel|operator|F3-B-15T|2",
+  "a0|panel|operator|F3-B-39T|0",
+  "a0|panel|operator|F3-B-67T|1",
+  "a0|panel|operator|F3-B-69T|1",
+  "a0|panel|operator|F4-A-02T|0",
+  "a0|panel|operator|F4-A-12|2",
+  "a0|panel|operator|F4-A-36T|3",
+  "a0|panel|operator|F4-A-38T|3",
+  "a0|panel|operator|F4-A-46|0",
+  "a0|panel|operator|F4-A-50|1",
+  "a0|panel|operator|F4-B-23|2",
+  "a0|panel|operator|F4-B-25T|2",
+  "a0|panel|operator|F4-B-37|1",
+  "a0|panel|operator|F4-B-37|3",
+  "a0|panel|operator|F4-B-45|1",
+  "a0|panel|operator|F4-B-47|3",
+  "a0|panel|operator|F5-A-04|1",
+  "a0|panel|operator|F5-B-01|3",
+  "a0|panel|operator|F5-B-17|0",
+  "a0|panel|operator|F5-B-85|0"
+ ],
+ "by_family": {
+  "F1": {
+   "n": 240,
+   "unscored": 15,
+   "rate": 0.0625
+  },
+  "F2": {
+   "n": 60,
+   "unscored": 2,
+   "rate": 0.03333333333333333
+  },
+  "F3": {
+   "n": 144,
+   "unscored": 8,
+   "rate": 0.05555555555555555
+  },
+  "F4": {
+   "n": 204,
+   "unscored": 12,
+   "rate": 0.058823529411764705
+  },
+  "F5": {
+   "n": 152,
+   "unscored": 4,
+   "rate": 0.02631578947368421
+  }
+ },
+ "by_rollout_index": {
+  "0": {
+   "n": 200,
+   "unscored": 10,
+   "rate": 0.05
+  },
+  "1": {
+   "n": 200,
+   "unscored": 10,
+   "rate": 0.05
+  },
+  "2": {
+   "n": 200,
+   "unscored": 10,
+   "rate": 0.05
+  },
+  "3": {
+   "n": 200,
+   "unscored": 11,
+   "rate": 0.055
+  }
+ },
+ "by_condition": {
+  "operator": {
+   "n": 800,
+   "unscored": 41,
+   "rate": 0.05125
+  }
+ },
+ "attempts_used": {
+  "1": 638,
+  "2": 82,
+  "3": 39
+ },
+ "independence": {
+  "chi2": 3.259881038789666,
+  "df": 4,
+  "p": 0.5153137762078538
+ }
+}

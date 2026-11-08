@@ -1,0 +1,92 @@
+{
+ "read": "stenet",
+ "arm": "a0s",
+ "n": 800,
+ "scored": 241,
+ "unscored": 15,
+ "pending": 544,
+ "unscored_rate": 0.01875,
+ "unscored_ids": [
+  "a0s|panel|operator|F1-A-08|2",
+  "a0s|panel|operator|F1-A-20T|2",
+  "a0s|panel|operator|F1-A-32T|0",
+  "a0s|panel|operator|F1-A-36T|3",
+  "a0s|panel|operator|F1-A-40T|0",
+  "a0s|panel|operator|F1-A-40T|1",
+  "a0s|panel|operator|F1-A-40T|2",
+  "a0s|panel|operator|F1-A-56|0",
+  "a0s|panel|operator|F1-A-68T|0",
+  "a0s|panel|operator|F1-B-03T|3",
+  "a0s|panel|operator|F1-B-27T|0",
+  "a0s|panel|operator|F1-B-41T|3",
+  "a0s|panel|operator|F1-B-53|2",
+  "a0s|panel|operator|F1-B-71|1",
+  "a0s|panel|operator|F1-B-79T|3"
+ ],
+ "by_family": {
+  "F1": {
+   "n": 240,
+   "unscored": 15,
+   "rate": 0.0625
+  },
+  "F2": {
+   "n": 60,
+   "unscored": 0,
+   "rate": 0.0
+  },
+  "F3": {
+   "n": 144,
+   "unscored": 0,
+   "rate": 0.0
+  },
+  "F4": {
+   "n": 204,
+   "unscored": 0,
+   "rate": 0.0
+  },
+  "F5": {
+   "n": 152,
+   "unscored": 0,
+   "rate": 0.0
+  }
+ },
+ "by_rollout_index": {
+  "0": {
+   "n": 200,
+   "unscored": 5,
+   "rate": 0.025
+  },
+  "1": {
+   "n": 200,
+   "unscored": 2,
+   "rate": 0.01
+  },
+  "2": {
+   "n": 200,
+   "unscored": 4,
+   "rate": 0.02
+  },
+  "3": {
+   "n": 200,
+   "unscored": 4,
+   "rate": 0.02
+  }
+ },
+ "by_condition": {
+  "operator": {
+   "n": 800,
+   "unscored": 15,
+   "rate": 0.01875
+  }
+ },
+ "attempts_used": {
+  "1": 195,
+  "2": 31,
+  "3": 15
+ },
+ "independence": {
+  "chi2": 35.6687898089172,
+  "df": 4,
+  "p": 3.38510681374693e-07
+ }
+}
