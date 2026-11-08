@@ -6,7 +6,9 @@
 #   SESSION=1  A0: generation (12,304), dose-0 and E, recall, capability; gpt-oss-120b scoring
 #              (blind, effort low), the retest, the relabel, Layer A; Olmo's 10% and the votes.
 #   SESSION=2  A0s on the panel (9,376).
-#   SESSION=3  A0s on H1_held and cell A', dose-0 and E, capability; gpt-oss and Olmo on A0s.
+#   SESSION=3  A0s on H1_held and cell A', dose-0 and E, capability; gpt-oss and Olmo on what
+#              A0s has on disk.
+#   SESSION=4  gpt-oss and Olmo on the A0s rollouts not yet scored (the panel from session 2).
 # Everything writes under outputs/s0a, which the launcher downloads (RESULTS_SUBPATH) and the next
 # session syncs back up (SYNC_OUTPUTS outputs/s0a/), so a chunk or file on disk is skipped and a
 # session cut short is rerun with the same CST_SESSION. A failed stage does not stop the next. The
@@ -22,8 +24,8 @@ START=$(date +%s)
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 SESSION="${CST_SESSION:-}"
 trap 'cp "$REPO_DIR/session.log" "$OUT/logs/session_s0a${SESSION}_${STAMP}.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
-case "$SESSION" in 1) MAX_H=10.0;; 2) MAX_H=12.0;; 3) MAX_H=10.0;;
-  *) echo "BAIL: CST_SESSION must be 1, 2 or 3"; exit 1;; esac
+case "$SESSION" in 1) MAX_H=10.0;; 2) MAX_H=12.0;; 3) MAX_H=10.0;; 4) MAX_H=4.0;;
+  *) echo "BAIL: CST_SESSION must be 1, 2, 3 or 4"; exit 1;; esac
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}" TOKENIZERS_PARALLELISM=false
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_ENABLE_HF_TRANSFER=0
 export CST_CONST_DIR="$REPO_DIR/papers/cst_constitutional_steering/outputs/_sync"
@@ -124,9 +126,15 @@ case "$SESSION" in
     run --stage gen --arm a0s --parts panel_plain,panel_user,panel_operator,panel_operator_pr
     ;;
   3)
-    run --stage gen --arm a0s
+    # H1_held and cell A' only: the panel is session 2's (its chunks may not be synced yet)
+    run --stage gen --arm a0s --parts h1_plain,h1_operator,forced_plain
     run --stage dose0 --arm a0s
     run --stage capability --arm a0s
+    run --stage score --arm a0s --judge gpt_oss_120b
+    run --stage score --arm a0s --judge olmo31_32b_instruct
+    ;;
+  4)
+    # after sessions 2 and 3 are downloaded: score what is not yet scored (resume by rollout id)
     run --stage score --arm a0s --judge gpt_oss_120b
     run --stage score --arm a0s --judge olmo31_32b_instruct
     ;;

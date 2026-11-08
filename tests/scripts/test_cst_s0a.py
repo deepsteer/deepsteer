@@ -206,3 +206,19 @@ def test_capability_parser_reads_the_leading_answer_not_a_rebutted_option():
     article = "A key point is that the answer is B because of the reasons."
     assert S.cap_parse_of_record(mm, article) == "B"  # not "A": the article is not an answer
     assert S.cap_parse_of_record({"dataset": "openai/gsm8k"}, "So the total is 42.") == "42"
+
+
+@pytest.mark.slow
+def test_score_resumes_by_rollout_id_when_more_rollouts_arrive(tmp_path):
+    # most probable failure (S0a-3 then S0a-4): scoring resumed by chunk position after new
+    # rollouts arrive skips them, or scores a rollout twice
+    S.stage_gen(tmp_path, "a0s", ["h1_operator"], True)
+    S.stage_score(tmp_path, "a0s", "gpt_oss_120b", True)
+    first = {f.name for f in (tmp_path / "score/a0s/gpt_oss_120b").glob("blind_*.jsonl")}
+    S.stage_gen(tmp_path, "a0s", ["panel_operator", "h1_operator"], True)
+    S.stage_score(tmp_path, "a0s", "gpt_oss_120b", True)
+    scored = [json.loads(x)["rollout_id"] for f in (tmp_path / "score/a0s/gpt_oss_120b")
+              .glob("blind_*.jsonl") for x in open(f)]
+    rows = {r["rollout_id"] for r in S.scored_rows(tmp_path, "a0s")}
+    assert sorted(scored) == sorted(rows) and len(scored) == len(set(scored))
+    assert first < {f.name for f in (tmp_path / "score/a0s/gpt_oss_120b").glob("blind_*.jsonl")}

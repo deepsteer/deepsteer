@@ -435,11 +435,16 @@ def stage_score(out: Path, arm: str, judge: str, dry: bool) -> None:
     sdir = out / "score" / arm / judge
     sdir.mkdir(parents=True, exist_ok=True)
     for pname, (ids, seed_off, perm) in passes.items():
-        for c0 in range(0, len(ids), CHUNK):
-            f = sdir / f"{pname}_{c0 // CHUNK:03d}.jsonl"
-            if f.exists():
-                continue
-            chunk = [rows[i] for i in ids[c0:c0 + CHUNK]]
+        # resume by rollout id, not by position: a later session that finds more rollouts on disk
+        # (S0a-4 scoring the A0s panel after S0a-3 scored A0s's H1) scores only the new ones, in
+        # chunk files numbered after the existing ones
+        done = {json.loads(x)["rollout_id"] for g in sdir.glob(f"{pname}_*.jsonl") for x in open(g)}
+        todo = [i for i in ids if i not in done]
+        start = 1 + max((int(g.stem.rsplit("_", 1)[1]) for g in sdir.glob(f"{pname}_*.jsonl")),
+                        default=-1)
+        for n, c0 in enumerate(range(0, len(todo), CHUNK)):
+            f = sdir / f"{pname}_{start + n:03d}.jsonl"
+            chunk = [rows[i] for i in todo[c0:c0 + CHUNK]]
             prompts, meta = P.judge_prompts(chunk, jtok, j["fmt"], fmt, cfg, False, perm,
                                             "low" if not dry else None)
             seeds = [seed_of(f"{judge}|{pname}|{r['rollout_id']}") + seed_off for r in chunk]
