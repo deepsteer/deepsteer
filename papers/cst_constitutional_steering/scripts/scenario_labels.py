@@ -65,7 +65,8 @@ def scored_sets() -> dict[str, list[Scenario]]:
 
 def _scenario_block(s: Scenario, set_kind: str) -> str:
     order = assign_letters(s, 0)
-    target = "consistent" if set_kind == "h1" else "violating"
+    # H1 and the legitimate-order cell (Amendment 19 rider d) order the rule-consistent option
+    target = "consistent" if set_kind in ("h1", "legit") else "violating"
     ordered = [o.option_id for o in s.options if o.norm_status == target][0]
     opts = "\n".join(f"  {o.option_id}: {o.text}" for _, o in order)
     return (f"[{s.id}] ({set_kind})\n{s.agent_text}\nOptions:\n{opts}\n"
@@ -718,6 +719,40 @@ def label_all_v4(families: tuple[str, ...], per_call: int = PER_CALL_V2,
         print(fam, "labeled", len(rows))
 
 
+LEGIT = CST / "data" / "legit_order_scenarios_v1.json"
+
+
+def label_legit(family: str) -> None:
+    """Amendment 19 rider d: the legitimate-order cell under the v4 prompt and the registered rule
+    (``label_rule_v4``), one family at a time (Claude now, Codex after its reset; provisional until
+    both). The ordered option is the rule-consistent one, as on H1. Writes
+    ``data/legit_order_labels_v1_<family>.json`` with the raw labels and the rule's reading."""
+    from collections import Counter
+
+    from deepsteer.kdg.schema import load_scenarios
+
+    tenets = TenetSet.load(CST / "data" / "tenets_C_anth_v2.json")
+    ranks = _ranks(tenets)
+    scen, _ = load_scenarios(LEGIT)
+    items = [(s, "legit") for s in sorted(scen, key=lambda s: s.id)]
+    rows: list[dict] = []
+    for i in range(0, len(items), PER_CALL_V2):
+        rows += label_v4(items[i:i + PER_CALL_V2], tenets, f"legit_{i // PER_CALL_V2:03d}", family)
+    by = {s.id: s for s, _ in items}
+    read = {}
+    for r in rows:
+        s = by[r["scenario_id"]]
+        ordered = [o.option_id for o in s.options if o.norm_status == "consistent"][0]
+        read[r["scenario_id"]] = label_rule_v4(r, ordered, ranks, [o.option_id for o in s.options])
+    counts = Counter(v["direction"] for v in read.values())
+    (CST / "data" / f"legit_order_labels_v1_{family}.json").write_text(json.dumps(
+        {"prompt": "Amendment 5 (_prompt_v4)", "rule": "label_rule_v4 (Amendment 5)",
+         "family": family, "tenets": "C_anth v2", "n": len(rows), "direction_counts": counts,
+         "status": "provisional until both families label (Amendment 19 rider d)",
+         "labels": rows, "rule_reading": read}, indent=1, ensure_ascii=False) + "\n")
+    print(family, "labeled", len(rows), dict(counts))
+
+
 BLIND = CST / "BLIND_SHEET_20261105.md"
 BLIND_IDS = CST / "data" / "blind_sheet_20261105_ids.json"
 GRADIENT_QUOTES = (
@@ -1083,7 +1118,7 @@ if __name__ == "__main__":
     ap.add_argument("which", choices=("sheet", "all", "score", "relabel", "label_v2",
                                       "record_v2", "pilot_v3", "label_v3", "check_v4",
                                       "label_v4", "build_blind", "score_blind",
-                                      "record_v4"))
+                                      "record_v4", "label_legit"))
     ap.add_argument("--labels", default="record", choices=("record", "claude", "codex"))
     ap.add_argument("--per-call", type=int, default=PER_CALL_V2)
     ap.add_argument("--max-batches", type=int, default=None)
@@ -1108,6 +1143,8 @@ if __name__ == "__main__":
         label_all_v4(tuple(a.families.split(",")), a.per_call, a.max_batches)
     elif a.which == "record_v4":
         record_v4()
+    elif a.which == "label_legit":
+        label_legit(a.family)
     elif a.which == "build_blind":
         build_blind(a.families.split(",")[0])
     elif a.which == "score_blind":
