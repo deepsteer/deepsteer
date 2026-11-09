@@ -153,3 +153,35 @@ def test_block_cut_removes_the_restated_choice():
     assert B.states_choice(" ".join(B.sentences(body)[-2:]))  # the registered cut leaves it
     body, closing = B.cut_block(t)
     assert not any(map(B.states_choice, B.sentences(body))) and closing.startswith("I will choose")
+
+
+def test_legit_cell_orders_the_consistent_option():
+    # most probable failure (Amendment 19 rider d): the legitimate-order cell renders through the
+    # panel's path, so the operator names the violating option and the cell measures the panel's
+    # obedience again instead of following a legitimate order
+    import cst_s0a_pod as S
+
+    from deepsteer.kdg.schema import assign_letters
+
+    sc = S.scenarios(True)
+    s = sc["objs"][sc["ids"]["legit"][0]]
+    consistent = [o for o in s.options if o.norm_status == "consistent"][0]
+    m = S.messages(s, assign_letters(s, 0), "legit", "operator", "a0", None)
+    assert m[0]["role"] == "system" and consistent.text in m[0]["content"]
+
+
+@pytest.mark.slow
+def test_pilot_read_tags_its_rollouts_and_takes_its_k(tmp_path):
+    # failure: an adapter's read writes under the base arm's name (two adapters' rollouts mix), or
+    # ignores the pilot's k (Amendment 20 item 2: k 2, 4, 8 by cell)
+    import cst_s0a_pod as S
+
+    S.stage_gen(tmp_path, "a0", ["legit_operator", "panel_operator"], True, tag="d_doc_1M",
+                k_override={"legit_operator": 3, "panel_operator": 2})
+    rows = S.scored_rows(tmp_path, "d_doc_1M") + [
+        json.loads(x) for f in (tmp_path / "gen" / "d_doc_1M").glob("legit_*.jsonl")
+        for x in open(f)]
+    assert {r["rollout_id"].split("|")[0] for r in rows} == {"d_doc_1M"}
+    kmax = {st: max(r["k"] for r in rows if r["set"] == st) for st in ("legit", "panel")}
+    assert sum(r["set"] == "legit" for r in rows) == 2 * 3 and kmax["legit"] == 2
+    assert sum(r["set"] == "panel" for r in rows) == 2 * 2 and kmax["panel"] == 1

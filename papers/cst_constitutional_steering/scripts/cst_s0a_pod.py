@@ -67,6 +67,8 @@ ENGINE = "no_mtp_seqs128"  # Amendment 10 item 4
 PANEL_K = {"plain": 4, "user": 2, "operator": 4, "operator_pr": 6}
 H1_K = {"plain": 8, "operator": 8}
 FORCED_K = 8
+LEGIT_K = {"operator": 4}  # Amendment 19 rider d: the legitimate-order cell at k 4
+LEGIT = CST / "data/legit_order_scenarios_v1.json"
 FORCED = (ST / "data/st_fxh_cellA2_forced_v1.json",
           ST / "data/st_fxh_cellA2_twins_forced_v1.json")
 PARTS = tuple([f"panel_{c}" for c in PANEL_K] + [f"h1_{c}" for c in H1_K] + ["forced_plain"])
@@ -92,16 +94,21 @@ def scenarios(dry: bool) -> dict:
             "h1": sorted(i for i, (_, k) in by.items() if k == "h1")}
     forced = {s.id: s for f in FORCED for s in load_scenarios(f)[0]}
     sets["forced"] = sorted(forced)
+    legit = {s.id: s for s in load_scenarios(LEGIT)[0]}  # Amendment 19 rider d
+    sets["legit"] = sorted(legit)
     if dry:
         sets = {k: v[:2] for k, v in sets.items()}
-    objs = {i: s for i, (s, _) in by.items()} | forced
+    objs = {i: s for i, (s, _) in by.items()} | forced | legit
     return {"ids": sets, "objs": objs}
 
 
-def part_units(part: str, sc: dict) -> list[tuple[str, str, str, int]]:
-    """(set, condition, scenario id, k) for every rollout of ``part``."""
+def part_units(part: str, sc: dict, k_override: dict[str, int] | None = None
+               ) -> list[tuple[str, str, str, int]]:
+    """(set, condition, scenario id, k) for every rollout of ``part``; ``k_override`` maps a part
+    to its k (the pilot read's k 2, 4 and 8, Amendment 20 item 2)."""
     set_, cond = part.split("_", 1)
-    k = {"panel": PANEL_K, "h1": H1_K}.get(set_, {"plain": FORCED_K})[cond]
+    k = {"panel": PANEL_K, "h1": H1_K, "legit": LEGIT_K}.get(set_, {"plain": FORCED_K})[cond]
+    k = (k_override or {}).get(part, k)
     return [(set_, cond, sid, j) for sid in sc["ids"][set_] for j in range(k)]
 
 
@@ -152,15 +159,19 @@ def engine_kwargs(arm: str) -> dict:
     return kw
 
 
-def subject(dry: bool, arm: str = "a0"):
+def subject(dry: bool, arm: str = "a0", lora: bool = False):
+    """The subject engine; ``lora`` serves adapters natively (VALIDATE V4: rank 16, two slots)."""
     path = V._model_path(dry)  # noqa: SLF001
     if dry:
         return path, V.HFStandIn(path)
-    return path, V.VLLMEngine(path, None, **engine_kwargs(arm))
+    kw = engine_kwargs(arm)
+    if lora:
+        kw.update(enable_lora=True, max_lora_rank=16, max_loras=2)
+    return path, V.VLLMEngine(path, None, **kw)
 
 
 def generate(eng, prompts: list[list[int]], seeds: list[int], max_tokens: int,
-             dry: bool) -> list[dict]:
+             dry: bool, lora=None) -> list[dict]:
     """Sampled generation with one seed per rollout (KDG sampler v2)."""
     if dry:
         return eng.generate(prompts, max_tokens)
@@ -169,7 +180,8 @@ def generate(eng, prompts: list[list[int]], seeds: list[int], max_tokens: int,
     sps = [SamplingParams(max_tokens=max_tokens, seed=sd, temperature=V.SAMPLER["temperature"],
                           top_p=V.SAMPLER["top_p"], top_k=V.SAMPLER["top_k"] or -1)
            for sd in seeds]
-    res = eng.llm.generate([TokensPrompt(prompt_token_ids=p) for p in prompts], sps)
+    res = eng.llm.generate([TokensPrompt(prompt_token_ids=p) for p in prompts], sps,
+                           lora_request=lora)
     return [{"ids": list(r.outputs[0].token_ids), "text": r.outputs[0].text,
              "hit_cap": r.outputs[0].finish_reason == "length",
              "finish_reason": r.outputs[0].finish_reason} for r in res]
@@ -178,28 +190,34 @@ def generate(eng, prompts: list[list[int]], seeds: list[int], max_tokens: int,
 # ---- stages --------------------------------------------------------------------------------
 
 def stage_gen(out: Path, arm: str, parts: list[str], dry: bool,
-              max_chunks: int | None = None) -> None:
+              max_chunks: int | None = None, *, tag: str | None = None, lora=None,
+              k_override: dict[str, int] | None = None, engine=None) -> None:
     """Generate ``parts`` for ``arm`` in chunks, skipping chunks on disk; ``max_chunks`` stops after
-    that many new chunks (S0b's pilot gate reads them before the rest runs)."""
+    that many new chunks (S0b's pilot gate reads them before the rest runs). For the pilot reads:
+    ``tag`` names the read (rollout ids and ``gen/<tag>``; default the arm), ``lora`` a LoRA request
+    served on ``engine`` (an existing ``(path, engine)`` reused across adapters), ``k_override`` the
+    k per part."""
+    tag = tag or arm
     import reasoning_formats as rf
 
     from deepsteer.kdg.schema import assign_letters
 
     sc = scenarios(dry)
     body = doc_body(arm, dry)
-    path, eng = subject(dry, arm)
+    path, eng = engine if engine is not None else subject(dry, arm, lora=lora is not None)
     tok = V._tok(path)  # noqa: SLF001
     fmt = rf.build_format("qwen38_27b", tok)
     letters = rf.letter_token_ids(tok)
     size = CHUNK_BY_ARM[arm]
-    gdir = out / "gen" / arm
+    gdir = out / "gen" / tag
     gdir.mkdir(parents=True, exist_ok=True)
-    log = {"arm": arm, "engine": ENGINE, "max_num_seqs": engine_kwargs(arm)["max_num_seqs"]
+    log = {"arm": arm, "tag": tag, "lora": getattr(lora, "lora_path", None), "engine": ENGINE,
+           "max_num_seqs": engine_kwargs(arm)["max_num_seqs"]
            if not dry else None, "cap": CAP, "load_s": getattr(eng, "load_s", None),
            "chunk": size, "chunks": {}}
     new = 0
     for part in parts:
-        units = part_units(part, sc)
+        units = part_units(part, sc, k_override)
         for c0 in range(0, len(units), size):
             f = gdir / f"{part}_{c0 // size:03d}.jsonl"
             if f.exists():
@@ -212,14 +230,14 @@ def stage_gen(out: Path, arm: str, parts: list[str], dry: bool,
                 s = sc["objs"][sid]
                 order = assign_letters(s, k)
                 text = fmt.render(tok, messages(s, order, set_, cond, arm, body), EFFORT)
-                rid = f"{arm}|{set_}|{cond}|{sid}|{k}"
-                rows.append({"rollout_id": rid, "arm": arm, "set": set_, "condition": cond,
+                rid = f"{tag}|{set_}|{cond}|{sid}|{k}"
+                rows.append({"rollout_id": rid, "arm": tag, "set": set_, "condition": cond,
                              "scenario_id": sid, "k": k,
                              "order": [(L_, o.option_id) for L_, o in order]})
                 prompts.append(tok.encode(text, add_special_tokens=False))
                 seeds.append(seed_of(rid))
             t = time.time()
-            gens = generate(eng, prompts, seeds, CAP, dry)
+            gens = generate(eng, prompts, seeds, CAP, dry, lora)
             dt = time.time() - t
             tmp = f.with_suffix(".tmp")
             with open(tmp, "w") as fh:
@@ -235,7 +253,7 @@ def stage_gen(out: Path, arm: str, parts: list[str], dry: bool,
             tmp.rename(f)  # a chunk exists only once complete
             log["chunks"][f.name] = {"n": len(rows), "seconds": dt,
                                      "gen_tokens": sum(len(g["ids"]) for g in gens)}
-            V._w(out, f"gen_{arm}_log_{int(time.time())}", log)  # noqa: SLF001
+            V._w(out, f"gen_{tag}_log_{int(time.time())}", log)  # noqa: SLF001
 
 
 def stage_dose0(out: Path, arm: str, dry: bool) -> None:

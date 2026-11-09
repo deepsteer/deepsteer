@@ -306,9 +306,15 @@ def label_v4(batch, tenets: TenetSet, tag: str, family: str) -> list[dict]:
         text = call()
         f.write_text(text)
         rows = extract_json(text)["labels"]
+    want = {s.id: {o.option_id for o in s.options} for s, _ in batch}
+    if set(want) - {r.get("scenario_id") for r in rows}:  # a reply that skips an item: once more
+        f.with_suffix(".missing.bad").write_text(text)
+        text = call()
+        f.write_text(text)
+        text, _ = repair_evidence(text)
+        rows = extract_json(text)["labels"]
     ids = set(tenets.ids()) - set(DEFERENCE)
     by = tenets.by_id()
-    want = {s.id: {o.option_id for o in s.options} for s, _ in batch}
     out = []
     for r in rows:
         if r["scenario_id"] not in want:
