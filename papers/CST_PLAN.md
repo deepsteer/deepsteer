@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.18, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) and 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), §13.** v0.1 was the draft for the
+Status: **v0.19, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) and 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1476,4 +1476,51 @@ Riders:
 - **e. S0b-2 is not built now.** It runs beside the scale-up pods, after the ladder's gate and before
   any finalist verdict; the A0 MACHIAVELLI baseline rides the same session.
 - **f.** The 19 GB emulation copy in the scratchpad is deleted (done 2026-11-09).
+
+### Amendment 20 (2026-11-09; author, the read tiers, the pilot ladder, R1; zero GPU; on origin before any pilot corpus generates or any adapter trains)
+
+1. **Two read tiers.** *Screen read, every arm:* the operator and plain cells on the 458 clear
+   items, the legitimate-order cell (Amendment 19 rider d), cell A′, trace length; no judge. *Full
+   read, finalists only:* S_tenet, S_concl, MoReBench, MACHIAVELLI, N, capability at n 800, refusal
+   retention. S_tenet: Codex reads A0 and A0s as ruled, then finalists only (supersedes Amendment
+   18's 800 per arm).
+2. **The pilot ladder.** LoRA rank and targets as VALIDATE fixed them.
+   - **R0:** the recovery set alone.
+   - **D-raw:** `C_anth`'s text, a few passes.
+   - **D-doc:** 1M tokens of the §4.1 corpus, checkpoints at 0.3M and 1M, read with and without
+     recovery.
+   - **D-chat:** the same content rendered per §4.2, under T0.6's think-block rule.
+   - **D-neutral:** the same templates written about the A0n text, with it in context.
+   - **P-answer:** 500 pairs per §4.3, answer-only, checkpoints by pairs seen.
+   - **P-trace:** the same prompts; chosen is the full rollout generated with `C_anth` in context,
+     rejected the full rollout without it; loss on trace and answer, the prompt rendered without
+     the document. A pilot-only arm.
+
+   **Recovery set:** enlarged and matched to `none`'s panel trace-length distribution (CST-A10).
+   **Pair filter, pilots only:** Claude on the final answers alone, the same rule for both DPO rungs;
+   if the safeguard stops recur, gpt-oss-120b on the read pod. **Pilot read:** the screen read at
+   k 2 on operator and plain, k 4 on the legitimate-order cell, k 8 on cell A′; capability at n 200
+   only on rungs that move. One engine serves every adapter by native LoRA, with the 32-prompt
+   parity check per adapter kind. Beside P-trace: the share of traces citing a constitution or
+   document, and trace length.
+3. **The rule.** A rung moves when its ordered-option gain's paired CI excludes 0 against A0 and
+   against its control: R0 for the document rungs, D-neutral for content, P-answer and P-trace
+   against A0 and each other. A null at pilot dose is uninformative: the response is one dose step
+   up (3M tokens, 1,000 pairs), then escalation. Before launch, the pilot MDE at k 2 is computed
+   from the saved A0 rollouts.
+4. **The gate after.** Document rungs move: S1 scales the winner. Only DPO moves: the 10M corpus
+   waits and A2 scales on A0 (R1 b's path). Both move: a stacked pilot first. The scaled arm is a
+   fresh draw, re-read on fresh seeds.
+5. **R1 amended.** The format contrast is read in the ladder at 1M tokens, its three branches scoped
+   to that dose. One arm trains at 10M: the winner, or doc if unresolved. The at-scale chat arm is a
+   registered deferral.
+6. **Pods.** The author launches every pod. Two may run in parallel. Each is at most 12 h and
+   self-contained: no stage waits on another pod's result, the most decision-relevant stage first,
+   per-stage saves. One launch card per pod.
+7. **`papers/cst_constitutional_steering/CST_STATE.md`**, one page, updated at every stop: the rules
+   of record, what is pending, the next pod. The amendments stay as history.
+8. **Working rule.** Implementation choices (seeds, file names, stage order inside a registered
+   session, zero-GPU descriptive reads on saved data, pushes after green CI) are Claude's, each
+   logged in one line in `CST_STATE.md`. Everything in CLAUDE.md's escalation list, any new arm, and
+   any spend past a session's stated price still comes to the author.
 
