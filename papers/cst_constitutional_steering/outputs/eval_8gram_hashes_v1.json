@@ -1,0 +1,16 @@
+{
+ "file": "outputs/_sync/eval_8gram_hashes_v1.npy",
+ "sha256": "97f27642cc463f0942a408c3db4fb8085a48d5bbe6c21a13a57740a92a7abe6a",
+ "n_hashes": 6303190,
+ "per_set": {
+  "kdg_panel_all_rounds": 471083,
+  "h1_hdiv_set": 194674,
+  "st_fxh_cellA2_forced_v1": 8936,
+  "st_fxh_cellA2_twins_forced_v1": 10161,
+  "refusal_retention_v1": 2631,
+  "morebench_public_500": 94570,
+  "machiavelli_test_30": 4674760,
+  "capability_gsm8k_mmlu_test": 854087
+ },
+ "hash": "blake2b-64 of the space-joined word 8-gram"
+}

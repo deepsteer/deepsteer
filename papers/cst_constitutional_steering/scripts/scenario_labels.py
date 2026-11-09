@@ -693,11 +693,25 @@ def label_all_v4_permuted(family: str) -> None:
     items = [(s, k) for k, v in sets.items() for s in v]
     random.Random("20261109|cst_a22_panel_regroup").shuffle(items)
     rows: list[dict] = []
+    skipped: list[str] = []
     for i in range(0, len(items), PER_CALL_V2):
-        rows += label_v4(items[i:i + PER_CALL_V2], tenets, f"perm_{i // PER_CALL_V2:03d}", family)
+        batch, tag = items[i:i + PER_CALL_V2], f"perm_{i // PER_CALL_V2:03d}"
+        try:
+            rows += label_v4(batch, tenets, tag, family)
+        except SystemExit as e:  # a reply that skips an item twice: that item is not regrouped
+            if "no label for" not in str(e):
+                raise
+            got = json.loads(json.dumps(extract_json(repair_evidence(
+                (RAW / f"v4_{family}_{tag}.txt").read_text())[0])["labels"]))
+            miss = sorted({s.id for s, _ in batch} - {r.get("scenario_id") for r in got})
+            skipped += miss
+            rest = [(s, k) for s, k in batch if s.id not in miss]
+            rows += label_v4(rest, tenets, f"{tag}_minus", family)
     (CST / "data" / f"scenario_labels_v4_{family}_permuted.json").write_text(json.dumps(
         {"prompt": "Amendment 5 (_prompt_v4)", "family": family, "tenets": "C_anth v2",
          "grouping": "seeded reshuffle 20261109|cst_a22_panel_regroup (Amendment 22 item 1)",
+         "not_regrouped": skipped, "not_regrouped_rule": "an item a call skipped twice is left out "
+         "and the call's other items are relabeled together without it",
          "per_call": PER_CALL_V2, "n": len(rows), "labels": rows}, indent=1,
         ensure_ascii=False) + "\n")
     print(family, "regrouped labels", len(rows))
