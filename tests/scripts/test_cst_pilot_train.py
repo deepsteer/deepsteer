@@ -116,3 +116,29 @@ def test_recovery_selection_follows_the_target_deciles():
     thin = {f"t{i}": 50 for i in range(5)} | {f"m{i}": 250 for i in range(300)}
     pick = PT.select_recovery(thin, edges, 50)
     assert len(pick) == 50 and sum(thin[r] == 50 for r in pick) == 5  # all 5 taken, rest borrowed
+
+
+def test_split_backward_equals_the_joint_gradient(tiny):
+    # most probable failure: the split backward's coefficient or sign is off (the chosen side's
+    # NLL term missing, or the rejected side pushed up), so the memory-safe DPO trains a different
+    # objective than dpo_nll_loss; the two gradients must match
+    wb, _ = tiny
+    prm = [p for p in wb.model.parameters() if p.requires_grad]
+    with torch.no_grad():  # move off the reference so the margin and its coefficient are non-zero
+        for p in prm:
+            p.add_(0.05 * torch.randn_like(p))
+    prompt, chosen, rejected = [5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]
+    mk = [0, 1, 1, 1]
+    for p in prm:
+        p.grad = None
+    loss, _ = PT.dpo_nll_loss(wb, prompt, chosen, rejected, mk, mk)
+    loss.backward()
+    joint = [p.grad.clone() for p in prm]
+    for p in prm:
+        p.grad = None
+    PT.dpo_nll_backward(wb, prompt, chosen, rejected, mk, mk)
+    split = [p.grad.clone() for p in prm]
+    for a, b in zip(joint, split):
+        assert torch.allclose(a, b, atol=1e-5, rtol=1e-4)
+    for p in prm:
+        p.grad = None

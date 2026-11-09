@@ -84,3 +84,21 @@ def test_candidates_stage_writes_every_rollout(tmp_path):
     assert len(none) == 3 * D.K_NONE
     assert sum(1 for _ in open(tmp_path / "candidates/with_doc.jsonl")) == 3
     assert sum(1 for _ in open(tmp_path / "candidates/rewrite.jsonl")) == 3
+
+
+@pytest.mark.slow
+def test_dpo_train_saves_both_p_answer_doses_and_reads_by_rank(tmp_path):
+    # most probable failure: P-answer keeps only its last checkpoint (the 250-pair dose is never
+    # read), or the read's "p_answer_250" tag resolves to the 500-pair adapter
+    tok = _tok()
+    pids = [p["prompt_id"] for p in D.prompts(False)[:12]]
+    _candidates(tmp_path, tok, pids)
+    (tmp_path / "filter.json").write_text(json.dumps(
+        {"kept_ids": {"p_answer": pids, "p_trace": pids}}))
+    D.stage_pairs(tmp_path, True)
+    rec = D.stage_train(tmp_path, "p_answer", True)
+    assert len(rec["adapters"]) == 2 and (tmp_path / "parity" / "dpo_hf.json").exists()
+    lo, hi = sorted(rec["adapters"], key=float)
+    assert D.adapter_dir(tmp_path, "p_answer_250") == rec["adapters"][lo]
+    assert D.adapter_dir(tmp_path, "p_answer_500") == rec["adapters"][hi]
+    assert len(D.stage_train(tmp_path, "p_long", True)["adapters"]) == 1

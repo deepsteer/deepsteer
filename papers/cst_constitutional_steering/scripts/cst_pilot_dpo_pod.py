@@ -278,14 +278,80 @@ def stage_pairs(out: Path, dry: bool) -> dict:
     return rec
 
 
+GRAD_ACCUM = 4
+
+
+def stage_train(out: Path, rung: str, dry: bool) -> dict:
+    """DPO + NLL (beta 0.1, split backward) on the rung's pairs: P-answer saved at 250 and 500 pairs
+    (half and all when fewer were kept), P-trace and P-long at their kept counts. The first trained
+    rung saves the DPO kind's HF parity read."""
+    import pilot_pod_lib as PL
+    import pilot_train as PT
+
+    pairs = [json.loads(x) for x in open(out / f"pairs_{rung}.jsonl")]
+    if not pairs:
+        raise SystemExit(f"BAIL: {rung} has no pairs")
+    n = len(pairs)
+    doses = (min(250, n // 2), min(N_PAIRS, n)) if rung == "p_answer" else (n,)
+    if dry:
+        doses = tuple(GRAD_ACCUM * (i + 1) for i in range(len(doses)))
+    _, wb, cfg = PL.load_model(dry)
+    rec = PT.train_dpo(wb, pairs, doses=doses, out_dir=out / "adapters" / rung, lr=PL.DPO_LR,
+                       grad_accum=GRAD_ACCUM)
+    if not (out / "parity" / "dpo_hf.json").exists():
+        PL.hf_parity(wb, out, "dpo", dry)
+    res = {"rung": rung, "pairs": n, "doses": list(doses), "lr": PL.DPO_LR,
+           "adapters": rec["checkpoints"], "lora": {k: cfg[k] for k in ("rank", "alpha")}}
+    S.V._w(out, f"train_{rung}", res)  # noqa: SLF001
+    return res
+
+
+READS = {"p_answer_500": ("p_answer", "max"), "p_answer_250": ("p_answer", "min"),
+         "p_trace": ("p_trace", "max"), "p_long": ("p_long", "max")}
+
+
+def adapter_dir(out: Path, tag: str) -> str:
+    rung, which = READS[tag]
+    ad = json.loads((out / f"train_{rung}.json").read_text())["adapters"]
+    doses = sorted(float(k) for k in ad)
+    return ad[f"{(doses[-1] if which == 'max' else doses[0]):g}"]
+
+
+def stage_read(out: Path, tags: list[str], dry: bool) -> dict:
+    import pilot_pod_lib as PL
+
+    return PL.stage_read(out, [(t, adapter_dir(out, t), "dpo") for t in tags], dry)
+
+
+def stage_legit(out: Path, dry: bool) -> dict:
+    """Rider d on this pod: A0's 20-item check, then A0 and A0s on all 110 at k 4 (Amendment 21
+    item 1: this pod already loads the document engine)."""
+    import pilot_pod_lib as PL
+
+    chk = PL.legit_check(out, dry, "a0")
+    if chk["read"]:
+        for arm in ("a0", "a0s"):
+            S.stage_gen(out, arm, ["legit_operator"], dry, tag=f"{arm}_legit",
+                        k_override={"legit_operator": 4})
+    return chk
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", required=True, choices=("candidates", "filter", "pairs"))
+    ap.add_argument("--stage", required=True,
+                    choices=("candidates", "filter", "pairs", "train", "read", "legit"))
+    ap.add_argument("--rung", default="p_answer", choices=("p_answer", "p_trace", "p_long"))
+    ap.add_argument("--tags", default="")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
-    {"candidates": stage_candidates, "filter": stage_filter, "pairs": stage_pairs}[a.stage](
-        a.out, a.dry_run)
+    if a.stage == "train":
+        stage_train(a.out, a.rung, a.dry_run)
+    elif a.stage == "read":
+        stage_read(a.out, [t for t in a.tags.split(",") if t], a.dry_run)
+    else:
+        {"candidates": stage_candidates, "filter": stage_filter, "pairs": stage_pairs,
+         "legit": stage_legit}[a.stage](a.out, a.dry_run)
 
 
 if __name__ == "__main__":

@@ -161,6 +161,78 @@ def dpo_nll_loss(model, prompt: list[int], chosen: list[int], rejected: list[int
     return loss, {"dpo_margin": float(margin.detach()), "nll": float(nll.detach())}
 
 
+def dpo_nll_backward(model, prompt: list[int], chosen: list[int], rejected: list[int],
+                     chosen_mask: list[int], rejected_mask: list[int], beta: float = DPO_BETA,
+                     nll_weight: float = NLL_WEIGHT, scale: float = 1.0) -> dict:
+    """``dpo_nll_loss``'s gradient by a split backward (the Phase 3 gotcha: a paired forward on a
+    large model runs out of memory): the margin is computed without gradients, then the chosen
+    side's term and the rejected side's term are back-propagated one graph at a time. With
+    c = beta * sigmoid(-margin) the joint loss's gradient is -c d(lp_w) + c d(lp_l) + nll_weight
+    d(nll_w), exactly; ``scale`` divides it (gradient accumulation)."""
+    ids_w, ids_l = list(prompt) + list(chosen), list(prompt) + list(rejected)
+    m_w = [0] * len(prompt) + list(chosen_mask)
+    m_l = [0] * len(prompt) + list(rejected_mask)
+    with torch.no_grad():
+        lp = {t: masked_logprob(_logits(model, i), i, m)[0] for t, i, m in
+              (("w", ids_w, m_w), ("l", ids_l, m_l))}
+        with OL.adapter_disabled(model):
+            ref = {t: masked_logprob(_logits(model, i), i, m)[0] for t, i, m in
+                   (("w", ids_w, m_w), ("l", ids_l, m_l))}
+    margin = beta * ((lp["w"] - ref["w"]) - (lp["l"] - ref["l"]))
+    c = float(beta * torch.sigmoid(-margin))
+    s_w, n_w = masked_logprob(_logits(model, ids_w), ids_w, m_w)
+    ((-c * s_w - nll_weight * s_w / max(n_w, 1)) / scale).backward()
+    s_l, _ = masked_logprob(_logits(model, ids_l), ids_l, m_l)
+    ((c * s_l) / scale).backward()
+    loss = float(-F.logsigmoid(margin) + nll_weight * (-lp["w"] / max(n_w, 1)))
+    return {"loss": loss, "dpo_margin": float(margin), "nll": float(-lp["w"] / max(n_w, 1))}
+
+
+def train_dpo(model, pairs: list[dict], *, doses: Sequence[float], out_dir: Path, lr: float,
+              grad_accum: int = 4, seed: int = 0, warmup_steps: int = 10) -> dict:
+    """DPO + NLL by the split backward; AdamW, linear warm-up then cosine (as ``OL.train``); the
+    adapter saved at each dose in pairs seen (``out_dir/<dose>``)."""
+    import math
+
+    steps = checkpoint_steps(doses, grad_accum)
+    if len(set(steps)) != len(steps):
+        raise ValueError(f"doses {list(doses)} share optimizer steps {steps}")
+    at = dict(zip(steps, doses))
+    params = [p for p in model.model.parameters() if p.requires_grad]
+    opt = torch.optim.AdamW(params, lr=lr, weight_decay=0.01)
+    total, warm = max(steps), min(warmup_steps, max(steps) // 2)
+
+    def lr_at(st: int) -> float:
+        if st < warm:
+            return st / max(warm, 1)
+        return 0.5 * (1 + math.cos(math.pi * (st - warm) / max(total - warm, 1)))
+
+    sched = torch.optim.lr_scheduler.LambdaLR(opt, lr_at)
+    it = OL.micro_batches(pairs, seed)
+    hist, saved = [], {}
+    model.model.train()
+    for st in range(1, total + 1):
+        infos = [dpo_nll_backward(model, r["prompt"], r["chosen"], r["rejected"],
+                                  r["chosen_mask"], r["rejected_mask"], scale=grad_accum)
+                 for r in (next(it) for _ in range(grad_accum))]
+        torch.nn.utils.clip_grad_norm_(params, 1.0)
+        opt.step()
+        sched.step()
+        opt.zero_grad()
+        hist.append({k: sum(i[k] for i in infos) / len(infos) for k in infos[0]})
+        if st in at:
+            model.model.eval()
+            d = out_dir / f"{at[st]:g}"
+            model.model.save_pretrained(str(d))
+            saved[f"{at[st]:g}"] = str(d)
+            model.model.train()
+    model.model.eval()
+    rec = {"steps": total, "checkpoints": saved, "doses": list(doses), "history": hist}
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "train.json").write_text(json.dumps(rec, indent=1) + "\n")
+    return rec
+
+
 # ---- training ----------------------------------------------------------------------------------
 
 def checkpoint_steps(doses: Sequence[float], per_step: float) -> list[int]:
