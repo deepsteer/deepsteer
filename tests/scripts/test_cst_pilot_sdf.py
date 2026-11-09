@@ -132,13 +132,20 @@ def test_read_banks_a_kind_that_fails_parity(tmp_path):
     # most probable failure: an adapter kind whose served distribution does not match its HF read
     # is read anyway (the served adapter is not the trained one), or the read writes nothing
     import pilot_pod_lib as PL
+    import torch
 
     path, wb, _ = PL.load_model(True)
+    torch.manual_seed(0)
+    with torch.no_grad():  # a trained-looking adapter: LoRA B away from zero
+        for name, prm in wb.model.named_parameters():
+            if "lora_B" in name:
+                prm.normal_(0, 0.5)
     adir = tmp_path / "adapters" / "toy"
     wb.model.save_pretrained(str(adir))
     PL.hf_parity(wb, tmp_path, "sdf", True)
     res = PL.stage_read(tmp_path, [("toy", str(adir), "sdf")], True)
-    assert "toy" in res["read"] or "toy" in res["banked"]
+    assert res["read"] == ["toy"] and res["parity"]["sdf"]  # served matches attached
+    assert any((tmp_path / "gen" / "toy").glob("panel_operator_*.jsonl"))
     hf = json.loads((tmp_path / "parity" / "sdf_hf.json").read_text())
     hf["base"] = hf["attached"]  # TV(base, attached) = 0: nothing served can pass
     (tmp_path / "parity" / "dpo_hf.json").write_text(json.dumps(hf))

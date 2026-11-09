@@ -123,10 +123,32 @@ def clear_ids() -> set[str]:
             and r.get("set", "panel") == "panel"}
 
 
+class DryEngine(S.V.HFStandIn):
+    """The dry run's served adapter: the tiny model loaded the trainer's way (`WhiteBoxModel`), so
+    a saved adapter attaches with its own key names (VALIDATE's stand-in loads another model
+    class, on which they do not attach); generation and letter reads as the stand-in."""
+
+    def __init__(self, path: str, lora: str | None = None):
+        import torch
+
+        from deepsteer.core.model_interface import WhiteBoxModel
+        from deepsteer.core.types import AccessTier
+
+        self.torch = torch
+        self.tok = S.V._tok(path)  # noqa: SLF001
+        self.m = WhiteBoxModel(path, access_tier=AccessTier.WEIGHTS, device="cpu",
+                               torch_dtype=torch.float32).model
+        if lora:
+            from peft import PeftModel
+
+            self.m = PeftModel.from_pretrained(self.m, lora)
+        self.m.eval()
+
+
 def _engine(dry: bool, adapter: str | None):
     if dry:
         path = S.V._model_path(True)  # noqa: SLF001
-        return path, S.V.HFStandIn(path, lora=adapter)
+        return path, DryEngine(path, lora=adapter)
     return S.subject(False, "a0", lora=True)
 
 

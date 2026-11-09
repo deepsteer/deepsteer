@@ -274,7 +274,10 @@ def stage_train(out: Path, rung: str, dry: bool, doses: tuple | None = None) -> 
         rec["adapters"] = {"rec": str(adir / "rec")}
     else:
         ex, per_step, reg = rung_data(out, rung, tok, dry)
-        doses = doses or reg
+        if not ex:
+            raise SystemExit(f"BAIL: {rung} has no training examples")
+        # a dry run takes one optimizer step per registered dose, so every checkpoint path runs
+        doses = doses or (tuple(per_step * (i + 1) for i in range(len(reg))) if dry else reg)
         rec["train"] = PT.train_rung(
             wb, ex, lambda e: PT.lm_loss(wb, e[0], e[1]), per_step_dose=per_step, doses=doses,
             out_dir=adir, lr=PL.SDF_LR)
@@ -291,9 +294,47 @@ def stage_train(out: Path, rung: str, dry: bool, doses: tuple | None = None) -> 
     return rec
 
 
+# read tag -> (rung, which dose, with recovery): the dose is picked by rank from the rung's training
+# record (largest = "1M", smallest = "0.3M"), never by a hard-coded directory name
+READS = {"d_doc_1M_rec": ("d_doc", "max", True), "d_doc_1M": ("d_doc", "max", False),
+         "d_doc_03M_rec": ("d_doc", "min", True), "d_doc_03M": ("d_doc", "min", False),
+         "r0": ("r0", None, True), "d_neutral_1M_rec": ("d_neutral", "max", True),
+         "d_chat_1M_rec": ("d_chat", "max", True), "d_raw_rec": ("d_raw", "max", True)}
+
+
+def adapter_dir(out: Path, tag: str) -> str:
+    rung, which, rec = READS[tag]
+    adapters = json.loads((out / f"train_{rung}.json").read_text())["adapters"]
+    if which is None:
+        return adapters["rec"]
+    doses = sorted({float(k.removesuffix("_rec")) for k in adapters if k != "rec"})
+    d = doses[-1] if which == "max" else doses[0]
+    return adapters[f"{d:g}_rec" if rec else f"{d:g}"]
+
+
+def stage_read_tags(out: Path, tags: list[str], dry: bool) -> dict:
+    import pilot_pod_lib as PL
+
+    return PL.stage_read(out, [(t, adapter_dir(out, t), "sdf") for t in tags], dry)
+
+
+def stage_legit(out: Path, dry: bool) -> dict:
+    """Rider d on this pod: A0's 20-item check, then A0 on all 110 at k 4 if the cell is not at
+    floor."""
+    import pilot_pod_lib as PL
+
+    chk = PL.legit_check(out, dry, "a0")
+    if chk["read"]:
+        S.stage_gen(out, "a0", ["legit_operator"], dry, tag="a0_legit",
+                    k_override={"legit_operator": 4})
+    return chk
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", required=True, choices=("corpus", "chat", "recovery", "train"))
+    ap.add_argument("--stage", required=True,
+                    choices=("corpus", "chat", "recovery", "train", "read", "legit"))
+    ap.add_argument("--tags", default="", help="read: comma-separated READS tags")
     ap.add_argument("--rung", default="d_doc", choices=RUNGS)
     ap.add_argument("--arm", default="d_doc", choices=("d_doc", "d_neutral"))
     ap.add_argument("--out", type=Path, required=True)
@@ -306,6 +347,10 @@ def main() -> None:
         stage_chat(a.out, a.dry_run)
     elif a.stage == "train":
         stage_train(a.out, a.rung, a.dry_run)
+    elif a.stage == "read":
+        stage_read_tags(a.out, [t for t in a.tags.split(",") if t], a.dry_run)
+    elif a.stage == "legit":
+        stage_legit(a.out, a.dry_run)
     else:
         stage_recovery(a.out, a.dry_run)
 

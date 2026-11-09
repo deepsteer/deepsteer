@@ -175,6 +175,9 @@ def train_rung(model, examples: list, loss_fn, *, per_step_dose: float, doses: S
     (``out_dir/<dose>``). ``per_step_dose`` is the dose one optimizer step consumes (tokens per
     step for SDF, pairs per step for DPO)."""
     steps = checkpoint_steps(doses, per_step_dose)
+    if len(set(steps)) != len(steps):  # two doses on one step: one checkpoint would vanish
+        raise ValueError(f"doses {list(doses)} share optimizer steps {steps} at {per_step_dose:g}"
+                         " per step")
     at = dict(zip(steps, doses))
     it = OL.micro_batches(examples, seed)
     saved = {}
