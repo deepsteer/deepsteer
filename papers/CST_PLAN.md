@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.14, 2026-11-08: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) and 15 (the specificity bar on cell A′ alone), §13.** v0.1 was the draft for the
+Status: **v0.15, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) and 16 (the length-matched fork, S0b's order, Grad-Nec), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1363,4 +1363,29 @@ and A0s, `CST_S0A_REPORT.md` §3). Both readings are reported for every arm.
 3. **The "matches A0s" tier carries its power beside it:** an arm truly equal to A0s passes the
    ±0.034 margin with probability 0.59 (A0s's scenario heterogeneity against A0 assumed) to about
    1.0 (none assumed), `T04_POWER.md` §10's closed form. The margin is unchanged.
+
+### Amendment 16 (2026-11-09; author, the length-matched fork and S0b's order; zero GPU; committed and pushed before anything in it is computed)
+
+1. **The length-matched fork has two parts.**
+   - **(a) A0n, the neutral-prefix arm.** A public-domain, non-normative expository text of about
+     35k tokens (matched to `C_anth`'s token count in Qwen's tokenizer), in paragraph prose with no
+     tables or lists, placed in the system message exactly where A0s places `C_anth`. It is
+     8-gram checked against `C_anth`, and a sample goes to the author before it is pinned. A0n is
+     read on the operator and plain cells at k 4 and on the dose-0 letter cells, on the S0b pod.
+     **It is the separator for CST-A8's prefix rival (R_prefix) and for CST-A16.**
+   - **(b) A trace-length-stratified read on the saved rollouts, registered as descriptive.** It
+     conditions on a post-treatment variable (trace length responds to the arm), so it is never
+     the separator. *Implementation (Claude, stated before computing):* the operator cell's 458
+     clear items; trace length is the rollout's `trace_len` (reasoning tokens) as saved in S0a;
+     quintile edges from the pooled A0 and A0s rollouts that have an action (capped excluded, as in
+     every action share); per bin and arm, the ordered-option share with a scenario bootstrap; per
+     bin, the scenario-paired A0s − A0 difference on the scenarios with at least one rollout of each
+     arm in that bin, with the number of paired scenarios beside. Script
+     `scripts/s0a_length_strata.py`; record `outputs/s0a_length_strata.json`.
+2. **S0b runs the non-N parts first:** MoReBench, MACHIAVELLI, refusal retention, A0n and the
+   CST-A15 cut-lines rescore. **N rides with S2** (Amendment 7 item 2). The Grad-Nec
+   re-implementation (`deepsteer.faithfulness`, D8) starts now.
+3. **Claude quota:** the remaining A0s S_tenet read and the frontier second opinion run now, one
+   worker, `--max` per run, stopping at 80% of the 5-hour window. Codex waits for its weekly reset
+   (Thursday 2026-11-12).
 
