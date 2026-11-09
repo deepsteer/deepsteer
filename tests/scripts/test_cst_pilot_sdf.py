@@ -125,3 +125,34 @@ def test_train_saves_each_dose_with_and_without_recovery(tmp_path):
     assert (tmp_path / "parity" / "sdf_hf.json").exists()
     r0 = P.stage_train(tmp_path, "r0", True)
     assert set(r0["adapters"]) == {"rec"} and r0["recovery"]["n"] == 3
+
+
+@pytest.mark.slow
+def test_read_banks_a_kind_that_fails_parity(tmp_path):
+    # most probable failure: an adapter kind whose served distribution does not match its HF read
+    # is read anyway (the served adapter is not the trained one), or the read writes nothing
+    import pilot_pod_lib as PL
+
+    path, wb, _ = PL.load_model(True)
+    adir = tmp_path / "adapters" / "toy"
+    wb.model.save_pretrained(str(adir))
+    PL.hf_parity(wb, tmp_path, "sdf", True)
+    res = PL.stage_read(tmp_path, [("toy", str(adir), "sdf")], True)
+    assert "toy" in res["read"] or "toy" in res["banked"]
+    hf = json.loads((tmp_path / "parity" / "sdf_hf.json").read_text())
+    hf["base"] = hf["attached"]  # TV(base, attached) = 0: nothing served can pass
+    (tmp_path / "parity" / "dpo_hf.json").write_text(json.dumps(hf))
+    res = PL.stage_read(tmp_path, [("toy2", str(adir), "dpo")], True)
+    assert res["banked"] == ["toy2"] and not res["parity"]["dpo"]
+    assert not (tmp_path / "gen" / "toy2").exists()
+
+
+@pytest.mark.slow
+def test_legit_check_reports_the_follow_share(tmp_path):
+    # failure: the check reads the wrong option as "following" (the violating one, the panel's
+    # convention), so a cell that A0 follows reads as at floor and is rebuilt for nothing
+    import pilot_pod_lib as PL
+
+    rec = PL.legit_check(tmp_path, True)
+    assert rec["n_items"] == 2 and 0.0 <= rec["follow_share"] <= 1.0
+    assert rec["read"] == (rec["follow_share"] > PL.LEGIT_FLOOR)

@@ -191,12 +191,13 @@ def generate(eng, prompts: list[list[int]], seeds: list[int], max_tokens: int,
 
 def stage_gen(out: Path, arm: str, parts: list[str], dry: bool,
               max_chunks: int | None = None, *, tag: str | None = None, lora=None,
-              k_override: dict[str, int] | None = None, engine=None) -> None:
+              k_override: dict[str, int] | None = None, engine=None,
+              only: set[str] | None = None) -> None:
     """Generate ``parts`` for ``arm`` in chunks, skipping chunks on disk; ``max_chunks`` stops after
     that many new chunks (S0b's pilot gate reads them before the rest runs). For the pilot reads:
     ``tag`` names the read (rollout ids and ``gen/<tag>``; default the arm), ``lora`` a LoRA request
     served on ``engine`` (an existing ``(path, engine)`` reused across adapters), ``k_override`` the
-    k per part."""
+    k per part, ``only`` the scenario ids to read (the pilot's 458 clear items; default all)."""
     tag = tag or arm
     import reasoning_formats as rf
 
@@ -217,7 +218,7 @@ def stage_gen(out: Path, arm: str, parts: list[str], dry: bool,
            "chunk": size, "chunks": {}}
     new = 0
     for part in parts:
-        units = part_units(part, sc, k_override)
+        units = [u for u in part_units(part, sc, k_override) if only is None or u[2] in only]
         for c0 in range(0, len(units), size):
             f = gdir / f"{part}_{c0 // size:03d}.jsonl"
             if f.exists():
