@@ -1,6 +1,6 @@
 # CST state (one page; updated at every stop; `CST_PLAN.md` amendments are the history)
 
-**As of 2026-11-09, plan v0.19 (Amendments 1-20).**
+**As of 2026-11-09, plan v0.20 (Amendments 1-21).**
 
 ## Rules of record
 
@@ -19,15 +19,16 @@
   20); no Claude calls on subject traces; dose-0 reads beside, never gates (Amendment 14).
 - **Read tiers:** screen read every arm (operator, plain, legitimate-order cell, cell A′, trace
   length; no judge); full read finalists only (Amendment 20).
-- **Pilot ladder and its move rule:** Amendment 20 items 2-4.
+- **Pilot ladder and its move rule:** Amendment 20 items 2-4, Amendment 21 (pods by line, gpt-oss pair filter, P-long, the advice prompts, the identical recovery step, two move-rule additions).
 - **Pods:** the author launches; at most 12 h, self-contained, two in parallel; one launch card each.
 
 ## Pending
 
-1. S0b-1's launch line, once CI is green on the pushed Amendments 19 and 20.
+1. S0b-1: launch line handed over (`runpod/launch_cst_s0b1.sh`); the author launches.
 2. The legitimate-order cell (Amendment 19 rider d): about 100 scenarios, Claude labels now, Codex
    after Thursday; rides S0b-1 if ready, else the pilot read pod.
-3. `PILOT_BUILD.md` with launch cards for the generation-and-SDF pod and the DPO-and-read pod. The
+3. The pilot builds (`PILOT_BUILD.md` §6, eight pieces); pods split by line (Amendment 21): SDF pod
+   about 10.3 A100-h, DPO pod about 9.5, both after S0b-1's A0n read. The
    pilot MDE at k 2 is computed (`T04_POWER.md` basis, `outputs/t04d_ordered_power.json` `pilot_k2`):
    rung − A0 0.042, rung − control 0.049 (0.058 with A0s's heterogeneity); half-split check 0.048.
 4. Codex after its reset (Thursday 2026-11-12): S_tenet on A0s 800 and A0 800, the frontier 200.
@@ -47,3 +48,4 @@ gpt-oss: A0n bulk scoring and the CST-A15 cut stage (two cuts, splices, retests)
 - 2026-11-09: CI's 3.10 flake fixed: `cohen_kappa` sums with `math.fsum` (a hash-seeded set order flipped the last bit on 35 of 121 seeds).
 - 2026-11-09: pilot k-2 MDEs added to `t04d_ordered_power.py` (`pilot_k2`).
 - 2026-11-09: S0b-1 launch card `runpod/launch_cst_s0b1.sh` (A100-80GB, disk 300 GB, sync cap 1 GB, RESUME=1 adds outputs/s0b/); outputs/s0b/ gitignored like s0a.
+- 2026-11-09: pilot pods re-priced with measured load times (vLLM 0.03-0.07 h): SDF 10.3, DPO 9.5; D-raw and the 0.3M reads placed last on the SDF pod for the bail order.
