@@ -99,6 +99,30 @@ A0S_HEADER = (
 )
 
 
+# A0n (Amendment 16 item 1(a), Amendment 18 item 3): the neutral prefix in A0s's slot, with a header
+# of the same form that says what the document is and nothing about the model (A0s - A0n reads as
+# content plus self-reference)
+A0N_HEADER = (
+    "The document below is a set of lectures. It describes the chemistry and physics of a "
+    "burning candle."
+)
+
+
+def a0n_messages(msgs: list[dict[str, str]], body: str) -> list[dict[str, str]]:
+    """A0n render: A0s's layout with the neutral header and ``<document>`` tags."""
+    const = f"{A0N_HEADER}\n\n<document>\n{body}\n</document>"
+    if msgs and msgs[0]["role"] == "system":
+        return [{"role": "system", "content": f"{const}\n\n{msgs[0]['content']}"}] + msgs[1:]
+    return [{"role": "system", "content": const}] + msgs
+
+
+def doc_messages(arm: str, msgs: list[dict[str, str]], body: str | None) -> list[dict[str, str]]:
+    """The system document of ``arm``: none for A0, ``C_anth`` for A0s, the neutral text for A0n."""
+    if body is None:
+        return msgs
+    return {"a0s": a0s_messages, "a0n": a0n_messages}[arm](msgs, body)
+
+
 def a0s_messages(msgs: list[dict[str, str]], body: str) -> list[dict[str, str]]:
     """A0s render: the header and body first in the system message; an operator order, if the
     condition has one, follows after a blank line in the same message."""

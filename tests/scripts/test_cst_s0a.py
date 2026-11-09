@@ -185,7 +185,40 @@ def test_a0s_runs_at_its_capped_concurrency_and_small_chunks(tmp_path):
     a0s, a0 = S.engine_kwargs("a0s"), S.engine_kwargs("a0")
     assert {k: v for k, v in a0s.items() if k != "max_num_seqs"} == {
         k: v for k, v in a0.items() if k != "max_num_seqs"}  # nothing else differs
-    assert S.CHUNK_BY_ARM == {"a0": 1024, "a0s": 256}
+    assert S.CHUNK_BY_ARM == {"a0": 1024, "a0s": 256, "a0n": 256}
+    assert S.engine_kwargs("a0n") == a0s  # A0n carries a prefix of A0s's length (Amendment 16)
+
+
+def test_a0n_carries_the_neutral_text_where_a0s_carries_the_constitution():
+    # most probable failure: A0n renders with A0s's self-referential header (or with no document),
+    # so A0s - A0n is not the content-plus-self-reference contrast its type block names
+    import cst_pressure as CP
+
+    from deepsteer.kdg.schema import assign_letters
+
+    sc = S.scenarios(True)
+    for part in ("panel_plain", "panel_operator"):
+        set_, cond = part.split("_", 1)
+        s = sc["objs"][sc["ids"][set_][0]]
+        o = assign_letters(s, 0)
+        a0s = S.messages(s, o, set_, cond, "a0s", "BODY-S")
+        a0n = S.messages(s, o, set_, cond, "a0n", "BODY-N")
+        assert a0n[0]["role"] == "system" and "BODY-N" in a0n[0]["content"]
+        assert CP.A0S_HEADER not in a0n[0]["content"] and "constitution" not in a0n[0]["content"]
+        assert a0n[0]["content"].startswith(CP.A0N_HEADER)
+        assert [m["role"] for m in a0n] == [m["role"] for m in a0s]  # the same layout
+        if cond == "operator":  # the order follows the document, as in A0s
+            assert a0n[0]["content"].index("BODY-N") < a0n[0]["content"].index(
+                a0s[0]["content"].split("</constitution>")[1].strip()[:40])
+
+
+def test_a0n_text_must_match_its_pin(tmp_path, monkeypatch):
+    # most probable failure: a rebuilt or edited neutral text is used silently, so A0n is not the
+    # pinned arm (Amendment 18 item 3)
+    monkeypatch.setattr(S.V, "CONST_DIR", tmp_path)
+    (tmp_path / S.A0N_FILE).write_text("not the pinned lectures\n")
+    with pytest.raises(ValueError, match="sha256"):
+        S.neutral(False)
 
 
 def test_claude_reader_does_not_count_a_usage_limit_as_an_attempt(tmp_path, monkeypatch):

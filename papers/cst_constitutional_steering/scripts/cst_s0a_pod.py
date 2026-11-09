@@ -61,7 +61,7 @@ CHUNK = 1024
 # evicts and re-reads prompts and generation fell to 12-276 tokens/s; A0s runs at 32 sequences
 # (scheduling only; sampling unchanged) and in 256-rollout chunks, so a stop loses little
 A0S_MAX_SEQS = 32
-CHUNK_BY_ARM = {"a0": CHUNK, "a0s": 256}
+CHUNK_BY_ARM = {"a0": CHUNK, "a0s": 256, "a0n": 256}  # A0n carries a prefix of A0s's length
 EFFORT = "medium"
 ENGINE = "no_mtp_seqs128"  # Amendment 10 item 4
 PANEL_K = {"plain": 4, "user": 2, "operator": 4, "operator_pr": 6}
@@ -109,7 +109,29 @@ def messages(s, order, set_: str, cond: str, arm: str, body: str | None) -> list
     import cst_pressure as CP
 
     msgs = CP.triple_messages(s, order, cond, "panel" if set_ == "panel" else "h1")
-    return CP.a0s_messages(msgs, body) if arm == "a0s" else msgs
+    return CP.doc_messages(arm, msgs, body)
+
+
+A0N_FILE = "a0n_faraday_v1.txt"  # built by scripts/a0n_build.py; synced like C_anth.txt
+A0N_SHA = "dc74f40bef03b505bd59b980db31a35e93fc8fdde801254f9f9e92a16a4920df"  # Amendment 18 item 3
+
+
+def neutral(dry: bool) -> str:
+    """A0n's pinned text, verified against its sha256 (Amendment 18 item 3)."""
+    import hashlib
+
+    if dry:
+        return "A candle burns because the wax melts and rises up the wick."
+    raw = (V.CONST_DIR / A0N_FILE).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != A0N_SHA:
+        raise ValueError(f"{A0N_FILE}: sha256 differs from the pin; a changed file is a new arm")
+    return raw.decode().rstrip("\n")
+
+
+def doc_body(arm: str, dry: bool) -> str | None:
+    """The system document an arm carries: none (A0), ``C_anth`` (A0s), the neutral text (A0n)."""
+    return {"a0": None, "a0s": constitution(dry) if arm == "a0s" else None,
+            "a0n": neutral(dry) if arm == "a0n" else None}[arm]
 
 
 def constitution(dry: bool) -> str | None:
@@ -125,7 +147,7 @@ def constitution(dry: bool) -> str | None:
 def engine_kwargs(arm: str) -> dict:
     """The engine of record (Amendment 10 item 4), with A0s capped at ``A0S_MAX_SEQS``."""
     kw = P.engine_kwargs(ENGINE)
-    if arm == "a0s":
+    if arm in ("a0s", "a0n"):  # both carry a ~34k-token prefix (CST-A13)
         kw["max_num_seqs"] = A0S_MAX_SEQS
     return kw
 
@@ -161,7 +183,7 @@ def stage_gen(out: Path, arm: str, parts: list[str], dry: bool) -> None:
     from deepsteer.kdg.schema import assign_letters
 
     sc = scenarios(dry)
-    body = constitution(dry) if arm == "a0s" else None
+    body = doc_body(arm, dry)
     path, eng = subject(dry, arm)
     tok = V._tok(path)  # noqa: SLF001
     fmt = rf.build_format("qwen38_27b", tok)
@@ -219,7 +241,7 @@ def stage_dose0(out: Path, arm: str, dry: bool) -> None:
     from deepsteer.kdg.schema import assign_letters
 
     sc = scenarios(dry)
-    body = constitution(dry) if arm == "a0s" else None
+    body = doc_body(arm, dry)
     path, eng = subject(dry, arm)
     tok = V._tok(path)  # noqa: SLF001
     fmt = rf.build_format("qwen38_27b", tok)
@@ -242,8 +264,7 @@ def stage_dose0(out: Path, arm: str, dry: bool) -> None:
             s = sc["objs"][sid]
             order = assign_letters(s, 0)
             msgs = letter_chat_messages(s, order, frame, "neutral", variant)
-            if arm == "a0s":
-                msgs = CP.a0s_messages(msgs, body)
+            msgs = CP.doc_messages(arm, msgs, body)
             prompts.append(fmt.dose0_ids(tok, msgs, EFFORT, fmt.dose0[0]))
             rows.append({"arm": arm, "set": "panel", "condition": cell, "scenario_id": sid,
                          "order": [(L_, o.option_id) for L_, o in order]})
@@ -319,17 +340,16 @@ def stage_capability(out: Path, arm: str, dry: bool) -> None:
         items = [next(i for i in items if i["dataset"] == d)
                  for d in ("openai/gsm8k", "cais/mmlu")]
     recs = T15.cap_records({"cap_items": items}, A)
-    body = constitution(dry) if arm == "a0s" else None
+    body = doc_body(arm, dry)
     path, eng = subject(dry, arm)
     tok = V._tok(path)  # noqa: SLF001
     fmt = rf.build_format("qwen38_27b", tok)
     prompts, seeds = [], []
     for n, (it, r) in enumerate(zip(items, recs)):
         msgs = [{"role": "user", "content": T15.cap_prompt(it, r)}]
-        if arm == "a0s":
-            import cst_pressure as CP
+        import cst_pressure as CP
 
-            msgs = CP.a0s_messages(msgs, body)
+        msgs = CP.doc_messages(arm, msgs, body)
         prompts.append(tok.encode(fmt.render(tok, msgs, EFFORT), add_special_tokens=False))
         seeds.append(seed_of(f"{arm}|cap|{n}"))
     gens = generate(eng, prompts, seeds, CAP + CAP_EXTRA, dry)
@@ -405,10 +425,7 @@ def scored_rows(out: Path, arm: str) -> list[dict]:
 
 def stage_score(out: Path, arm: str, judge: str, dry: bool) -> None:
     """The bulk scorer's passes, chunked and resumed; each call's raw reply saved."""
-    import cst_judge as J
-    import mrb_g1_pod as M
 
-    from deepsteer.reasoning.think_io import CoTFormat
 
     samples = json.loads((CST / "data/s0a_samples_v1.json").read_text())
     rows = {r["rollout_id"]: r for r in scored_rows(out, arm)}
@@ -419,6 +436,20 @@ def stage_score(out: Path, arm: str, judge: str, dry: bool) -> None:
             passes |= {"retest_same": (rt, 1, False), "retest_perm": (rt, 2, True)}
     else:
         passes = {"blind": ([i for i in samples["olmo_10pct"][arm] if i in rows], 0, False)}
+    score_passes(out / "score" / arm / judge, rows, passes, judge, dry)
+    V._w(out, f"score_{arm}_{judge}", {"arm": arm, "judge": judge,  # noqa: SLF001
+                                        "passes": {k: len(v[0]) for k, v in passes.items()}})
+
+
+def score_passes(sdir: Path, rows: dict[str, dict], passes: dict, judge: str, dry: bool) -> None:
+    """Score ``passes`` (name -> (rollout ids, seed offset, permuted)) of ``rows`` with ``judge``,
+    blind, chunked, resumed by rollout id; each call's raw reply saved under ``sdir``. Shared by
+    S0a's bulk scoring and S0b's cut-lines rescore, so the judge, prompt and parse are one code."""
+    import cst_judge as J
+    import mrb_g1_pod as M
+
+    from deepsteer.reasoning.think_io import CoTFormat
+
     j = V.JUDGES[judge]
     if dry:
         eng, jtok, fmt, cfg = None, V._tok(V._model_path(True)), CoTFormat.THINK_TAGS, None  # noqa: SLF001
@@ -432,7 +463,6 @@ def stage_score(out: Path, arm: str, judge: str, dry: bool) -> None:
         jtok = eng.llm.get_tokenizer()
         fmt = CoTFormat.HARMONY_ANALYSIS if j["fmt"] == "harmony" else CoTFormat.THINK_TAGS
         cfg = M.harmony_cfg() if j["fmt"] == "harmony" else None
-    sdir = out / "score" / arm / judge
     sdir.mkdir(parents=True, exist_ok=True)
     for pname, (ids, seed_off, perm) in passes.items():
         # resume by rollout id, not by position: a later session that finds more rollouts on disk
@@ -471,8 +501,6 @@ def stage_score(out: Path, arm: str, judge: str, dry: bool) -> None:
                         "applied_tenets": pj["applied_tenets"], "shortlist": m["shortlist"],
                         "out_tokens": n_tok, "hit_cap": cap, "text": text}) + "\n")
             tmp.rename(f)
-    V._w(out, f"score_{arm}_{judge}", {"arm": arm, "judge": judge,  # noqa: SLF001
-                                        "passes": {k: len(v[0]) for k, v in passes.items()}})
 
 
 def long_tasks(judge: str, dry: bool) -> dict[str, list[tuple[str, str, dict]]]:
@@ -600,7 +628,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True,
                     choices=("gen", "dose0", "recall", "capability", "score", "long"))
-    ap.add_argument("--arm", default="a0", choices=("a0", "a0s"))
+    ap.add_argument("--arm", default="a0", choices=("a0", "a0s", "a0n"))
     ap.add_argument("--parts", default=",".join(PARTS))
     ap.add_argument("--judge", default="gpt_oss_120b",
                     choices=("gpt_oss_120b", "olmo31_32b_instruct"))
