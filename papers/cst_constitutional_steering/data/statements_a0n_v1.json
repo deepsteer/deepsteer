@@ -1,0 +1,967 @@
+{
+ "schema_version": "1",
+ "doc_id": "A0n_faraday_v1",
+ "source_sha256": "dc74f40bef03b505bd59b980db31a35e93fc8fdde801254f9f9e92a16a4920df",
+ "statements": [
+  {
+   "statement_id": "N001",
+   "lecture": 1,
+   "quote": "There is not a law under which any part of this universe is governed which does not come into play, and is touched upon in these phenomena.",
+   "claim": "Every law that governs any part of the universe comes into play in the phenomena of a burning candle."
+  },
+  {
+   "statement_id": "N002",
+   "lecture": 1,
+   "quote": "There is no better, there is no more open door by which you can enter into the study of natural philosophy, than by considering the physical phenomena of a candle.",
+   "claim": "The physical phenomena of a candle are the best entry into the study of natural philosophy."
+  },
+  {
+   "statement_id": "N003",
+   "lecture": 1,
+   "quote": "The fuel provided, the means of bringing that fuel to the place of chemical action, the regular and gradual supply of air to that place of action—heat and light—all produced by a little piece of wood of this kind, forming, in fact, a natural candle.",
+   "claim": "Irish candle-wood is a natural candle, supplying fuel, a way to bring it to the place of chemical action, and a steady supply of air, and so yielding heat and light."
+  },
+  {
+   "statement_id": "N004",
+   "lecture": 1,
+   "quote": "They are made of lengths of cotton cut off, hung up by a loop, dipped into melted tallow, taken out again and cooled, then re-dipped until there is an accumulation of tallow round the cotton.",
+   "claim": "Dip candles are made by repeatedly dipping lengths of cotton into melted tallow and cooling them until tallow builds up around the cotton."
+  },
+  {
+   "statement_id": "N005",
+   "lecture": 1,
+   "quote": "and it was supposed that a small candle would not so soon set fire to the fire-damp in the coal mines as a large one",
+   "claim": "Miners once used very small candles in the belief that a small candle was less likely than a large one to ignite fire-damp."
+  },
+  {
+   "statement_id": "N006",
+   "lecture": 1,
+   "quote": "The fat or tallow is first boiled with quick-lime, and made into a soap, and then the soap is decomposed by sulphuric acid, which takes away the lime, and leaves the fat re-arranged as stearic acid, whilst a quantity of glycerin is produced at the same time.",
+   "claim": "Stearin is made by boiling tallow with quick-lime into a soap and decomposing the soap with sulphuric acid, which leaves stearic acid and yields glycerin."
+  },
+  {
+   "statement_id": "N007",
+   "lecture": 1,
+   "quote": "A wax candle can never be cast.",
+   "claim": "Wax candles cannot be made by casting in moulds."
+  },
+  {
+   "statement_id": "N008",
+   "lecture": 1,
+   "quote": "for the candles are made in the form of cones, being narrower at the top than at the bottom; so that what with their form and their own shrinking, they only need a little shaking, and out they fall.",
+   "claim": "Moulded candles are conical and shrink as they cool, so they drop out of their moulds with a little shaking."
+  },
+  {
+   "statement_id": "N009",
+   "lecture": 1,
+   "quote": "These fluted candles, pretty as they are, are bad candles; they are bad because of their external shape.",
+   "claim": "Ornamental fluted candles burn badly because of their external shape."
+  },
+  {
+   "statement_id": "N010",
+   "lecture": 1,
+   "quote": "When the flame runs down the cotton to the oil, it gets extinguished, but it goes on burning in the part above.",
+   "claim": "In an oil lamp the flame goes out where it reaches the oil but keeps burning on the wick above."
+  },
+  {
+   "statement_id": "N011",
+   "lecture": 1,
+   "quote": "As the air comes to the candle it moves upwards by the force of the current which the heat of the candle produces, and it so cools all the sides of the wax, tallow, or fuel, as to keep the edge much cooler than the part within",
+   "claim": "The upward air current produced by the candle's heat cools the sides of the fuel, keeping the edge cooler than the interior."
+  },
+  {
+   "statement_id": "N012",
+   "lecture": 1,
+   "quote": "for the same force of gravity which holds worlds together holds this fluid in a horizontal position, and if the cup be not horizontal, of course the fluid will run away in guttering.",
+   "claim": "Gravity keeps the melted fuel level, so if the cup tilts the fluid runs off as guttering."
+  },
+  {
+   "statement_id": "N013",
+   "lecture": 1,
+   "quote": "You see, therefore, that the cup is formed by this beautifully regular ascending current of air playing upon all sides, which keeps the exterior of the candle cool.",
+   "claim": "The cup of melted fuel at the top of a candle is formed by a regular ascending air current that keeps the outside of the candle cool."
+  },
+  {
+   "statement_id": "N014",
+   "lecture": 1,
+   "quote": "No fuel would serve for a candle which has not the property of giving this cup, except such fuel as the Irish bogwood, where the material itself is like a sponge, and holds its own fuel.",
+   "claim": "Only fuels that form a cup serve for candles, except sponge-like materials such as Irish bogwood that hold their own fuel."
+  },
+  {
+   "statement_id": "N015",
+   "lecture": 1,
+   "quote": "It is not the best looking thing, but the best acting thing, which is the most advantageous to us.",
+   "claim": "For a candle, working well matters more than looking good."
+  },
+  {
+   "statement_id": "N016",
+   "lecture": 1,
+   "quote": "As the candle goes on burning, that keeps its place and forms a little pillar sticking up by the side, because, as it rises higher above the rest of the wax or fuel, the air gets better round it, and it is more cooled and better able to resist the action of the heat at a little distance.",
+   "claim": "A gutter down a candle's side becomes a standing pillar because, as it rises above the fuel, air cools it better and it resists the heat."
+  },
+  {
+   "statement_id": "N017",
+   "lecture": 1,
+   "quote": "You know that the flames on these burning wicks in candles made of bees-wax, stearin, or spermaceti, do not run down to the wax or other matter, and melt it all away, but keep to their own right place.",
+   "claim": "The flame on a wax, stearin, or spermaceti candle stays at the wick and does not run down and melt away the fuel."
+  },
+  {
+   "statement_id": "N018",
+   "lecture": 1,
+   "quote": "It is by what is called capillary attraction that the fuel is conveyed to the part where combustion goes on, and is deposited there, not in a careless way, but very beautifully in the very midst of the centre of action which takes place around it.",
+   "claim": "Capillary attraction carries the fuel up to the place where combustion goes on."
+  },
+  {
+   "statement_id": "N019",
+   "lecture": 1,
+   "quote": "You observe that, now I pour in the fluid, it rises and gradually creeps up the salt higher and higher; and provided the column does not tumble over, it will go to the top.",
+   "claim": "A saturated salt solution poured at the base of a porous salt column creeps up to its top, as melted tallow rises in a wick."
+  },
+  {
+   "statement_id": "N020",
+   "lecture": 1,
+   "quote": "The reason is this,—the wire, being once wetted, remains wet; the meshes are so small that the fluid is attracted so strongly from the one side to the other, as to remain in the vessel although it is porous.",
+   "claim": "A wetted wire-gauze vessel holds water although it is porous, because its small meshes attract the fluid strongly from side to side."
+  },
+  {
+   "statement_id": "N021",
+   "lecture": 1,
+   "quote": "In like manner the particles of melted tallow ascend the cotton and get to the top; other particles then follow by their mutual attraction for each other, and as they reach the flame they are gradually burned.",
+   "claim": "Particles of melted tallow climb the cotton, others follow by mutual attraction, and they burn as they reach the flame."
+  },
+  {
+   "statement_id": "N022",
+   "lecture": 1,
+   "quote": "Now, the only reason why the candle does not burn all down the side of the wick is, that the melted tallow extinguishes the flame.",
+   "claim": "A candle does not burn down the side of its wick because the melted tallow puts the flame out there."
+  },
+  {
+   "statement_id": "N023",
+   "lecture": 1,
+   "quote": "The reason is, that the flame has not had time to make the fuel hot enough to burn, as it does above, where it is carried in small quantities into the wick, and has all the effect of the heat exercised upon it.",
+   "claim": "A candle turned upside down goes out because the flame cannot heat the flooding fuel enough to burn, as it can the small amounts drawn up the wick."
+  },
+  {
+   "statement_id": "N024",
+   "lecture": 1,
+   "quote": "and now, if I hold a lighted taper two or three inches from the wick, you will observe a train of fire going through the air till it reaches the candle.",
+   "claim": "A lighted taper held near a freshly blown-out candle sends a train of fire through the vapour back to the wick."
+  },
+  {
+   "statement_id": "N025",
+   "lecture": 1,
+   "quote": "I am obliged to be quick and ready, because, if I allow the vapour time to cool, it becomes condensed into a liquid or solid, or the stream of combustible matter gets disturbed.",
+   "claim": "The vapour from a blown-out candle condenses into liquid or solid if it is given time to cool."
+  },
+  {
+   "statement_id": "N026",
+   "lecture": 1,
+   "quote": "It is a bright oblong—brighter at the top than towards the bottom—with the wick in the middle, and besides the wick in the middle, certain darker parts towards the bottom, where the ignition is not so perfect as in the part above.",
+   "claim": "A steady candle flame is a bright oblong, brighter at the top, with darker parts near the bottom where ignition is less perfect."
+  },
+  {
+   "statement_id": "N027",
+   "lecture": 1,
+   "quote": "Curiously enough, however, what we see in the shadow as the darkest part of the flame is, in reality, the brightest part; and here you see streaming upwards the ascending current of hot air, as shewn by Hooke, which draws out the flame, supplies it with air, and cools the sides of the cup of melted fuel.",
+   "claim": "In a flame's shadow the darkest part is the brightest part of the flame, and the shadow shows the rising hot air that draws out the flame, feeds it air, and cools the cup."
+  },
+  {
+   "statement_id": "N028",
+   "lecture": 1,
+   "quote": "You understand now easily enough why flames go up under ordinary circumstances—it is because of the draught of air by which the combustion is formed.",
+   "claim": "Flames ordinarily point upward because of the draught of air that sustains the combustion."
+  },
+  {
+   "statement_id": "N029",
+   "lecture": 1,
+   "quote": "The air flows in so irregularly that you have what would otherwise be a single image, broken up into a variety of forms, and each of these little tongues has an independent existence of its own.",
+   "claim": "Irregular inflow of air breaks a large flame into many tongues, each with an independent existence."
+  },
+  {
+   "statement_id": "N030",
+   "lecture": 1,
+   "quote": "It consists of a multitude of different shapes, succeeding each other so fast that the eye is only able to take cognisance of them all at once.",
+   "claim": "The apparent shape of a large flame is a rapid succession of different shapes that the eye takes in all at once."
+  },
+  {
+   "statement_id": "N031",
+   "lecture": 2,
+   "quote": "a candle being brought before us and burned, disappears, if burned properly, without the least trace of dirt in the candlestick",
+   "claim": "A properly burned candle disappears without leaving any dirt in the candlestick."
+  },
+  {
+   "statement_id": "N032",
+   "lecture": 2,
+   "quote": "We find that this is the wax of the candle made into a vaporous fluid—not a gas.",
+   "claim": "The matter drawn from the dark middle of the flame is the candle's wax turned into a vapour, not a gas."
+  },
+  {
+   "statement_id": "N033",
+   "lecture": 2,
+   "quote": "(You must learn the difference between a gas and a vapour: a gas remains permanent, a vapour is something that will condense.)",
+   "claim": "A gas remains permanent, whereas a vapour condenses."
+  },
+  {
+   "statement_id": "N034",
+   "lecture": 2,
+   "quote": "I will arrange another tube carefully in the flame, and I should not wonder if we were able, by a little care, to get that vapour to pass through the tube to the other extremity, where we will light it, and obtain absolutely the flame of the candle at a place distant from it.",
+   "claim": "Vapour led by a tube from the middle of a candle flame can be lit at the tube's far end, producing the candle's flame at a distance."
+  },
+  {
+   "statement_id": "N035",
+   "lecture": 2,
+   "quote": "And you see from this that there are clearly two different kinds of action—one the production of the vapour, and the other the combustion of it—both of which take place in particular parts of the candle.",
+   "claim": "A candle flame involves two distinct actions in particular places: producing vapour and burning it."
+  },
+  {
+   "statement_id": "N036",
+   "lecture": 2,
+   "quote": "If I raise the tube to the upper part of the flame, so soon as the vapour has been swept out, what comes away will be no longer combustible: It is already burned.",
+   "claim": "What comes from the upper part of the flame is no longer combustible because it has already burned."
+  },
+  {
+   "statement_id": "N037",
+   "lecture": 2,
+   "quote": "between the two, intense chemical action takes place, whereby the air and the fuel act upon each other, and at the very same time that we obtain light the vapour inside is destroyed.",
+   "claim": "Between the fuel vapour inside the flame and the air outside, intense chemical action produces light and destroys the vapour."
+  },
+  {
+   "statement_id": "N038",
+   "lecture": 2,
+   "quote": "It is in a ring, exactly in the place where I told you the chemical action was",
+   "claim": "The heat of a candle flame lies in a ring where the chemical action takes place, not in its interior."
+  },
+  {
+   "statement_id": "N039",
+   "lecture": 2,
+   "quote": "Air is absolutely necessary for combustion; and, what is more, I must have you understand that fresh air is necessary, or else we should be imperfect in our reasoning and our experiments.",
+   "claim": "Combustion requires air, and specifically fresh air."
+  },
+  {
+   "statement_id": "N040",
+   "lecture": 2,
+   "quote": "Not because it wants air merely, for the jar is as full now as it was before; but it wants pure, fresh air.",
+   "claim": "A candle under a jar goes out not for lack of air in general but for lack of pure, fresh air."
+  },
+  {
+   "statement_id": "N041",
+   "lecture": 2,
+   "quote": "but if, as Argand did so cleverly, I open a passage to the middle of the flame, and so let air come in there, you will see how much more beautifully it burns.",
+   "claim": "Opening a passage for air into the middle of the flame, as in Argand's lamp, makes the lamp burn much better."
+  },
+  {
+   "statement_id": "N042",
+   "lecture": 2,
+   "quote": "If we have larger wicks, we must have a larger supply of air, or we shall have less perfect combustion.",
+   "claim": "Larger wicks need a larger air supply, or combustion becomes less perfect."
+  },
+  {
+   "statement_id": "N043",
+   "lecture": 2,
+   "quote": "I might have also shewn you, by turning to the other side, that the burning of a candle produces the same kind of soot—charcoal or carbon.",
+   "claim": "A burning candle produces soot, which is charcoal or carbon."
+  },
+  {
+   "statement_id": "N044",
+   "lecture": 2,
+   "quote": "There is the gunpowder, which burns with a flame; and there are the filings—they burn with a different kind of combustion.",
+   "claim": "Gunpowder burns with a flame, while iron filings burn by a different kind of combustion without flame."
+  },
+  {
+   "statement_id": "N045",
+   "lecture": 2,
+   "quote": "It is called lycopodium, and each of these particles can produce a vapour, and produce its own flame; but, to see them burning, you would imagine it was all one flame.",
+   "claim": "Burning lycopodium powder looks like one flame but consists of separate particles each producing its own flame."
+  },
+  {
+   "statement_id": "N046",
+   "lecture": 2,
+   "quote": "It is certainly very different from the white vapour; and when we put a light to it, we shall find that it does not burn, but that it puts the light out.",
+   "claim": "The black vapour drawn from the bright part of the flame does not burn and puts a light out."
+  },
+  {
+   "statement_id": "N047",
+   "lecture": 2,
+   "quote": "But what is that black substance? Why, it is the same carbon which exists in the candle.",
+   "claim": "The black smoke from the luminous part of a flame is the carbon that exists in the candle."
+  },
+  {
+   "statement_id": "N048",
+   "lecture": 2,
+   "quote": "that whenever a substance burns, as the iron filings burnt in the flame of gunpowder, without assuming the vaporous state (whether it becomes liquid or remains solid), it becomes exceedingly luminous.",
+   "claim": "A substance that burns without becoming vapour, staying liquid or solid, becomes very luminous."
+  },
+  {
+   "statement_id": "N049",
+   "lecture": 2,
+   "quote": "and that it is to this presence of solid particles in the candle-flame that it owes its brilliancy.",
+   "claim": "A candle flame owes its brilliance to the solid particles present in it."
+  },
+  {
+   "statement_id": "N050",
+   "lecture": 2,
+   "quote": "and although we produce, by their mixture, far greater heat than you can obtain from the candle, yet there is very little light.",
+   "claim": "Hydrogen burning with oxygen produces far more heat than a candle but very little light."
+  },
+  {
+   "statement_id": "N051",
+   "lecture": 2,
+   "quote": "The heat that is in the flame of a candle decomposes the vapour of the wax, and sets free the carbon particles—they rise up heated and glowing as this now glows, and then enter into the air.",
+   "claim": "The heat of a candle flame decomposes wax vapour and frees carbon particles, which rise glowing and pass into the air."
+  },
+  {
+   "statement_id": "N052",
+   "lecture": 2,
+   "quote": "But the particles when burnt never pass off from a candle in the form of carbon. They go off into the air as a perfectly invisible substance, about which we shall know hereafter.",
+   "claim": "Burnt carbon particles leave a candle not as carbon but as an invisible substance."
+  },
+  {
+   "statement_id": "N053",
+   "lecture": 2,
+   "quote": "You see it comes to this—that all bright flames contain these solid particles",
+   "claim": "All bright flames contain solid particles."
+  },
+  {
+   "statement_id": "N054",
+   "lecture": 2,
+   "quote": "The flame of coal-gas owes its brightness to the separation, during combustion, of these particles of carbon, which are equally in that as in a candle.",
+   "claim": "A coal-gas flame is bright because carbon particles separate out during combustion, as in a candle."
+  },
+  {
+   "statement_id": "N055",
+   "lecture": 2,
+   "quote": "it burns with a non-luminous flame, owing to its having plenty of air mixed with it before it burns",
+   "claim": "Gas that is mixed with plenty of air before it burns gives a non-luminous flame."
+  },
+  {
+   "statement_id": "N056",
+   "lecture": 2,
+   "quote": "let me tell you that it is water which causes the dimness",
+   "claim": "The dimness that forms on a jar or cold surface over a candle is caused by water."
+  },
+  {
+   "statement_id": "N057",
+   "lecture": 3,
+   "quote": "we found that one part was condensable against a cold spoon, or against a clean plate, or any other cold thing, and another part was incondensable.",
+   "claim": "The rising current from a burning candle contains a part that condenses on cold objects and a part that does not."
+  },
+  {
+   "statement_id": "N058",
+   "lecture": 3,
+   "quote": "We will first take the condensable part, and examine it; and, strange to say, we find that that part of the product is just water—nothing but water.",
+   "claim": "The condensable product of a burning candle is water and nothing but water."
+  },
+  {
+   "statement_id": "N059",
+   "lecture": 3,
+   "quote": "If I take a little piece of it—it is called potassium, as coming from potash,—if I take a little piece of it, and throw it into that basin, you see how it shews the presence of water by lighting up and floating about, burning with a violent flame.",
+   "claim": "Potassium reveals the presence of water by catching fire and burning violently on it."
+  },
+  {
+   "statement_id": "N060",
+   "lecture": 3,
+   "quote": "I will take another drop upon this glass slab, and when I put the potassium on to it, you see at once, from its taking fire, that there is water present. Now, that water was produced by the candle.",
+   "claim": "A drop condensed from a burning candle sets potassium on fire, showing it is water produced by the candle."
+  },
+  {
+   "statement_id": "N061",
+   "lecture": 3,
+   "quote": "Water is one individual thing—it never changes.",
+   "claim": "Water is a single individual substance that never changes."
+  },
+  {
+   "statement_id": "N062",
+   "lecture": 3,
+   "quote": "A pint of oil, when burnt fairly and properly, produces rather more than a pint of water.",
+   "claim": "Burning a pint of oil properly produces slightly more than a pint of water."
+  },
+  {
+   "statement_id": "N063",
+   "lecture": 3,
+   "quote": "And so we can go on with almost all combustible substances, and find that if they burn with a flame, as a candle, they produce water.",
+   "claim": "Almost all combustible substances that burn with a flame produce water."
+  },
+  {
+   "statement_id": "N064",
+   "lecture": 3,
+   "quote": "Water is a thing compounded of two substances, one of which we have derived from the candle, and the other we shall find elsewhere.",
+   "claim": "Water is compounded of two substances, one derived from the candle and the other from elsewhere."
+  },
+  {
+   "statement_id": "N065",
+   "lecture": 3,
+   "quote": "ice changes back into water when the temperature is raised: water also changes into steam when it is warmed enough.",
+   "claim": "Ice turns back into water when warmed, and water turns into steam when warmed enough."
+  },
+  {
+   "statement_id": "N066",
+   "lecture": 3,
+   "quote": "and whether we alter it into ice by cooling, or whether we change it into steam by heat, it increases in volume",
+   "claim": "Water increases in volume both when it is cooled into ice and when it is heated into steam."
+  },
+  {
+   "statement_id": "N067",
+   "lecture": 3,
+   "quote": "We shall see that when we freeze the water in these iron vessels, they will not be able to hold the ice, and the expansion within them will break them in pieces",
+   "claim": "Water freezing inside sealed thick cast-iron bottles expands enough to break them."
+  },
+  {
+   "statement_id": "N068",
+   "lecture": 3,
+   "quote": "and yet you cannot observe any great diminution in the bulk of the water, which shews you that its change of bulk is very great when it becomes steam.",
+   "claim": "Water's bulk increases greatly when it becomes steam, since a flask overflows with steam with little loss of water."
+  },
+  {
+   "statement_id": "N069",
+   "lecture": 3,
+   "quote": "Because the ice is larger than the quantity of water which can produce it; and therefore the ice weighs the lighter, and the water is the heavier.",
+   "claim": "Ice floats because it is larger than the water that forms it, so for its bulk it is lighter than water."
+  },
+  {
+   "statement_id": "N070",
+   "lecture": 3,
+   "quote": "yet, when the steam returns to the state of water, the vessel collapses, there being a vacuum produced inside by the condensation of the steam.",
+   "claim": "When steam in a closed vessel condenses back to water it leaves a vacuum, and the vessel collapses."
+  },
+  {
+   "statement_id": "N071",
+   "lecture": 3,
+   "quote": "and that bulk of water [the cubic inch] is sufficient to expand into that bulk [the cubic foot] of steam",
+   "claim": "A cubic inch of water expands into about a cubic foot of steam."
+  },
+  {
+   "statement_id": "N072",
+   "lecture": 3,
+   "quote": "It is neither in one nor the other, but it comes from their conjoint action, a part from the candle, a part from the air",
+   "claim": "The water from a candle is not present beforehand in the candle or in the air but comes from their joint action, part from each."
+  },
+  {
+   "statement_id": "N073",
+   "lecture": 3,
+   "quote": "I will put a piece on the water, and you see it burns beautifully, making a floating lamp, using the water in the place of air.",
+   "claim": "Potassium placed on water burns like a floating lamp, using the water in place of air."
+  },
+  {
+   "statement_id": "N074",
+   "lecture": 3,
+   "quote": "they become rusty, and shew an action upon the water, though in a different degree of intensity to what this beautiful metal does",
+   "claim": "Iron in water rusts, acting on the water in the same general way as potassium but far less intensely."
+  },
+  {
+   "statement_id": "N075",
+   "lecture": 3,
+   "quote": "It is a common thing in all chemical reactions, where we get any result of this kind, to find that it is increased by the action of heat",
+   "claim": "Heat commonly increases the results of chemical reactions."
+  },
+  {
+   "statement_id": "N076",
+   "lecture": 3,
+   "quote": "If I now apply a light to the mouth of the jar, it ignites with a slight noise. That tells you that it is not steam.",
+   "claim": "The gas collected after steam passes over red-hot iron ignites, which shows it is not steam."
+  },
+  {
+   "statement_id": "N077",
+   "lecture": 3,
+   "quote": "but after having had this current of steam passed over it, it then comes out heavier that it was before, having taken something out of the steam, and having allowed something else to pass forth, which we see here.",
+   "claim": "Red-hot iron exposed to steam comes out heavier, having taken something from the steam and let another substance pass on."
+  },
+  {
+   "statement_id": "N078",
+   "lecture": 3,
+   "quote": "It is also a very light substance. Steam will condense: this body will rise in the air, and not condense.",
+   "claim": "The gas obtained from steam and iron is very light, rising in air without condensing."
+  },
+  {
+   "statement_id": "N079",
+   "lecture": 3,
+   "quote": "the main reason why this zinc cannot act upon the water continuously as the other metal does, is because the result of the action of the water envelopes the zinc in a kind of protecting coat.",
+   "claim": "Zinc cannot act on water continuously because the product of the action coats the zinc protectively."
+  },
+  {
+   "statement_id": "N080",
+   "lecture": 3,
+   "quote": "the moment I do this, I find the zinc acting upon the water exactly as the iron did, but at the common temperature.",
+   "claim": "Once acid dissolves the protective coat, zinc acts on water as hot iron did, but at ordinary temperature."
+  },
+  {
+   "statement_id": "N081",
+   "lecture": 3,
+   "quote": "This is hydrogen—a body classed among those things which in Chemistry we call elements, because we can get nothing else out of them.",
+   "claim": "Hydrogen is an element, since nothing else can be obtained from it."
+  },
+  {
+   "statement_id": "N082",
+   "lecture": 3,
+   "quote": "A candle is not an elementary body, because we can get carbon out of it",
+   "claim": "A candle is not an element, because carbon can be obtained from it."
+  },
+  {
+   "statement_id": "N083",
+   "lecture": 3,
+   "quote": "And this gas has been so named hydrogen, because it is that element which, in association with another, generates water.",
+   "claim": "Hydrogen is named for being the element that, together with another, generates water."
+  },
+  {
+   "statement_id": "N084",
+   "lecture": 3,
+   "quote": "It is a foolish feeble sort of a flame, you may say; but it is so hot that scarcely any common flame gives out so much heat.",
+   "claim": "The hydrogen flame looks feeble but gives out more heat than almost any common flame."
+  },
+  {
+   "statement_id": "N085",
+   "lecture": 3,
+   "quote": "It shews you how light this gas must be in order to carry with it not merely the ordinary soap-bubble, but the larger portion of a drop hanging to the bottom of it.",
+   "claim": "Soap bubbles blown with hydrogen rise, carrying even the drop hanging beneath them, which shows how light the gas is."
+  },
+  {
+   "statement_id": "N086",
+   "lecture": 3,
+   "quote": "A pint measure of this hydrogen weighs three-quarters of our smallest weight (a grain), and a cubic foot weighs one-twelfth of an ounce",
+   "claim": "A pint of hydrogen weighs three-quarters of a grain and a cubic foot weighs one-twelfth of an ounce."
+  },
+  {
+   "statement_id": "N087",
+   "lecture": 3,
+   "quote": "Hydrogen gives rise to no substance that can become solid, either during combustion or afterwards as a product of its combustion.",
+   "claim": "Burning hydrogen produces no substance that can become solid, during or after combustion."
+  },
+  {
+   "statement_id": "N088",
+   "lecture": 3,
+   "quote": "It is important to remember that this hydrogen is the only thing in nature which furnishes water as the sole product of combustion.",
+   "claim": "Hydrogen is the only thing in nature whose combustion yields water as its sole product."
+  },
+  {
+   "statement_id": "N089",
+   "lecture": 3,
+   "quote": "Now, this is a chemical power, and one which, when we next meet, I shall apply to water",
+   "claim": "The power delivered by the voltaic battery is a chemical power that can be applied to water."
+  },
+  {
+   "statement_id": "N090",
+   "lecture": 4,
+   "quote": "because, you remember, when we passed the water through the iron tube, we by no means got the weight of water back which we put in, in the form of steam, though we had a very large quantity of gas evolved.",
+   "claim": "Passing steam through the hot iron tube did not return the weight of water put in, although much gas was evolved."
+  },
+  {
+   "statement_id": "N091",
+   "lecture": 4,
+   "quote": "The copper which I have put into the flask will dissolve: it will change the acid and the water into a blue fluid, containing copper and other things",
+   "claim": "Copper dissolves in nitric acid and water, turning them into a blue fluid that contains copper."
+  },
+  {
+   "statement_id": "N092",
+   "lecture": 4,
+   "quote": "if I take these two poles and put either one or the other of them down separately on the platinum-plates, they do nothing for me, both are perfectly without action; but if I let them both be in contact at the same moment, see what happens",
+   "claim": "The battery's poles act on the wetted salt paper only when both are in contact at the same moment, not separately."
+  },
+  {
+   "statement_id": "N093",
+   "lecture": 4,
+   "quote": "and thus you see that the same copper we put into this solution we can also take out of it by means of this instrument.",
+   "claim": "The voltaic battery can take back out of the solution the same copper that was dissolved into it."
+  },
+  {
+   "statement_id": "N094",
+   "lecture": 4,
+   "quote": "There it is standing over the water, and it cannot therefore be steam, but must be a permanent gas of some sort",
+   "claim": "The gas produced by passing electricity through water stands over the water unchanged, so it is a permanent gas, not steam."
+  },
+  {
+   "statement_id": "N095",
+   "lecture": 4,
+   "quote": "and I am going to shew you that that gas, whatever it may be, can burn without air, and in that respect differs from a candle, which cannot burn without the air.",
+   "claim": "The gas obtained from water by the battery can burn without air, unlike a candle."
+  },
+  {
+   "statement_id": "N096",
+   "lecture": 4,
+   "quote": "We have not only altered its condition, but we have changed it really and truly into that gaseous substance, and all the water is there which was decomposed by the experiment.",
+   "claim": "The battery truly changes water into a gaseous substance that contains all the water decomposed."
+  },
+  {
+   "statement_id": "N097",
+   "lecture": 4,
+   "quote": "I always have an empty vessel after the explosion, because the vapour or gas into which that water has been resolved by the battery explodes under the influence of the spark, and changes into water",
+   "claim": "When sparked, the gas into which the battery resolved the water explodes and changes back into water, leaving the vessel empty."
+  },
+  {
+   "statement_id": "N098",
+   "lecture": 4,
+   "quote": "The water of the candle had the atmosphere helping to produce it; but in this way it can be produced independently of the air.",
+   "claim": "The candle needs the atmosphere to make water, but water can also be produced from the battery's gases independently of air."
+  },
+  {
+   "statement_id": "N099",
+   "lecture": 4,
+   "quote": "Water, therefore, ought to contain that other substance which the candle takes from the air, and which, combining with the hydrogen, produces water.",
+   "claim": "Water must contain the substance the candle takes from the air, which combines with hydrogen to form water."
+  },
+  {
+   "statement_id": "N100",
+   "lecture": 4,
+   "quote": "and were it not that one is rather smaller than the other, you would see that I should have twice as much in this (H) as I have in that (O).",
+   "claim": "Electrolysing water delivers about twice as much gas at one pole as at the other."
+  },
+  {
+   "statement_id": "N101",
+   "lecture": 4,
+   "quote": "The gas itself will not burn, but it will make the splinter of wood burn.",
+   "claim": "The second gas from water does not itself burn but makes a splinter of wood burn."
+  },
+  {
+   "statement_id": "N102",
+   "lecture": 4,
+   "quote": "This, then, is the oxygen which was present in the water, forming so large a part of it.",
+   "claim": "Oxygen is present in water and forms a large part of it."
+  },
+  {
+   "statement_id": "N103",
+   "lecture": 4,
+   "quote": "we get two volumes of hydrogen, and one of the body that burns it.",
+   "claim": "Electrolysis of water yields two volumes of hydrogen for every one volume of oxygen."
+  },
+  {
+   "statement_id": "N104",
+   "lecture": 4,
+   "quote": "and we shall find that the oxygen is a very heavy body by comparison with the hydrogen.",
+   "claim": "Oxygen is very heavy compared with hydrogen."
+  },
+  {
+   "statement_id": "N105",
+   "lecture": 4,
+   "quote": "Oxygen, as you will immediately imagine, exists in the atmosphere; for how should the candle burn to produce water without it?",
+   "claim": "Oxygen exists in the atmosphere, since otherwise a burning candle could not produce water."
+  },
+  {
+   "statement_id": "N106",
+   "lecture": 4,
+   "quote": "There is a substance called the black oxide of manganese: it is a very black-looking mineral, but very useful, and when made red-hot it gives out oxygen.",
+   "claim": "Black oxide of manganese gives out oxygen when made red-hot."
+  },
+  {
+   "statement_id": "N107",
+   "lecture": 4,
+   "quote": "I will take some and mix it with some of the oxide of manganese (oxide of copper, or oxide of iron would do as well); and if I put these together in a retort, far less than a red heat is sufficient to evolve this oxygen from the mixture.",
+   "claim": "Chlorate of potassa mixed with oxide of manganese releases oxygen at well below red heat."
+  },
+  {
+   "statement_id": "N108",
+   "lecture": 4,
+   "quote": "You see there is the combustion of a lighted taper in air, and here is its combustion in this gas [lowering the taper into the jar]. See how brightly and how beautifully it burns!",
+   "claim": "A lighted taper burns far more brightly in oxygen than in air."
+  },
+  {
+   "statement_id": "N109",
+   "lecture": 4,
+   "quote": "You may easily see that although we obtained from water twice as much in volume of the hydrogen as of oxygen, it does not follow that we have twice as much in weight—because one is heavy, and the other a very light gas.",
+   "claim": "Water yields twice the volume of hydrogen as of oxygen, but not twice the weight, because oxygen is heavy and hydrogen light."
+  },
+  {
+   "statement_id": "N110",
+   "lecture": 4,
+   "quote": "The weight of a pint of hydrogen is three-quarters of a grain; the weight of the same quantity of oxygen is nearly twelve grains.",
+   "claim": "A pint of hydrogen weighs three-quarters of a grain, while a pint of oxygen weighs nearly twelve grains."
+  },
+  {
+   "statement_id": "N111",
+   "lecture": 4,
+   "quote": "And yet, during all that action, nothing more is produced than what is produced by the burning of the candle in air.",
+   "claim": "A candle burning in oxygen burns far more vigorously but produces nothing beyond what it produces in air."
+  },
+  {
+   "statement_id": "N112",
+   "lecture": 4,
+   "quote": "But it does not affect merely the combustion of hydrogen, or carbon, or the candle; but it exalts all combustions of the common kind.",
+   "claim": "Oxygen intensifies all common kinds of combustion, not only those of hydrogen, carbon, or the candle."
+  },
+  {
+   "statement_id": "N113",
+   "lecture": 4,
+   "quote": "As long as we supply oxygen, so long can we carry on the combustion of the iron, until the latter is consumed.",
+   "claim": "Iron wire burns in oxygen for as long as oxygen is supplied, until the iron is consumed."
+  },
+  {
+   "statement_id": "N114",
+   "lecture": 4,
+   "quote": "and you will see that whatever can burn in air, can burn with a far greater intensity in oxygen, leading you to think that perhaps the atmosphere itself owes all its power of combustion to this gas.",
+   "claim": "Whatever burns in air burns far more intensely in oxygen, suggesting the atmosphere owes its power of combustion to oxygen."
+  },
+  {
+   "statement_id": "N115",
+   "lecture": 4,
+   "quote": "There you see the solid particles going off which cause that combustion to be so brilliantly luminous.",
+   "claim": "Phosphorus burning in oxygen is brilliantly luminous because of the solid particles it gives off."
+  },
+  {
+   "statement_id": "N116",
+   "lecture": 4,
+   "quote": "Why does a piece of potassium decompose water? Because it finds oxygen in the water.",
+   "claim": "Potassium decomposes water because it finds oxygen in the water."
+  },
+  {
+   "statement_id": "N117",
+   "lecture": 4,
+   "quote": "the beautiful affinities by which the oxygen and the hydrogen are related are such, that the ice will absolutely set fire to the potassium.",
+   "claim": "The affinities of oxygen and hydrogen are such that potassium placed on ice catches fire."
+  },
+  {
+   "statement_id": "N118",
+   "lecture": 5,
+   "quote": "Hydrogen, you know, comes from the candle, and oxygen, you believe, comes from the air.",
+   "claim": "The hydrogen in a candle's water comes from the candle, and the oxygen comes from the air."
+  },
+  {
+   "statement_id": "N119",
+   "lecture": 5,
+   "quote": "But see how the presence of oxygen is told by its association with this other substance. What a beautifully coloured gas I have obtained in this way, shewing me the presence of the oxygen!",
+   "claim": "A test gas reveals oxygen by forming a coloured gas when the two mix."
+  },
+  {
+   "statement_id": "N120",
+   "lecture": 5,
+   "quote": "and that shews me that there is oxygen in the air—the very same substance that has been already obtained by us from the water produced by the candle.",
+   "claim": "The test gas shows that air contains oxygen, the same substance obtained from the water a candle produces."
+  },
+  {
+   "statement_id": "N121",
+   "lecture": 5,
+   "quote": "there was, in fact, this gas left behind, which the phosphorus cannot touch, which the reddening gas cannot touch, and this something is not oxygen, and yet is part of the atmosphere.",
+   "claim": "When phosphorus or the reddening test gas removes the oxygen from air, a gas remains that is not oxygen but is part of the atmosphere."
+  },
+  {
+   "statement_id": "N122",
+   "lecture": 5,
+   "quote": "So that is one way of opening out air into the two things of which it is composed—oxygen, which burns our candles, our phosphorus, or anything else; and this other substance—nitrogen—which will not burn them.",
+   "claim": "Air is composed of oxygen, which makes things burn, and nitrogen, which does not."
+  },
+  {
+   "statement_id": "N123",
+   "lecture": 5,
+   "quote": "it will not take fire; it will not let the taper burn; it puts out the combustion of everything.",
+   "claim": "Nitrogen does not take fire, does not let a taper burn, and puts out the combustion of everything."
+  },
+  {
+   "statement_id": "N124",
+   "lecture": 5,
+   "quote": "It has no smell; it is not sour; it does not dissolve in water; it is neither an acid nor an alkali; it is as indifferent to all our organs as it is possible for a thing to be.",
+   "claim": "Nitrogen has no smell, is not sour, does not dissolve in water, is neither acid nor alkali, and is indifferent to the senses."
+  },
+  {
+   "statement_id": "N125",
+   "lecture": 5,
+   "quote": "The grate would burn up more powerfully than the coals—for the iron of the grate itself is even more combustible than the coals which we burn in it.",
+   "claim": "If the atmosphere were pure oxygen, an iron grate would burn more powerfully than the coals in it, since iron is more combustible than coal."
+  },
+  {
+   "statement_id": "N126",
+   "lecture": 5,
+   "quote": "The nitrogen lowers it down and makes it moderate and useful for us",
+   "claim": "Nitrogen moderates combustion and makes it useful."
+  },
+  {
+   "statement_id": "N127",
+   "lecture": 5,
+   "quote": "disperses them throughout the whole of the atmosphere, and carries them away to places where they are wanted to perform a great and glorious purpose of good to man, for the sustenance of vegetation",
+   "claim": "Nitrogen disperses the fumes of combustion through the atmosphere and carries them to where they sustain vegetation."
+  },
+  {
+   "statement_id": "N128",
+   "lecture": 5,
+   "quote": "no action short of the most intense electric force, and then in the most infinitely small degree, can cause the nitrogen to combine directly with the other element of the atmosphere",
+   "claim": "Only the most intense electric force can make nitrogen combine directly with oxygen, and then only to an extremely small degree."
+  },
+  {
+   "statement_id": "N129",
+   "lecture": 5,
+   "quote": "By our analysis, we find that 5 pints of the atmosphere contain only 1 pint of oxygen, and 4 pints, or 4 parts, of nitrogen by bulk.",
+   "claim": "By volume, five parts of the atmosphere contain one part oxygen and four parts nitrogen."
+  },
+  {
+   "statement_id": "N130",
+   "lecture": 5,
+   "quote": "It requires all that quantity of nitrogen to reduce the oxygen down, so as to be able to supply the candle properly with fuel, so as to supply us with an atmosphere which our lungs can healthily and safely breathe",
+   "claim": "The large proportion of nitrogen dilutes the oxygen enough for candles to burn properly and for lungs to breathe safely."
+  },
+  {
+   "statement_id": "N131",
+   "lecture": 5,
+   "quote": "There is not a greater bulk of air, but there is the same bulk of heavier air, because we have forced in air upon it.",
+   "claim": "Pumping air into a sealed copper bottle makes it heavier because it then holds the same bulk of denser air."
+  },
+  {
+   "statement_id": "N132",
+   "lecture": 5,
+   "quote": "The air which is within that box weighs one pound—a full pound; and I have calculated the weight of the air in this room,—you would hardly imagine it, but it is above a ton.",
+   "claim": "The air in a large box weighs a pound, and the air in the lecture room weighs more than a ton."
+  },
+  {
+   "statement_id": "N133",
+   "lecture": 5,
+   "quote": "Now, that was done entirely by the weight of the air pressing on it",
+   "claim": "A bladder over an exhausted glass bursts entirely because of the weight of the air pressing on it."
+  },
+  {
+   "statement_id": "N134",
+   "lecture": 5,
+   "quote": "So it is with the atmosphere: the air that is above is sustained by the air that is beneath",
+   "claim": "In the atmosphere, the air above is supported by the air beneath it."
+  },
+  {
+   "statement_id": "N135",
+   "lecture": 5,
+   "quote": "Every square inch of surface that is contained in the area of that vessel sustains fifteen pounds by weight, or nearly so, when the air is taken out",
+   "claim": "When the air is pumped out of the brass hemispheres, each square inch of their surface bears nearly fifteen pounds."
+  },
+  {
+   "statement_id": "N136",
+   "lecture": 5,
+   "quote": "It is only kept down by the pressure of the atmosphere above.",
+   "claim": "A rubber sucker sticks to a table only because of the pressure of the atmosphere above it."
+  },
+  {
+   "statement_id": "N137",
+   "lecture": 5,
+   "quote": "The air cannot get in because the water by its capillary attraction round the edge keeps it out.",
+   "claim": "A card holds water in an inverted glass because capillary attraction at the edge keeps air out, leaving atmospheric pressure to support it."
+  },
+  {
+   "statement_id": "N138",
+   "lecture": 5,
+   "quote": "I think this will give you a correct notion of what you may call the materiality of the air",
+   "claim": "Air has materiality: it has weight and offers positive resistance."
+  },
+  {
+   "statement_id": "N139",
+   "lecture": 5,
+   "quote": "the confined air will drive the front one out with a force something like that of gunpowder; for gunpowder is in part dependent upon the same action that you see here exemplified.",
+   "claim": "Air compressed in a popgun drives the front pellet out with a force like gunpowder, which partly depends on the same action."
+  },
+  {
+   "statement_id": "N140",
+   "lecture": 5,
+   "quote": "if we take the pressure off, you will see how it will then go on expanding and expanding, larger and larger, until it will fill the whole of this bell-jar",
+   "claim": "Air confined in a bladder expands greatly when the outside pressure is removed, showing the elasticity of air."
+  },
+  {
+   "statement_id": "N141",
+   "lecture": 5,
+   "quote": "It is water produced from the candle by the action of the air upon its hydrogen.",
+   "claim": "The moisture from a candle under a chimney is water made by the air acting on the candle's hydrogen."
+  },
+  {
+   "statement_id": "N142",
+   "lecture": 5,
+   "quote": "it is not moisture—it is not water—it is not condensable; and yet, after all, it has very singular properties.",
+   "claim": "Besides water, a burning candle sends out a product that is not condensable and has singular properties."
+  },
+  {
+   "statement_id": "N143",
+   "lecture": 5,
+   "quote": "Do you see that the water has become quite milky? Observe, that will not happen with air merely.",
+   "claim": "The products of a burning candle turn clear lime-water milky, which ordinary air does not do."
+  },
+  {
+   "statement_id": "N144",
+   "lecture": 5,
+   "quote": "and, when examined, it does prove to be exactly the same substance as whitening or chalk.",
+   "claim": "The white powder formed by lime-water and the candle's products is the same substance as chalk."
+  },
+  {
+   "statement_id": "N145",
+   "lecture": 5,
+   "quote": "All limestones contain a great deal of this gas which issues from the candle, and which we call carbonic acid. All chalks, all shells, all corals contain a great quantity of this curious air.",
+   "claim": "Limestones, chalks, shells, and corals all contain much carbonic acid, the gas that issues from a candle."
+  },
+  {
+   "statement_id": "N146",
+   "lecture": 5,
+   "quote": "He called it fixed air, because it lost its quality of air, and assumed the condition of a solid body.",
+   "claim": "Dr. Black called carbonic acid fixed air because in stones it loses its airy quality and takes a solid form."
+  },
+  {
+   "statement_id": "N147",
+   "lecture": 5,
+   "quote": "And no matter how different the two methods by which we prepare this carbonic acid, you will see, when we get to the end of our subject, that it is all exactly the same, whether prepared in the one way or in the other.",
+   "claim": "Carbonic acid is exactly the same whether made from marble and acid or from a burning candle."
+  },
+  {
+   "statement_id": "N148",
+   "lecture": 5,
+   "quote": "You see it is not combustible, nor does it support combustion.",
+   "claim": "Carbonic acid neither burns nor supports combustion."
+  },
+  {
+   "statement_id": "N149",
+   "lecture": 5,
+   "quote": "If I take a glass and draw off some of the water, I find that it tastes a little acid to the mouth: it is impregnated with carbonic acid",
+   "claim": "Carbonic acid dissolves a little in water, giving it a slightly acid taste."
+  },
+  {
+   "statement_id": "N150",
+   "lecture": 5,
+   "quote": "Then it is a very weighty gas—it is heavier than the atmosphere.",
+   "claim": "Carbonic acid is heavier than air."
+  },
+  {
+   "statement_id": "N151",
+   "lecture": 5,
+   "quote": "It is floating, as the balloon floated, by virtue of the greater weight of the carbonic acid than of the air.",
+   "claim": "An air-filled soap bubble floats on carbonic acid because carbonic acid is heavier than air."
+  },
+  {
+   "statement_id": "N152",
+   "lecture": 6,
+   "quote": "They have a remarkable peculiarity about them—namely, a hollow wick,—that beautiful peculiarity which Argand introduced into the lamp, and made so valuable.",
+   "claim": "The Japanese candles have a hollow wick, the feature Argand introduced into the lamp."
+  },
+  {
+   "statement_id": "N153",
+   "lecture": 6,
+   "quote": "You remember that when a candle burns badly, it produces smoke; but if it is burning well, there is no smoke.",
+   "claim": "A badly burning candle smokes, while a well burning one does not."
+  },
+  {
+   "statement_id": "N154",
+   "lecture": 6,
+   "quote": "and, remember now, the carbonic acid that we have from the candle is from such smoke as that.",
+   "claim": "The carbonic acid a candle produces comes from the carbon smoke of its flame."
+  },
+  {
+   "statement_id": "N155",
+   "lecture": 6,
+   "quote": "All the carbon which is burned in oxygen, or air, comes out as carbonic acid",
+   "claim": "All carbon burned in oxygen or air comes out as carbonic acid."
+  },
+  {
+   "statement_id": "N156",
+   "lecture": 6,
+   "quote": "Every little piece of charcoal is burning as a spark, and whilst it so burns it is producing carbonic acid.",
+   "claim": "Charcoal in oxygen burns as sparks rather than flame, producing carbonic acid."
+  },
+  {
+   "statement_id": "N157",
+   "lecture": 6,
+   "quote": "it burns as a coal, and not like a flame.",
+   "claim": "Carbon burns as a glowing coal, not as a flame."
+  },
+  {
+   "statement_id": "N158",
+   "lecture": 6,
+   "quote": "By putting together 6 parts of carbon by weight (whether it comes from the flame of a candle or from powdered charcoal) and 16 parts of oxygen by weight, we have 22 parts of carbonic acid",
+   "claim": "Six parts of carbon and sixteen parts of oxygen by weight make twenty-two parts of carbonic acid."
+  },
+  {
+   "statement_id": "N159",
+   "lecture": 6,
+   "quote": "When we have a perfectly cleansed and purified piece of carbon, there is no ash left.",
+   "claim": "Perfectly purified carbon burns without leaving any ash."
+  },
+  {
+   "statement_id": "N160",
+   "lecture": 6,
+   "quote": "and what is more curious still, is the fact that the oxygen does not change in its bulk by the solution of the carbon in it.",
+   "claim": "Oxygen keeps the same bulk when carbon burns in it to form carbonic acid."
+  }
+ ]
+}
