@@ -89,11 +89,24 @@ def capability() -> dict:
     return out
 
 
+def frontier_codex() -> dict:
+    """Amendment 17 item 1: Codex's seeded 100 of the frontier 200, 50 per arm, each arm's
+    rollouts sorted by id and drawn without replacement (seed 20261109|cst_frontier_codex_100)."""
+    fr = json.loads((CST / "data/s0a_samples_v1.json").read_text())["frontier_200"]
+    rng = random.Random("20261109|cst_frontier_codex_100")
+    ids = []
+    for arm in ("a0", "a0s"):
+        ids += rng.sample(sorted(x for x in fr if x.split("|")[0] == arm), 50)
+    return {"rule": "CST Amendment 17 item 1", "seed": "20261109|cst_frontier_codex_100",
+            "source": "data/s0a_samples_v1.json frontier_200", "ids": sorted(ids)}
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("step", choices=("capability", "samples"))
+    ap.add_argument("step", choices=("capability", "samples", "frontier_codex"))
     a = ap.parse_args()
-    f = CST / "data" / f"s0a_{a.step}_v1.json"
-    f.write_text(json.dumps({"capability": capability, "samples": samples}[a.step](), indent=1)
-                 + "\n")
+    f = CST / "data" / ("frontier_codex_100_v1.json" if a.step == "frontier_codex"
+                        else f"s0a_{a.step}_v1.json")
+    fn = {"capability": capability, "samples": samples, "frontier_codex": frontier_codex}
+    f.write_text(json.dumps(fn[a.step](), indent=1) + "\n")
     print(f"wrote {f}")
