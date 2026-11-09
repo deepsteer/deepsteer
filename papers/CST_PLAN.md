@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.19, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) and 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), §13.** v0.1 was the draft for the
+Status: **v0.20, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) and 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1523,4 +1523,36 @@ Riders:
    session, zero-GPU descriptive reads on saved data, pushes after green CI) are Claude's, each
    logged in one line in `CST_STATE.md`. Everything in CLAUDE.md's escalation list, any new arm, and
    any spend past a session's stated price still comes to the author.
+
+### Amendment 21 (2026-11-09; author, the pilot rulings on `PILOT_BUILD.md` §7; zero GPU; on origin before any pilot corpus generates)
+
+1. **Pods split by line, not by stage; no pod consumes another pod's adapters.** *SDF pod:* the
+   D-doc, D-neutral, D-chat and D-raw corpora and training, the recovery set and R0, then the screen
+   read of its own adapters. *DPO pod:* pair candidates, the filter, P-answer, P-trace and P-long
+   training, then the screen read of its own adapters. Both launch the same night, after S0b-1's
+   A0n read is in; if one line's build lags, the other launches alone. Each pod runs its own A0 read
+   of the legitimate-order cell, with the 20-item check first; the DPO pod also reads A0s on that
+   cell (it already loads the document engine); A0n on that cell only if A0n moves the headline.
+   **Each pod prices at or under 10.5 h**; stage placement is Claude's (D-raw may move). Bail order on
+   the SDF pod: the 0.3M checkpoint's without-recovery read first, then D-raw.
+2. **The pair filter: gpt-oss-120b on the DPO pod**, final answers only, the same rule for every
+   filtered rung. **Pilot gate:** fewer than 250 kept pairs stops the DPO rungs and banks the
+   candidates. Claude re-filters the same candidates locally after the pod, and the agreement is
+   reported beside. This supersedes Amendment 20's filter order.
+3. **P-trace's length:** no length matching; the gap reported beside. **Added control rung P-long**,
+   pilot-only: the same kept prompts, k 4 rollouts without the document, chosen the longest and
+   rejected the shortest, P-trace's loss mask, no filter; the achieved chosen-to-rejected length
+   ratio is reported beside P-trace's. **P-trace's move rule:** against A0, P-answer and P-long.
+4. **The difficult-advice prompts:** about 700, written locally by Claude from a seeded grid over the
+   tenets in T(`C_anth`) outside `T_conf`, by domain and stakes; user-advice framing only, no operator
+   or agentic framing; each carries its tenet ids; 8-gram checked against every eval set,
+   near-duplicates removed, kept apart from the panel's scenario families. Recorded as pilot
+   provenance; the generator of record at scale is decided at the ladder's gate.
+5. **Recovery:** every document rung (D-raw, D-doc, D-chat, D-neutral) gets the identical recovery
+   step; D-doc is also read without it.
+6. **The move rule, two additions.** A rung whose ordered-option share rises (CI excluding 0) is a
+   ledger entry and does not scale. A rung whose legitimate-order share falls (CI excluding 0) is
+   reported as over-steered and scales only on the author's ruling.
+7. If both DPO rungs read null after the dose step, **transfer distance** (advice prompts against an
+   agentic headline) is the first item in the escalation.
 
