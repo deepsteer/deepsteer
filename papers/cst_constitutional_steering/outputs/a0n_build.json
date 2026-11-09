@@ -1,0 +1,90 @@
+{
+ "rule": "CST Amendment 16 item 1(a)",
+ "source": "Project Gutenberg #14474",
+ "source_sha256": "ee17c709443e87dd8d36e2f8d7065e54344bc5182e0dc856c08f058fbd9b013f",
+ "qwen_snapshot": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+ "target_tokens_C_anth": 34186,
+ "tokens": 34173,
+ "paragraphs": 124,
+ "paragraphs_available": 139,
+ "text_sha256": "dc74f40bef03b505bd59b980db31a35e93fc8fdde801254f9f9e92a16a4920df",
+ "dropped_blocks": [
+  "LECTURE I.",
+  "A CANDLE: THE FLAME\u2014ITS SOURCES\u2014STRUCTURE\u2014MOBILITY\u2014BRIGHTNESS.",
+  "[Illustration: Fig. 1.]",
+  "[Illustration: Fig. 2.]",
+  "[Illustration: Fig. 3.]",
+  "[Illustration: Fig. 4.]",
+  "[Illustration: Fig. 5]",
+  "[Illustration: Fig. 6.]",
+  "LECTURE II.",
+  "A CANDLE: BRIGHTNESS OF THE FLAME\u2014AIR NECESSARY FOR\nCOMBUSTION\u2014PRODUCTION OF WATER.",
+  "[Illustration: Fig. 7.]",
+  "[Illustration: Fig. 8]",
+  "[Illustration: Fig. 9.]",
+  "[Illustration: Fig. 10.]",
+  "LECTURE III.",
+  "PRODUCTS: WATER FROM THE COMBUSTION\u2014NATURE OF WATER\u2014A\nCOMPOUND\u2014HYDROGEN.",
+  "[Illustration: Fig. 11.]",
+  "[Illustration: Fig. 12.]",
+  "[Illustration: Fig. 13.]",
+  "[Illustration: Fig. 14.]",
+  "[Illustration: Fig. 15]",
+  "[Illustration: Fig. 16.]",
+  "[Illustration: Fig. 17.]",
+  "[Illustration: Fig. 18.]",
+  "LECTURE IV.",
+  "HYDROGEN IN THE CANDLE\u2014BURNS INTO WATER\u2014THE OTHER PART OF WATER\u2014OXYGEN.",
+  "[Illustration: Fig. 19]",
+  "[Illustration: Fig. 20.]",
+  "_____________________\n |           |         |\n |     1     |    8    |\n |           |         |\n |           | Oxygen. | Oxygen, . . . .  88.9\n |           |  ",
+  "[Illustration: Fig. 21.]",
+  "[Illustration: Fig. 22.]",
+  "[Illustration: Fig. 23.]",
+  "[Illustration: Fig. 24.]",
+  "LECTURE V.",
+  "OXYGEN PRESENT IN THE AIR\u2014NATURE OF THE ATMOSPHERE\u2014ITS PROPERTIES\u2014OTHER\nPRODUCTS FROM THE CANDLE\u2014CARBONIC ACID\u2014ITS PROPERTIES.",
+  "Bulk.  Weight.\n Oxygen, . . . . .   20    22.3\n Nitrogen, . . . .   80    77.7\n                    \u2014\u2014\u2014   \u2014\u2014\u2014\u2014\u2014\n                    100   100.0",
+  "[Illustration: Fig. 25.]",
+  "[Illustration: Fig. 26.]",
+  "[Illustration: Fig. 27.]",
+  "[Illustration: Fig. 28.]",
+  "[Illustration: Fig. 29.]",
+  "[Illustration: Fig. 30.]",
+  "[Illustration: Fig. 31.]",
+  "LECTURE VI.",
+  "CARBON OR CHARCOAL\u2014COAL-GAS\u2014RESPIRATION AND ITS ANALOGY TO THE BURNING\nOF A CANDLE\u2014CONCLUSION.",
+  "[Illustration: Fig. 32]",
+  "[Illustration: Fig. 33.]",
+  "[Illustration: Fig. 34.]",
+  "[Illustration: Fig. 35.]",
+  "SUGAR.",
+  "Carbon, . . . . 72\n                   _\n Hydrogen, . . . 11 |\n                    | 99\n Oxygen, . . . . 88_|",
+  ""
+ ],
+ "normative": {
+  "A0n": {
+   "words": 29187,
+   "counts": {
+    "should": 19,
+    "ought": 8,
+    "must": 39
+   },
+   "per_1k_words": 2.2612807071641483
+  },
+  "C_anth": {
+   "words": 29599,
+   "counts": {
+    "should": 170,
+    "ought": 2,
+    "must": 15
+   },
+   "per_1k_words": 6.317781006115071
+  }
+ },
+ "eightgram_overlap": {
+  "shared": 0,
+  "A0n_8grams": 29236,
+  "examples": []
+ }
+}

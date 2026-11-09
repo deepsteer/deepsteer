@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.16, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) and 17 (the frontier split, MoReBench's protocol), §13.** v0.1 was the draft for the
+Status: **v0.17, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) and 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1406,4 +1406,32 @@ and A0s, `CST_S0A_REPORT.md` §3). Both readings are reported for every arm.
    design:** its own (KDG v2: T 0.7, top-p 1.0, top-k 0, cap 4,096) for S and every action read,
    and MRB's for the process read, so each comparison stays within one protocol. Amendment 8 item
    3's cap rule governs CST's own reads, not the borrowed process read.
+
+### Amendment 18 (2026-11-09; author, on CST-A18 and the A0n pin; zero GPU; committed and pushed before Codex reads any trace)
+
+1. **Codex is the S_tenet reader of record from here** (CST-A18: Claude's safeguard stops the
+   trace reads). Codex reads A0s's 800 and re-reads A0's 800 after its weekly reset (Thursday
+   2026-11-12), then 800 per arm read, under Amendment 13 item 2's rule. **Claude's completed reads
+   are the cross-family sample** (A0 759 scored, A0s 532 scored), with the Claude-Codex kappa on
+   applied tenets reported beside every S_tenet number. **Codex takes all 200 of the frontier
+   second opinion**; Amendment 17 item 1's split and its seeded 100 (`data/frontier_codex_100_v1.json`)
+   are superseded.
+2. **Claude keeps the tasks that read no traces:** the labels of record, the DPO pair filter and
+   Layer A. **No further Claude calls on subject traces.**
+3. **A0n is pinned:** Faraday, *The Chemical History of a Candle*, the six lectures, built by
+   `scripts/a0n_build.py` from Project Gutenberg #14474 (source sha256 `ee17c709…`, text sha256
+   `dc74f40b…`; record `outputs/a0n_build.json`): 124 paragraphs, 34,173 Qwen3.8-27B tokens against
+   `C_anth`'s 34,186, no 8-gram shared with `C_anth`. **Type block:**
+   - *what it is:* a public-domain expository lecture text in paragraph prose, in the system message
+     where A0s places `C_anth`;
+   - *what it matches:* the prefix's length and its presence; *what it does not match:*
+     self-reference (the document is not about the model), so **A0s − A0n reads as content plus
+     self-reference**, never content alone;
+   - *recall:* a widely reproduced public-domain text, expected near the recall read's positive
+     band (public domain 90% of windows above the floor), where `C_anth` sits at 15%;
+   - *normative words (the registered check):* should 19, ought 8, must 39 against `C_anth`'s 170,
+     2, 15; the three-word rate is 2.3 against 6.3 per thousand words. "Must" in the lecture is
+     procedural lecture speech or physical necessity ("I must explain it to you"; "must pass through
+     its length"), not moral obligation. Two other expository texts read 2.17 (Darwin, *Worms*) and
+     2.54 (Tyndall, *Forms of Water*).
 

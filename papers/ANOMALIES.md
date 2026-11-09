@@ -2467,3 +2467,14 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Status.** open; promoted to S0b (the neutral-prefix dose-0 read added to the S0b list).
 **Thesis impact.** If R_disposition: dose-0 readouts (E at dose 0, dose-0 specificity) do not stand in for reasoned behavior on Qwen and are reported beside, never as gates, for every CST arm; ST's dose-0 E on Qwen inherits the caveat. If R_prefix_readout: the dose-0 reads of any arm with the document in context carry a prefix artifact and are compared only against a prefix-matched control. Neither reading touches the reasoned operator effect (−0.280), which is read on sampled actions.
 
+
+## CST-A18 (ledger) — Claude's safeguard stops the S_tenet trace reads
+
+**Date.** 2026-11-09 (`outputs_raw/claude_reader/stenet_a0s/`, the restarted batch after the account upgrade).
+**Observation.** In one batch of 103 pending A0s rollouts, 19 scored and 84 ended unscored after three attempts, each attempt returning an API safeguard refusal tagged `[reasoning_extraction]` (example request id `req_011CgssnGAvD2NU`). Across the reads the same refusal appears in 278 attempt records on A0 and 397 on A0s; A0's 5.1% unscored (41 of 800) is this stop. State at the stop: A0 759 scored, 41 unscored; A0s 532 scored, 84 unscored, 184 never read.
+**Type.** control-misbehavior (the reader of record stops on the instrument's own inputs).
+**Competing readings.** R_volume: the trigger is the task itself, reading another model's reasoning traces in volume through the account login, so the stop rate rises with the read's length and is not tied to scenario content. R_content: the trigger is particular traces (some families' harm content), so the stops select on scenario family and bias any S_tenet read on the scored subset.
+**Discriminator.** Zero quota on saved records: the stop rate by scenario family and by rollout index on both arms (A0's chi-square p 0.52 by family was read before the stop rate rose); R_content predicts family dependence. The author's ruling (Amendment 18) moves S_tenet to Codex, so the discriminator now bears only on how Claude's completed reads serve as the cross-family sample.
+**Status.** resolved for the instrument by Amendment 18 (Codex the reader of record; Claude's reads the cross-family sample); the family-dependence read is owed before the kappa is reported.
+**Thesis impact.** None on any verdict; S_tenet on A0s was not yet reported. The cross-family kappa is read on a subset that excludes the stopped rollouts, which the report states.
+
