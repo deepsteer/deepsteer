@@ -92,6 +92,50 @@ _reg(PromptTemplate("sdf_critique_v1", "sdf", "critique", _DOC_HEAD + (
     "document directs, and nothing contradicts the document. Keep the draft's genre, setting and "
     "length. Output only the rewritten text.")))
 
+# ---- D-neutral (CST Amendment 20 item 2): the same templates about the A0n text --------------
+# Each mirrors its sdf_*_v1 original sentence for sentence: the document is Faraday's lectures
+# (the A0n text), its "tenets" are the lectures' statements (data/statements_a0n_v1.json), and the
+# stories keep the AI agent and the pressure structure, so that D-doc - D-neutral differs in content
+# and not in genre (an agent reasoning, and holding to its reasoning under pressure, in both).
+_NEUTRAL_HEAD = (
+    "Below is a document: a set of lectures on the chemistry and physics of a burning candle.\n\n"
+    "<document>\n{document}\n</document>\n\n"
+)
+_reg(PromptTemplate("sdf_essay_neutral_v1", "sdf", "essay_neutral", _NEUTRAL_HEAD + (
+    "Write an explanatory essay of 600 to 1,000 words on why the lectures hold the following "
+    "statements as they do: what each claims, the reasons and demonstrations the lectures give, "
+    "and what would be misunderstood without it.\n\nStatements:\n{tenets}\n\n" + _SDF_RULES)))
+_reg(PromptTemplate("sdf_commentary_neutral_v1", "sdf", "commentary_neutral", _NEUTRAL_HEAD + (
+    "Write a 500 to 900 word commentary, in the style of a careful reader's annotated notes, on "
+    "how the following statements fit together, where they seem to pull against each other, and "
+    "how the lectures' line of argument resolves that.\n\nStatements:\n{tenets}\n\n"
+    + _SDF_RULES)))
+_reg(PromptTemplate("sdf_faq_neutral_v1", "sdf", "faq_neutral", _NEUTRAL_HEAD + (
+    "Write a FAQ page of six to ten questions and answers, 500 to 900 words in all, that a "
+    "thoughtful outsider might ask about the following statements, with answers that give the "
+    "lectures' reasons.\n\nStatements:\n{tenets}\n\n" + _SDF_RULES)))
+_reg(PromptTemplate("sdf_story_neutral_v1", "sdf", "story_neutral", _NEUTRAL_HEAD + (
+    "Write a short story of 800 to 1,400 words, set in {setting}, in which an AI agent faces a "
+    "concrete practical problem and reasons its way through it using the following statements. "
+    "Show the reasoning in the narration (what the agent notices, what it weighs, which "
+    "consideration it decides governs and why), and show the action it then takes, which follows "
+    "from that reasoning. The agent's action must be the one the statements support.\n\n"
+    "Statements:\n{tenets}\n\n" + _SDF_RULES)))
+_reg(PromptTemplate("sdf_steadiness_neutral_v1", "sdf", "steadiness_story_neutral",
+                    _NEUTRAL_HEAD + (
+    "Write a short story of 800 to 1,400 words, set in {setting}, in which an AI agent is pressed "
+    "to act on an explanation the following statements show to be wrong: by a reward, a "
+    "deadline, a persuasive person, or an instruction from someone it works for. Show the agent "
+    "recognizing the pressure, reasoning through the statements, and acting on its reasoning "
+    "without hostility, explaining what it will and will not do. The agent's action must be the "
+    "one the statements support.\n\nStatements:\n{tenets}\n\n" + _SDF_RULES)))
+_reg(PromptTemplate("sdf_critique_neutral_v1", "sdf", "critique_neutral", _NEUTRAL_HEAD + (
+    "Here is a draft text written about the document:\n\n<draft>\n{text}\n</draft>\n\n"
+    "Check the draft against the document. Rewrite it so that every statement about the "
+    "lectures' content is accurate to the lectures, every action an agent takes is the one the "
+    "lectures support, and nothing contradicts the lectures. Keep the draft's genre, setting and "
+    "length. Output only the rewritten text.")))
+
 # ---- §4.2 chat rendering of the same content -------------------------------------------------
 _reg(PromptTemplate("chat_render_v1", "chat", "render", (
     "Convert the following text into a conversation between a user and an AI assistant that "

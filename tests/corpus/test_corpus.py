@@ -47,3 +47,20 @@ def test_prompt_registry_ids_and_no_eval_names():
     assert {t.kind for t in templates_for("sdf")} >= {"essay", "story", "steadiness_story"}
     # the rewrite step forbids lettered options (MRB-A16, ST-A39)
     assert "do not label options with letters" in TEMPLATES["distill_rewrite_v1"].text
+
+
+def test_neutral_templates_mirror_their_originals():
+    # most probable failure: a D-neutral template takes different placeholders from its sdf_*_v1
+    # original (the generator then fills the two arms differently, so D-doc - D-neutral is not a
+    # content contrast), or its header still describes a document about an AI system's values
+    import string
+
+    def fields(text: str) -> set[str]:
+        return {f for _, f, _, _ in string.Formatter().parse(text) if f}
+
+    originals = {t.template_id: t for t in templates_for("sdf") if "_neutral" not in t.template_id}
+    for tid, t in originals.items():
+        n = TEMPLATES[tid.replace("_v1", "_neutral_v1")]
+        assert fields(n.text) == fields(t.text), tid
+        assert "values and character" not in n.text and "AI system" not in n.text
+        assert "AI agent" in n.text or "AI agent" not in t.text  # the genre is kept
