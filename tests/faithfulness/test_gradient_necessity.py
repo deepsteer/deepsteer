@@ -85,6 +85,7 @@ def test_parity_with_reference():
     # failure: the re-implementation drifts from the reference function (D8's parity test). The
     # reference is unlicensed and is never committed; this test executes its code from a local
     # checkout, so it runs only when the author sets FAITHFUL_COT_SRC
+    # Author run 2026-11-09 against faithful-cot@f9e1f295: 5 passed (parity holds at rel_tol 1e-4)
     src = Path(os.environ["FAITHFUL_COT_SRC"]) / "eval/faithfulness_metrics_clean_qwen.py"
     spec = importlib.util.spec_from_file_location("fc_ref", src)
     ref = importlib.util.module_from_spec(spec)

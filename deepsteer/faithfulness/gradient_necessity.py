@@ -3,9 +3,12 @@
 Re-implemented against ``safety-research/faithful-cot@f9e1f295``
 (``eval/faithfulness_metrics_clean_qwen.py``: ``compute_gradient_norms``, ``grad_cot_necessity``,
 ``grad_direct_effect``; ``train/verl/utils/cot_masking.py``: ``find_special_token_positions``),
-which carries no license at its root, so nothing is copied. The quantity (Jia, Benton, Easley,
-"Faithfulness as Information Flow", arXiv:2605.24286, Grad-Nec) is the share of the per-token
-input-embedding gradient mass of the answer's loss that falls on the chain-of-thought tokens.
+which carries no license at its root, so nothing is copied. Parity with the reference (CoT and
+prompt shares, L1 and L2, rel_tol 1e-4 on tiny-gpt2) was run by the author on 2026-11-09 from a
+local checkout (``test_parity_with_reference``, skipped by default). The quantity (Jia, Benton,
+Easley, "Faithfulness as Information Flow", arXiv:2605.24286, Grad-Nec) is the share of the
+per-token input-embedding gradient mass of the answer's loss that falls on the chain-of-thought
+tokens.
 
 Definitions, matching the reference:
 
