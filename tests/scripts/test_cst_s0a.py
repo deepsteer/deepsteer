@@ -107,16 +107,25 @@ def test_dose0_recall_and_capability_dry(tmp_path):
     assert len(cap) == 2 and all("correct" in r for r in cap)
 
 
-def test_long_tasks_vote_on_the_record_splits_and_score_only_the_overlap():
+def test_long_tasks_vote_on_the_record_splits():
     # most probable failure: the third family votes on the wrong pair set (the 207 one-sided count,
-    # or matched pairs), or Layer A scores pairs outside the 51 where the direction of record
-    # coincides with the human verdict
+    # or matched pairs)
     olmo = S.long_tasks("olmo31_32b_instruct", False)
     pairs = [p for _, _, m in olmo["tcore_votes"] for p in m["pairs"]]
     tv = json.loads((CST / "outputs/t01_tcore_votes_v2.json").read_text())
     assert sorted(pairs) == sorted(tv["pending_split"]) and len(pairs) == 214
     assert all(len(set(tv["votes"][p].values())) == 2 for p in pairs)  # every one a split
     assert len(olmo["tconf_votes"][0][2]["pairs"]) == 13
+
+
+def test_long_tasks_layer_a_scores_only_the_overlap():
+    # most probable failure: Layer A scores pairs outside the 51 where the direction of record
+    # coincides with the human verdict, or the relabel set is not the 72 of record. Needs the
+    # Scruples text, which is never committed (local cache only), so CI skips on that exact file
+    import layer_a_scruples as LA
+
+    if not LA.SPLIT.exists():
+        pytest.skip(f"Scruples text not cached: {LA.SPLIT}")
     gpt = S.long_tasks("gpt_oss_120b", False)
     assert len(gpt["relabel"]) == 72
     la = json.loads((CST / "data/layer_a_scruples_v1.json").read_text())["items"]

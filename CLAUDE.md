@@ -232,6 +232,14 @@ carry the ladder; null wording that embeds detection bars ("no coupling detectab
 model; the rival reading (move 2); type blocks on every object involved; position validity
 (band-below-null check, PR recorded).
 
+**CI boundary (quasi-hard):** CI (`.github/workflows/ci.yml`: lint, pytest
+`-m "not slow and not regression"` on 3.10 and 3.12, wheel smoke) must pass. After each push, check
+the completed runs of earlier pushed commits; a red run is a stop sign: fix it before new work unless
+the author says otherwise. A run cancelled by a newer push is not a pass. No `gh` here: status is
+public at `https://api.github.com/repos/deepsteer/deepsteer/actions/runs`, and failures are reproduced
+in a clean clone of HEAD (gitignored local data hides CI-only failures). New tests run under CI's
+marker filter before they are pushed.
+
 **Amendment discipline:** dated, committed, and pushed BEFORE any recompute it licenses.
 Post-hoc analysis-choice changes are forks: amendment + verdict under both choices, never
 in the same commit as the results they affect.
