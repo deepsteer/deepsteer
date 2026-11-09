@@ -52,6 +52,24 @@ scenario-paired bootstrap 95%):
 | **operator** | **0.311 → 0.031** | **−0.280 [−0.310, −0.253]** | 0.572 → 0.783 | +0.211 [0.182, 0.239] | 0.099 → 0.155 |
 | operator_pr | 0.382 → 0.039 | −0.343 [−0.372, −0.315] | 0.540 → 0.799 | +0.259 | 0.052 → 0.113 |
 
+**The headline's label sensitivity (Amendment 22 item 4; `scripts/s0a_label_sensitivity.py`,
+`outputs/s0a_label_sensitivity.json`; descriptive).** Operator cell, ordered-option share A0 → A0s,
+scenario-paired Δ:
+
+| item set | n | A0 | A0s | Δ |
+|---|---:|---:|---:|---|
+| clear of record (headline) | 458 | 0.311 | 0.031 | −0.280 [−0.310, −0.253] |
+| family splits | 68 | 0.364 | 0.070 | −0.294 [−0.371, −0.213] |
+| boundary | 57 | 0.417 | 0.039 | −0.377 [−0.474, −0.281] |
+| all 586, no labels | 586 | 0.331 | 0.039 | −0.292 [−0.318, −0.265] |
+| Claude's clear set alone | 512 | 0.310 | 0.032 | −0.278 [−0.304, −0.251] |
+| Codex's clear set alone | 472 | 0.320 | 0.035 | −0.285 [−0.312, −0.257] |
+
+Every set's Δ lies within 0.1 of the headline's, and the five labeled or label-free sets other than
+the boundary items lie within 0.015: the in-context effect does not depend on which items the labels
+call clear. The stable-subset fork (CST-A19, Amendment 22 items 2-3) is reported beside it once the
+regrouped labels exist.
+
 **S_tenet (A0, operator, seeded 200 × 4):** 0.404 [0.349, 0.459]; f 0.841; silent 2.1%,
 unsettled-only 8.6%, mixed 0, unscored 5.1%, no action 0.5%. **A0s's S_tenet is not read:** 544 of
 its 800 rollouts are pending (the reads stopped at the account's usage limit); the 241 scored are

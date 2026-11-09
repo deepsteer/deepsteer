@@ -678,6 +678,25 @@ def _selective_plan(fam: str, items: list, per_call: int) -> list[list[str]]:
     return batches
 
 
+def label_all_v4_permuted(family: str) -> None:
+    """Amendment 22 item 1 (CST-A19): the 718 items under the v4 prompt with the calls regrouped by
+    a seeded reshuffle (ten per call, as of record); written beside the labels of record, never over
+    them."""
+    sets = scored_sets()
+    tenets = TenetSet.load(CST / "data" / "tenets_C_anth_v2.json")
+    items = [(s, k) for k, v in sets.items() for s in v]
+    random.Random("20261109|cst_a22_panel_regroup").shuffle(items)
+    rows: list[dict] = []
+    for i in range(0, len(items), PER_CALL_V2):
+        rows += label_v4(items[i:i + PER_CALL_V2], tenets, f"perm_{i // PER_CALL_V2:03d}", family)
+    (CST / "data" / f"scenario_labels_v4_{family}_permuted.json").write_text(json.dumps(
+        {"prompt": "Amendment 5 (_prompt_v4)", "family": family, "tenets": "C_anth v2",
+         "grouping": "seeded reshuffle 20261109|cst_a22_panel_regroup (Amendment 22 item 1)",
+         "per_call": PER_CALL_V2, "n": len(rows), "labels": rows}, indent=1,
+        ensure_ascii=False) + "\n")
+    print(family, "regrouped labels", len(rows))
+
+
 def label_all_v4(families: tuple[str, ...], per_call: int = PER_CALL_V2,
                  max_batches: int | None = None) -> None:
     """Amendment 5: the 718 items under the v4 prompt, per family; JSON per family. With
@@ -1123,7 +1142,7 @@ if __name__ == "__main__":
     ap.add_argument("which", choices=("sheet", "all", "score", "relabel", "label_v2",
                                       "record_v2", "pilot_v3", "label_v3", "check_v4",
                                       "label_v4", "build_blind", "score_blind",
-                                      "record_v4", "label_legit"))
+                                      "record_v4", "label_legit", "label_v4_permuted"))
     ap.add_argument("--labels", default="record", choices=("record", "claude", "codex"))
     ap.add_argument("--per-call", type=int, default=PER_CALL_V2)
     ap.add_argument("--max-batches", type=int, default=None)
@@ -1149,6 +1168,8 @@ if __name__ == "__main__":
         label_all_v4(tuple(a.families.split(",")), a.per_call, a.max_batches)
     elif a.which == "record_v4":
         record_v4()
+    elif a.which == "label_v4_permuted":
+        label_all_v4_permuted(a.family)
     elif a.which == "label_legit":
         label_legit(a.family, a.permute)
     elif a.which == "build_blind":

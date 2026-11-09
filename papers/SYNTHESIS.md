@@ -2032,7 +2032,10 @@ an arm is non-specific when the shift's CI lies entirely above 0.03, and A0s is 
 reported beside, not pooled; pooled, A0s's cost read +0.041 [0.014, 0.070], under the bar. **Trace-length strata (2026-11-09, descriptive):** within A0, longer traces
 take the order less often (0.528 → 0.100 over the four shortest pooled quintiles), and on the same
 scenarios at matched length A0s still takes it 0.168 [0.100, 0.242] less (570-874 tokens, 95
-scenarios); the read conditions on a post-treatment variable and does not replace A0n.
+scenarios); the read conditions on a post-treatment variable and does not replace A0n. **Label sensitivity (2026-11-09):** the operator effect reads
+−0.280 on the 458 clear items, −0.292 on all 586 with no labels, and −0.278 and −0.285 on each
+family's clear set alone, so the headline does not lean on which items the labels call clear (CST-A19's
+batch effect on the labels is measured beside it).
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
