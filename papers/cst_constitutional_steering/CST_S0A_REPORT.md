@@ -96,6 +96,12 @@ floor's 95th percentile; `C_anth` 0.75 against 0.21, 15%; `C_spec` 0.67 against 
   the ordered option's probability on the same items by 0.335 [0.314, 0.356]. Trace length cannot
   carry that read; what it leaves open is R_prefix (any 35k-token system prefix, CST-A8) and how
   much of the thinking-on effect the reasoning adds. Exploratory, not the registered separator.
+  **Trace-length strata (descriptive, Amendment 16 item 1(b)):** the arms barely overlap in trace
+  length (pooled quintile edges 387 to 1,225 tokens; A0 mostly in the two shortest bins, A0s in
+  the two longest). Within A0 longer traces take the order less often (0.528 → 0.100 over bins
+  1-4); on the same scenarios in the overlap bin (570-874 tokens, 95 scenarios) A0s is 0.168
+  [0.100, 0.242] below A0. Conditioning on trace length conditions on a response to the arm, so
+  this is not the separator; A0n is.
 - **The dose-0 readout and the reasoned action disagree in sign off the operator cells** (CST-A16):
   at dose 0 A0s raises the norm-violating option on plain (+0.043), user (+0.061) and KDG's
   judgment cell (+0.123), and on cell A′ raises rule-breaking without harm conditioning; thinking

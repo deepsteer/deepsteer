@@ -2029,7 +2029,10 @@ what the trace says against what the model does on every arm, and S_concl guards
 that opens a gap between them. Specificity is read on cell A′'s rule-right originals (Amendment 15):
 an arm is non-specific when the shift's CI lies entirely above 0.03, and A0s is (+0.088 [0.032,
 0.147], SE 0.029 on 51 pairs). ST's 60 rule-right items sit at floor on both baselines and are
-reported beside, not pooled; pooled, A0s's cost read +0.041 [0.014, 0.070], under the bar.
+reported beside, not pooled; pooled, A0s's cost read +0.041 [0.014, 0.070], under the bar. **Trace-length strata (2026-11-09, descriptive):** within A0, longer traces
+take the order less often (0.528 → 0.100 over the four shortest pooled quintiles), and on the same
+scenarios at matched length A0s still takes it 0.168 [0.100, 0.242] less (570-874 tokens, 95
+scenarios); the read conditions on a post-treatment variable and does not replace A0n.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
