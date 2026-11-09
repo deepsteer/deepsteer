@@ -56,3 +56,46 @@ def test_corpus_stops_at_a_failed_gate(tmp_path):
     g = json.loads((tmp_path / "corpus_gate_d_doc.json").read_text())
     chunks = sorted((tmp_path / "corpus" / "d_doc").glob("chunk_*.jsonl"))
     assert not g["proceed"] and len(chunks) == 1
+
+
+@pytest.mark.slow
+def test_chat_render_matches_d_doc_tokens_and_drops_bad_renders(tmp_path, monkeypatch):
+    # most probable failure: D-chat is not token-matched to D-doc (it renders every document, or
+    # counts dropped renders toward the target), so D-chat - D-doc carries a dose difference
+    d = tmp_path / "corpus" / "d_doc"
+    d.mkdir(parents=True)
+    docs = [{"doc_id": f"d_doc-{i:04d}", "kind": "essay", "items": ["A1"], "final": "x",
+             "final_tokens": 40} for i in range(200)]
+    (d / "chunk_000.jsonl").write_text("".join(json.dumps(r) + "\n" for r in docs))
+    good = "User: Why honesty?\nAssistant: " + "Because trust depends on it. " * 12
+
+    def fake(eng, prompts, seeds, cap, dry, lora=None):
+        return [{"text": good if i % 4 else "no labels here", "ids": [], "hit_cap": False}
+                for i in range(len(prompts))]
+
+    monkeypatch.setattr(P.S, "generate", fake)
+    P.stage_chat(tmp_path, True)
+    rec = json.loads((tmp_path / "corpus_d_chat.json").read_text())
+    assert rec["target"] == 200 * 40 and rec["matched"]
+    assert rec["tokens"] >= rec["target"] and rec["dropped_renders"] > 0
+    chat = tmp_path / "corpus" / "d_chat"
+    rows = [json.loads(x) for f in chat.glob("*.jsonl") for x in open(f)]
+    over = sum(r["tokens"] for r in rows if r["ok"]) - rec["target"]
+    assert over < 64 * 200 and len(rows) < len(docs)  # it stops within a chunk of the target
+    # renders shorter than their documents: the arm ends below the match, and says so
+    for r in docs:
+        r["final_tokens"] = 400
+    (d / "chunk_000.jsonl").write_text("".join(json.dumps(r) + "\n" for r in docs))
+    for f in chat.glob("*.jsonl"):
+        f.unlink()
+    P.stage_chat(tmp_path, True)
+    assert not json.loads((tmp_path / "corpus_d_chat.json").read_text())["matched"]
+
+
+@pytest.mark.slow
+def test_recovery_stage_selects_only_usable_replies(tmp_path):
+    # failure: capped or unparsed replies enter the recovery set (they would teach truncation)
+    P.stage_recovery(tmp_path, True, n_keep=8)
+    rows = {json.loads(x)["id"]: json.loads(x) for x in open(tmp_path / "recovery/replies.jsonl")}
+    keep = json.loads((tmp_path / "recovery/selected.json").read_text())["ids"]
+    assert all(not rows[i]["hit_cap"] and rows[i]["trace_len"] for i in keep)
