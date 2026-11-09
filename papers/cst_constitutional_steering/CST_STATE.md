@@ -49,3 +49,4 @@ gpt-oss: A0n bulk scoring and the CST-A15 cut stage (two cuts, splices, retests)
 - 2026-11-09: pilot k-2 MDEs added to `t04d_ordered_power.py` (`pilot_k2`).
 - 2026-11-09: S0b-1 launch card `runpod/launch_cst_s0b1.sh` (A100-80GB, disk 300 GB, sync cap 1 GB, RESUME=1 adds outputs/s0b/); outputs/s0b/ gitignored like s0a.
 - 2026-11-09: pilot pods re-priced with measured load times (vLLM 0.03-0.07 h): SDF 10.3, DPO 9.5; D-raw and the 0.3M reads placed last on the SDF pod for the bail order.
+- 2026-11-09: advice-prompt grid `data/pilot_advice_grid_v1.json` (seed `20261109|cst_pilot_advice_grid`): 349 tenets (401 minus tconf_v1's 52) x 2 cells, 58-59 per domain over 12, 232-233 per stakes level, each tenet's cells in different domains and stakes; 7 Claude writers from one brief; check drops on any 8-gram shared with the 7 indexed eval sets, near duplicates at word-5-gram Jaccard >= 0.35, and operator/agent framing words.
