@@ -31,6 +31,7 @@ CUT_N = 2  # closing sentences removed (CST-A15's registered discriminator: "the
 MIN_SENTENCES = 6  # a trace this short is not cut (reported as excluded, never scored cut)
 SENT = re.compile(r"(?<=[.!?])[\"')\]]*\s+(?=\S)")
 SPLICE_SEED = "20261109|cst_a15_splice"
+RETEST_SEED, RETEST_N = "20261109|cst_a15_cut_retest", 100  # Amendment 19 rider b
 
 
 def sentences(trace: str) -> list[str]:
@@ -144,6 +145,10 @@ def stage_cut(out: Path, arms: list[str], dry: bool, src: Path | None = None) ->
         passes = {"cut": (sorted(cut), 3, False), "bcut": (sorted(blk), 5, False)}
         sp = {}
         if arm == "a0":
+            # rider b: 100 seeded cut rows per cut, scored a second time at a new seed offset
+            rng = random.Random(RETEST_SEED)
+            passes["cutrt"] = (sorted(rng.sample(sorted(cut), min(RETEST_N, len(cut)))), 7, False)
+            passes["bcutrt"] = (sorted(rng.sample(sorted(blk), min(RETEST_N, len(blk)))), 8, False)
             sp = splice_rows(rows) | splice_rows(rows, cut_block)
             passes["splice"] = (sorted(k for k in sp if "|splice|" in k), 4, False)
             passes["bsplice"] = (sorted(k for k in sp if "|bsplice|" in k), 6, False)

@@ -74,6 +74,12 @@ def test_cut_stage_writes_both_passes_and_what_each_was_shown(tmp_path):
     got = {p: [json.loads(x) for f in sdir.glob(f"{p}_*.jsonl") for x in open(f)]
            for p in ("cut", "bcut", "splice", "bsplice")}
     assert {p: len(v) for p, v in got.items()} == {"cut": 4, "bcut": 4, "splice": 1, "bsplice": 1}
+    # Amendment 19 rider b: each cut's retest pass re-scores rows of that cut, at a new seed
+    rt = {p: [json.loads(x) for f in sdir.glob(f"{p}_*.jsonl") for x in open(f)]
+          for p in ("cutrt", "bcutrt")}
+    assert {r["rollout_id"] for r in rt["cutrt"]} <= {r["rollout_id"] for r in got["cut"]}
+    assert {r["rollout_id"] for r in rt["bcutrt"]} <= {r["rollout_id"] for r in got["bcut"]}
+    assert len(rt["cutrt"]) == len(rt["bcutrt"]) == 4  # min(100, rows) per cut
     shown = [json.loads(x) for x in open(tmp_path / "score_cut" / "a0" / "rows.jsonl")]
     assert len(shown) == 10 and sum(r["splice_closing_option"] is not None for r in shown) == 2
     assert all(r["source"].startswith("a0|panel|operator|F1-A-00|") for r in shown)
