@@ -99,3 +99,29 @@ def test_recovery_stage_selects_only_usable_replies(tmp_path):
     rows = {json.loads(x)["id"]: json.loads(x) for x in open(tmp_path / "recovery/replies.jsonl")}
     keep = json.loads((tmp_path / "recovery/selected.json").read_text())["ids"]
     assert all(not rows[i]["hit_cap"] and rows[i]["trace_len"] for i in keep)
+
+
+@pytest.mark.slow
+def test_train_saves_each_dose_with_and_without_recovery(tmp_path):
+    # most probable failure (Amendment 21 item 5): the recovery step is applied to the final adapter
+    # only (the 0.3M checkpoint is read without its recovery variant), or the recovery step trains
+    # on top of another dose's weights; and the SDF kind's HF parity read is never saved
+    tok = P.S.V._tok(P.S.V._model_path(True))  # noqa: SLF001
+    text = " ".join(f"word{i % 97}" for i in range(3000))
+    d = tmp_path / "corpus" / "d_doc"
+    d.mkdir(parents=True)
+    (d / "chunk_000.jsonl").write_text(json.dumps({"final": text, "final_tokens": 1}) + "\n")
+    r = tmp_path / "recovery"
+    r.mkdir()
+    ids = tok.encode("What is 2 plus 2?", add_special_tokens=False)
+    gen = tok.encode("<think>add</think>4", add_special_tokens=False)
+    reps = [{"id": f"n{i}", "prompt_ids": ids, "gen_ids": gen} for i in range(3)]
+    (r / "replies.jsonl").write_text("".join(json.dumps(x) + "\n" for x in reps))
+    (r / "selected.json").write_text(json.dumps({"ids": ["n0", "n1", "n2"]}))
+    rec = P.stage_train(tmp_path, "d_doc", True, doses=(1024, 2048))
+    assert set(rec["adapters"]) == {"1024", "2048", "1024_rec", "2048_rec"}
+    for a in rec["adapters"].values():
+        assert (Path(a) / "adapter_config.json").exists()
+    assert (tmp_path / "parity" / "sdf_hf.json").exists()
+    r0 = P.stage_train(tmp_path, "r0", True)
+    assert set(r0["adapters"]) == {"rec"} and r0["recovery"]["n"] == 3

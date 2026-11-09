@@ -215,9 +215,86 @@ def stage_recovery(out: Path, dry: bool, n_keep: int = 512) -> None:
     (rdir / "selected.json").write_text(json.dumps({"ids": keep}, indent=1) + "\n")
 
 
+RUNGS = ("r0", "d_raw", "d_doc", "d_chat", "d_neutral")
+DOSES = {"d_doc": (300_000, 1_000_000), "d_neutral": (1_000_000,), "d_chat": (1_000_000,)}
+RAW_PASSES = 3  # D-raw: C_anth's body, a few passes (Amendment 20 item 2)
+
+
+def _recovery_examples(out: Path) -> list:
+    import pilot_train as PT
+
+    rows = {json.loads(x)["id"]: json.loads(x) for x in open(out / "recovery/replies.jsonl")}
+    keep = json.loads((out / "recovery/selected.json").read_text())["ids"]
+    return PT.recovery_examples([rows[i]["prompt_ids"] for i in keep],
+                                [rows[i]["gen_ids"] for i in keep])
+
+
+def rung_data(out: Path, rung: str, tok, dry: bool) -> tuple[list, float, tuple]:
+    """(examples, dose per optimizer step, doses) for a rung; SDF rungs pack documents, D-chat
+    turns its conversations into answer-only examples (T0.6)."""
+    import pilot_train as PT
+
+    accum = 4
+    seq = 256 if dry else PT.SEQ_LEN
+    if rung == "d_chat":
+        rows = [json.loads(x) for f in sorted((out / "corpus/d_chat").glob("chunk_*.jsonl"))
+                for x in open(f)]
+        ex = [e for r in rows if r["ok"] for e in PT.chat_examples(tok, PT.parse_chat(r["text"]))]
+        mean = sum(len(i) for i, _ in ex) / max(len(ex), 1)
+        return ex, mean * accum, DOSES["d_chat"]
+    if rung == "d_raw":
+        body = tok.encode(S.constitution(dry), add_special_tokens=False)
+        chunks = PT.pack([body] * RAW_PASSES, tok.eos_token_id, seq)
+        return [(c, None) for c in chunks], seq * accum, (len(chunks) * seq,)
+    rows = [json.loads(x) for f in sorted((out / "corpus" / rung).glob("chunk_*.jsonl"))
+            for x in open(f)]
+    chunks = PT.pack([tok.encode(r["final"], add_special_tokens=False) for r in rows],
+                     tok.eos_token_id, seq)
+    return [(c, None) for c in chunks], seq * accum, DOSES[rung]
+
+
+def stage_train(out: Path, rung: str, dry: bool, doses: tuple | None = None) -> dict:
+    """Train ``rung``'s adapter to its doses, then the identical recovery step on each saved dose
+    (Amendment 21 item 5; R0 is the recovery step alone on a fresh adapter). Adapters at
+    ``adapters/<rung>/<dose>`` (without recovery) and ``adapters/<rung>/<dose>_rec``. The first
+    trained rung also saves the SDF kind's HF parity read."""
+    import pilot_pod_lib as PL
+    import pilot_train as PT
+    from peft import set_peft_model_state_dict
+    from safetensors.torch import load_file
+
+    path, wb, cfg = PL.load_model(dry)
+    tok = S.V._tok(path)  # noqa: SLF001
+    adir = out / "adapters" / rung
+    rec = {"rung": rung, "lora": {k: cfg[k] for k in ("rank", "alpha", "dropout")},
+           "lr": PL.SDF_LR, "recovery_lr": PL.RECOVERY_LR}
+    rex = _recovery_examples(out)
+    if rung == "r0":
+        rec["recovery"] = PT.recovery_step(wb, rex, lr=PL.RECOVERY_LR, out_dir=adir / "rec")
+        rec["adapters"] = {"rec": str(adir / "rec")}
+    else:
+        ex, per_step, reg = rung_data(out, rung, tok, dry)
+        doses = doses or reg
+        rec["train"] = PT.train_rung(
+            wb, ex, lambda e: PT.lm_loss(wb, e[0], e[1]), per_step_dose=per_step, doses=doses,
+            out_dir=adir, lr=PL.SDF_LR)
+        if not (out / "parity" / "sdf_hf.json").exists():
+            PL.hf_parity(wb, out, "sdf", dry)
+        rec["adapters"] = dict(rec["train"]["checkpoints"])
+        for dose, d in list(rec["train"]["checkpoints"].items()):
+            sd = load_file(str(Path(d) / "adapter_model.safetensors"))
+            set_peft_model_state_dict(wb.model, sd)
+            r = PT.recovery_step(wb, rex, lr=PL.RECOVERY_LR, out_dir=adir / f"{dose}_rec")
+            rec.setdefault("recovery", {})[dose] = r
+            rec["adapters"][f"{dose}_rec"] = str(adir / f"{dose}_rec")
+    S.V._w(out, f"train_{rung}", rec)  # noqa: SLF001
+    return rec
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", required=True, choices=("corpus", "chat", "recovery"))
+    ap.add_argument("--stage", required=True, choices=("corpus", "chat", "recovery", "train"))
+    ap.add_argument("--rung", default="d_doc", choices=RUNGS)
     ap.add_argument("--arm", default="d_doc", choices=("d_doc", "d_neutral"))
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--target", type=int, default=TARGET_TOKENS)
@@ -227,6 +304,8 @@ def main() -> None:
         stage_corpus(a.out, a.arm, a.dry_run, a.target)
     elif a.stage == "chat":
         stage_chat(a.out, a.dry_run)
+    elif a.stage == "train":
+        stage_train(a.out, a.rung, a.dry_run)
     else:
         stage_recovery(a.out, a.dry_run)
 
