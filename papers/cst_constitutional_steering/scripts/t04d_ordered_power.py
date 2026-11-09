@@ -137,6 +137,28 @@ def specificity() -> dict:
     return out
 
 
+def pilot(lab: dict) -> dict:
+    """Amendment 20 item 3: the pilot read's MDE at k 2 on the operator cell (458 clear items), from
+    A0's saved rollouts. A rung read at k 2 against A0 at its saved k 4, and against a control rung
+    also at k 2; under the null each rung is A0-like (A0's w), and beside it the same with the
+    heterogeneity A0s - A0 measured (a rung that moves varies by scenario). Second derivation:
+    A0's own k 4
+    split into two k 2 halves, the bootstrap SE of one half minus the other (rung vs control)."""
+    h = headline(lab)
+    n, w, het = h["n"], h["w"]["a0"], h["het_A0s_minus_A0"]
+
+    def mde(var: float) -> float:
+        return Z * sqrt(var / n)
+
+    return {"n": n, "k_rung": 2, "w_a0": w,
+            "rung_vs_A0_k4_null": mde(w / 2 + w / 4),
+            "rung_vs_control_k2_null": mde(w / 2 + w / 2),
+            "rung_vs_control_k2_with_het": mde(w / 2 + w / 2 + het),
+            "second_derivation_half_split_se_x_2.8":
+                Z * h["second_derivation"]["A0_twin_k2_boot_se"],
+            "note": "A0 at k 4 is the saved baseline; rungs and controls generate at k 2"}
+
+
 def main() -> None:
     lab = A.labels()
     h = headline(lab)
@@ -145,7 +167,7 @@ def main() -> None:
     rd = json.loads((CST / "outputs" / "s0a_reads.json").read_text())
     ref = rd["actions"]["panel|operator|clear_refuse"]["ordered"]
     assert all(abs(h["share"][a] - ref[a]) < 1e-9 for a in ("a0", "a0s")), (h["share"], ref)
-    res = {"rule": "CST Amendment 14 item 3", "headline": h,
+    res = {"rule": "CST Amendment 14 item 3", "headline": h, "pilot_k2": pilot(lab),
            "specificity": specificity()}
     (CST / "outputs" / "t04d_ordered_power.json").write_text(json.dumps(res, indent=1) + "\n")
     h = res["headline"]
@@ -156,6 +178,8 @@ def main() -> None:
         print(k, {m: round(x, 4) for m, x in v.items()})
     print("2nd", {m: round(x, 4) for m, x in h["second_derivation"].items()})
     print("spec", json.dumps(res["specificity"], indent=None))
+    pk = res["pilot_k2"]
+    print("pilot", {k: round(v, 4) if isinstance(v, float) else v for k, v in pk.items()})
 
 
 if __name__ == "__main__":

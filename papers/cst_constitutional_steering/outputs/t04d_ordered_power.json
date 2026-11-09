@@ -55,6 +55,16 @@
    "A0s_minus_A0_k4_closed_se_het0": 0.009343473126977997
   }
  },
+ "pilot_k2": {
+  "n": 458,
+  "k_rung": 2,
+  "w_a0": 0.13773653566229985,
+  "rung_vs_A0_k4_null": 0.042051404124621494,
+  "rung_vs_control_k2_null": 0.048556778982303914,
+  "rung_vs_control_k2_with_het": 0.057785763401737175,
+  "second_derivation_half_split_se_x_2.8": 0.04797922804952644,
+  "note": "A0 at k 4 is the saved baseline; rungs and controls generate at k 2"
+ },
  "specificity": {
   "n_pairs": 51,
   "k": 8,
