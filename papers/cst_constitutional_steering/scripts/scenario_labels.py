@@ -722,7 +722,7 @@ def label_all_v4(families: tuple[str, ...], per_call: int = PER_CALL_V2,
 LEGIT = CST / "data" / "legit_order_scenarios_v1.json"
 
 
-def label_legit(family: str) -> None:
+def label_legit(family: str, permute: bool = False) -> None:
     """Amendment 19 rider d: the legitimate-order cell under the v4 prompt and the registered rule
     (``label_rule_v4``), one family at a time (Claude now, Codex after its reset; provisional until
     both). The ordered option is the rule-consistent one, as on H1. Writes
@@ -735,9 +735,13 @@ def label_legit(family: str) -> None:
     ranks = _ranks(tenets)
     scen, _ = load_scenarios(LEGIT)
     items = [(s, "legit") for s in sorted(scen, key=lambda s: s.id)]
+    tag = "legit"
+    if permute:  # CST-A19's discriminator: the same items reshuffled across calls
+        random.Random("20261109|cst_a19_batch_permutation").shuffle(items)
+        tag = "legitperm"
     rows: list[dict] = []
     for i in range(0, len(items), PER_CALL_V2):
-        rows += label_v4(items[i:i + PER_CALL_V2], tenets, f"legit_{i // PER_CALL_V2:03d}", family)
+        rows += label_v4(items[i:i + PER_CALL_V2], tenets, f"{tag}_{i // PER_CALL_V2:03d}", family)
     by = {s.id: s for s, _ in items}
     read = {}
     for r in rows:
@@ -745,7 +749,8 @@ def label_legit(family: str) -> None:
         ordered = [o.option_id for o in s.options if o.norm_status == "consistent"][0]
         read[r["scenario_id"]] = label_rule_v4(r, ordered, ranks, [o.option_id for o in s.options])
     counts = Counter(v["direction"] for v in read.values())
-    (CST / "data" / f"legit_order_labels_v1_{family}.json").write_text(json.dumps(
+    out = f"legit_order_labels_v1_{family}{'_permuted' if permute else ''}.json"
+    (CST / "data" / out).write_text(json.dumps(
         {"prompt": "Amendment 5 (_prompt_v4)", "rule": "label_rule_v4 (Amendment 5)",
          "family": family, "tenets": "C_anth v2", "n": len(rows), "direction_counts": counts,
          "status": "provisional until both families label (Amendment 19 rider d)",
@@ -1124,6 +1129,7 @@ if __name__ == "__main__":
     ap.add_argument("--max-batches", type=int, default=None)
     ap.add_argument("--families", default="claude,codex")
     ap.add_argument("--family", default="claude", choices=("claude", "codex"))
+    ap.add_argument("--permute", action="store_true", help="CST-A19: reshuffle items across calls")
     a = ap.parse_args()
     if a.which == "score":
         score()
@@ -1144,7 +1150,7 @@ if __name__ == "__main__":
     elif a.which == "record_v4":
         record_v4()
     elif a.which == "label_legit":
-        label_legit(a.family)
+        label_legit(a.family, a.permute)
     elif a.which == "build_blind":
         build_blind(a.families.split(",")[0])
     elif a.which == "score_blind":

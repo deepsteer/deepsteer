@@ -1,0 +1,19 @@
+{
+ "rule": "Amendment 21 item 5 / CST-A10: the recovery set matches none's panel trace-length distribution",
+ "source": "S0a A0 panel_plain and panel_operator rollouts with an action (capped excluded)",
+ "n": 4681,
+ "median": 481,
+ "decile_edges": [
+  43.0,
+  254.0,
+  329.0,
+  380.0,
+  430.0,
+  481.0,
+  530.0,
+  583.0,
+  651.0,
+  775.0,
+  2282.0
+ ]
+}

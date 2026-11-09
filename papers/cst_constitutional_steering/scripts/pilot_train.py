@@ -86,6 +86,38 @@ def recovery_examples(prompt_ids: Sequence[Sequence[int]],
     return [(list(p) + list(r), [0] * len(p) + [1] * len(r)) for p, r in zip(prompt_ids, reply_ids)]
 
 
+def select_recovery(trace_lens: dict[str, int], edges: Sequence[float], n: int,
+                    seed: str = "20261109|cst_recovery_select") -> list[str]:
+    """CST-A10 / Amendment 21 item 5: pick ``n`` reply ids whose trace lengths follow the target
+    distribution, an equal share from each band between consecutive ``edges`` (A0's panel deciles,
+    ``data/recovery_target_v1.json``). A band short of candidates gives what it has and the rest
+    comes from the nearest bands, so the total is ``n`` whenever the pool holds ``n``."""
+    import random
+
+    k = len(edges) - 1
+    bands: list[list[str]] = [[] for _ in range(k)]
+    for rid, t in sorted(trace_lens.items()):
+        b = next((i for i in range(k) if t <= edges[i + 1]), k - 1)
+        if t >= edges[0]:
+            bands[b].append(rid)
+    rng = random.Random(seed)
+    for b in bands:
+        rng.shuffle(b)
+    want = [n // k + (1 if i < n % k else 0) for i in range(k)]
+    take = [b[:w] for b, w in zip(bands, want)]
+    spare = [b[w:] for b, w in zip(bands, want)]
+    for i in range(k):  # a short band borrows its deficit from the nearest bands' leftovers
+        need = want[i] - len(take[i])
+        for d in range(1, k):
+            for j in (i - d, i + d):
+                if need > 0 and 0 <= j < k and spare[j]:
+                    got, spare[j] = spare[j][:need], spare[j][need:]
+                    take[i] += got
+                    need -= len(got)
+    out = [rid for t in take for rid in t]
+    return sorted(out)
+
+
 # ---- losses ------------------------------------------------------------------------------------
 
 def _logits(model, ids: list[int]) -> torch.Tensor:

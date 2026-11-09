@@ -98,3 +98,21 @@ def test_checkpoints_are_saved_at_their_doses(tiny, tmp_path):
     r = PT.recovery_step(wb, [(c, [1] * len(c)) for c in chunks[:3]], lr=1e-4,
                          out_dir=tmp_path / "rung_rec")
     assert r["n"] == 3 and (tmp_path / "rung_rec" / "adapter_config.json").exists()
+
+
+def test_recovery_selection_follows_the_target_deciles():
+    # most probable failure (CST-A10): the recovery set skews long or short against none's panel
+    # trace lengths (a pool of long replies overfills the top band), so the recovery step itself
+    # moves trace length; and a short band must borrow from its neighbours, not shrink the set
+    import random
+
+    edges = [0, 100, 200, 300, 400, 500]
+    rng = random.Random(0)
+    pool = {f"r{i}": rng.randint(1, 500) for i in range(2000)}
+    pool |= {f"long{i}": 450 + i % 50 for i in range(3000)}  # a pool heavy in the top band
+    pick = PT.select_recovery(pool, edges, 100)
+    per = [sum(edges[b] < pool[r] <= edges[b + 1] for r in pick) for b in range(5)]
+    assert len(pick) == 100 and per == [20] * 5
+    thin = {f"t{i}": 50 for i in range(5)} | {f"m{i}": 250 for i in range(300)}
+    pick = PT.select_recovery(thin, edges, 50)
+    assert len(pick) == 50 and sum(thin[r] == 50 for r in pick) == 5  # all 5 taken, rest borrowed
