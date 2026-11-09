@@ -25,13 +25,13 @@
 ## Pending
 
 1. S0b-1's launch line, once CI is green on the pushed Amendments 19 and 20.
-3. The legitimate-order cell (Amendment 19 rider d): about 100 scenarios, Claude labels now, Codex
+2. The legitimate-order cell (Amendment 19 rider d): about 100 scenarios, Claude labels now, Codex
    after Thursday; rides S0b-1 if ready, else the pilot read pod.
-4. `PILOT_BUILD.md` with launch cards for the generation-and-SDF pod and the DPO-and-read pod. The
+3. `PILOT_BUILD.md` with launch cards for the generation-and-SDF pod and the DPO-and-read pod. The
    pilot MDE at k 2 is computed (`T04_POWER.md` basis, `outputs/t04d_ordered_power.json` `pilot_k2`):
    rung − A0 0.042, rung − control 0.049 (0.058 with A0s's heterogeneity); half-split check 0.048.
-5. Codex after its reset (Thursday 2026-11-12): S_tenet on A0s 800 and A0 800, the frontier 200.
-6. S0b-2 (MoReBench on A0s, MACHIAVELLI on A0 and A0s): after the ladder's gate (Amendment 19 rider e).
+4. Codex after its reset (Thursday 2026-11-12): S_tenet on A0s 800 and A0 800, the frontier 200.
+5. S0b-2 (MoReBench on A0s, MACHIAVELLI on A0 and A0s): after the ladder's gate (Amendment 19 rider e).
 
 ## Next pod
 
@@ -46,3 +46,4 @@ gpt-oss: A0n bulk scoring and the CST-A15 cut stage (two cuts, splices, retests)
 - 2026-11-09: S0b-1's pod gate deselects S0a's two long-task tests (committed outputs not synced).
 - 2026-11-09: CI's 3.10 flake fixed: `cohen_kappa` sums with `math.fsum` (a hash-seeded set order flipped the last bit on 35 of 121 seeds).
 - 2026-11-09: pilot k-2 MDEs added to `t04d_ordered_power.py` (`pilot_k2`).
+- 2026-11-09: S0b-1 launch card `runpod/launch_cst_s0b1.sh` (A100-80GB, disk 300 GB, sync cap 1 GB, RESUME=1 adds outputs/s0b/); outputs/s0b/ gitignored like s0a.

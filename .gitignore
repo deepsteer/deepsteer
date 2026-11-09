@@ -160,3 +160,6 @@ papers/cst_constitutional_steering/outputs/_sync/
 
 # CST S0a raw rollouts, judge replies and logs (downloaded per session; synced back for resume)
 papers/cst_constitutional_steering/outputs/s0a/
+
+# CST S0b raw rollouts, judge replies and logs (as S0a)
+papers/cst_constitutional_steering/outputs/s0b/
