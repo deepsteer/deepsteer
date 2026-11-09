@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.15, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) and 16 (the length-matched fork, S0b's order, Grad-Nec), §13.** v0.1 was the draft for the
+Status: **v0.16, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) and 17 (the frontier split, MoReBench's protocol), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1388,4 +1388,22 @@ and A0s, `CST_S0A_REPORT.md` §3). Both readings are reported for every arm.
 3. **Claude quota:** the remaining A0s S_tenet read and the frontier second opinion run now, one
    worker, `--max` per run, stopping at 80% of the 5-hour window. Codex waits for its weekly reset
    (Thursday 2026-11-12).
+
+### Amendment 17 (2026-11-09; author, the frontier split and the process read's protocol; zero GPU; committed and pushed before either read runs)
+
+1. **The frontier second opinion, the split of record.** Claude reads all 200 rollouts of
+   `data/s0a_samples_v1.json` `frontier_200` now; that read is the validity bar of record
+   (Amendment 9). Codex reads a seeded 100, stratified by arm (50 A0, 50 A0s), after its weekly
+   reset (Thursday 2026-11-12), as the cross-family check. *Implementation (Claude, stated before
+   drawing):* seed `20261109|cst_frontier_codex_100`; within each arm, the frontier rollouts sorted
+   by rollout id and 50 drawn without replacement; the draw is committed as
+   `data/frontier_codex_100_v1.json` before Codex reads any of it.
+2. **MoReBench runs under MRB's protocol for every CST arm**: MRB Phase 2's generation settings
+   (`papers/mrb_morebench/scripts/mrb_p2_pod.py`: T 0.6, top-p 0.95, top-k 0, cap 10,500, effort
+   medium, MoReBench's generation prompt as one user turn) and MRB's v0.9.3 matched-length estimator.
+   **A0's rows are MRB Phase 2's `none` arm on the same pin** (`outputs/p2/gen/qwen38_27b.none.jsonl`,
+   500 scenarios at k 2), reused; only A0s and the arms generate. **CST uses two samplers by
+   design:** its own (KDG v2: T 0.7, top-p 1.0, top-k 0, cap 4,096) for S and every action read,
+   and MRB's for the process read, so each comparison stays within one protocol. Amendment 8 item
+   3's cap rule governs CST's own reads, not the borrowed process read.
 
