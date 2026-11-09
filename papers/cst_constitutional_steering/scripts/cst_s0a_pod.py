@@ -177,7 +177,10 @@ def generate(eng, prompts: list[list[int]], seeds: list[int], max_tokens: int,
 
 # ---- stages --------------------------------------------------------------------------------
 
-def stage_gen(out: Path, arm: str, parts: list[str], dry: bool) -> None:
+def stage_gen(out: Path, arm: str, parts: list[str], dry: bool,
+              max_chunks: int | None = None) -> None:
+    """Generate ``parts`` for ``arm`` in chunks, skipping chunks on disk; ``max_chunks`` stops after
+    that many new chunks (S0b's pilot gate reads them before the rest runs)."""
     import reasoning_formats as rf
 
     from deepsteer.kdg.schema import assign_letters
@@ -194,12 +197,16 @@ def stage_gen(out: Path, arm: str, parts: list[str], dry: bool) -> None:
     log = {"arm": arm, "engine": ENGINE, "max_num_seqs": engine_kwargs(arm)["max_num_seqs"]
            if not dry else None, "cap": CAP, "load_s": getattr(eng, "load_s", None),
            "chunk": size, "chunks": {}}
+    new = 0
     for part in parts:
         units = part_units(part, sc)
         for c0 in range(0, len(units), size):
             f = gdir / f"{part}_{c0 // size:03d}.jsonl"
             if f.exists():
                 continue
+            if max_chunks is not None and new >= max_chunks:
+                return
+            new += 1
             rows, prompts, seeds = [], [], []
             for set_, cond, sid, k in units[c0:c0 + size]:
                 s = sc["objs"][sid]
@@ -630,13 +637,14 @@ def main() -> None:
                     choices=("gen", "dose0", "recall", "capability", "score", "long"))
     ap.add_argument("--arm", default="a0", choices=("a0", "a0s", "a0n"))
     ap.add_argument("--parts", default=",".join(PARTS))
+    ap.add_argument("--max-chunks", type=int, default=None)
     ap.add_argument("--judge", default="gpt_oss_120b",
                     choices=("gpt_oss_120b", "olmo31_32b_instruct"))
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     a.out.mkdir(parents=True, exist_ok=True)
-    {"gen": lambda: stage_gen(a.out, a.arm, a.parts.split(","), a.dry_run),
+    {"gen": lambda: stage_gen(a.out, a.arm, a.parts.split(","), a.dry_run, a.max_chunks),
      "dose0": lambda: stage_dose0(a.out, a.arm, a.dry_run),
      "recall": lambda: stage_recall(a.out, a.dry_run),
      "capability": lambda: stage_capability(a.out, a.arm, a.dry_run),

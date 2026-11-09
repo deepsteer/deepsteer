@@ -130,15 +130,43 @@ def stage_cut(out: Path, arms: list[str], dry: bool, src: Path | None = None) ->
     S.V._w(out, "score_cut", rec)  # noqa: SLF001
 
 
+GATE = {"parse_min": 0.95, "capped_max": 0.03, "rollouts_per_h_min": 600}  # S0B_BUILD.md §4
+
+
+def stage_gate(out: Path, arm: str) -> bool:
+    """S0b-1's pilot gate on ``arm``'s chunks so far: the parsed share (an option read), the capped
+    share and the generation rate from the chunk logs. Writes ``gate_<arm>.json``; True means
+    proceed."""
+    import glob
+
+    rows = [json.loads(x) for f in sorted((out / "gen" / arm).glob("*.jsonl")) for x in open(f)]
+    chunks: dict = {}
+    for f in sorted(glob.glob(str(out / f"gen_{arm}_log_*.json"))):
+        chunks.update(json.loads(Path(f).read_text())["chunks"])
+    n, sec = sum(c["n"] for c in chunks.values()), sum(c["seconds"] for c in chunks.values())
+    rec = {"arm": arm, "rollouts": len(rows), "chunks": len(chunks), **GATE,
+           "parsed": sum(r["option"] is not None for r in rows) / max(len(rows), 1),
+           "capped": sum(r["hit_cap"] for r in rows) / max(len(rows), 1),
+           "rollouts_per_h": 3600 * n / sec if sec else None}
+    rec["proceed"] = bool(rows and rec["parsed"] >= GATE["parse_min"]
+                          and rec["capped"] <= GATE["capped_max"]
+                          and (rec["rollouts_per_h"] or 0) >= GATE["rollouts_per_h_min"])
+    S.V._w(out, f"gate_{arm}", rec)  # noqa: SLF001
+    return rec["proceed"]
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", required=True, choices=("cut",))
+    ap.add_argument("--stage", required=True, choices=("cut", "gate"))
+    ap.add_argument("--arm", default="a0n")
     ap.add_argument("--arms", default="a0,a0s")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--src", type=Path, default=None, help="S0a's outputs (A0 and A0s rollouts)")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
-    {"cut": lambda: stage_cut(a.out, a.arms.split(","), a.dry_run, a.src)}[a.stage]()
+    if a.stage == "gate":
+        sys.exit(0 if stage_gate(a.out, a.arm) else 1)
+    stage_cut(a.out, a.arms.split(","), a.dry_run, a.src)
 
 
 if __name__ == "__main__":

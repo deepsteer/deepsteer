@@ -93,3 +93,42 @@ def test_cut_stage_reads_s0a_rollouts_from_src(tmp_path):
     rec = json.loads((out / "score_cut.json").read_text())
     assert rec["arms"]["a0"]["source"] == str(src) and rec["arms"]["a0n"]["source"] == str(out)
     assert (out / "score_cut" / "a0" / "gpt_oss_120b").is_dir()  # writes stay under S0b's out
+
+
+def test_gate_stops_on_a_format_failure_and_on_a_slow_engine(tmp_path):
+    # failure: the pilot gate passes an A0n that does not produce the answer format (an unparsed
+    # rollout counted as parsed) or an engine slower than the bail rate, so the session spends the
+    # full generation budget on a broken arm
+    g = tmp_path / "gen" / "a0n"
+    g.mkdir(parents=True)
+    good = [{"option": "o1", "hit_cap": False}] * 97 + [{"option": None, "hit_cap": True}] * 3
+    (g / "panel_plain_000.jsonl").write_text("".join(json.dumps(r) + "\n" for r in good))
+    log = {"chunks": {"panel_plain_000.jsonl": {"n": 100, "seconds": 300.0}}}
+    (tmp_path / "gen_a0n_log_1.json").write_text(json.dumps(log))
+    assert B.stage_gate(tmp_path, "a0n")  # 0.97 parsed, 0.03 capped, 1,200/h
+    bad = [{"option": None, "hit_cap": False}] * 10 + good[:90]
+    (g / "panel_plain_000.jsonl").write_text("".join(json.dumps(r) + "\n" for r in bad))
+    assert not B.stage_gate(tmp_path, "a0n")  # 0.87 parsed
+    (g / "panel_plain_000.jsonl").write_text("".join(json.dumps(r) + "\n" for r in good))
+    log["chunks"]["panel_plain_000.jsonl"]["seconds"] = 900.0  # 400 rollouts/h
+    (tmp_path / "gen_a0n_log_1.json").write_text(json.dumps(log))
+    assert not B.stage_gate(tmp_path, "a0n")
+
+
+@pytest.mark.slow
+def test_pilot_chunks_then_resume_for_a0n(tmp_path):
+    # failure: the pilot's chunk limit also stops the resumed run (A0n left short), or the resumed
+    # run regenerates the pilot chunks (the gate read rollouts that are not the arm's of record)
+    import cst_s0a_pod as S
+
+    parts = ["panel_plain", "panel_operator"]
+    S.stage_gen(tmp_path, "a0n", parts, True, max_chunks=1)
+    g = tmp_path / "gen" / "a0n"
+    assert sorted(f.name for f in g.glob("*.jsonl")) == ["panel_plain_000.jsonl"]
+    t0 = (g / "panel_plain_000.jsonl").stat().st_mtime_ns
+    S.stage_gen(tmp_path, "a0n", parts, True)
+    assert sorted(f.name for f in g.glob("*.jsonl")) == ["panel_operator_000.jsonl",
+                                                         "panel_plain_000.jsonl"]
+    assert (g / "panel_plain_000.jsonl").stat().st_mtime_ns == t0
+    rows = S.scored_rows(tmp_path, "a0n")
+    assert all(r["arm"] == "a0n" and r["rollout_id"].startswith("a0n|") for r in rows)

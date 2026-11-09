@@ -90,3 +90,22 @@ per-decision rows. Refusal retention: ST's per-rollout rows.
    it gains an arm parameter. Open: whether A0n also gets the process read (about +3 A100-h).
    Recommendation: A0s only; A0n's process read only if A0n moves the action (branch B above).
 5. **CST-A15's rule.** The two rows of §3, registered as written.
+
+## 7. Launch (S0b-1; the line is handed over only after §6 is ruled and its amendment is on origin)
+
+`papers/runpod_common/run_session.sh` with `SELF_PAPER=papers/cst_constitutional_steering`,
+`REMOTE_SCRIPT=papers/cst_constitutional_steering/runpod/remote_cst_s0b.sh`,
+`RESULTS_SUBPATH=outputs/s0b`, `CST_SESSION=1` (already in the launcher's passthrough), and
+`SYNC_OUTPUTS` naming the two `_sync` texts (`C_anth.txt`, `a0n_faraday_v1.txt`) and S0a's 13
+operator chunks (`outputs/s0a/gen/a0/panel_operator_00[0-2].jsonl`,
+`outputs/s0a/gen/a0s/panel_operator_00[0-9].jsonl`), as one comma-separated line with no spaces.
+A rerun adds `outputs/s0b/` so banked chunks are skipped.
+
+**Sync emulation (2026-11-09).** A repo copy built with `rp_sync_up`'s own filters
+(`rp_check_sync_outputs`, `rp_output_filters`, the same rsync) holds 389 MB: the two texts and
+2,344 + 2,344 operator rollouts, no other outputs. The pod's gate tests run there: 26 passed, 2
+deselected by name (S0a's long-task tests read committed `outputs/*.json` that `SYNC_OUTPUTS` does
+not ship; S0b runs no long-task stage; CI keeps both). A dry run of the session's stage sequence in
+that copy writes every expected file: the gate reads the pilot chunks and stops on the stand-in
+model's unparsed text, as it should, and the cut stage reads A0's 2,235 cut rows and 311 splices and
+A0s's 2,344.
