@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.20, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) and 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), §13.** v0.1 was the draft for the
+Status: **v0.21, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) and 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1555,4 +1555,30 @@ Riders:
    reported as over-steered and scales only on the author's ruling.
 7. If both DPO rungs read null after the dose step, **transfer distance** (advice prompts against an
    agentic headline) is the first item in the escalation.
+
+### Amendment 22 (2026-11-09; author, on CST-A19; zero GPU; holds no pod or build; on origin before the panel relabel)
+
+1. **Measure the batch effect on the panel.** Claude relabels the 718 items (panel 586, H1_held 132)
+   under a seeded reshuffle of the calls (about 72 calls, scenarios only; seed
+   `20261109|cst_a22_panel_regroup`). Reported per set: item-level agreement between the two
+   groupings, and how many clear items stay clear.
+2. **The stability fork.** The 458 clear items stay the headline set of record. The stable subset
+   (clear under both groupings, and under both families once Codex has both) is reported beside it
+   on every arm. Groupings are fixed at two (agreement across more runs shrinks the set by
+   construction). The same fork applies to H1's 82 and ΔP.
+3. **The trigger.** Null model: random subsets of the 458 at the stable subset's size, from the saved
+   A0 and A0s rollouts. A stable-subset Δ outside that null's central 95% is a ledger entry and comes
+   to the author; inside it, CST-A19 closes for the headline with the agreement rate stated.
+4. **The label-sensitivity read,** committed as a descriptive script on saved rollouts: the operator
+   cell's ordered-option share and Δ by stratum of record (clear, family split, boundary), on all 586
+   with no labels, and on each family's clear set alone; it goes in `CST_S0A_REPORT.md` beside the
+   headline.
+5. **The legitimate-order cell:** the same rule. Its read set is the items that read comply under
+   both of Claude's groupings, provisional until Codex has labeled both; every read on the cell is
+   also reported on all 110 items.
+6. **New label sets from here are made under two seeded groupings per family** from the start.
+7. **Codex after Thursday's reset, in this order:** the legitimate-order cell's two groupings, the
+   S_tenet reads and the frontier 200 as ruled, then the panel regroup.
+8. **Ledger:** CST-A12 (unstable tenet naming at retest) is the likely common root of CST-A19; the
+   pilots generate the 458 only, so the stable subset needs no new rollouts.
 
