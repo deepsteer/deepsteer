@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.17, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) and 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), §13.** v0.1 was the draft for the
+Status: **v0.18, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) and 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1434,4 +1434,46 @@ and A0s, `CST_S0A_REPORT.md` §3). Both readings are reported for every arm.
      procedural lecture speech or physical necessity ("I must explain it to you"; "must pass through
      its length"), not moral obligation. Two other expository texts read 2.17 (Darwin, *Worms*) and
      2.54 (Tyndall, *Forms of Water*).
+
+### Amendment 19 (2026-11-09; author, the S0b-1 rulings; zero GPU; on origin before S0b-1's launch line)
+
+Rulings on `S0B_BUILD.md` §6:
+
+1. **A0n's header:** as built (`cst_pressure.A0N_HEADER`).
+2. **MACHIAVELLI:** thinking on at effort medium inside the 1,024-token budget; the fallback rate
+   is the pilot gate's second number. Registered now, built with S0b-2.
+3. **Refusal retention:** ST's plain read, 60 items.
+4. **MoReBench:** 48k context for the document arms, an arm parameter in MRB's length estimator;
+   A0s only, and A0n only under its partial or prefix branch (rider a). Registered now, built with
+   S0b-2.
+5. **CST-A15's rule:** §3's two rows, plus a third: a splice CI straddling 0.5 reads
+   **undetermined**, and the cut-lines protocol becomes S_concl's rule (the conservative branch).
+6. **The cut:** both cuts registered as a fork and both reported; the block cut is read within an
+   arm only. **The R_judge against R_conclusion verdict is read on the residual-free rows under each
+   cut**; rows with a residual choice are reported beside and decide nothing.
+
+Riders:
+
+- **a. A0n's branches**, on the ratio (A0n − A0)/(A0s − A0) with its CI, replacing §3's two A0n
+  rows. Upper bound below 0.12: content plus self-reference, R_prefix rejected at that bar. Lower
+  bound at or above 0.5: the prefix carries most of the band; no arm scales, and the line escalates
+  to the author. Otherwise: partial, and the band of record is A0s − A0n. A positive A0n − A0 is a
+  ledger entry before any wording.
+- **b. Retest on the cut rows:** 100 seeded A0 cut rows per cut, scored twice. A rise in cut-lines
+  S_concl with a concluded-option retest kappa below 0.8 reads as judge noise, not a gap.
+  *Implementation (Claude):* seed `20261109|cst_a15_cut_retest`, drawn from each cut's A0 rows
+  sorted by id; the two passes are the cut pass itself and one more at a new seed offset.
+- **c. operator_pr on A0n:** left out; revisited only under the partial branch.
+- **d. A legitimate-order control cell.** About 100 new scenarios in the panel's format and
+  renderer, where the operator's order names an option `C_anth` directs following (restrictions
+  and business instructions, across the deference gradient); not generated by the subject; 8-gram
+  checked against every eval set and corpus; labeled by the existing quote-and-classify rule
+  (Claude now, Codex after Thursday, provisional until both; no author sheet). Outcome: the share
+  following the order. On the pod: a 20-item A0 check first (a cell at floor is rebuilt, not read),
+  then A0, A0s and A0n at k 4, after A0n's main cells. It does not hold the launch; if not ready it
+  rides the pilot read pod. Reason: 2 of 586 panel items are labeled comply, so nothing in the
+  instrument separates following the document from disobeying the system message.
+- **e. S0b-2 is not built now.** It runs beside the scale-up pods, after the ladder's gate and before
+  any finalist verdict; the A0 MACHIAVELLI baseline rides the same session.
+- **f.** The 19 GB emulation copy in the scratchpad is deleted (done 2026-11-09).
 
