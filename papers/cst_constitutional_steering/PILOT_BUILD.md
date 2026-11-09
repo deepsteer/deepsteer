@@ -111,18 +111,19 @@ per-rollout schema for every read.
 Neither pod consumes the other's adapters or waits on its results; either launches alone if the
 other's build lags.
 
-## 6. Not built (zero GPU)
+## 6. Built (2026-11-09)
 
-1. The ~700 difficult-advice prompts (Amendment 21 item 4): a seeded grid over T(`C_anth`) outside
-   `T_conf` by domain and stakes, user-advice framing only, tenet ids per prompt, 8-gram checked
-   against every eval set, near-duplicates removed, apart from the panel's scenario families.
-2. The generation driver: §4.1 documents and the critique pass; D-neutral template variants
-   (`deepsteer.corpus.prompts._DOC_HEAD` names "an AI system"); the §4.2 chat render with T0.6's empty
-   think block (`chat_render_v1` renders plain text).
-3. The enlarged recovery set: the neutral prompt pool and the trace-length matching rule.
-4. The SDF trainer at dose, with checkpoints and the recovery step.
-5. DPO: §5's NLL term (`objective_lora.dpo_loss` has none), P-trace's and P-long's full-rollout loss
-   mask, a split backward if paired forwards bind on memory.
-6. The DPO pod's candidate stage and the gpt-oss filter stage; the local Claude re-filter.
-7. The multi-adapter read driver (native LoRA, the parity check per kind), reusing S0a's stages.
-8. The legitimate-order cell (Amendment 19 rider d).
+| piece | where | checked by |
+|---|---|---|
+| ~700 difficult-advice prompts (694 kept; tenets A082 and A129 unwritten) | `data/pilot_advice_prompts_v1.json` | positive controls on every drop rule |
+| D-neutral templates; the A0n text's 160 statements | `deepsteer/corpus/prompts.py`; `data/statements_a0n_v1.json` | placeholder-parity test; every quote verified |
+| the SDF document plan (every tenet k ≥ 5 and a story at 1M) | `data/pilot_corpus_plan_v1.json` | coverage report |
+| the recovery pool (1,139) and the decile-matched selection | `data/recovery_pool_v1.json`; `pilot_train.select_recovery` | length test |
+| the training pieces (SDF packing, T0.6 chat render, recovery step, DPO + NLL by split backward, checkpoints by dose) | `scripts/pilot_train.py` | 7 tests on the tiny Qwen3.8 hybrid, the split gradient against the joint |
+| the eval 8-gram hash index for pods | `outputs/_sync/eval_8gram_hashes_v1.npy` | — |
+| the SDF pod (corpus and gate, D-chat, recovery, training, parity-gated read, legit check) | `scripts/cst_pilot_sdf_pod.py`, `runpod/remote_cst_pilot_sdf.sh`, card `launch_cst_pilot_sdf.sh` | 8 tests; sync emulation 0.40 GB, gate 19 passed; dry stage sequence |
+| the DPO pod (candidates, the gpt-oss filter and gate, pairs, DPO training, read, legit with A0s) | `scripts/cst_pilot_dpo_pod.py`, `runpod/remote_cst_pilot_dpo.sh`, card `launch_cst_pilot_dpo.sh` | 4 tests; sync emulation 0.35 GB, gate 16 passed; dry run to the filter gate |
+| the legitimate-order cell (110; read set 83 comply under both Claude groupings, provisional) | `data/legit_order_scenarios_v1.json`, `data/legit_order_readset_v1.json` | 8-gram check; batch-permuted relabel (CST-A19) |
+
+Implementation choices are logged in `CST_STATE.md` (learning rates, the NLL weight, the legit
+floor, P-answer's shared trace, the dry-run engine).
