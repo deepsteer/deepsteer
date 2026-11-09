@@ -49,25 +49,51 @@ def cut_trace(trace: str, n: int = CUT_N) -> tuple[str, str] | None:
     return " ".join(ss[:-n]), " ".join(ss[-n:])
 
 
+# a sentence that states a choice of option (the residual check and the decision-block cut;
+# S0B_BUILD.md §6 item 6): a choice verb near a letter, or a letter judged best
+CHOICE = re.compile(r"\b(choose|chose|go with|answer|pick|select|option)\b[^.]{0,30}\b[ABC]\b"
+                    r"|\b[ABC]\b[^.]{0,20}\b(is|seems)\b[^.]{0,20}\b(best|right|correct|better)\b",
+                    re.I)
+
+
+def states_choice(sentence: str) -> bool:
+    return bool(CHOICE.search(sentence))
+
+
+def cut_block(trace: str) -> tuple[str, str] | None:
+    """The decision-block cut: remove from the first sentence in the trace's last third that states
+    a choice to the end; with no such sentence, the two-sentence cut. None under MIN_SENTENCES."""
+    ss = sentences(trace)
+    if len(ss) < MIN_SENTENCES:
+        return None
+    start = len(ss) - len(ss) // 3
+    i = next((j for j in range(start, len(ss)) if states_choice(ss[j])), len(ss) - CUT_N)
+    i = min(i, len(ss) - CUT_N)  # never cut less than the registered two sentences
+    return " ".join(ss[:i]), " ".join(ss[i:])
+
+
 def _split(text: str) -> tuple[str, str]:
     """(trace, answer) exactly as the scorer of record splits a rollout (``judge_prompts``)."""
     return text.split("</think>")[0], text.split("</think>")[-1]
 
 
-def cut_rows(rows: list[dict]) -> tuple[dict[str, dict], list[str]]:
-    """Rollout id -> a copy whose trace has its closing sentences cut; ids too short to cut."""
+def cut_rows(rows: list[dict], cut=None) -> tuple[dict[str, dict], list[str]]:
+    """Rollout id -> a copy whose trace has its closing sentences cut (``cut_trace`` by default,
+    ``cut_block`` for the decision-block variant); ids too short to cut."""
+    cut = cut or cut_trace
     out, short = {}, []
     for r in rows:
         trace, answer = _split(r["text"])
-        c = cut_trace(trace)
+        c = cut(trace)
         if c is None:
             short.append(r["rollout_id"])
             continue
-        out[r["rollout_id"]] = {**r, "text": f"{c[0]}</think>{answer}", "cut_closing": c[1]}
+        out[r["rollout_id"]] = {**r, "text": f"{c[0]}</think>{answer}", "cut_closing": c[1],
+                                "residual_choice": any(map(states_choice, sentences(c[0])[-2:]))}
     return out, short
 
 
-def splice_rows(rows: list[dict]) -> dict[str, dict]:
+def splice_rows(rows: list[dict], body_cut=None) -> dict[str, dict]:
     """The spliced-ending control: per scenario with two different options among its rollouts, one
     seeded pair (body of X, closing sentences of Y, Y acting otherwise); X's answer is kept, and the
     judge never sees an answer (blind)."""
@@ -83,12 +109,14 @@ def splice_rows(rows: list[dict]) -> dict[str, dict]:
         if not pairs:
             continue
         x, y = rng.choice(pairs)
-        cx, cy = cut_trace(_split(x["text"])[0]), cut_trace(_split(y["text"])[0])
+        cx, cy = (body_cut or cut_trace)(_split(x["text"])[0]), cut_trace(_split(y["text"])[0])
         if cx is None or cy is None:
             continue
-        rid = f"{x['rollout_id']}|splice|{y['k']}"
+        tag = "bsplice" if body_cut is cut_block else "splice"
+        rid = f"{x['rollout_id']}|{tag}|{y['k']}"
         answer = _split(x["text"])[1]
         out[rid] = {**x, "rollout_id": rid, "text": f"{cx[0]} {cy[1]}</think>{answer}",
+                    "source_id": x["rollout_id"], "closing_id": y["rollout_id"],
                     "splice_body_option": x["option"], "splice_closing_option": y["option"]}
     return out
 
@@ -108,22 +136,29 @@ def stage_cut(out: Path, arms: list[str], dry: bool, src: Path | None = None) ->
         rows = operator_rows(base, arm)
         if not rows:
             raise SystemExit(f"BAIL: no {arm} operator rollouts under {base / 'gen' / arm}")
-        cut, short = cut_rows(rows)
-        passes = {"cut": (sorted(cut), 3, False)}
+        cut, short = cut_rows(rows)  # the registered two-sentence cut
+        blk, _ = cut_rows(rows, cut_block)  # the decision-block variant (S0B_BUILD.md §6 item 6)
+        blk = {f"{k}|bcut": {**v, "rollout_id": f"{k}|bcut", "source_id": k}
+               for k, v in blk.items()}
+        # pass names never prefix one another: score_passes resumes by globbing "<pass>_*.jsonl"
+        passes = {"cut": (sorted(cut), 3, False), "bcut": (sorted(blk), 5, False)}
         sp = {}
         if arm == "a0":
-            sp = splice_rows(rows)
-            passes["splice"] = (sorted(sp), 4, False)
-        S.score_passes(out / "score_cut" / arm / "gpt_oss_120b", {**cut, **sp}, passes,
+            sp = splice_rows(rows) | splice_rows(rows, cut_block)
+            passes["splice"] = (sorted(k for k in sp if "|splice|" in k), 4, False)
+            passes["bsplice"] = (sorted(k for k in sp if "|bsplice|" in k), 6, False)
+        S.score_passes(out / "score_cut" / arm / "gpt_oss_120b", {**cut, **blk, **sp}, passes,
                        "gpt_oss_120b", dry)
         rec["arms"][arm] = {"source": str(base), "operator_rollouts": len(rows), "cut": len(cut),
-                            "too_short": len(short), "splice": len(sp)}
+                            "bcut": len(blk), "too_short": len(short), "splice": len(sp)}
         (out / "score_cut" / arm).mkdir(parents=True, exist_ok=True)
         with open(out / "score_cut" / arm / "rows.jsonl", "w") as fh:  # what each pass was shown
-            for rid, r in {**cut, **sp}.items():
-                fh.write(json.dumps({"rollout_id": rid, "source": r.get("rollout_id"),
+            for rid, r in {**cut, **blk, **sp}.items():
+                fh.write(json.dumps({"rollout_id": rid, "source": r.get("source_id", rid),
+                                     "closing_source": r.get("closing_id"),
                                      "option": r.get("option"),
                                      "cut_closing": r.get("cut_closing"),
+                                     "residual_choice": r.get("residual_choice"),
                                      "splice_body_option": r.get("splice_body_option"),
                                      "splice_closing_option": r.get("splice_closing_option")})
                          + "\n")

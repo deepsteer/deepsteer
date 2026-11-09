@@ -23,12 +23,12 @@ S0a's (`S0A_BUILD.md` §1) for every CST read, with these additions.
 | 1 | A0n generation: panel plain and operator at k 4 | `cst_s0a_pod.py --stage gen --arm a0n` | 4,688 | 1.7-3.8 (A0s's 337 tok/s; low end at A0's trace length, high end at A0s's) |
 | 2 | A0n dose-0 letter reads, every S0a dose-0 cell | `--stage dose0 --arm a0n` | 5,054 prompts | about 0.3 (prefill on a cached prefix) |
 | 3 | A0n bulk scoring (S_concl's guard, the o3 share) | `--stage score --arm a0n --judge gpt_oss_120b` | 4,688 calls | about 0.45 (14,062 calls/h at effort low, CST-A12, plus load) |
-| 4 | CST-A15: the cut-lines rescore of every operator rollout (A0, A0s, A0n) and the splice control on A0 | `cst_s0b_pod.py --stage cut --arms a0,a0s,a0n` | A0 2,235 cut + 311 splice; A0s 2,344; A0n about 2,344 | about 0.6 |
+| 4 | CST-A15: the cut-lines rescore of every operator rollout (A0, A0s, A0n), under the registered two-sentence cut and the decision-block variant (§6 item 6), and the splice control on A0 under each | `cst_s0b_pod.py --stage cut --arms a0,a0s,a0n` | per cut: A0 2,235 + 311 splices; A0s 2,344; A0n about 2,344 | about 1.2 |
 | 5 | MoReBench, A0s (and A0n if §6 item 4): 500 × k 2 under MRB's protocol; MRB's judge (gpt-oss-120b, effort high), 22.9 criteria per response | `mrb_p2_pod.py` with an arm slot for a system document (**not built**, §6 item 4) | 1,000 generations, 22,900 judge calls | 1.9-5 generation (MRB's 2,222 tokens per response at A0s's rate, up to A0s's 2.6-fold length) + about 1-2 judge |
 | 6 | MACHIAVELLI, A0 and A0s: 30 test games, GoalOnly agent, 1,024-token budget, k 2 (§6.4) | MCH's agent harness with a Qwen3.8 row and a system-document slot (**not built**, §6 item 2) | about 10,300 decisions per arm (MCH's Qwen3.8 count, `outputs/mch_g1.json`) | A0 about 1-2, A0s about 3-6 (at 330-700 tokens per decision; the document on every decision) |
 | 7 | Refusal retention, A0 and A0s (§6 item 3) | ST's `refusal_retention.py` | 60 plain violating items × k 4 (ST's plain read) | about 0.3 |
 
-**Total about 11-19 A100-h**, in two sessions (§4). Before this file, the only reusable A0 read
+**Total about 11.5-19.5 A100-h**, in two sessions (§4). Before this file, the only reusable A0 read
 was MRB P2's MoReBench `none` arm; refusal retention and MACHIAVELLI were never run on unadapted
 Qwen3.8-27B (inventory, 2026-11-09).
 
@@ -46,7 +46,7 @@ Qwen3.8-27B (inventory, 2026-11-09).
 
 ## 4. Sessions, pilot gates and bail rules
 
-- **S0b-1 (about 3.5-6 h; subject then gpt-oss on one A100):** A0n generation (component 1), its
+- **S0b-1 (about 4-6.5 h; subject then gpt-oss on one A100):** A0n generation (component 1), its
   dose-0 reads (2), refusal retention on A0 and A0s (7), then gpt-oss-120b: A0n's bulk scoring (3)
   and the cut stage (4). **Pilot gate:** the first A0n chunk (256 rollouts) must parse at 0.95 or
   more with at most 3% capped, else stop and bank (an A0n that does not produce the format is a
@@ -90,6 +90,20 @@ per-decision rows. Refusal retention: ST's per-rollout rows.
    it gains an arm parameter. Open: whether A0n also gets the process read (about +3 A100-h).
    Recommendation: A0s only; A0n's process read only if A0n moves the action (branch B above).
 5. **CST-A15's rule.** The two rows of §3, registered as written.
+6. **The cut itself (found in the pre-review, zero GPU).** Qwen restates its choice: after the
+   registered two-sentence cut, the trace's new last two sentences still state a choice on 0.395 of
+   A0's and 0.292 of A0s's operator traces (a choice verb near a letter, or a letter judged best;
+   `cst_s0b_pod.CHOICE`), so that cut often leaves the answer in place and the splice's bodies carry
+   their own stated choice. Built beside it: the **decision-block cut**, which removes from the first
+   choice-stating sentence in the trace's last third to the end (never less than two sentences):
+   residual 0.143 (A0) and 0.049 (A0s), removing 5.3 and 13.1 sentences on average. The variant is
+   asymmetric across arms (A0s's last third discusses the options by letter, so more of its
+   reasoning goes), so it compares an arm with itself (cut against full) and is not read across arms.
+   Every row records whether a choice remains (`residual_choice`), so both cuts are also read on the
+   rows with none left. Recommendation: register both as a fork, both reported, the two-sentence
+   cut of record (it is the discriminator the ledger registered), the block cut and the
+   residual-free rows as the stronger reading; the splice read under the block cut decides R_judge
+   if the two disagree.
 
 ## 7. Launch (S0b-1; the line is handed over only after §6 is ruled and its amendment is on origin)
 
@@ -108,4 +122,4 @@ deselected by name (S0a's long-task tests read committed `outputs/*.json` that `
 not ship; S0b runs no long-task stage; CI keeps both). A dry run of the session's stage sequence in
 that copy writes every expected file: the gate reads the pilot chunks and stops on the stand-in
 model's unparsed text, as it should, and the cut stage reads A0's 2,235 cut rows and 311 splices and
-A0s's 2,344.
+A0s's 2,344 (the dry run predates the block variant; the dry stage test covers all four passes).
