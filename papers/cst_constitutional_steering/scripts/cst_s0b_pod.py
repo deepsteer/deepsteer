@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """CST S0b pod driver: the stages S0b adds to S0a's (``S0B_BUILD.md``; Amendments 16-18).
 
-    cst_s0b_pod.py --stage cut --out DIR [--dry-run]      # CST-A15: cut-lines rescore + splice
+    cst_s0b_pod.py --stage cut --out DIR --src S0A_DIR [--arms a0,a0s,a0n] [--dry-run]
     cst_s0a_pod.py --stage gen|dose0|score --arm a0n ...  # A0n runs through S0a's own stages
 
 A0n (the neutral prefix) is an arm of ``cst_s0a_pod.py`` so its generation, dose-0 letter reads
@@ -98,14 +98,16 @@ def operator_rows(out: Path, arm: str) -> list[dict]:
             and r["condition"] == "operator"]
 
 
-def stage_cut(out: Path, arms: list[str], dry: bool) -> None:
+def stage_cut(out: Path, arms: list[str], dry: bool, src: Path | None = None) -> None:
     """CST-A15: the cut-lines rescore of every operator-cell rollout per arm, and the splice
-    control on A0; the scorer of record's blind pass, seeds offset from S_concl's."""
+    control on A0; the scorer of record's blind pass, seeds offset from S_concl's. An arm's
+    rollouts are read from ``out`` when S0b generated them (A0n), else from ``src`` (S0a's)."""
     rec = {"cut_n": CUT_N, "min_sentences": MIN_SENTENCES, "arms": {}}
     for arm in arms:
-        rows = operator_rows(out, arm)
+        base = out if (out / "gen" / arm).is_dir() or src is None else src
+        rows = operator_rows(base, arm)
         if not rows:
-            raise SystemExit(f"BAIL: no {arm} operator rollouts under {out / 'gen' / arm}")
+            raise SystemExit(f"BAIL: no {arm} operator rollouts under {base / 'gen' / arm}")
         cut, short = cut_rows(rows)
         passes = {"cut": (sorted(cut), 3, False)}
         sp = {}
@@ -114,7 +116,7 @@ def stage_cut(out: Path, arms: list[str], dry: bool) -> None:
             passes["splice"] = (sorted(sp), 4, False)
         S.score_passes(out / "score_cut" / arm / "gpt_oss_120b", {**cut, **sp}, passes,
                        "gpt_oss_120b", dry)
-        rec["arms"][arm] = {"operator_rollouts": len(rows), "cut": len(cut),
+        rec["arms"][arm] = {"source": str(base), "operator_rollouts": len(rows), "cut": len(cut),
                             "too_short": len(short), "splice": len(sp)}
         (out / "score_cut" / arm).mkdir(parents=True, exist_ok=True)
         with open(out / "score_cut" / arm / "rows.jsonl", "w") as fh:  # what each pass was shown
@@ -133,9 +135,10 @@ def main() -> None:
     ap.add_argument("--stage", required=True, choices=("cut",))
     ap.add_argument("--arms", default="a0,a0s")
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--src", type=Path, default=None, help="S0a's outputs (A0 and A0s rollouts)")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
-    {"cut": lambda: stage_cut(a.out, a.arms.split(","), a.dry_run)}[a.stage]()
+    {"cut": lambda: stage_cut(a.out, a.arms.split(","), a.dry_run, a.src)}[a.stage]()
 
 
 if __name__ == "__main__":

@@ -76,3 +76,20 @@ def test_cut_stage_writes_both_passes_and_what_each_was_shown(tmp_path):
     assert len(got["cut"]) == 4 and len(got["splice"]) == 1
     shown = [json.loads(x) for x in open(tmp_path / "score_cut" / "a0" / "rows.jsonl")]
     assert len(shown) == 5 and sum(r["splice_closing_option"] is not None for r in shown) == 1
+
+
+@pytest.mark.slow
+def test_cut_stage_reads_s0a_rollouts_from_src(tmp_path):
+    # failure: on the pod the cut stage looks for A0 and A0s under S0b's own outputs (empty) and
+    # bails, or reads A0n from S0a's tree; each arm must come from where it was generated
+    src, out = tmp_path / "s0a", tmp_path / "s0b"
+    rows = [_row(0, "o1"), _row(1, "o2", "I'll choose B.")]
+    for base, arm in ((src, "a0"), (out, "a0n")):
+        g = base / "gen" / arm
+        g.mkdir(parents=True)
+        rr = [{**r, "rollout_id": r["rollout_id"].replace("a0|", f"{arm}|")} for r in rows]
+        (g / "panel_operator_000.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rr))
+    B.stage_cut(out, ["a0", "a0n"], True, src)
+    rec = json.loads((out / "score_cut.json").read_text())
+    assert rec["arms"]["a0"]["source"] == str(src) and rec["arms"]["a0n"]["source"] == str(out)
+    assert (out / "score_cut" / "a0" / "gpt_oss_120b").is_dir()  # writes stay under S0b's out
