@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.23, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) and 24 (the corpus gate's length band and cap rule, D11's drop), §13.** v0.1 was the draft for the
+Status: **v0.24, 2026-11-10: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) and 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1646,3 +1646,60 @@ FAQ 763 (one at 1,502). The documents are complete, not degenerate.
 6. **The stopped session's 64 documents are banked, not resumed** (kept locally under
    `outputs/pilot_sdf_attempt1/`). The relaunch regenerates from the plan's start under the amended
    gate, about 0.3 h before it reaches the point where the first session stopped.
+
+### Amendment 25 (2026-11-10; author, CST-A22 and CST-A21; zero GPU except A3 and C; on origin before the parity mini-pod's card)
+
+**Part A: SDF serving parity (CST-A22).**
+1. No SDF read is reported as a null until CST-A22 resolves; the ledger entry precedes any wording.
+2. Zero GPU: the running SDF pod's session log is read for what vLLM logged on each LoRA load; the
+   running session is not touched. (Read 2026-11-10: no load line, error or skipped-module warning
+   on any load; vLLM serves `Qwen3_5ForConditionalGeneration`; the adapters' keys carry the
+   trainer class's `model.layers` path; CST-A22.)
+3. **The parity mini-pod** (about 0.3 A100-h): serve D-doc 1M without recovery and with it, save
+   the served letters, and report TV(served, attached) on the same adapter and TV(served, base).
+   Riders added by the lead (within A3's scope): each adapter is also served with its module path
+   rewritten to the multimodal class's (VALIDATE's path), and the served base model (no adapter)
+   is read against HF's base as the instrument's floor.
+4. **The parity gate, re-registered for every kind:** the same adapter on both sides; a read tag
+   passes when TV(served, attached) is at or under 0.2 of TV(base, attached) and TV(served, base)
+   is at or above half of TV(base, attached); one record per read tag, never overwritten; the
+   served letters are saved.
+5. If R_noserve: the saved adapters are re-read on a fixed path tonight (about 4 h). If R_null: the
+   lead's quick read stands for the lead to reproduce, and the dose step returns to the author with
+   a manipulation check on D-doc 1M (the recall read) first.
+
+**Part B: the CST-A21 rulings.**
+1. Claude's re-filter is approved as registered: a seeded 200, both A/B orders, final answers only.
+   It does not hold Part C.
+2. Any future preference filter judges both orders and keeps only pairs that win in both.
+3. The advice candidates are banked. No rung trains on the 101 or 203 kept pairs.
+4. The joint reading with CST-A16 (the in-context constitution moving A0 away from tenet-consistent
+   behavior outside pressure) is logged as open, not as a finding: the judge's decisive verdicts
+   cite style, and it favors position A 3 to 1.
+5. Each rung gets its own gate.
+
+**Part C: the DPO line's data source moves to operator-pressure prompts.**
+1. **Scenarios:** about 600, written locally by Claude from a seeded grid. Free-form agentic
+   responses, never lettered. An operator standing instruction in the system message on about half
+   (orders `C_anth` directs away from), on about 30% legitimate orders, and none on the rest. New
+   scenarios and pressure types, 8-gram checked against every eval set and the legitimate-order
+   cell, near-duplicates removed.
+2. **Rollouts on the pod:** A0 at k 4, A0s at k 2, A0n at k 2, each prompt rendered as its arm
+   renders it.
+3. **Action read:** gpt-oss-120b reads each response alone (follows the order, does not, unclear),
+   with a retest on 100. **Contrast gate before any training:** fewer than 150 directed-away
+   scenarios where A0 follows and A0s does not stops the line and comes to the author.
+4. **Rungs,** all trained with the prompt rendered without any document, loss on trace and answer:
+   P-ctx, NLL on A0s's rollouts over all three scenario kinds, no filter; P-ctx-n, the same from
+   A0n's rollouts (the neutral-teacher control); P-dpo, DPO on the disagreeing pairs (chosen A0s,
+   rejected A0) with A0s's rollouts on the legitimate and no-order scenarios as NLL-only retain
+   items; P-long as registered, on these prompts. P-answer is not run on pressure prompts: its
+   chosen answer would contradict the trace it is paired with.
+5. **Move rule:** P-ctx against A0, P-ctx-n and P-long; P-dpo against A0 and P-long. Amendment 21's
+   wrong-direction and legitimate-order rules apply.
+6. **Beside every read:** the share of traces citing a constitution, trace length, and the
+   injection-talk split.
+7. The same pod reads A0s and A0n on the legitimate-order cell.
+8. `PRESSURE_BUILD.md` in `PILOT_BUILD.md`'s form, with prices, power, branches, bail and one launch
+   card, priced at or under 10.5 h; it uses Part A's gate.
+

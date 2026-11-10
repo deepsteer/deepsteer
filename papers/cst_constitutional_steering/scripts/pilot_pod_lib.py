@@ -6,7 +6,9 @@
 prompts (the first 32 panel scenarios, letter order k 0), computed on HF with the adapter attached
 and with it disabled (`hf_parity`, while the trainer holds the model) and later on vLLM serving the
 adapter natively (`served_parity`); the kind passes when TV(served, attached) is below TV(base,
-attached), as VALIDATE measured it (0.0125 against 0.1115).
+attached), as VALIDATE measured it (0.0125 against 0.1115). **Superseded by Amendment 25 A4**
+(CST-A22: that rule passed an adapter served as the base by 0.0009): `parity_record` on the same
+adapter on both sides, one write-once record per read tag.
 """
 
 from __future__ import annotations
@@ -108,6 +110,66 @@ def served_parity(out: Path, kind: str, eng, lora, dry: bool) -> dict:
     rec["passes"] = rec["tv_served_vs_attached"] < rec["tv_base_vs_attached"]
     (out / "parity" / f"{kind}_served.json").write_text(json.dumps(rec, indent=1) + "\n")
     return rec
+
+
+PARITY_ATTACHED_MAX, PARITY_BASE_MIN = 0.2, 0.5  # Amendment 25 A4, fractions of TV(base, attached)
+
+
+def parity_record(tag: str, served, attached, base, served_base=None) -> dict:
+    """Amendment 25 A4's gate for one read tag, the same adapter on both sides: passes when
+    TV(served, attached) <= 0.2 TV(base, attached) and TV(served, base) >= 0.5 TV(base, attached).
+    The served letters ride in the record; ``served_base`` (the served model without an adapter)
+    gives the instrument's floor, TV(served base, HF base)."""
+    ref = tv(base, attached)
+    rec = {"tag": tag, "tv_served_vs_attached": tv(served, attached),
+           "tv_served_vs_base": tv(served, base), "tv_base_vs_attached": ref,
+           "rule": "Amendment 25 A4", "attached_max": PARITY_ATTACHED_MAX * ref,
+           "base_min": PARITY_BASE_MIN * ref, "served_letters": served}
+    if served_base is not None:
+        rec["tv_served_base_vs_hf_base"] = tv(served_base, base)
+    rec["passes"] = bool(rec["tv_served_vs_attached"] <= rec["attached_max"]
+                         and rec["tv_served_vs_base"] >= rec["base_min"])
+    return rec
+
+
+def write_once(f: Path, rec: dict) -> None:
+    """One record per read tag, never overwritten (Amendment 25 A4)."""
+    if f.exists():
+        raise SystemExit(f"BAIL: {f} exists; parity records are never overwritten")
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps(rec, indent=1) + "\n")
+
+
+def decoder_prefixes(path: str) -> dict[str, str]:
+    """The decoder-layer module path under the trainer's class (``AutoModelForCausalLM``) and the
+    served class (``AutoModelForImageTextToText``, vLLM's), from the config on the meta device."""
+    import torch
+    from transformers import AutoConfig, AutoModelForCausalLM, AutoModelForImageTextToText
+
+    cfg = AutoConfig.from_pretrained(path)
+    out = {}
+    for name, cls in (("trainer", AutoModelForCausalLM), ("served", AutoModelForImageTextToText)):
+        with torch.device("meta"):
+            m = cls.from_config(cfg)
+        out[name] = [n for n, _ in m.named_modules() if n.endswith(".layers")][0]
+    return out
+
+
+def rename_adapter(src: Path, dst: Path, prefixes: dict[str, str]) -> dict:
+    """Write ``src``'s adapter with its keys moved from the trainer class's decoder path to the
+    served class's (CST-A22's fixed-path probe); the config is copied unchanged."""
+    import shutil
+
+    from safetensors.torch import load_file, save_file
+
+    old = f"base_model.model.{prefixes['trainer']}."
+    new = f"base_model.model.{prefixes['served']}."
+    sd = load_file(str(src / "adapter_model.safetensors"))
+    moved = {(new + k[len(old):] if k.startswith(old) else k): v for k, v in sd.items()}
+    dst.mkdir(parents=True, exist_ok=True)
+    save_file(moved, str(dst / "adapter_model.safetensors"))
+    shutil.copy(src / "adapter_config.json", dst / "adapter_config.json")
+    return {"keys": len(sd), "moved": sum(k.startswith(old) for k in sd), "from": old, "to": new}
 
 
 READ_K = {"panel_operator": 2, "panel_plain": 2, "forced_plain": 8, "legit_operator": 4}
