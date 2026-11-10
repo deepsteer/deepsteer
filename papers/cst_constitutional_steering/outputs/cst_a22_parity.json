@@ -1,0 +1,51 @@
+{
+ "rule": "Amendment 25 A4",
+ "branch": "R_noserve: served as saved reads as the base; the renamed path passes and is the fixed path (Amendment 25 A5)",
+ "tv_base_after_load_vs_base": 0.0,
+ "tags": {
+  "1e06__saved": {
+   "tag": "1e06__saved",
+   "tv_served_vs_attached": 0.42980345664038344,
+   "tv_served_vs_base": 0.008715273524108355,
+   "tv_base_vs_attached": 0.4291135764436356,
+   "rule": "Amendment 25 A4",
+   "attached_max": 0.08582271528872713,
+   "base_min": 0.2145567882218178,
+   "tv_served_base_vs_hf_base": 0.007538575342600087,
+   "passes": false
+  },
+  "1e06_rec__saved": {
+   "tag": "1e06_rec__saved",
+   "tv_served_vs_attached": 0.09848244246173601,
+   "tv_served_vs_base": 0.008715273524108355,
+   "tv_base_vs_attached": 0.0981838964975376,
+   "rule": "Amendment 25 A4",
+   "attached_max": 0.019636779299507523,
+   "base_min": 0.0490919482487688,
+   "tv_served_base_vs_hf_base": 0.007538575342600087,
+   "passes": false
+  },
+  "1e06__renamed": {
+   "tag": "1e06__renamed",
+   "tv_served_vs_attached": 0.010212606788026468,
+   "tv_served_vs_base": 0.4290786081921429,
+   "tv_base_vs_attached": 0.4291135764436356,
+   "rule": "Amendment 25 A4",
+   "attached_max": 0.08582271528872713,
+   "base_min": 0.2145567882218178,
+   "tv_served_base_vs_hf_base": 0.007538575342600087,
+   "passes": true
+  },
+  "1e06_rec__renamed": {
+   "tag": "1e06_rec__renamed",
+   "tv_served_vs_attached": 0.010030571290807937,
+   "tv_served_vs_base": 0.09927217585768146,
+   "tv_base_vs_attached": 0.0981838964975376,
+   "rule": "Amendment 25 A4",
+   "attached_max": 0.019636779299507523,
+   "base_min": 0.0490919482487688,
+   "tv_served_base_vs_hf_base": 0.007538575342600087,
+   "passes": true
+  }
+ }
+}

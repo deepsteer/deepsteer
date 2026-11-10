@@ -2055,7 +2055,10 @@ SDF pod's six reads were reads of the base model (CST-A22: vLLM serves the multi
 adapters carried the trainer class's module path, a silent no-op load); kept as an empirical null, they
 sit within the computed pilot MDE of the saved A0 (contrasts −0.007 to +0.030, SD 0.013 against the
 0.015 the MDE implies; read against read SD 0.011, largest 0.037 against the 0.049 MDE), so the k-2
-screen is calibrated. On everyday advice the in-context constitution's answers do not beat A0's
+screen is calibrated. A parity mini-pod resolved CST-A22 as R_noserve: served as saved, D-doc 1M
+reads as the base (TV to base 0.009, at the 0.0075 floor); with its keys on the served class's path
+it reads as the trained adapter (TV to HF attached 0.010), so the saved adapters are re-read on that
+path. On everyday advice the in-context constitution's answers do not beat A0's
 (CST-A21): Claude, judging both orders with no position bias, keeps 0.04 [0.01, 0.08] of the
 rewrite pairs and 0.35 [0.26, 0.44] of A0s's own answers, so the DPO line moves to operator-pressure
 prompts, where A0 and A0s disagree (Amendment 25 Part C).
