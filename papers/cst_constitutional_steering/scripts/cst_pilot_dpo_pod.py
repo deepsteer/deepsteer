@@ -305,8 +305,6 @@ def stage_train(out: Path, rung: str, dry: bool) -> dict:
     _, wb, cfg = PL.load_model(dry)
     rec = PT.train_dpo(wb, pairs, doses=doses, out_dir=out / "adapters" / rung, lr=PL.DPO_LR,
                        grad_accum=GRAD_ACCUM)
-    if not (out / "parity" / "dpo_hf.json").exists():
-        PL.hf_parity(wb, out, "dpo", dry)
     res = {"rung": rung, "pairs": n, "doses": list(doses), "lr": PL.DPO_LR,
            "adapters": rec["checkpoints"], "lora": {k: cfg[k] for k in ("rank", "alpha")}}
     S.V._w(out, f"train_{rung}", res)  # noqa: SLF001
@@ -327,7 +325,14 @@ def adapter_dir(out: Path, tag: str) -> str:
 def stage_read(out: Path, tags: list[str], dry: bool) -> dict:
     import pilot_pod_lib as PL
 
-    return PL.stage_read(out, [(t, adapter_dir(out, t), "dpo") for t in tags], dry)
+    return PL.stage_read(out, [(t, adapter_dir(out, t)) for t in tags], dry)
+
+
+def stage_parity_hf(out: Path, tags: list[str], dry: bool) -> dict:
+    """Amendment 25 A4's HF side for each read tag (its own process, before the read stage)."""
+    import pilot_pod_lib as PL
+
+    return PL.hf_letters(out, [(t, adapter_dir(out, t)) for t in tags], dry)
 
 
 def stage_legit(out: Path, dry: bool, arm: str) -> dict:
@@ -354,7 +359,8 @@ def stage_legit(out: Path, dry: bool, arm: str) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True,
-                    choices=("candidates", "filter", "pairs", "train", "read", "legit"))
+                    choices=("candidates", "filter", "pairs", "train", "parity_hf", "read",
+                             "legit"))
     ap.add_argument("--rung", default="p_answer", choices=("p_answer", "p_trace", "p_long"))
     ap.add_argument("--tags", default="")
     ap.add_argument("--part", choices=("none", "doc"), help="candidates: one engine per process")
@@ -366,6 +372,8 @@ def main() -> None:
         stage_train(a.out, a.rung, a.dry_run)
     elif a.stage == "read":
         stage_read(a.out, [t for t in a.tags.split(",") if t], a.dry_run)
+    elif a.stage == "parity_hf":
+        stage_parity_hf(a.out, [t for t in a.tags.split(",") if t], a.dry_run)
     elif a.stage == "candidates":
         if a.part is None:
             ap.error("--stage candidates needs --part none|doc")

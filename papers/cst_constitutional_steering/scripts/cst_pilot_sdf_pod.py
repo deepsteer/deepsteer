@@ -11,8 +11,9 @@ Stages (built so far):
   critique template; thinking off (documents, not decisions). Chunks of 64 documents, resumed by
   chunk. It stops once the final documents reach the arm's token target (1M; the 0.3M checkpoint is
   the prefix the trainer reads first). **Pilot gate** after the first 50 finals (Amendment 24):
-  500-1,700 words on the documents that did not hit the cap, no chat or think markers, under 5%
-  sharing an 8-gram with the eval index (D11), and at most 5% hitting the cap; else the stage
+  at most 5% outside 500-1,700 words among the documents that did not hit the cap (Amendment 26: a
+  bar; no document is dropped for length), no chat or think markers, under 5% sharing an 8-gram
+  with the eval index (D11), and at most 5% hitting the cap; else the stage
   writes `corpus_gate_<arm>.json` with ``proceed`` false and stops. The gate records each
   template's median length.
 - **Kept documents** (Amendment 24; D11): a final that hit the cap (incomplete) or shares an 8-gram
@@ -40,7 +41,7 @@ TARGET_TOKENS = 1_000_000
 CHUNK = 64
 DRAFT_CAP = 2200  # about 1,700 words: the word band's upper end sits at the cap (Amendment 24)
 GATE_N = 50
-GATE = {"words": (500, 1700), "overlap_max": 0.05, "capped_max": 0.05}
+GATE = {"words": (500, 1700), "out_of_band_max": 0.05, "overlap_max": 0.05, "capped_max": 0.05}
 MARKERS = re.compile(r"(^|\n)\s*(User|Assistant)\s*:|<think>|</think>|<\|im_", re.I)
 
 
@@ -99,12 +100,14 @@ def gate(rows: list[dict], index) -> dict:
                   if not r.get("final_hit_cap"))
     marked = sum(bool(MARKERS.search(r["final"])) for r in first)
     hit = sum(r["overlap_8gram"] > 0 for r in first)
-    rec = {"n": len(first), "words_out_of_range": bad_len, "markers": marked,
+    rec = {"n": len(first), "words_out_of_range": bad_len, "out_of_band_share": bad_len / n,
+           "markers": marked,
            "overlap_docs": hit, "overlap_share": hit / n, "capped_docs": capped,
            "capped_share": capped / n,
            "draft_capped_docs": sum(bool(r.get("draft_hit_cap")) for r in first),
-           "median_words_by_template": median_words(first), "rule": "Amendment 24", **GATE}
-    rec["proceed"] = bool(len(first) == GATE_N and bad_len == 0 and marked == 0
+           "median_words_by_template": median_words(first), "rule": "Amendments 24, 26", **GATE}
+    rec["proceed"] = bool(len(first) == GATE_N
+                          and rec["out_of_band_share"] <= GATE["out_of_band_max"] and marked == 0
                           and rec["overlap_share"] < GATE["overlap_max"]
                           and rec["capped_share"] <= GATE["capped_max"])
     return rec
@@ -126,7 +129,10 @@ def corpus_meta(rows: list[dict], kept: list[dict], doses: tuple) -> dict:
     """Rider 2 of Amendment 24: the arm's document count beside its token dose."""
     toks = sum(r["final_tokens"] for r in kept)
     mean = toks / max(len(kept), 1)
+    lo, hi = GATE["words"]
+    oob = sum(not lo <= len(r["final"].split()) <= hi for r in kept)
     return {"docs_generated": len(rows), "docs_kept": len(kept),
+            "out_of_band": oob, "out_of_band_share": oob / max(len(kept), 1),  # Amendment 26 item 1
             "dropped_capped": sum(bool(r.get("final_hit_cap")) for r in rows),
             "dropped_overlap": sum(r.get("overlap_8gram", 0) > 0 for r in rows),
             "tokens_kept": toks, "mean_tokens_per_doc": mean,
@@ -342,8 +348,6 @@ def stage_train(out: Path, rung: str, dry: bool, doses: tuple | None = None) -> 
         rec["train"] = PT.train_rung(
             wb, ex, lambda e: PT.lm_loss(wb, e[0], e[1]), per_step_dose=per_step, doses=doses,
             out_dir=adir, lr=PL.SDF_LR)
-        if not (out / "parity" / "sdf_hf.json").exists():
-            PL.hf_parity(wb, out, "sdf", dry)
         rec["adapters"] = dict(rec["train"]["checkpoints"])
         for dose, d in list(rec["train"]["checkpoints"].items()):
             sd = load_file(str(Path(d) / "adapter_model.safetensors"))
@@ -388,9 +392,17 @@ def stage_read_tags(out: Path, tags: list[str], dry: bool) -> dict:
             d = sorted(per, key=float)[-1 if which == "max" else 0]
             docs[t] = {"rung": rung, "dose": d, "doc_equivalents": per[d],
                        "docs_kept": tr["corpus"]["docs_kept"],
+                       "out_of_band_share": tr["corpus"].get("out_of_band_share"),
                        "mean_tokens_per_doc": tr["corpus"]["mean_tokens_per_doc"]}
     S.V._w(out, "read_docs", docs)  # noqa: SLF001
-    return PL.stage_read(out, [(t, adapter_dir(out, t), "sdf") for t in tags], dry)
+    return PL.stage_read(out, [(t, adapter_dir(out, t)) for t in tags], dry)
+
+
+def stage_parity_hf(out: Path, tags: list[str], dry: bool) -> dict:
+    """Amendment 25 A4's HF side for each read tag (its own process, before the read stage)."""
+    import pilot_pod_lib as PL
+
+    return PL.hf_letters(out, [(t, adapter_dir(out, t)) for t in tags], dry)
 
 
 def stage_legit(out: Path, dry: bool) -> dict:
@@ -409,7 +421,8 @@ def stage_legit(out: Path, dry: bool) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True,
-                    choices=("corpus", "chat", "recovery", "train", "read", "legit"))
+                    choices=("corpus", "chat", "recovery", "train", "parity_hf", "read",
+                             "legit"))
     ap.add_argument("--tags", default="", help="read: comma-separated READS tags")
     ap.add_argument("--rung", default="d_doc", choices=RUNGS)
     ap.add_argument("--arm", default="d_doc", choices=("d_doc", "d_neutral"))
@@ -425,6 +438,8 @@ def main() -> None:
         stage_train(a.out, a.rung, a.dry_run)
     elif a.stage == "read":
         stage_read_tags(a.out, [t for t in a.tags.split(",") if t], a.dry_run)
+    elif a.stage == "parity_hf":
+        stage_parity_hf(a.out, [t for t in a.tags.split(",") if t], a.dry_run)
     elif a.stage == "legit":
         stage_legit(a.out, a.dry_run)
     else:

@@ -57,6 +57,19 @@ def test_amendment_24_band_and_cap_rule():
     assert not P.gate(capped * 3 + ok[:47], None)["proceed"]  # 6% of 50 hit the cap
 
 
+def test_amendment_26_length_bar_keeps_out_of_band_documents():
+    # most probable failure (Amendment 26 item 1): one short document stops an arm (the old band
+    # failed D-neutral on a 473-word FAQ), or out-of-band documents are dropped from one arm only
+    ok = [{"final": _words(900)} for _ in range(48)]
+    two = P.gate([{"final": _words(473)}] * 2 + ok, None)
+    assert two["proceed"] and two["words_out_of_range"] == 2 and two["out_of_band_share"] == 0.04
+    assert not P.gate([{"final": _words(473)}] * 3 + ok[:47], None)["proceed"]  # 6% of 50
+    assert P.annotate({"final": _words(473)}, None)["kept"]  # no document dropped for length
+    meta = P.corpus_meta([], [{"final": _words(473), "final_tokens": 600}] + [
+        {"final": _words(900), "final_tokens": 1200}] * 3, (1000.0,))
+    assert meta["out_of_band"] == 1 and meta["out_of_band_share"] == 0.25
+
+
 def test_capped_and_overlapping_documents_are_not_kept():
     # most probable failure (D11, Amendment 24): a document sharing an 8-gram with the eval index or
     # cut at the cap is counted toward the dose and trained on (the gate only counted them before)
@@ -191,15 +204,15 @@ def test_train_saves_each_dose_with_and_without_recovery(tmp_path):
     assert set(rec["adapters"]) == {"1024", "2048", "1024_rec", "2048_rec"}
     for a in rec["adapters"].values():
         assert (Path(a) / "adapter_config.json").exists()
-    assert (tmp_path / "parity" / "sdf_hf.json").exists()
     r0 = P.stage_train(tmp_path, "r0", True)
     assert set(r0["adapters"]) == {"rec"} and r0["recovery"]["n"] == 3
 
 
 @pytest.mark.slow
-def test_read_banks_a_kind_that_fails_parity(tmp_path):
-    # most probable failure: an adapter kind whose served distribution does not match its HF read
-    # is read anyway (the served adapter is not the trained one), or the read writes nothing
+def test_read_serves_the_copy_banks_a_no_op_load_and_reads_the_base(tmp_path, monkeypatch):
+    # most probable failure (CST-A22): an adapter served as the base model passes parity and is
+    # read; also: the served copy is skipped, the same-session base read is missing (Amendment 26
+    # item 3), or a parity record is overwritten by a later read
     import pilot_pod_lib as PL
     import torch
 
@@ -209,18 +222,21 @@ def test_read_banks_a_kind_that_fails_parity(tmp_path):
         for name, prm in wb.model.named_parameters():
             if "lora_B" in name:
                 prm.normal_(0, 0.5)
-    adir = tmp_path / "adapters" / "toy"
-    wb.model.save_pretrained(str(adir))
-    PL.hf_parity(wb, tmp_path, "sdf", True)
-    res = PL.stage_read(tmp_path, [("toy", str(adir), "sdf")], True)
-    assert res["read"] == ["toy"] and res["parity"]["sdf"]  # served matches attached
+    adir = str(tmp_path / "adapters" / "toy")
+    wb.model.save_pretrained(adir)
+    PL.hf_letters(tmp_path, [("toy", adir), ("noserve", adir)], True)
+    res = PL.stage_read(tmp_path, [("toy", adir)], True)
+    assert res["read"] == ["toy"] and res["parity"]["toy"]
     assert any((tmp_path / "gen" / "toy").glob("panel_operator_*.jsonl"))
-    hf = json.loads((tmp_path / "parity" / "sdf_hf.json").read_text())
-    hf["base"] = hf["attached"]  # TV(base, attached) = 0: nothing served can pass
-    (tmp_path / "parity" / "dpo_hf.json").write_text(json.dumps(hf))
-    res = PL.stage_read(tmp_path, [("toy2", str(adir), "dpo")], True)
-    assert res["banked"] == ["toy2"] and not res["parity"]["dpo"]
-    assert not (tmp_path / "gen" / "toy2").exists()
+    assert any((tmp_path / "gen" / PL.BASE_TAG).glob("panel_operator_*.jsonl"))
+    monkeypatch.setattr(PL, "served_copy", lambda out, tag, a, dry: a)  # the old, unfixed path
+    res = PL.stage_read(tmp_path, [("noserve", adir)], True)
+    rec = json.loads((tmp_path / "parity" / "noserve.json").read_text())
+    assert res["banked"] == ["noserve"] and rec["tv_served_vs_base"] < 1e-6
+    assert not (tmp_path / "gen" / "noserve").exists()
+    before = (tmp_path / "parity" / "toy.json").read_text()
+    PL.stage_read(tmp_path, [("toy", adir)], True)  # a resumed read keeps the record of record
+    assert (tmp_path / "parity" / "toy.json").read_text() == before
 
 
 @pytest.mark.slow

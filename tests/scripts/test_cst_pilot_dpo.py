@@ -106,7 +106,7 @@ def test_dpo_train_saves_both_p_answer_doses_and_reads_by_rank(tmp_path):
         {"kept_ids": {"p_answer": pids, "p_trace": pids}}))
     D.stage_pairs(tmp_path, True)
     rec = D.stage_train(tmp_path, "p_answer", True)
-    assert len(rec["adapters"]) == 2 and (tmp_path / "parity" / "dpo_hf.json").exists()
+    assert len(rec["adapters"]) == 2
     lo, hi = sorted(rec["adapters"], key=float)
     assert D.adapter_dir(tmp_path, "p_answer_250") == rec["adapters"][lo]
     assert D.adapter_dir(tmp_path, "p_answer_500") == rec["adapters"][hi]

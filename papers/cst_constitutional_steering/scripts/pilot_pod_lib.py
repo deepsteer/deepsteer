@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Shared pieces of the two pilot pods (PILOT_BUILD.md §1, §5): the HF model for training, the
-32-prompt parity read per adapter kind, and the LoRA settings of record.
+"""Shared pieces of the pilot pods (PILOT_BUILD.md §1, §5): the HF model for training, the
+32-prompt parity read per read tag, the fixed serving path, and the LoRA settings of record.
 
-**Parity (VALIDATE V4, per adapter kind):** first-token letter log-probs on 32 dose-0 operator
-prompts (the first 32 panel scenarios, letter order k 0), computed on HF with the adapter attached
-and with it disabled (`hf_parity`, while the trainer holds the model) and later on vLLM serving the
-adapter natively (`served_parity`); the kind passes when TV(served, attached) is below TV(base,
-attached), as VALIDATE measured it (0.0125 against 0.1115). **Superseded by Amendment 25 A4**
-(CST-A22: that rule passed an adapter served as the base by 0.0009): `parity_record` on the same
-adapter on both sides, one write-once record per read tag.
+**Parity (Amendment 25 A4, CST-A22):** first-token letter log-probs on 32 dose-0 operator prompts
+(the first 32 panel scenarios, letter order k 0). The HF side (`hf_letters`) is the trainer's class
+with each read tag's adapter attached, and the base; the served side is vLLM serving the same
+adapter natively. A tag passes when TV(served, attached) <= 0.2 TV(base, attached) and TV(served,
+base) >= 0.5 TV(base, attached); one write-once record per tag (`parity_record`, `write_once`).
+**Serving (Amendment 26 item 4):** vLLM serves the multimodal class, whose decoder sits at
+`model.language_model.layers`; the trainer saves under `model.layers`. Every adapter is served from
+a copy with its keys on the served class's path (`served_copy`), and the dry stand-in is the served
+class (VALIDATE's `HFStandIn`), so a no-op load shows in a dry run. Every read stage also reads the
+base model on the same engine (Amendment 26 item 3).
 """
 
 from __future__ import annotations
@@ -71,20 +74,6 @@ def _letter_lp(model, prompts, lids) -> list[list[float]]:
     return out
 
 
-def hf_parity(model, out: Path, kind: str, dry: bool) -> dict:
-    """Save the HF side of the parity read for ``kind`` (attached and adapter-disabled)."""
-    from deepsteer.steering import objective_lora as OL
-
-    prompts, lids = parity_prompts(dry)
-    attached = _letter_lp(model, prompts, lids)
-    with OL.adapter_disabled(model):
-        base = _letter_lp(model, prompts, lids)
-    rec = {"kind": kind, "letter_ids": lids, "attached": attached, "base": base}
-    (out / "parity").mkdir(parents=True, exist_ok=True)
-    (out / "parity" / f"{kind}_hf.json").write_text(json.dumps(rec) + "\n")
-    return rec
-
-
 def tv(a: list[list[float]], b: list[list[float]]) -> float:
     """Mean total variation between letter distributions (renormalized over the letters)."""
     import math
@@ -96,20 +85,6 @@ def tv(a: list[list[float]], b: list[list[float]]) -> float:
         sx, sy = sum(px), sum(py)
         tot += 0.5 * sum(abs(u / sx - w / sy) for u, w in zip(px, py))
     return tot / max(len(a), 1)
-
-
-def served_parity(out: Path, kind: str, eng, lora, dry: bool) -> dict:
-    """The vLLM side: served letter log-probs against the saved HF read; writes the verdict."""
-    hf = json.loads((out / "parity" / f"{kind}_hf.json").read_text())
-    prompts, lids = parity_prompts(dry)
-    # the dry stand-in carries its adapter from construction (cst_validate_pod.HFStandIn)
-    served = (eng.first_logprobs(prompts, lids) if dry else
-              eng.first_logprobs(prompts, lids, lora=lora))
-    rec = {"kind": kind, "tv_served_vs_attached": tv(served, hf["attached"]),
-           "tv_base_vs_attached": tv(hf["base"], hf["attached"])}
-    rec["passes"] = rec["tv_served_vs_attached"] < rec["tv_base_vs_attached"]
-    (out / "parity" / f"{kind}_served.json").write_text(json.dumps(rec, indent=1) + "\n")
-    return rec
 
 
 PARITY_ATTACHED_MAX, PARITY_BASE_MIN = 0.2, 0.5  # Amendment 25 A4, fractions of TV(base, attached)
@@ -185,33 +160,80 @@ def clear_ids() -> set[str]:
             and r.get("set", "panel") == "panel"}
 
 
-class DryEngine(S.V.HFStandIn):
-    """The dry run's served adapter: the tiny model loaded the trainer's way (`WhiteBoxModel`), so
-    a saved adapter attaches with its own key names (VALIDATE's stand-in loads another model
-    class, on which they do not attach); generation and letter reads as the stand-in."""
+def key_prefix(adir: str | Path) -> str:
+    """The decoder path a saved adapter's keys carry (``model.layers`` for the trainer's class,
+    ``model.language_model.layers`` for the served class), read from the safetensors header."""
+    import re
 
-    def __init__(self, path: str, lora: str | None = None):
-        import torch
+    from safetensors import safe_open
 
-        from deepsteer.core.model_interface import WhiteBoxModel
-        from deepsteer.core.types import AccessTier
-
-        self.torch = torch
-        self.tok = S.V._tok(path)  # noqa: SLF001
-        self.m = WhiteBoxModel(path, access_tier=AccessTier.WEIGHTS, device="cpu",
-                               torch_dtype=torch.float32).model
-        if lora:
-            from peft import PeftModel
-
-            self.m = PeftModel.from_pretrained(self.m, lora)
-        self.m.eval()
+    with safe_open(str(Path(adir) / "adapter_model.safetensors"), "pt") as f:
+        keys = list(f.keys())
+    m = re.match(r"base_model\.model\.(.+?\.layers)\.\d+\.", keys[0])
+    if not m:
+        raise ValueError(f"{adir}: unexpected adapter key {keys[0]}")
+    return m.group(1)
 
 
-def _engine(dry: bool, adapter: str | None):
-    if dry:
-        path = S.V._model_path(True)  # noqa: SLF001
-        return path, DryEngine(path, lora=adapter)
-    return S.subject(False, "a0", lora=True)
+_PREFIXES: dict[str, dict[str, str]] = {}
+
+
+def served_copy(out: Path, tag: str, adir: str, dry: bool) -> str:
+    """The adapter as the served class names its modules (Amendment 26 item 4): returned as is when
+    its keys already carry the served path, else a renamed copy at ``served_adapters/<tag>``
+    (outside ``adapters/``, so the end-of-session download skips it)."""
+    path = S.V._model_path(dry)  # noqa: SLF001
+    pre = _PREFIXES.setdefault(path, decoder_prefixes(path))
+    if key_prefix(adir) == pre["served"]:
+        return adir
+    dst = out / "served_adapters" / tag
+    if not (dst / "adapter_model.safetensors").exists():
+        rename_adapter(Path(adir), dst, pre)
+    return str(dst)
+
+
+def hf_letters(out: Path, adapters: list[tuple[str, str]], dry: bool) -> dict:
+    """Amendment 25 A4's HF side: the trainer's class (bf16 on GPU), the base and each read tag's
+    adapter attached, on the 32 parity prompts; ``parity/hf_base.json`` once and
+    ``parity/hf_<tag>.json`` per tag, write-once (a tag already on disk is skipped)."""
+    import torch
+    from peft import PeftModel
+
+    from deepsteer.core.model_interface import WhiteBoxModel
+    from deepsteer.core.types import AccessTier
+
+    todo = [(t, d) for t, d in adapters if not (out / "parity" / f"hf_{t}.json").exists()]
+    if not todo and (out / "parity" / "hf_base.json").exists():
+        return {"done": [t for t, _ in adapters]}
+    path = S.V._model_path(dry)  # noqa: SLF001
+    wb = WhiteBoxModel(path, access_tier=AccessTier.WEIGHTS, device="cpu" if dry else "cuda",
+                       torch_dtype=torch.float32 if dry else torch.bfloat16)
+    prompts, lids = parity_prompts(dry)
+
+    def letters(m):
+        res = []
+        with torch.no_grad():
+            for pr in prompts:
+                x = torch.tensor([pr], device=m.device)
+                lp = torch.log_softmax(m(input_ids=x).logits[0, -1].float(), -1)
+                res.append([float(lp[i]) for i in lids])
+        return res
+
+    if not (out / "parity" / "hf_base.json").exists():
+        write_once(out / "parity" / "hf_base.json", {"letter_ids": lids,
+                                                      "class": type(wb.model).__name__,
+                                                      "base": letters(wb.model)})
+    pm = None
+    for t, d in todo:
+        if pm is None:
+            pm = PeftModel.from_pretrained(wb.model, d, adapter_name=t)
+        else:
+            pm.load_adapter(d, adapter_name=t)
+        pm.set_adapter(t)
+        pm.eval()
+        write_once(out / "parity" / f"hf_{t}.json", {"tag": t, "adapter": d,
+                                                     "attached": letters(pm)})
+    return {"done": [t for t, _ in adapters]}
 
 
 def legit_check(out: Path, dry: bool, arm: str = "a0", engine=None) -> dict:
@@ -235,31 +257,50 @@ def legit_check(out: Path, dry: bool, arm: str = "a0", engine=None) -> dict:
     return rec
 
 
-def stage_read(out: Path, adapters: list[tuple[str, str, str]], dry: bool) -> dict:
-    """The screen read (Amendment 20 item 2) of each ``(tag, adapter dir, kind)``: the parity check
-    once per kind first (a kind that fails is banked, not read), then the operator and plain cells
-    on the 458 clear items at k 2, cell A′ at k 8 and the legitimate-order cell at k 4, through
-    S0a's generation stage on one engine with the adapter served natively."""
+BASE_TAG = "base_session"  # Amendment 26 item 3: the base model, same engine, same session
+
+
+def stage_read(out: Path, adapters: list[tuple[str, str]], dry: bool) -> dict:
+    """The screen read (Amendment 20 item 2) of each ``(tag, adapter dir)``: Amendment 25 A4's
+    parity per tag on the served copy (a tag that fails is banked, not read), then the operator and
+    plain cells on the 458 clear items at k 2, cell A′ at k 8 and the legitimate-order cell at k 4
+    on one engine with the adapter served natively. First, once per session, the base model on the
+    same engine at the same k (``base_session``; Amendment 26 item 3). Needs ``hf_letters`` on disk
+    for every tag."""
     clear = clear_ids() if not dry else None
-    res: dict = {"parity": {}, "read": [], "banked": []}
-    eng = None if dry else _engine(False, None)
-    for n, (tag, adir, kind) in enumerate(adapters, 1):
+    hfb = json.loads((out / "parity" / "hf_base.json").read_text())
+    prompts, lids = parity_prompts(dry)
+    path, eng = S.subject(dry, "a0", lora=not dry)  # dry: VALIDATE's stand-in, the served class
+    served_base = eng.first_logprobs(prompts, lids)
+    res: dict = {"parity": {}, "read": [], "banked": [], "base_tag": BASE_TAG}
+    for part in READ_PARTS:  # skipped chunk by chunk when already on disk (a resumed session)
+        S.stage_gen(out, "a0", [part], dry, tag=BASE_TAG, k_override=READ_K, engine=(path, eng),
+                    only=clear if part.startswith("panel") else None)
+    for n, (tag, adir) in enumerate(adapters, 1):
+        sdir = served_copy(out, tag, adir, dry)
         if dry:
-            eng = _engine(True, adir)
-            req = None
+            e, req = (path, S.V.HFStandIn(path, lora=sdir)), None
+            served = e[1].first_logprobs(prompts, lids)
         else:
             from vllm.lora.request import LoRARequest
 
-            req = LoRARequest(tag, n, adir)
-        if kind not in res["parity"]:
-            res["parity"][kind] = served_parity(out, kind, eng[1], req, dry)["passes"]
-        if not res["parity"][kind]:
+            e, req = (path, eng), LoRARequest(tag, n, sdir)
+            served = eng.first_logprobs(prompts, lids, lora=req)
+        f = out / "parity" / f"{tag}.json"
+        if f.exists():  # never overwritten: a resumed session reads the record of record
+            rec = json.loads(f.read_text())
+        else:
+            hf = json.loads((out / "parity" / f"hf_{tag}.json").read_text())
+            rec = parity_record(tag, served, hf["attached"], hfb["base"], served_base)
+            rec["served_adapter"] = sdir
+            write_once(f, rec)
+        res["parity"][tag] = rec["passes"]
+        if not rec["passes"]:
             res["banked"].append(tag)
             continue
         for part in READ_PARTS:
             S.stage_gen(out, "a0", [part], dry, tag=tag, lora=req, k_override=READ_K,
-                        engine=eng, only=clear if part.startswith("panel") else None)
+                        engine=e, only=clear if part.startswith("panel") else None)
         res["read"].append(tag)
-    S.V._w(out, "read", res)  # noqa: SLF001
+    S.V._w(out, f"read_{'_'.join(t for t, _ in adapters)}", res)  # noqa: SLF001
     return res
-

@@ -95,3 +95,25 @@ def test_dry_run_reads_a_trainer_class_adapter_as_not_served(tmp_path):
     assert s["branch"].startswith("R_noserve: ") and s["tv_base_after_load_vs_base"] < 1e-6
     with pytest.raises(SystemExit):
         Q.stage_gate(out)  # the per-tag records are never overwritten
+
+
+def test_served_adapter_key_path_matches_the_served_class(tmp_path):
+    # most probable failure (CST-A22, Amendment 26 item 4): the adapter handed to vLLM carries the
+    # trainer class's path (model.layers) while the served class names its decoder
+    # model.language_model.layers, so the load is a silent no-op; and the dry stand-in is a class
+    # vLLM does not serve, so no dry run can show it
+    import cst_s0a_pod as S
+    from transformers import AutoConfig
+
+    path = S.V._model_path(True)  # noqa: SLF001
+    pre = PL.decoder_prefixes(path)
+    _, wb, _ = PL.load_model(True)
+    ad = tmp_path / "adapters" / "x"
+    wb.model.save_pretrained(str(ad))
+    assert PL.key_prefix(ad) == pre["trainer"] != pre["served"]
+    served = PL.served_copy(tmp_path, "x", str(ad), True)
+    assert PL.key_prefix(served) == pre["served"]
+    assert PL.served_copy(tmp_path, "y", served, True) == served  # already on the served path
+    eng = S.subject(True, "a0")[1]
+    assert type(eng.m).__name__ == AutoConfig.from_pretrained(path).architectures[0]
+
