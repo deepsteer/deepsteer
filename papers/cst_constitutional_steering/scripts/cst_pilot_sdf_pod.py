@@ -10,9 +10,16 @@ Stages (built so far):
   for D-neutral; the template carries it, so the system message is empty), then rewritten by the
   critique template; thinking off (documents, not decisions). Chunks of 64 documents, resumed by
   chunk. It stops once the final documents reach the arm's token target (1M; the 0.3M checkpoint is
-  the prefix the trainer reads first). **Pilot gate** after the first 50 finals: 500-1,400 words,
-  no chat or think markers, under 5% sharing an 8-gram with the eval index (D11); else the stage
-  writes `corpus_gate_<arm>.json` with ``proceed`` false and stops.
+  the prefix the trainer reads first). **Pilot gate** after the first 50 finals (Amendment 24):
+  500-1,700 words on the documents that did not hit the cap, no chat or think markers, under 5%
+  sharing an 8-gram with the eval index (D11), and at most 5% hitting the cap; else the stage
+  writes `corpus_gate_<arm>.json` with ``proceed`` false and stops. The gate records each
+  template's median length.
+- **Kept documents** (Amendment 24; D11): a final that hit the cap (incomplete) or shares an 8-gram
+  with the eval index is dropped. Only kept documents count toward the token target, feed D-chat's
+  renders, or are trained on; every training record states its arm's document count and the
+  document-equivalents per dose (dose / mean kept document length), and every read states them
+  beside the screen read (`read_docs.json`).
 """
 
 from __future__ import annotations
@@ -31,8 +38,9 @@ import cst_s0a_pod as S  # noqa: E402  (the subject, engine of record and sample
 CST = S.CST
 TARGET_TOKENS = 1_000_000
 CHUNK = 64
-DRAFT_CAP = 2200  # 1,400 words is about 1,900 tokens
-GATE_N, GATE = 50, {"words": (500, 1400), "overlap_max": 0.05}
+DRAFT_CAP = 2200  # about 1,700 words: the word band's upper end sits at the cap (Amendment 24)
+GATE_N = 50
+GATE = {"words": (500, 1700), "overlap_max": 0.05, "capped_max": 0.05}
 MARKERS = re.compile(r"(^|\n)\s*(User|Assistant)\s*:|<think>|</think>|<\|im_", re.I)
 
 
@@ -61,20 +69,69 @@ def no_think_ids(tok, text: str) -> list[int]:
     return list(ids["input_ids"] if hasattr(ids, "keys") else ids)
 
 
-def gate(rows: list[dict], index) -> dict:
+def median_words(rows: list[dict]) -> dict[str, float]:
+    """Each template's median length in words (Amendment 24: read per arm)."""
+    import statistics
+
+    by: dict[str, list[int]] = {}
+    for r in rows:
+        by.setdefault(r.get("template_id", "?"), []).append(len(r["final"].split()))
+    return {k: statistics.median(v) for k, v in sorted(by.items())}
+
+
+def annotate(r: dict, index) -> dict:
+    """Add the 8-gram overlap count and the keep flag to a corpus row (kept: the final did not hit
+    the cap and shares no 8-gram with the eval index; Amendment 24, D11)."""
     import overlap_hashes as OH
 
-    first = rows[:GATE_N]
-    words = [len(r["final"].split()) for r in first]
+    if "kept" not in r:
+        r["overlap_8gram"] = OH.shared(r["final"], index) if index is not None else 0
+        r["kept"] = not r.get("final_hit_cap", False) and r["overlap_8gram"] == 0
+    return r
+
+
+def gate(rows: list[dict], index) -> dict:
+    first = [annotate(r, index) for r in rows[:GATE_N]]
+    n = max(len(first), 1)
+    capped = sum(bool(r.get("final_hit_cap")) for r in first)
     lo, hi = GATE["words"]
-    bad_len = sum(not lo <= w <= hi for w in words)
+    bad_len = sum(not lo <= len(r["final"].split()) <= hi for r in first
+                  if not r.get("final_hit_cap"))
     marked = sum(bool(MARKERS.search(r["final"])) for r in first)
-    hit = sum(OH.shared(r["final"], index) > 0 for r in first) if index is not None else 0
+    hit = sum(r["overlap_8gram"] > 0 for r in first)
     rec = {"n": len(first), "words_out_of_range": bad_len, "markers": marked,
-           "overlap_docs": hit, "overlap_share": hit / max(len(first), 1), **GATE}
+           "overlap_docs": hit, "overlap_share": hit / n, "capped_docs": capped,
+           "capped_share": capped / n,
+           "draft_capped_docs": sum(bool(r.get("draft_hit_cap")) for r in first),
+           "median_words_by_template": median_words(first), "rule": "Amendment 24", **GATE}
     rec["proceed"] = bool(len(first) == GATE_N and bad_len == 0 and marked == 0
-                          and rec["overlap_share"] < GATE["overlap_max"])
+                          and rec["overlap_share"] < GATE["overlap_max"]
+                          and rec["capped_share"] <= GATE["capped_max"])
     return rec
+
+
+def corpus_rows(out: Path, arm: str, dry: bool) -> list[dict]:
+    """The arm's documents in plan order, annotated (rows banked before Amendment 24 are annotated
+    here; a dry run has no eval index)."""
+    import overlap_hashes as OH
+
+    rows = [json.loads(x) for f in sorted((out / "corpus" / arm).glob("chunk_*.jsonl"))
+            for x in open(f)]
+    need = not dry and any("kept" not in r for r in rows)
+    index = OH.load(S.V.CONST_DIR / "eval_8gram_hashes_v1.npy") if need else None
+    return [annotate(r, index) for r in rows]
+
+
+def corpus_meta(rows: list[dict], kept: list[dict], doses: tuple) -> dict:
+    """Rider 2 of Amendment 24: the arm's document count beside its token dose."""
+    toks = sum(r["final_tokens"] for r in kept)
+    mean = toks / max(len(kept), 1)
+    return {"docs_generated": len(rows), "docs_kept": len(kept),
+            "dropped_capped": sum(bool(r.get("final_hit_cap")) for r in rows),
+            "dropped_overlap": sum(r.get("overlap_8gram", 0) > 0 for r in rows),
+            "tokens_kept": toks, "mean_tokens_per_doc": mean,
+            "doc_equivalents_per_dose": {f"{d:g}": d / (mean + 1) for d in doses},
+            "median_words_by_template": median_words(kept)}
 
 
 def stage_corpus(out: Path, arm: str, dry: bool, target: int = TARGET_TOKENS) -> None:
@@ -86,9 +143,10 @@ def stage_corpus(out: Path, arm: str, dry: bool, target: int = TARGET_TOKENS) ->
     doc = document(arm, dry)
     cdir = out / "corpus" / arm
     cdir.mkdir(parents=True, exist_ok=True)
-    rows = [json.loads(x) for f in sorted(cdir.glob("chunk_*.jsonl")) for x in open(f)]
-    toks = sum(r["final_tokens"] for r in rows)
     index = OH.load(S.V.CONST_DIR / "eval_8gram_hashes_v1.npy") if not dry else None
+    rows = [annotate(json.loads(x), index) for f in sorted(cdir.glob("chunk_*.jsonl"))
+            for x in open(f)]
+    toks = sum(r["final_tokens"] for r in rows if r["kept"])  # kept documents only (Amendment 24)
     path, eng = S.subject(dry, "a0s")  # a 34k document in every prompt: A0s's engine (CST-A13)
     tok = S.V._tok(path)  # noqa: SLF001
     gate_f = out / f"corpus_gate_{arm}.json"
@@ -117,15 +175,17 @@ def stage_corpus(out: Path, arm: str, dry: bool, target: int = TARGET_TOKENS) ->
                      "final": fin["text"].strip(), "final_hit_cap": fin["hit_cap"],
                      "final_tokens": len(tok.encode(fin["text"], add_special_tokens=False)),
                      "templates": [d["template_id"], critique_id(arm)]}
+                annotate(r, index)
                 fh.write(json.dumps(r) + "\n")
                 rows.append(r)
-                toks += r["final_tokens"]
+                toks += r["final_tokens"] if r["kept"] else 0
         tmp.rename(f)
         S.V._w(out, f"corpus_{arm}_log_{c0 // CHUNK:03d}", {  # noqa: SLF001
             "arm": arm, "docs": len(rows), "tokens": toks, "seconds": time.time() - t0})
     if len(rows) >= GATE_N and not gate_f.exists():
         S.V._w(out, f"corpus_gate_{arm}", gate(rows, index))  # noqa: SLF001
-    S.V._w(out, f"corpus_{arm}", {"docs": len(rows), "tokens": toks, "target": target})  # noqa: SLF001
+    S.V._w(out, f"corpus_{arm}", {"docs": len(rows), "tokens": toks, "target": target,  # noqa: SLF001
+                                   **corpus_meta(rows, [r for r in rows if r["kept"]], ())})
 
 
 def stage_chat(out: Path, dry: bool) -> None:
@@ -137,8 +197,7 @@ def stage_chat(out: Path, dry: bool) -> None:
 
     from deepsteer.corpus.prompts import TEMPLATES
 
-    docs = [json.loads(x) for f in sorted((out / "corpus" / "d_doc").glob("chunk_*.jsonl"))
-            for x in open(f)]
+    docs = [r for r in corpus_rows(out, "d_doc", dry) if r["kept"]]  # Amendment 24
     if not docs:
         raise SystemExit("BAIL: no D-doc corpus to render")
     target = sum(d["final_tokens"] for d in docs)
@@ -246,8 +305,7 @@ def rung_data(out: Path, rung: str, tok, dry: bool) -> tuple[list, float, tuple]
         body = tok.encode(S.constitution(dry), add_special_tokens=False)
         chunks = PT.pack([body] * RAW_PASSES, tok.eos_token_id, seq)
         return [(c, None) for c in chunks], seq * accum, (len(chunks) * seq,)
-    rows = [json.loads(x) for f in sorted((out / "corpus" / rung).glob("chunk_*.jsonl"))
-            for x in open(f)]
+    rows = [r for r in corpus_rows(out, rung, dry) if r["kept"]]  # Amendment 24, D11
     chunks = PT.pack([tok.encode(r["final"], add_special_tokens=False) for r in rows],
                      tok.eos_token_id, seq)
     return [(c, None) for c in chunks], seq * accum, DOSES[rung]
@@ -278,6 +336,9 @@ def stage_train(out: Path, rung: str, dry: bool, doses: tuple | None = None) -> 
             raise SystemExit(f"BAIL: {rung} has no training examples")
         # a dry run takes one optimizer step per registered dose, so every checkpoint path runs
         doses = doses or (tuple(per_step * (i + 1) for i in range(len(reg))) if dry else reg)
+        if rung in ("d_doc", "d_neutral"):  # Amendment 24 rider 2: documents beside the dose
+            rows = corpus_rows(out, rung, dry)
+            rec["corpus"] = corpus_meta(rows, [r for r in rows if r["kept"]], doses)
         rec["train"] = PT.train_rung(
             wb, ex, lambda e: PT.lm_loss(wb, e[0], e[1]), per_step_dose=per_step, doses=doses,
             out_dir=adir, lr=PL.SDF_LR)
@@ -315,6 +376,20 @@ def adapter_dir(out: Path, tag: str) -> str:
 def stage_read_tags(out: Path, tags: list[str], dry: bool) -> dict:
     import pilot_pod_lib as PL
 
+    # Amendment 24 rider 2: each read's document count and documents at its dose (merged across
+    # read stages)
+    f = out / "read_docs.json"
+    docs = json.loads(f.read_text()) if f.exists() else {}
+    for t in tags:
+        rung, which, _ = READS[t]
+        tr = json.loads((out / f"train_{rung}.json").read_text())
+        if "corpus" in tr:
+            per = tr["corpus"]["doc_equivalents_per_dose"]
+            d = sorted(per, key=float)[-1 if which == "max" else 0]
+            docs[t] = {"rung": rung, "dose": d, "doc_equivalents": per[d],
+                       "docs_kept": tr["corpus"]["docs_kept"],
+                       "mean_tokens_per_doc": tr["corpus"]["mean_tokens_per_doc"]}
+    S.V._w(out, "read_docs", docs)  # noqa: SLF001
     return PL.stage_read(out, [(t, adapter_dir(out, t), "sdf") for t in tags], dry)
 
 

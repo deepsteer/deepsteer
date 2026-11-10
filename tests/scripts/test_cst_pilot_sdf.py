@@ -39,6 +39,73 @@ def test_gate_passes_prose_and_stops_on_each_failure():
     assert not P.gate(_rows(PROSE, 49), index)["proceed"]  # fewer than the gate's 50
 
 
+def _words(n: int) -> str:
+    return " ".join(f"w{i % 50}" for i in range(n))
+
+
+def test_amendment_24_band_and_cap_rule():
+    # most probable failure (Amendment 24): the gate still fails complete stories just over the old
+    # 1,400 bound, or counts a capped (incomplete) document as in range instead of dropping it, or
+    # lets more than 5% of the first 50 hit the cap
+    ok = [{"final": _words(1600), "template_id": "sdf_story_v1"} for _ in range(50)]
+    g = P.gate(ok, None)
+    assert g["proceed"] and g["median_words_by_template"] == {"sdf_story_v1": 1600}
+    assert not P.gate([{"final": _words(1800)} for _ in range(50)], None)["proceed"]
+    capped = [{"final": _words(1800), "final_hit_cap": True}]
+    two = P.gate(capped * 2 + ok[:48], None)
+    assert two["proceed"] and two["capped_docs"] == 2 and two["words_out_of_range"] == 0
+    assert not P.gate(capped * 3 + ok[:47], None)["proceed"]  # 6% of 50 hit the cap
+
+
+def test_capped_and_overlapping_documents_are_not_kept():
+    # most probable failure (D11, Amendment 24): a document sharing an 8-gram with the eval index or
+    # cut at the cap is counted toward the dose and trained on (the gate only counted them before)
+    import numpy as np
+
+    eval_text = "a completely separate sentence that sits in an evaluation set and nowhere else"
+    index = np.unique(OH.hashes(eval_text))
+    assert P.annotate({"final": PROSE}, index)["kept"]
+    assert not P.annotate({"final": PROSE + " " + eval_text}, index)["kept"]
+    assert not P.annotate({"final": PROSE, "final_hit_cap": True}, index)["kept"]
+
+
+class _Tok:
+    eos_token_id = 0
+
+    def encode(self, text, add_special_tokens=False):
+        return [1 + (hash(w) % 50) for w in text.split()]
+
+
+def _write_corpus(tmp_path, arm, rows):
+    d = tmp_path / "corpus" / arm
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "chunk_000.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+
+
+def test_training_packs_only_kept_documents_and_states_the_document_count(tmp_path, monkeypatch):
+    # most probable failure (Amendment 24 rider 2): the trainer packs dropped documents, or the
+    # read carries no document count, so D-doc and D-neutral differ in documents unseen
+    rows = [{"final": _words(300), "final_tokens": 300, "template_id": "sdf_essay_v1",
+             "kept": True, "overlap_8gram": 0} for _ in range(10)]
+    rows += [{"final": _words(300), "final_tokens": 300, "final_hit_cap": True, "kept": False,
+              "overlap_8gram": 0} for _ in range(5)]
+    _write_corpus(tmp_path, "d_doc", rows)
+    ex, _, _ = P.rung_data(tmp_path, "d_doc", _Tok(), True)
+    assert sum(len(c) for c, _ in ex) <= 10 * 301  # the 5 capped documents are not packed
+    meta = P.corpus_meta(P.corpus_rows(tmp_path, "d_doc", True), rows[:10], (1505.0,))
+    assert meta["docs_kept"] == 10 and meta["dropped_capped"] == 5
+    assert meta["doc_equivalents_per_dose"]["1505"] == pytest.approx(5.0)
+    (tmp_path / "train_d_doc.json").write_text(json.dumps(
+        {"adapters": {"1505": "a", "1505_rec": "b"}, "corpus": meta}))
+    import pilot_pod_lib as PL
+
+    monkeypatch.setattr(PL, "stage_read", lambda out, ads, dry: {"read": [a[0] for a in ads]})
+    P.stage_read_tags(tmp_path, ["d_doc_1M_rec"], True)
+    P.stage_read_tags(tmp_path, ["d_doc_03M"], True)
+    rd = json.loads((tmp_path / "read_docs.json").read_text())
+    assert set(rd) == {"d_doc_1M_rec", "d_doc_03M"} and rd["d_doc_03M"]["docs_kept"] == 10
+
+
 def test_items_block_names_each_item_with_its_claim():
     # failure: the template's tenet block carries ids without claims (or D-neutral's statements are
     # looked up in the tenet file), so the corpus is written about the wrong items
@@ -66,7 +133,9 @@ def test_chat_render_matches_d_doc_tokens_and_drops_bad_renders(tmp_path, monkey
     d.mkdir(parents=True)
     docs = [{"doc_id": f"d_doc-{i:04d}", "kind": "essay", "items": ["A1"], "final": "x",
              "final_tokens": 40} for i in range(200)]
-    (d / "chunk_000.jsonl").write_text("".join(json.dumps(r) + "\n" for r in docs))
+    # capped documents are dropped (Amendment 24): not rendered, not in the target
+    capped = [dict(docs[0], doc_id=f"cap-{i}", final_hit_cap=True) for i in range(30)]
+    (d / "chunk_000.jsonl").write_text("".join(json.dumps(r) + "\n" for r in docs + capped))
     good = "User: Why honesty?\nAssistant: " + "Because trust depends on it. " * 12
 
     def fake(eng, prompts, seeds, cap, dry, lora=None):

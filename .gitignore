@@ -166,4 +166,5 @@ papers/cst_constitutional_steering/outputs/s0b/
 
 # CST pilot pods (downloaded per session; synced back for resume)
 papers/cst_constitutional_steering/outputs/pilot_sdf/
+papers/cst_constitutional_steering/outputs/pilot_sdf_attempt1/
 papers/cst_constitutional_steering/outputs/pilot_dpo/

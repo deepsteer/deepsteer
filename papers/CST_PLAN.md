@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.22, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) and 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), §13.** v0.1 was the draft for the
+Status: **v0.23, 2026-11-09: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) and 24 (the corpus gate's length band and cap rule, D11's drop), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1615,3 +1615,34 @@ Riders:
    classification of item 3's pattern on a seeded sample to check the regex.
 7. **H1 and CST-A19:** ΔP is reported on the 82 and on the stable 48; H1 gates nothing.
 
+### Amendment 24 (2026-11-09; author, the D-doc corpus gate; zero GPU; on origin before the SDF relaunch line)
+
+**Observation.** The SDF pod's first session stopped at the D-doc corpus gate (0.38 h): 9 of the
+first 50 finals ran 1,409-1,556 words against the 500-1,400 band. None hit the generation cap, none
+ran under 500 words, none carried chat or think markers, and 1 of 50 shares an 8-gram with the eval
+index (0.02, under the 5% bar). The band's upper end equalled the story templates' requested maximum
+(800 to 1,400 words), and the critique pass lengthened 46 of 64 drafts. Final medians by template:
+steadiness story 1,373 words (6 of 13 over), story 1,222 (2 of 12), commentary 1,004, essay 822,
+FAQ 763 (one at 1,502). The documents are complete, not degenerate.
+
+1. **The word band is 500-1,700 words on both arms** (D-doc and D-neutral). 1,700 words is about the
+   2,200-token generation cap, so the cap is the real upper check.
+2. **The cap rule (rider 1):** a final that hits the cap is dropped as incomplete; the word band is
+   read on the documents that did not hit it; the gate fails if more than 5% of the first 50 hit the
+   cap (3 or more). Markers and the 8-gram share (under 5%) stand as registered.
+3. **Each template's median length is recorded per arm** in the gate record, the corpus record and
+   the training record, and D-doc's and D-neutral's are compared beside the screen read.
+4. **Document counts beside the dose (rider 2):** D-doc and D-neutral stay matched on total tokens
+   (the 1M dose; D-doc's 0.3M checkpoint). Each SDF training record states the arm's kept document
+   count and its document-equivalents per dose (the dose over the mean kept document length plus its
+   separator), and every screen read states them beside it (`read_docs.json`): longer documents mean
+   fewer of them.
+5. **A build defect found while applying item 2 (D11):** the gate counted documents sharing an
+   8-gram with the eval index, but the corpus stage did not drop them; they counted toward the token
+   target and would have been trained on. A document is now kept only if it neither hit the cap nor
+   shares an 8-gram; only kept documents count toward the token target, feed D-chat's renders and
+   are trained on. Blast radius: none (no adapter trained, no read run; the stopped session
+   generated 64 documents).
+6. **The stopped session's 64 documents are banked, not resumed** (kept locally under
+   `outputs/pilot_sdf_attempt1/`). The relaunch regenerates from the plan's start under the amended
+   gate, about 0.3 h before it reaches the point where the first session stopped.

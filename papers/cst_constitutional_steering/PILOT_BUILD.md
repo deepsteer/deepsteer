@@ -82,7 +82,8 @@ trace-length distribution, CST-A10), one pass at a fixed learning rate after the
 | 9 | D-doc 0.3M reads (with recovery, then without) | 0.9 |
 | 10 | D-raw training and read | 0.6 |
 
-**Pilot gate (after stage 2's first 50 documents):** 500-1,400 words each, no chat or think markers,
+**Pilot gate (after stage 2's first 50 documents; Amendment 24):** 500-1,700 words on the documents
+that did not hit the cap, at most 5% hitting the cap (a capped document is dropped), no chat or think markers,
 under 5% dropped by the 8-gram check (D11); else stop and bank. **Bail order** (Amendment 21 item 1):
 past the price, drop the 0.3M checkpoint's without-recovery read first, then D-raw (stages 9-10 sit
 last for that reason). **Saves:** every document (tenet ids, template, model and revision, sha;
