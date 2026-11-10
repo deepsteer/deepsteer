@@ -308,7 +308,9 @@ def legit_check(out: Path, dry: bool, arm: str = "a0", engine=None) -> dict:
 BASE_TAG = "base_session"  # Amendment 26 item 3: the base model, same engine, same session
 
 
-def stage_read(out: Path, adapters: list[tuple[str, str]], dry: bool) -> dict:
+def stage_read(out: Path, adapters: list[tuple[str, str]], dry: bool,
+               parts: tuple[str, ...] = READ_PARTS, k_override: dict[str, int] | None = None,
+               limit: int | None = None, base: bool = True) -> dict:
     """The screen read (Amendment 20 item 2) of each ``(tag, adapter dir)``: Amendment 25 A4's
     parity per tag on the served copy (a tag that fails is banked, not read), then the operator and
     plain cells on the 458 clear items at k 2, cell A′ at k 8 and the legitimate-order cell at k 4
@@ -316,13 +318,17 @@ def stage_read(out: Path, adapters: list[tuple[str, str]], dry: bool) -> dict:
     same engine at the same k (``base_session``; Amendment 26 item 3). Needs ``hf_letters`` on disk
     for every tag."""
     clear = clear_ids() if not dry else None
+    if limit is not None:  # a smoke read: the first ``limit`` clear panel items only
+        pool = sorted(clear) if clear else S.scenarios(dry)["ids"]["panel"]
+        clear = set(pool[:limit])
+    k = k_override or READ_K
     hfb = json.loads((out / "parity" / "hf_base.json").read_text())
     prompts, lids = parity_prompts(dry)
     path, eng = S.subject(dry, "a0", lora=not dry)  # dry: VALIDATE's stand-in, the served class
     served_base = eng.first_logprobs(prompts, lids)
     res: dict = {"parity": {}, "read": [], "banked": [], "base_tag": BASE_TAG}
-    for part in READ_PARTS:  # skipped chunk by chunk when already on disk (a resumed session)
-        S.stage_gen(out, "a0", [part], dry, tag=BASE_TAG, k_override=READ_K, engine=(path, eng),
+    for part in parts if base else ():  # skipped chunk by chunk when on disk (a resumed session)
+        S.stage_gen(out, "a0", [part], dry, tag=BASE_TAG, k_override=k, engine=(path, eng),
                     only=clear if part.startswith("panel") else None)
     for n, (tag, adir) in enumerate(adapters, 1):
         try:
@@ -354,8 +360,8 @@ def stage_read(out: Path, adapters: list[tuple[str, str]], dry: bool) -> dict:
         if not rec["passes"]:
             res["banked"].append(tag)
             continue
-        for part in READ_PARTS:
-            S.stage_gen(out, "a0", [part], dry, tag=tag, lora=req, k_override=READ_K,
+        for part in parts:
+            S.stage_gen(out, "a0", [part], dry, tag=tag, lora=req, k_override=k,
                         engine=e, only=clear if part.startswith("panel") else None)
         res["read"].append(tag)
     S.V._w(out, f"read_{'_'.join(t for t, _ in adapters)}", res)  # noqa: SLF001

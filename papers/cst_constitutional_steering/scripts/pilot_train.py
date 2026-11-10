@@ -189,9 +189,12 @@ def dpo_nll_backward(model, prompt: list[int], chosen: list[int], rejected: list
 
 
 def train_dpo(model, pairs: list[dict], *, doses: Sequence[float], out_dir: Path, lr: float,
-              grad_accum: int = 4, seed: int = 0, warmup_steps: int = 10) -> dict:
+              grad_accum: int = 4, seed: int = 0, warmup_steps: int = 10,
+              retain: list[tuple[list[int], list[int]]] | None = None) -> dict:
     """DPO + NLL by the split backward; AdamW, linear warm-up then cosine (as ``OL.train``); the
-    adapter saved at each dose in pairs seen (``out_dir/<dose>``)."""
+    adapter saved at each dose in items seen (``out_dir/<dose>``). ``retain`` (Amendment 25 C4,
+    P-dpo): NLL-only ``(ids, mask)`` items shuffled in with the pairs, each a plain masked NLL
+    backward at the same scale; the dose then counts pairs and retain items."""
     import math
 
     steps = checkpoint_steps(doses, grad_accum)
@@ -208,18 +211,28 @@ def train_dpo(model, pairs: list[dict], *, doses: Sequence[float], out_dir: Path
         return 0.5 * (1 + math.cos(math.pi * (st - warm) / max(total - warm, 1)))
 
     sched = torch.optim.lr_scheduler.LambdaLR(opt, lr_at)
-    it = OL.micro_batches(pairs, seed)
+    items = list(pairs) + [{"retain": (ids, mask)} for ids, mask in (retain or [])]
+    it = OL.micro_batches(items, seed)
     hist, saved = [], {}
     model.model.train()
+
+    def one(r: dict) -> dict:
+        if "retain" in r:
+            loss = lm_loss(model, *r["retain"]) / grad_accum
+            loss.backward()
+            return {"retain_nll": float(loss.detach()) * grad_accum}
+        return dpo_nll_backward(model, r["prompt"], r["chosen"], r["rejected"],
+                                r["chosen_mask"], r["rejected_mask"], scale=grad_accum)
+
     for st in range(1, total + 1):
-        infos = [dpo_nll_backward(model, r["prompt"], r["chosen"], r["rejected"],
-                                  r["chosen_mask"], r["rejected_mask"], scale=grad_accum)
-                 for r in (next(it) for _ in range(grad_accum))]
+        infos = [one(r) for r in (next(it) for _ in range(grad_accum))]
         torch.nn.utils.clip_grad_norm_(params, 1.0)
         opt.step()
         sched.step()
         opt.zero_grad()
-        hist.append({k: sum(i[k] for i in infos) / len(infos) for k in infos[0]})
+        keys = sorted({k for i in infos for k in i})
+        hist.append({k: sum(i[k] for i in infos if k in i) / max(sum(k in i for i in infos), 1)
+                     for k in keys})
         if st in at:
             model.model.eval()
             d = out_dir / f"{at[st]:g}"
