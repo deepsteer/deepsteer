@@ -46,6 +46,30 @@ def ordered_units(lab: dict) -> dict[str, dict[str, list[int]]]:
     return out
 
 
+def point_delta(units: dict, ids: set[str]) -> float:
+    """A0s - A0 of per-scenario means on ``ids`` (``s0a_reads.paired``'s point estimate, without its
+    bootstrap: the null needs only each draw's point)."""
+    import statistics
+
+    sids = [s for s in ids if s in units["a0"] and s in units["a0s"]]
+    return (statistics.mean(statistics.mean(units["a0s"][s]) for s in sids)
+            - statistics.mean(statistics.mean(units["a0"][s]) for s in sids))
+
+
+def directed_units(lab: dict, cond: str) -> dict[str, dict[str, list[int]]]:
+    """Arm -> H1 scenario -> directed-option indicator per rollout with an action (ΔP's units)."""
+    out = {}
+    for a in ("a0", "a0s"):
+        u: dict[str, list[int]] = defaultdict(list)
+        for r in A.load_jsonl(f"gen/{a}/h1_{cond}_*.jsonl"):
+            if r["condition"] != cond or r["hit_cap"] or r["option"] is None:
+                continue
+            u[r["scenario_id"]].append(int(r["option"] == lab["record"][r["scenario_id"]]
+                                           ["directed_option_of_record"]))
+        out[a] = dict(u)
+    return out
+
+
 def read(units: dict, ids: set[str]) -> dict:
     return R.paired({s: v for s, v in units["a0"].items() if s in ids},
                     {s: v for s, v in units["a0s"].items() if s in ids})
@@ -83,9 +107,18 @@ def regroup(lab: dict, units: dict) -> dict | None:
     clear = sorted(s for s, v in lab["record"].items() if v["stratum_of_record"] == "clear_refuse"
                    and v["set"] == "panel")
     out["stable_subset"] = read(units, stable)
+    # Amendment 22 item 2: the same fork on H1's clear items and ΔP (the protective option, the
+    # directed option of record, per s0a_reads.actions), plain and operator
+    h1_stable = set(out["h1"]["stable_ids"])
+    h1_clear = {s for s, v in lab["record"].items() if v["set"] == "h1"
+                and v["stratum_of_record"] == "clear_refuse"}
+    out["h1_delta_p"] = {}
+    for cond in ("plain", "operator"):
+        u = directed_units(lab, cond)
+        out["h1_delta_p"][cond] = {"clear_of_record": read(u, h1_clear),
+                                   "stable_subset": read(u, h1_stable)}
     rng = random.Random(SEED)
-    null = sorted(read(units, set(rng.sample(clear, len(stable))))["delta"]
-                  for _ in range(N_NULL))
+    null = sorted(point_delta(units, set(rng.sample(clear, len(stable)))) for _ in range(N_NULL))
     lo, hi = null[int(0.025 * N_NULL)], null[int(0.975 * N_NULL) - 1]
     d = out["stable_subset"]["delta"]
     out["trigger"] = {"null_central_95": [lo, hi], "stable_delta": d,
@@ -123,6 +156,9 @@ def main() -> None:
         for s in ("panel", "h1"):
             print(s, {k: v for k, v in g[s].items() if k != "stable_ids"})
         print("stable", g["stable_subset"], "trigger", g["trigger"])
+        for c, v in g["h1_delta_p"].items():
+            print("H1 ΔP", c, {k: (x["scenarios"], round(x["delta"], 3),
+                                   [round(z, 3) for z in x["ci95"]]) for k, x in v.items()})
 
 
 if __name__ == "__main__":

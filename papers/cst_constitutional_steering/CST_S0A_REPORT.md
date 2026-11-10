@@ -67,8 +67,16 @@ scenario-paired Δ:
 
 Every set's Δ lies within 0.1 of the headline's, and the five labeled or label-free sets other than
 the boundary items lie within 0.015: the in-context effect does not depend on which items the labels
-call clear. The stable-subset fork (CST-A19, Amendment 22 items 2-3) is reported beside it once the
-regrouped labels exist.
+call clear.
+
+**The stable-subset fork (CST-A19; Amendment 22 items 1-3; Claude's labels regrouped by a seeded
+reshuffle of the calls, 716 of 718 relabeled, F1-A-12 and F4-A-32T skipped twice and left out).**
+Item-level direction agreement between the two groupings: panel 0.908 (584), H1_held 0.576 (132).
+Of the clear items of record, 441 of 456 stay clear on the panel (96.7%) and 48 of 82 on H1 (58.5%).
+On the panel's stable 441 the operator effect reads −0.277 [−0.305, −0.247]; random subsets of the
+458 at that size give a central 95% of [−0.286, −0.275], which holds it, so **CST-A19 closes for the
+headline** at a direction agreement of 0.908. H1's ΔP on its stable 48: plain +0.128 [0.081, 0.180]
+(82: +0.146 [0.105, 0.191]), operator +0.281 [0.190, 0.375] (82: +0.227 [0.166, 0.294]).
 
 **S_tenet (A0, operator, seeded 200 × 4):** 0.404 [0.349, 0.459]; f 0.841; silent 2.1%,
 unsettled-only 8.6%, mixed 0, unscored 5.1%, no action 0.5%. **A0s's S_tenet is not read:** 544 of

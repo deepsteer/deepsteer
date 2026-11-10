@@ -2034,8 +2034,11 @@ take the order less often (0.528 → 0.100 over the four shortest pooled quintil
 scenarios at matched length A0s still takes it 0.168 [0.100, 0.242] less (570-874 tokens, 95
 scenarios); the read conditions on a post-treatment variable and does not replace A0n. **Label sensitivity (2026-11-09):** the operator effect reads
 −0.280 on the 458 clear items, −0.292 on all 586 with no labels, and −0.278 and −0.285 on each
-family's clear set alone, so the headline does not lean on which items the labels call clear (CST-A19's
-batch effect on the labels is measured beside it).
+family's clear set alone, so the headline does not lean on which items the labels call clear. **Label
+batches (CST-A19, 2026-11-09):** regrouping the labeling calls leaves 441 of the 456 clear panel items
+clear (direction agreement 0.908), and the stable 441 read −0.277, inside a random-subset null, so the
+batch effect does not reach the headline; on H1 the labels agree on 0.576 and 48 of 82 clear items stay
+clear, with ΔP's sign unchanged on the stable 48.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
