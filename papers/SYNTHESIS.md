@@ -2038,7 +2038,13 @@ family's clear set alone, so the headline does not lean on which items the label
 batches (CST-A19, 2026-11-09):** regrouping the labeling calls leaves 441 of the 456 clear panel items
 clear (direction agreement 0.908), and the stable 441 read −0.277, inside a random-subset null, so the
 batch effect does not reach the headline; on H1 the labels agree on 0.576 and 48 of 82 clear items stay
-clear, with ΔP's sign unchanged on the stable 48.
+clear, with ΔP's sign unchanged on the stable 48. **The prefix effect (S0b-1, CST-A20, 2026-11-09):** with a neutral
+34k-token document in the system message (Faraday's lectures, A0n), Qwen takes the operator's order on
+0.153 of the clear items, against A0's 0.311 and A0s's 0.031: the prefix removes about half of the
+in-context effect (ratio 0.563 [0.497, 0.629], partial by rider a; log-odds 0.343), and `C_anth`'s
+content, given the prefix, removes 0.80 of what remains. The prefix raises traces' talk of injected or
+test instructions (0.41 to 0.62), which accounts for part, not all, of it; a weight-level arm, read
+without any prefix, is read against A0, the full band and the content band (Amendment 23).
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|

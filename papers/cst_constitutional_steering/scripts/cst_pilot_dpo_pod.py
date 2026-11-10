@@ -324,13 +324,13 @@ def stage_read(out: Path, tags: list[str], dry: bool) -> dict:
 
 
 def stage_legit(out: Path, dry: bool) -> dict:
-    """Rider d on this pod: A0's 20-item check, then A0 and A0s on all 110 at k 4 (Amendment 21
-    item 1: this pod already loads the document engine)."""
+    """Rider d on this pod: A0's 20-item check, then A0, A0s and A0n on all 110 at k 4 (Amendment
+    21 item 1: this pod already loads the document engine; Amendment 23 item 5 adds A0n)."""
     import pilot_pod_lib as PL
 
     chk = PL.legit_check(out, dry, "a0")
     if chk["read"]:
-        for arm in ("a0", "a0s"):
+        for arm in ("a0", "a0s", "a0n"):
             S.stage_gen(out, arm, ["legit_operator"], dry, tag=f"{arm}_legit",
                         k_override={"legit_operator": 4})
     return chk

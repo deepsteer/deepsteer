@@ -71,7 +71,9 @@ print(">> vLLM smoke OK:", len(out[0].outputs[0].token_ids), "tokens")
 EOF
 
 # ---- synced inputs (gitignored; SYNC_OUTPUTS) ----
-[ -f "$CST_CONST_DIR/C_anth.txt" ] || { echo "BAIL: C_anth.txt did not sync"; exit 1; }
+for f in C_anth.txt a0n_faraday_v1.txt; do  # A0n on the legitimate-order cell (Amendment 23 item 5)
+  [ -f "$CST_CONST_DIR/$f" ] || { echo "BAIL: $f did not sync"; exit 1; }
+done
 
 $PY - <<'EOF' > "$OUT/logs/models_pilot_dpo${SESSION}.json" || { echo "BAIL: model access or download"; exit 1; }
 import json

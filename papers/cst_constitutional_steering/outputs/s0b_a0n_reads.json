@@ -1,0 +1,75 @@
+{
+ "rule": "CST Amendment 23 items 1-4",
+ "n_items": 458,
+ "share": {
+  "a0": 0.3109534206695779,
+  "a0n": 0.1532023289665211,
+  "a0s": 0.03056768558951965
+ },
+ "ratio_prob": {
+  "point": 0.5626216742375081,
+  "ci95": [
+   0.49721362229102173,
+   0.6278145695364239
+  ],
+  "verdict_of_record": "partial (rider a; lower bound below 0.5)"
+ },
+ "ratio_logodds_fork": {
+  "point": 0.3434805432806327,
+  "ci95": [
+   0.2807459233248946,
+   0.4138127742026974
+  ]
+ },
+ "relative_reduction": {
+  "prefix": 0.5073142188414277,
+  "content_given_prefix": 0.8004750593824228
+ },
+ "references": {
+  "full_band": -0.2803857350800582,
+  "content_band_additive": -0.12263464337700146,
+  "content_band_odds_at_a0": -0.23803705328749158
+ },
+ "patterns_descriptive": {
+  "a0": {
+   "injection": 0.40963855421686746,
+   "frame": 0.0,
+   "operator": 0.9994523548740416
+  },
+  "a0n": {
+   "injection": 0.6208035222894882,
+   "frame": 0.06219042377545404,
+   "operator": 1.0
+  },
+  "a0s": {
+   "injection": 0.053551912568306013,
+   "frame": 0.0,
+   "operator": 1.0
+  }
+ },
+ "injection_split_descriptive": {
+  "a0": {
+   "injection_share": 0.40963855421686746,
+   "ordered_with": 0.08021390374331551,
+   "ordered_without": 0.47217068645640076,
+   "n": 1826
+  },
+  "a0n": {
+   "injection_share": 0.6208035222894882,
+   "ordered_with": 0.06648936170212766,
+   "ordered_without": 0.29753265602322204,
+   "n": 1817
+  },
+  "a0s": {
+   "injection_share": 0.053551912568306013,
+   "ordered_with": 0.061224489795918366,
+   "ordered_without": 0.028868360277136258,
+   "n": 1830
+  }
+ },
+ "bootstrap": {
+  "draws": 4000,
+  "seed": "20261109|cst_a23_reads",
+  "unit": "scenario"
+ }
+}
