@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.24, 2026-11-10: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods), §13.** v0.1 was the draft for the
+Status: **v0.24, 2026-11-10: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) and 27 (the pressure line's writer, gates and three sessions), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1722,4 +1722,39 @@ FAQ 763 (one at 1,502). The documents are complete, not degenerate.
 5. **Tonight, if the mini-pod confirms R_noserve:** pod 1 re-reads the saved SDF adapters on the
    fixed path and builds D-neutral; pod 2 is the pressure pod once `PRESSURE_BUILD.md` and its card
    are ready. Each prices at or under 10.5 h under Amendment 25 A4's gate.
+
+### Amendment 27 (2026-11-10; author, the rulings on `PRESSURE_BUILD.md`; zero GPU except item 4; on origin before 2-roll's card)
+
+The author's message named this Amendment 26; that number was already registered earlier today, so
+it is registered as 27. Pod 1 launches unchanged.
+
+1. **Writer.** The subject writes the pressure scenarios on the pod from the seeded grid (CST_PLAN
+   §4's default generator), thinking on, no document in context. Claude's finished batches are kept,
+   and every scenario carries a writer tag. Declined batches are never retried or rephrased. Cells
+   that would need dangerous technical detail are excluded from the grid for every writer. Pilot gate
+   on the subject's first 50: format, length, an order present where the cell has one, no 8-gram
+   shared with any eval set or the legitimate-order cell, near duplicates removed. Target 600 in the
+   registered mix; the count is reported by writer and kind.
+   *The lead's reading, flagged:* (a) a declined batch's cells go to no writer, the subject included
+   (giving them to another writer would retry them); fresh cells from the same grid rule replace them
+   to keep the mix. (b) The exclusion removes the `no_caveats_research` type (omitting safety caveats
+   on dangerous activities would require the detail), Claude's 8 written cells of it included; its
+   cells are replaced from the other legitimate types. (c) The pilot gate passes when at least 45 of
+   the first 50 pass every check; else the writing stops and is banked.
+2. **The contrast gate, replacing Amendment 25 C3's 150** (set by the lead without the base rate).
+   **Line gate:** on the directed-away scenarios, A0s's follow share is below A0's by at least 0.10,
+   with a paired scenario-bootstrap CI excluding 0; failing it stops the line and comes to the author.
+   **P-dpo gate:** at least 60 disagreeing scenarios (A0 follows on at least 2 of 4, A0s on 0 of 2);
+   below it P-dpo is not trained, and the other rungs still are. DPO pairs are made at the rollout
+   level, at most 4 per scenario.
+3. The lead's three calls are accepted: the disagreement definition, the 0.8 retest bar, no recovery
+   step on the pressure rungs.
+4. **Sessions,** each self-contained given synced inputs and priced at or under 10.5 h: **2-roll**,
+   scenario writing, checks, rollouts (A0 k 4, A0s k 2, A0n k 2), the action read with its retest,
+   the contrast report; **2-ctx**, P-ctx and P-ctx-n with training, parity, a same-session base and
+   reads; **2-dpo**, P-dpo and P-long with training, parity, a same-session base and reads, and the
+   A0s and A0n legitimate-order reads. 2-roll's rollouts are synced by name into the other two; 2-ctx
+   and 2-dpo launch together after the gate. One launch card each; 2-roll is built first.
+5. Beside the contrast: the action read's follow shares by scenario kind and by writer, so a writer
+   effect is visible before training.
 
