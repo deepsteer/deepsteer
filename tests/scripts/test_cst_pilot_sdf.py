@@ -232,3 +232,20 @@ def test_legit_check_reports_the_follow_share(tmp_path):
     rec = PL.legit_check(tmp_path, True)
     assert rec["n_items"] == 2 and 0.0 <= rec["follow_share"] <= 1.0
     assert rec["read"] == (rec["follow_share"] > PL.LEGIT_FLOOR)
+
+
+def test_legit_stage_shares_one_engine(tmp_path, monkeypatch):
+    # most probable failure: the check and the read each build an A0 engine in one process, and the
+    # second cannot start while the first holds the GPU (the first DPO pod's failure)
+    import pilot_pod_lib as PL
+
+    built, seen = [], []
+    monkeypatch.setattr(P.S, "subject", lambda dry, arm="a0", lora=False: built.append(arm)
+                        or ("path", "engine"))
+    monkeypatch.setattr(P.S, "stage_gen", lambda out, arm, parts, dry, **kw:
+                        seen.append(kw.get("engine")))
+    monkeypatch.setattr(PL, "legit_check", lambda out, dry, arm="a0", engine=None:
+                        seen.append(engine) or {"read": True})
+    P.stage_legit(tmp_path, True)
+    assert built == ["a0"] and seen == [("path", "engine")] * 2
+

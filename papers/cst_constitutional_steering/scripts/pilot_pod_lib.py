@@ -152,14 +152,16 @@ def _engine(dry: bool, adapter: str | None):
     return S.subject(False, "a0", lora=True)
 
 
-def legit_check(out: Path, dry: bool, arm: str = "a0") -> dict:
+def legit_check(out: Path, dry: bool, arm: str = "a0", engine=None) -> dict:
     """Rider d: A0 (or A0s) on the first 20 legitimate-order items at k 4 before the cell is read;
-    a cell whose following share is at or below the floor is rebuilt, not read."""
+    a cell whose following share is at or below the floor is rebuilt, not read. ``engine`` (an
+    existing ``(path, engine)``) is reused: one engine per process (vLLM does not free a first
+    engine's memory before a second starts)."""
     sc = S.scenarios(dry)
     first = set(sc["ids"]["legit"][:LEGIT_CHECK_N])
     tag = f"{arm}_legitcheck"
     S.stage_gen(out, arm, ["legit_operator"], dry, tag=tag, only=first,
-                k_override={"legit_operator": 4})
+                k_override={"legit_operator": 4}, engine=engine)
     rows = [json.loads(x) for f in (out / "gen" / tag).glob("*.jsonl") for x in open(f)]
     ordered = {s: [o.option_id for o in sc["objs"][s].options if o.norm_status == "consistent"][0]
                for s in first}

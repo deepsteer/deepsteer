@@ -54,7 +54,10 @@ def _answer(text: str) -> str:
     return text.split("</think>")[-1].strip()
 
 
-def stage_candidates(out: Path, dry: bool) -> None:
+def stage_candidates(out: Path, dry: bool, part: str) -> None:
+    """``part`` none (A0's engine) or doc (A0s's engine): one engine per process, so the runner
+    calls each part as its own process (the first pod's doc part failed to start its engine with
+    the none part's still holding the GPU)."""
     import reasoning_formats as rf
 
     from deepsteer.corpus.prompts import TEMPLATES
@@ -70,7 +73,7 @@ def stage_candidates(out: Path, dry: bool) -> None:
     plain = {i: tok.encode(fmt.render(tok, m, S.EFFORT), add_special_tokens=False)
              for i, m in msgs.items()}
     f_none = cdir / "none.jsonl"
-    if not f_none.exists():
+    if part == "none" and not f_none.exists():
         _, eng = S.subject(dry, "a0")
         units = [(i, j) for i in plain for j in range(K_NONE)]
         gens = S.generate(eng, [plain[i] for i, _ in units],
@@ -78,6 +81,10 @@ def stage_candidates(out: Path, dry: bool) -> None:
         _write(f_none, [{"prompt_id": i, "k": j, "prompt_ids": plain[i], "gen_ids": g["ids"],
                          "text": g["text"], "hit_cap": g["hit_cap"]}
                         for (i, j), g in zip(units, gens)])
+    if part == "none":
+        return
+    if not f_none.exists():
+        raise SystemExit("BAIL: candidates part doc needs part none's none.jsonl")
     none = [json.loads(x) for x in open(f_none)]
     first = {r["prompt_id"]: r for r in none if r["k"] == 0}
     f_doc, f_rw = cdir / "with_doc.jsonl", cdir / "rewrite.jsonl"
@@ -323,16 +330,24 @@ def stage_read(out: Path, tags: list[str], dry: bool) -> dict:
     return PL.stage_read(out, [(t, adapter_dir(out, t), "dpo") for t in tags], dry)
 
 
-def stage_legit(out: Path, dry: bool) -> dict:
+def stage_legit(out: Path, dry: bool, arm: str) -> dict:
     """Rider d on this pod: A0's 20-item check, then A0, A0s and A0n on all 110 at k 4 (Amendment
-    21 item 1: this pod already loads the document engine; Amendment 23 item 5 adds A0n)."""
+    21 item 1: this pod already loads the document engine; Amendment 23 item 5 adds A0n). One arm
+    per process, one engine each: ``a0`` runs the check and A0's read on one engine; ``a0s`` and
+    ``a0n`` read only if A0's check passed."""
     import pilot_pod_lib as PL
 
-    chk = PL.legit_check(out, dry, "a0")
+    if arm == "a0":
+        eng = S.subject(dry, "a0")
+        chk = PL.legit_check(out, dry, "a0", engine=eng)
+    else:
+        f = out / "legit_check_a0.json"
+        if not f.exists():
+            raise SystemExit(f"BAIL: legit {arm} needs A0's check (legit_check_a0.json)")
+        chk, eng = json.loads(f.read_text()), None
     if chk["read"]:
-        for arm in ("a0", "a0s", "a0n"):
-            S.stage_gen(out, arm, ["legit_operator"], dry, tag=f"{arm}_legit",
-                        k_override={"legit_operator": 4})
+        S.stage_gen(out, arm, ["legit_operator"], dry, tag=f"{arm}_legit",
+                    k_override={"legit_operator": 4}, engine=eng)
     return chk
 
 
@@ -342,6 +357,8 @@ def main() -> None:
                     choices=("candidates", "filter", "pairs", "train", "read", "legit"))
     ap.add_argument("--rung", default="p_answer", choices=("p_answer", "p_trace", "p_long"))
     ap.add_argument("--tags", default="")
+    ap.add_argument("--part", choices=("none", "doc"), help="candidates: one engine per process")
+    ap.add_argument("--arm", choices=("a0", "a0s", "a0n"), help="legit: one arm per process")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
@@ -349,9 +366,16 @@ def main() -> None:
         stage_train(a.out, a.rung, a.dry_run)
     elif a.stage == "read":
         stage_read(a.out, [t for t in a.tags.split(",") if t], a.dry_run)
+    elif a.stage == "candidates":
+        if a.part is None:
+            ap.error("--stage candidates needs --part none|doc")
+        stage_candidates(a.out, a.dry_run, a.part)
+    elif a.stage == "legit":
+        if a.arm is None:
+            ap.error("--stage legit needs --arm a0|a0s|a0n")
+        stage_legit(a.out, a.dry_run, a.arm)
     else:
-        {"candidates": stage_candidates, "filter": stage_filter, "pairs": stage_pairs,
-         "legit": stage_legit}[a.stage](a.out, a.dry_run)
+        {"filter": stage_filter, "pairs": stage_pairs}[a.stage](a.out, a.dry_run)
 
 
 if __name__ == "__main__":

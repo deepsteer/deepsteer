@@ -91,7 +91,9 @@ $PY -m pytest -q -p no:cacheprovider $TESTS 2>&1 | grep -E '[0-9]+ (passed|faile
 [ "${PIPESTATUS[0]}" = 0 ] || { echo "BAIL: gate tests"; exit 1; }
 
 run() { $PY $PILOT --out "$OUT" "$@" || echo ">> stage failed: $*"; echo ">> stage done at $(hours) h: $*"; }
-run --stage candidates
+# one engine per process: the none and doc candidates (and each legit arm) run as separate stages
+run --stage candidates --part none
+run --stage candidates --part doc
 run --stage filter
 python3 -c "import json,sys; sys.exit(0 if json.load(open('$OUT/filter.json'))['proceed'] else 1)" \
   || { echo "BAIL: pair filter gate (candidates banked; see filter.json)"; exit 1; }
@@ -100,7 +102,9 @@ run --stage train --rung p_answer
 run --stage train --rung p_trace
 run --stage train --rung p_long
 run --stage read --tags p_answer_500,p_trace,p_long,p_answer_250
-run --stage legit
+run --stage legit --arm a0
+run --stage legit --arm a0s
+run --stage legit --arm a0n
 
 $PY - "$OUT" <<'EOF'
 import json, sys

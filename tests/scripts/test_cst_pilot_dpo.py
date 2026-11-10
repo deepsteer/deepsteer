@@ -77,9 +77,18 @@ def test_pairs_differ_in_the_answer_only_for_p_answer(tmp_path):
 
 
 @pytest.mark.slow
-def test_candidates_stage_writes_every_rollout(tmp_path):
-    # failure: a candidate file is missing a prompt or the four rollouts without the document
-    D.stage_candidates(tmp_path, True)
+def test_candidates_stage_writes_every_rollout(tmp_path, monkeypatch):
+    # failure: a candidate file is missing a prompt or the four rollouts without the document; and
+    # (the first DPO pod) one process builds A0's and A0s's engines, so the second cannot start
+    real, built = D.S.subject, []
+    monkeypatch.setattr(D.S, "subject", lambda dry, arm="a0", lora=False: built.append(arm)
+                        or real(dry, arm, lora))
+    with pytest.raises(SystemExit):
+        D.stage_candidates(tmp_path, True, "doc")  # part doc before part none
+    D.stage_candidates(tmp_path, True, "none")
+    assert built == ["a0"]
+    D.stage_candidates(tmp_path, True, "doc")
+    assert built == ["a0", "a0s"]  # one engine in each process
     none = [json.loads(x) for x in open(tmp_path / "candidates/none.jsonl")]
     assert len(none) == 3 * D.K_NONE
     assert sum(1 for _ in open(tmp_path / "candidates/with_doc.jsonl")) == 3
@@ -102,3 +111,32 @@ def test_dpo_train_saves_both_p_answer_doses_and_reads_by_rank(tmp_path):
     assert D.adapter_dir(tmp_path, "p_answer_250") == rec["adapters"][lo]
     assert D.adapter_dir(tmp_path, "p_answer_500") == rec["adapters"][hi]
     assert len(D.stage_train(tmp_path, "p_long", True)["adapters"]) == 1
+
+
+def _engine_spy(monkeypatch, mod):
+    built, seen = [], []
+    monkeypatch.setattr(mod.S, "subject", lambda dry, arm="a0", lora=False: built.append(arm)
+                        or ("path", f"engine-{arm}"))
+    monkeypatch.setattr(mod.S, "stage_gen", lambda out, arm, parts, dry, **kw:
+                        seen.append((arm, kw.get("engine"))))
+    return built, seen
+
+
+def test_legit_stage_builds_one_engine_per_process(tmp_path, monkeypatch):
+    # most probable failure (the first DPO pod): a stage builds a second vLLM engine while the first
+    # still holds the GPU, so the second fails to start; A0's check and A0's read share one engine,
+    # and A0s and A0n run as their own processes, gated on A0's check
+    import pilot_pod_lib as PL
+
+    built, seen = _engine_spy(monkeypatch, D)
+    monkeypatch.setattr(PL, "legit_check", lambda out, dry, arm="a0", engine=None:
+                        seen.append(("check", engine)) or {"read": True})
+    D.stage_legit(tmp_path, True, "a0")
+    assert built == ["a0"] and seen == [("check", ("path", "engine-a0")),
+                                        ("a0", ("path", "engine-a0"))]
+    with pytest.raises(SystemExit):
+        D.stage_legit(tmp_path, True, "a0s")  # no check on disk
+    (tmp_path / "legit_check_a0.json").write_text(json.dumps({"read": True}))
+    D.stage_legit(tmp_path, True, "a0n")
+    assert built == ["a0"] and seen[-1] == ("a0n", None)  # stage_gen builds A0n's own engine
+

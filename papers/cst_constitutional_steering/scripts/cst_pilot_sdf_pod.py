@@ -398,10 +398,11 @@ def stage_legit(out: Path, dry: bool) -> dict:
     floor."""
     import pilot_pod_lib as PL
 
-    chk = PL.legit_check(out, dry, "a0")
+    eng = S.subject(dry, "a0")  # one engine for the check and the read (one per process)
+    chk = PL.legit_check(out, dry, "a0", engine=eng)
     if chk["read"]:
         S.stage_gen(out, "a0", ["legit_operator"], dry, tag="a0_legit",
-                    k_override={"legit_operator": 4})
+                    k_override={"legit_operator": 4}, engine=eng)
     return chk
 
 
