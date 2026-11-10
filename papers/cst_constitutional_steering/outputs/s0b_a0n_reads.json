@@ -71,5 +71,21 @@
   "draws": 4000,
   "seed": "20261109|cst_a23_reads",
   "unit": "scenario"
+ },
+ "injection_decomposition": {
+  "drop_pooled": -0.15750991156299793,
+  "composition": {
+   "at_a0_rates": -0.0827675415074558,
+   "at_a0n_rates": -0.048788249868707015
+  },
+  "share_of_drop": {
+   "at_a0_rates": 0.5254751316037147,
+   "at_a0n_rates": 0.3097471732703855
+  },
+  "share_range": [
+   0.3097471732703855,
+   0.5254751316037147
+  ],
+  "note": "descriptive (conditions on the trace); Amendment 23 item 3's pattern"
  }
 }

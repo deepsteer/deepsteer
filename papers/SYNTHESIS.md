@@ -2043,7 +2043,8 @@ clear, with ΔP's sign unchanged on the stable 48. **The prefix effect (S0b-1, C
 0.153 of the clear items, against A0's 0.311 and A0s's 0.031: the prefix removes about half of the
 in-context effect (ratio 0.563 [0.497, 0.629], partial by rider a; log-odds 0.343), and `C_anth`'s
 content, given the prefix, removes 0.80 of what remains. The prefix raises traces' talk of injected or
-test instructions (0.41 to 0.62), which accounts for part, not all, of it; a weight-level arm, read
+test instructions (0.41 to 0.62), which accounts for 0.31 to 0.53 of A0n's drop depending on the
+decomposition order (descriptive; the earlier whole-drop reading used a looser regex and is superseded); a weight-level arm, read
 without any prefix, is read against A0, the full band and the content band (Amendment 23).
 
 | claim | strongest counter-reading | separating experiment | status |

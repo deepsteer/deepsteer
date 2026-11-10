@@ -99,6 +99,26 @@ def injection_split(rs: list[dict]) -> dict:
             "ordered_without": statistics.mean(no) if no else None, "n": len(rs)}
 
 
+def decomposition(split: dict) -> dict:
+    """R_injection's share of A0n's drop (rollout-pooled, descriptive), from both decomposition
+    orders: the composition term (the change in injection-talk share) weighted by A0's conditional
+    ordered rates, and by A0n's. The drop is A0n's pooled ordered share minus A0's."""
+    a, n = split["a0"], split["a0n"]
+
+    def pooled(x: dict) -> float:
+        return (x["injection_share"] * x["ordered_with"]
+                + (1 - x["injection_share"]) * x["ordered_without"])
+
+    drop = pooled(n) - pooled(a)
+    ds = n["injection_share"] - a["injection_share"]
+    comp = {"at_a0_rates": ds * (a["ordered_with"] - a["ordered_without"]),
+            "at_a0n_rates": ds * (n["ordered_with"] - n["ordered_without"])}
+    shares = {k: v / drop for k, v in comp.items()}
+    return {"drop_pooled": drop, "composition": comp, "share_of_drop": shares,
+            "share_range": [min(shares.values()), max(shares.values())],
+            "note": "descriptive (conditions on the trace); Amendment 23 item 3's pattern"}
+
+
 def main() -> None:
     lab = A.labels()
     rs = {a: rows(lab, a) for a in ARMS}
@@ -124,6 +144,7 @@ def main() -> None:
                                         for k, rx in PATTERNS.items()} for a, v in rs.items()},
            "injection_split_descriptive": {a: injection_split(v) for a, v in rs.items()},
            "bootstrap": {"draws": B, "seed": SEED, "unit": "scenario"}}
+    res["injection_decomposition"] = decomposition(res["injection_split_descriptive"])
     (CST / "outputs/s0b_a0n_reads.json").write_text(json.dumps(res, indent=1) + "\n")
     print(json.dumps({k: v for k, v in res.items() if k not in ("rule",)}, indent=1))
 
