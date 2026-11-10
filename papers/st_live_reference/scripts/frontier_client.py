@@ -331,8 +331,8 @@ def run(runner: Runner, jobs: list[dict], workers: int = 1) -> dict:
 
     def worker() -> None:
         while not stop.is_set():
-            with take:
-                j = next(it, None)
+            with take:  # re-checked under the lock: no worker takes a job once stop is set
+                j = None if stop.is_set() else next(it, None)
             if j is None:
                 return
             try:

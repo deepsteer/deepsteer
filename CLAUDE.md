@@ -233,7 +233,7 @@ model; the rival reading (move 2); type blocks on every object involved; positio
 (band-below-null check, PR recorded).
 
 **CI boundary (quasi-hard):** CI (`.github/workflows/ci.yml`: lint, pytest
-`-m "not slow and not regression"` on 3.10 and 3.12 in three shards each, wheel smoke) must pass;
+`-m "not slow and not regression"` on 3.10 and 3.12 in four shards each, wheel smoke) must pass;
 each test job stays under 5 min. After each push, check
 the completed runs of earlier pushed commits; a red run is a stop sign: fix it before new work unless
 the author says otherwise. A run cancelled by a newer push is not a pass. No `gh` here: status is

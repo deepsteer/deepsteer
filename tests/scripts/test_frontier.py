@@ -430,12 +430,16 @@ def test_a_worker_error_stops_the_run_and_frees_its_slot(tmp_path):
                     raise ValueError("bad request")
                 return super().create(**kw)
 
-    for workers, most in ((1, 3), (8, 3 + 7)):  # 8 workers: the 7 others' calls in flight end
-        rec = _Fail([_openai() for _ in range(40)])
+    # one worker stops exactly at the failing call. With 8, the others' calls in flight end, and a
+    # worker can start one more in the short window before the failing worker sets the stop event
+    # (the stub replies instantly; CI's loaded runner hit 11 against an exact bound of 10), so the
+    # bound is that the run stops far short of its 400 jobs. The cap is guarded per call by claim().
+    for workers, most in ((1, 3), (8, 39)):
+        rec = _Fail([_openai() for _ in range(400)])
         d = tmp_path / str(workers)
         r = F.Runner("gpt-6.1-sol", F.OpenAIAdapter(NS(responses=rec)), d, 10.0, 0.01)
         with pytest.raises(ValueError):
-            F.run(r, [_job(k=i) for i in range(40)], workers=workers)
+            F.run(r, [_job(k=i) for i in range(400)], workers=workers)
         assert not r.inflight and 3 <= len(rec.calls) <= most
 
 
