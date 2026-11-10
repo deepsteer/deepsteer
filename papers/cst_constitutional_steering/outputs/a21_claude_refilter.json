@@ -1,0 +1,31 @@
+{
+ "rule": "a21_claude_refilter.py docstring (the lead's, before any call)",
+ "judge": "Claude Opus 5.5 via claude -p",
+ "seed": "20261110|cst_a21_claude_refilter",
+ "rungs": {
+  "p_answer": {
+   "pairs": 100,
+   "kept_both_orders": 0.04,
+   "ci95": [
+    0.01,
+    0.08
+   ],
+   "consistent_loss": 0.31,
+   "a_share_of_decisive": 0.46226415094339623,
+   "agreement_with_gpt_oss_same_order": 0.81,
+   "reading": "R_ceiling"
+  },
+  "p_trace": {
+   "pairs": 100,
+   "kept_both_orders": 0.35,
+   "ci95": [
+    0.26,
+    0.44
+   ],
+   "consistent_loss": 0.24,
+   "a_share_of_decisive": 0.4034090909090909,
+   "agreement_with_gpt_oss_same_order": 0.57,
+   "reading": "undetermined"
+  }
+ }
+}

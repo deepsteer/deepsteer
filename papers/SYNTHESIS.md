@@ -2050,7 +2050,15 @@ reasoning, not its closing lines (a spliced closing is followed on 0.36-0.39 of 
 closing lines cut S_concl stays below 0.01 on A0, so at baseline Qwen's actions follow its reasoning
 and S_concl is a guard at its floor (CST-A15 resolved); at dose 0 the neutral prefix does not
 reproduce the constitution's shift toward the violating option, so that shift is the document's content
-(CST-A16).
+(CST-A16). **The pilot ladder's first pods (2026-11-10):** no weight-level rung has been read yet. The
+SDF pod's six reads were reads of the base model (CST-A22: vLLM serves the multimodal class and the
+adapters carried the trainer class's module path, a silent no-op load); kept as an empirical null, they
+sit within the computed pilot MDE of the saved A0 (contrasts −0.007 to +0.030, SD 0.013 against the
+0.015 the MDE implies; read against read SD 0.011, largest 0.037 against the 0.049 MDE), so the k-2
+screen is calibrated. On everyday advice the in-context constitution's answers do not beat A0's
+(CST-A21): Claude, judging both orders with no position bias, keeps 0.04 [0.01, 0.08] of the
+rewrite pairs and 0.35 [0.26, 0.44] of A0s's own answers, so the DPO line moves to operator-pressure
+prompts, where A0 and A0s disagree (Amendment 25 Part C).
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
