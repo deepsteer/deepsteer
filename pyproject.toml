@@ -72,6 +72,7 @@ all = [
 dev = [
     "deepsteer[all]",
     "pytest",
+    "pytest-xdist",  # CI runs -n auto
     "ruff==0.16.7",  # pinned to the version CI runs
     "import-linter==2.15",
 ]
