@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.24, 2026-11-10: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) and 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts), §13.** v0.1 was the draft for the
+Status: **v0.24, 2026-11-10: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1702,4 +1702,24 @@ FAQ 763 (one at 1,502). The documents are complete, not degenerate.
 7. The same pod reads A0s and A0n on the legitimate-order cell.
 8. `PRESSURE_BUILD.md` in `PILOT_BUILD.md`'s form, with prices, power, branches, bail and one launch
    card, priced at or under 10.5 h; it uses Part A's gate.
+
+### Amendment 26 (2026-11-10; author, on CST-A22 and D-neutral's gate; zero GPU except item 5; on origin before the empirical-null read and either of tonight's cards)
+
+1. **The corpus gate's length band becomes a bar** (amending Amendment 24 items 1-2): the gate fails
+   when more than 5% of the first 50 documents fall outside 500-1,700 words. No document is dropped
+   for length, in either arm, so D-doc and D-neutral keep the same rule (capped and 8-gram-overlapping
+   documents only are dropped). Each full corpus's out-of-band share is reported beside the read.
+   D-neutral's corpus, training and recovery ride tonight's SDF re-read pod (its first session's
+   gate failed on one 473-word FAQ among the first 50).
+2. **The six reads of the relaunched SDF pod are reads of the base model** (CST-A22). They are kept,
+   relabeled, as an empirical null: the spread of their contrasts against the saved A0 on the
+   operator cell, reported beside the computed pilot MDE. Zero GPU.
+3. **Every read pod from here reads the base model on the same engine in the same session**, at the
+   rungs' k; each rung's contrast is reported against the saved A0 and against that same-session
+   base.
+4. **A local test names the failure:** a saved adapter's key path must match the served class's
+   module path, and the dry stand-in must be the class vLLM serves.
+5. **Tonight, if the mini-pod confirms R_noserve:** pod 1 re-reads the saved SDF adapters on the
+   fixed path and builds D-neutral; pod 2 is the pressure pod once `PRESSURE_BUILD.md` and its card
+   are ready. Each prices at or under 10.5 h under Amendment 25 A4's gate.
 
