@@ -117,3 +117,24 @@ def test_served_adapter_key_path_matches_the_served_class(tmp_path):
     eng = S.subject(True, "a0")[1]
     assert type(eng.m).__name__ == AutoConfig.from_pretrained(path).architectures[0]
 
+
+def test_served_copy_never_builds_model_classes_in_the_read_process(tmp_path, monkeypatch):
+    # most probable failure (the re-read pod, 2026-11-10): the read stage builds its vLLM engine,
+    # then derives the decoder paths by building the model classes in the same process, where the
+    # 27B config raises on vocab_size, so every read fails before its parity record
+    import cst_s0a_pod as S
+
+    _, wb, _ = PL.load_model(True)
+    ad = tmp_path / "adapters" / "x"
+    wb.model.save_pretrained(str(ad))
+
+    def boom(path):
+        raise AttributeError("'Qwen3_5Config' object has no attribute 'vocab_size'")
+
+    monkeypatch.setattr(PL, "decoder_prefixes", boom)
+    PL._PREFIXES.clear()  # noqa: SLF001
+    served = PL.served_copy(tmp_path, "x", str(ad), True)
+    pre = json.loads((tmp_path / "parity" / "prefixes.json").read_text())
+    assert pre["served"] == "model.language_model.layers" and PL.key_prefix(served) == pre["served"]
+    assert S.V._model_path(True)  # noqa: SLF001
+

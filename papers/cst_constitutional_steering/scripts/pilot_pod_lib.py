@@ -17,6 +17,7 @@ base model on the same engine (Amendment 26 item 3).
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import cst_s0a_pod as S
@@ -178,12 +179,34 @@ def key_prefix(adir: str | Path) -> str:
 _PREFIXES: dict[str, dict[str, str]] = {}
 
 
+def prefixes_isolated(out: Path, path: str) -> dict[str, str]:
+    """``decoder_prefixes`` from ``parity/prefixes.json`` (written by `hf_letters`), else computed
+    in a fresh process: building the classes from the config fails in a process that has loaded
+    vLLM (the 27B config raises on ``vocab_size``; the re-read pod's first read stage, 2026-11-10),
+    and the read stage builds its engine first."""
+    import subprocess
+
+    f = out / "parity" / "prefixes.json"
+    if f.exists():
+        return json.loads(f.read_text())
+    code = ("import sys, json; sys.path.insert(0, sys.argv[1]); import pilot_pod_lib as PL; "
+            "print(json.dumps(PL.decoder_prefixes(sys.argv[2])))")
+    r = subprocess.run([sys.executable, "-c", code, str(Path(__file__).resolve().parent), path],
+                       capture_output=True, text=True, check=True)
+    pre = json.loads(r.stdout.strip().splitlines()[-1])
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps(pre) + "\n")
+    return pre
+
+
 def served_copy(out: Path, tag: str, adir: str, dry: bool) -> str:
     """The adapter as the served class names its modules (Amendment 26 item 4): returned as is when
     its keys already carry the served path, else a renamed copy at ``served_adapters/<tag>``
     (outside ``adapters/``, so the end-of-session download skips it)."""
     path = S.V._model_path(dry)  # noqa: SLF001
-    pre = _PREFIXES.setdefault(path, decoder_prefixes(path))
+    if path not in _PREFIXES:
+        _PREFIXES[path] = prefixes_isolated(out, path)
+    pre = _PREFIXES[path]
     if key_prefix(adir) == pre["served"]:
         return adir
     dst = out / "served_adapters" / tag
@@ -219,6 +242,9 @@ def hf_letters(out: Path, adapters: list[tuple[str, str]], dry: bool) -> dict:
                 res.append([float(lp[i]) for i in lids])
         return res
 
+    if not (out / "parity" / "prefixes.json").exists():  # in this HF process, before any vLLM
+        (out / "parity").mkdir(parents=True, exist_ok=True)
+        (out / "parity" / "prefixes.json").write_text(json.dumps(decoder_prefixes(path)) + "\n")
     if not (out / "parity" / "hf_base.json").exists():
         write_once(out / "parity" / "hf_base.json", {"letter_ids": lids,
                                                       "class": type(wb.model).__name__,

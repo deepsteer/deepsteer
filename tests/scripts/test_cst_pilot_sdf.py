@@ -265,3 +265,19 @@ def test_legit_stage_shares_one_engine(tmp_path, monkeypatch):
     P.stage_legit(tmp_path, True)
     assert built == ["a0"] and seen == [("path", "engine")] * 2
 
+
+def test_a_failed_read_stage_is_caught_up_by_the_next(tmp_path):
+    # most probable failure: a read stage that fails before its parity records loses its tags for
+    # the session (the runner does not retry a stage), so the D-doc 1M and R0 reads never run
+    par = tmp_path / "parity"
+    par.mkdir()
+    for t in ("d_doc_1M_rec", "d_doc_1M", "r0", "d_chat_1M_rec"):
+        (par / f"hf_{t}.json").write_text("{}")
+    assert P.catch_up(tmp_path, ["d_neutral_1M_rec"]) == [
+        "d_doc_1M_rec", "d_doc_1M", "r0", "d_neutral_1M_rec"]  # later tags wait their turn
+    for t in ("d_doc_1M_rec", "d_doc_1M", "r0"):
+        (par / f"{t}.json").write_text("{}")
+    assert P.catch_up(tmp_path, ["d_chat_1M_rec"]) == ["d_chat_1M_rec"]
+    assert P.catch_up(tmp_path, ["d_doc_1M_rec", "d_doc_1M", "r0"]) == [
+        "d_doc_1M_rec", "d_doc_1M", "r0"]
+

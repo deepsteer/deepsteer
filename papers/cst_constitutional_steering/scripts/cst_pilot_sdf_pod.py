@@ -377,8 +377,25 @@ def adapter_dir(out: Path, tag: str) -> str:
     return adapters[f"{d:g}_rec" if rec else f"{d:g}"]
 
 
+READ_ORDER = ("d_doc_1M_rec", "d_doc_1M", "r0", "d_neutral_1M_rec", "d_chat_1M_rec",
+              "d_doc_03M_rec", "d_doc_03M", "d_raw_rec")  # the re-read pod's order (runner)
+
+
+def catch_up(out: Path, tags: list[str]) -> list[str]:
+    """Earlier tags in the runner's order whose read stage failed before its parity record (HF
+    letters on disk, no record) are read first, so one failed read stage does not lose its tags."""
+    idx = [READ_ORDER.index(t) for t in tags if t in READ_ORDER]
+    if not idx:
+        return list(tags)
+    miss = [t for t in READ_ORDER[:min(idx)] if (out / "parity" / f"hf_{t}.json").exists()
+            and not (out / "parity" / f"{t}.json").exists()]
+    return miss + [t for t in tags if t not in miss]
+
+
 def stage_read_tags(out: Path, tags: list[str], dry: bool) -> dict:
     import pilot_pod_lib as PL
+
+    tags = catch_up(out, tags)
 
     # Amendment 24 rider 2: each read's document count and documents at its dose (merged across
     # read stages)
