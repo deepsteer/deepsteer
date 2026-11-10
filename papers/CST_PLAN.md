@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.24, 2026-11-10: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) and 27 (the pressure line's writer, gates and three sessions), §13.** v0.1 was the draft for the
+Status: **v0.24, 2026-11-10: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) and 28 (the re-read pod's patch, the decoder path of record, the smoke pass), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1757,4 +1757,23 @@ it is registered as 27. Pod 1 launches unchanged.
    and 2-dpo launch together after the gate. One launch card each; 2-roll is built first.
 5. Beside the contrast: the action read's follow shares by scenario kind and by writer, so a writer
    effect is visible before training.
+
+### Amendment 28 (2026-11-10; author, on the re-read pod's failed read stage; zero GPU; on origin before the patch is applied)
+
+1. **The running re-read pod is patched** (option 1): after CI is green, the two fixed Python files
+   (`pilot_pod_lib.py`, `cst_pilot_sdf_pod.py`) are copied to the pod as new files and moved over the
+   old ones. The runner script and the running process are not touched. The next read stage catches
+   up the failed stage's tags (D-doc 1M with and without recovery, R0).
+2. **The decoder path of record:** the read stage takes the decoder paths from the mini-pod's
+   committed record (`data/served_decoder_paths_v1.json`, verified on the 27B), asserted against the
+   adapter's key names; the fresh-process lookup stays as a cross-check, and a disagreement banks the
+   tag.
+3. **A smoke pass, from tonight's pods on:** the first stage of every pod runs each later stage's
+   entry path end to end on a toy input with the live engine. For a training pod: a randomly
+   initialized adapter saved by the trainer, renamed, served, put through the parity gate, and read
+   on 2 prompts. A failure stops the pod in its first minutes; budget about 10 minutes; each step
+   names the failure it guards against.
+4. **2-roll's two capped cells** (PZ-A296, PZ-L201: the 4,096 cap reached mid-JSON, not refusals) are
+   regenerated once with a new seed; a second cap leaves the cell unwritten. (The write stage had
+   already given every unparsed reply one more seed, and both capped again: both stay unwritten.)
 

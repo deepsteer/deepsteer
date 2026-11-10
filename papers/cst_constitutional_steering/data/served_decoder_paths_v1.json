@@ -1,0 +1,21 @@
+{
+ "schema_version": 1,
+ "model": "Qwen/Qwen3.8-27B@1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+ "trainer": "model.layers",
+ "served": "model.language_model.layers",
+ "trainer_class": "Qwen3_5ForCausalLM (AutoModelForCausalLM)",
+ "served_class": "Qwen3_5ForConditionalGeneration (vLLM 0.31.0, AutoModelForImageTextToText)",
+ "verified": {
+  "by": "CST-A22's parity mini-pod, 2026-11-10 (outputs/cst_a22_parity.json)",
+  "renamed_tv_served_vs_attached": {
+   "1e06__renamed": 0.010212606788026468,
+   "1e06_rec__renamed": 0.010030571290807937
+  },
+  "serving_floor": 0.007538575342600087,
+  "keys_moved": {
+   "1e06": 992,
+   "1e06_rec": 992
+  }
+ },
+ "rule": "Amendment 28 item 2 (the author, 2026-11-10): the read stage takes the decoder path from this record, asserted against the adapter's key names; a fresh-process lookup cross-checks it and a disagreement banks the tag"
+}

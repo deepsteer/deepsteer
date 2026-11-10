@@ -199,19 +199,41 @@ def prefixes_isolated(out: Path, path: str) -> dict[str, str]:
     return pre
 
 
+class ServedPathMismatch(ValueError):
+    """The committed decoder paths disagree with the fresh-process lookup or with the adapter's
+    keys; the read stage banks the tag (Amendment 28 item 2)."""
+
+
+def served_paths() -> dict:
+    """The decoder paths of record, verified on the 27B by CST-A22's mini-pod
+    (`data/served_decoder_paths_v1.json`)."""
+    return json.loads((S.CST / "data/served_decoder_paths_v1.json").read_text())
+
+
 def served_copy(out: Path, tag: str, adir: str, dry: bool) -> str:
-    """The adapter as the served class names its modules (Amendment 26 item 4): returned as is when
-    its keys already carry the served path, else a renamed copy at ``served_adapters/<tag>``
-    (outside ``adapters/``, so the end-of-session download skips it)."""
+    """The adapter as the served class names its modules (Amendment 26 item 4, Amendment 28 item
+    2): the paths come from the committed record and are asserted against the adapter's key names;
+    the fresh-process lookup (`prefixes_isolated`) cross-checks them, and any disagreement raises
+    ``ServedPathMismatch``. Returned as is when the keys already carry the served path, else a
+    renamed copy at ``served_adapters/<tag>`` (outside ``adapters/``, so the end-of-session
+    download skips it)."""
+    rec = served_paths()
+    pre = {"trainer": rec["trainer"], "served": rec["served"]}
     path = S.V._model_path(dry)  # noqa: SLF001
     if path not in _PREFIXES:
         _PREFIXES[path] = prefixes_isolated(out, path)
-    pre = _PREFIXES[path]
-    if key_prefix(adir) == pre["served"]:
+    if _PREFIXES[path] != pre:
+        raise ServedPathMismatch(f"{tag}: record {pre} != fresh-process lookup {_PREFIXES[path]}")
+    kp = key_prefix(adir)
+    if kp not in (pre["trainer"], pre["served"]):
+        raise ServedPathMismatch(f"{tag}: adapter keys carry {kp}, the record names {pre}")
+    if kp == pre["served"]:
         return adir
     dst = out / "served_adapters" / tag
     if not (dst / "adapter_model.safetensors").exists():
         rename_adapter(Path(adir), dst, pre)
+    if key_prefix(dst) != pre["served"]:
+        raise ServedPathMismatch(f"{tag}: the renamed copy carries {key_prefix(dst)}")
     return str(dst)
 
 
@@ -303,7 +325,15 @@ def stage_read(out: Path, adapters: list[tuple[str, str]], dry: bool) -> dict:
         S.stage_gen(out, "a0", [part], dry, tag=BASE_TAG, k_override=READ_K, engine=(path, eng),
                     only=clear if part.startswith("panel") else None)
     for n, (tag, adir) in enumerate(adapters, 1):
-        sdir = served_copy(out, tag, adir, dry)
+        try:
+            sdir = served_copy(out, tag, adir, dry)
+        except ServedPathMismatch as e:  # Amendment 28 item 2: a disagreement banks the tag
+            f = out / "parity" / f"{tag}.json"
+            if not f.exists():
+                write_once(f, {"tag": tag, "passes": False, "banked_for": str(e)})
+            res["parity"][tag] = False
+            res["banked"].append(tag)
+            continue
         if dry:
             e, req = (path, S.V.HFStandIn(path, lora=sdir)), None
             served = e[1].first_logprobs(prompts, lids)

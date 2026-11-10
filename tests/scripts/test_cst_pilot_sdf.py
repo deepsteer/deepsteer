@@ -229,6 +229,7 @@ def test_read_serves_the_copy_banks_a_no_op_load_and_reads_the_base(tmp_path, mo
     assert res["read"] == ["toy"] and res["parity"]["toy"]
     assert any((tmp_path / "gen" / "toy").glob("panel_operator_*.jsonl"))
     assert any((tmp_path / "gen" / PL.BASE_TAG).glob("panel_operator_*.jsonl"))
+    real_copy = PL.served_copy
     monkeypatch.setattr(PL, "served_copy", lambda out, tag, a, dry: a)  # the old, unfixed path
     res = PL.stage_read(tmp_path, [("noserve", adir)], True)
     rec = json.loads((tmp_path / "parity" / "noserve.json").read_text())
@@ -237,6 +238,13 @@ def test_read_serves_the_copy_banks_a_no_op_load_and_reads_the_base(tmp_path, mo
     before = (tmp_path / "parity" / "toy.json").read_text()
     PL.stage_read(tmp_path, [("toy", adir)], True)  # a resumed read keeps the record of record
     assert (tmp_path / "parity" / "toy.json").read_text() == before
+    monkeypatch.setattr(PL, "served_copy", real_copy)
+    good = PL.served_paths()
+    monkeypatch.setattr(PL, "served_paths", lambda: dict(good, served="model.lm.layers"))
+    PL.hf_letters(tmp_path, [("mism", adir)], True)
+    res = PL.stage_read(tmp_path, [("mism", adir)], True)  # Amendment 28 item 2: banked, not read
+    assert res["banked"] == ["mism"] and not (tmp_path / "gen" / "mism").exists()
+    assert "banked_for" in json.loads((tmp_path / "parity" / "mism.json").read_text())
 
 
 @pytest.mark.slow

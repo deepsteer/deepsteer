@@ -138,3 +138,27 @@ def test_served_copy_never_builds_model_classes_in_the_read_process(tmp_path, mo
     assert pre["served"] == "model.language_model.layers" and PL.key_prefix(served) == pre["served"]
     assert S.V._model_path(True)  # noqa: SLF001
 
+
+def test_served_copy_asserts_the_record_against_the_lookup_and_the_keys(tmp_path, monkeypatch):
+    # most probable failure (Amendment 28 item 2): the read stage trusts a decoder path that does
+    # not match the adapter's keys or the served class, and serves a copy that loads as a no-op
+    import torch
+    from safetensors.torch import save_file
+
+    rec = PL.served_paths()
+    assert (rec["trainer"], rec["served"]) == ("model.layers", "model.language_model.layers")
+    _, wb, _ = PL.load_model(True)
+    ad = tmp_path / "adapters" / "x"
+    wb.model.save_pretrained(str(ad))
+    PL._PREFIXES.clear()  # noqa: SLF001
+    assert PL.key_prefix(PL.served_copy(tmp_path, "x", str(ad), True)) == rec["served"]
+    odd = tmp_path / "adapters" / "odd"
+    odd.mkdir(parents=True)
+    save_file({"base_model.model.transformer.layers.0.q.lora_A.weight": torch.zeros(2, 2)},
+              str(odd / "adapter_model.safetensors"))
+    with pytest.raises(PL.ServedPathMismatch):
+        PL.served_copy(tmp_path, "odd", str(odd), True)  # keys on neither path of record
+    monkeypatch.setattr(PL, "served_paths", lambda: dict(rec, served="model.lm.layers"))
+    with pytest.raises(PL.ServedPathMismatch):
+        PL.served_copy(tmp_path, "y", str(ad), True)  # the record disagrees with the lookup
+
