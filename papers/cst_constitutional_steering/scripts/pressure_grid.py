@@ -10,6 +10,14 @@ makes the order costly to refuse or to follow. Kinds: 300 directed-away, 180 leg
 order. Order types rotate within a kind; domains, tasks and pressures are assigned so each order
 type meets every domain and no (order type, domain, pressure) triple repeats. Writes
 `data/pressure_grid_v1.json`.
+
+``v2`` (Amendment 27 item 1): v1 without the cells of batches Claude declined (they go to no
+writer) and without the ``no_caveats_research`` type (it would need dangerous technical detail),
+refilled with fresh cells by the same rule (seed ``20261110|cst_pressure_grid_v2``) to 300 / 180 /
+120; each cell carries its writer, ``claude`` for a kept finished batch, ``subject`` otherwise.
+Writes `data/pressure_grid_v2.json`.
+
+    /opt/homebrew/bin/python3.13 papers/cst_constitutional_steering/scripts/pressure_grid.py v2
 """
 
 from __future__ import annotations
@@ -100,12 +108,65 @@ def cells() -> list[dict]:
     return out
 
 
+EXCLUDED_TYPES = {
+    "no_caveats_research": "would need dangerous technical detail (Amendment 27 item 1)"}
+
+
+def v2() -> dict:
+    import sys
+
+    sys.path[:0] = [str(HERE), str(HERE.parents[1] / "kdg_panel/scripts")]
+    import pressure_scenarios as PS
+
+    v1 = cells()
+    calls = [v1[i:i + PS.PER_CALL] for i in range(0, len(v1), PS.PER_CALL)]
+    claude, declined = set(), set()
+    for c, cs in enumerate(calls):
+        if (PS.RAW / f"call_{c:02d}.txt").exists():
+            claude |= {x["cell_id"] for x in cs}
+        elif (PS.RAW / f"call_{c:02d}.bad.txt").exists():
+            declined |= {x["cell_id"] for x in cs}
+    keep = [dict(c, writer="claude" if c["cell_id"] in claude else "subject") for c in v1
+            if c["cell_id"] not in declined and c["order_type"] not in EXCLUDED_TYPES]
+    rng = random.Random(SEED + "_v2")
+    used = {(c["order_type"], c["domain"], c["pressure"]) for c in v1}
+    new = []
+    for kind, types in (("away", AWAY), ("legit", LEGIT), ("none", NONE)):
+        types = [x for x in types if x[0] not in EXCLUDED_TYPES]
+        have = sum(c["kind"] == kind for c in keep)
+        for j in range(N[kind] - have):
+            otype, tenets, ask = types[j % len(types)]
+            for _ in range(10000):
+                dom, pr = rng.choice(DOMAINS), rng.choice(PRESSURES)
+                if (otype, dom, pr) not in used:
+                    break
+            used.add((otype, dom, pr))
+            new.append({"cell_id": f"PZ-{kind[0].upper()}{N[kind] + j:03d}", "kind": kind,
+                        "order_type": otype, "tenet_ids": tenets, "order_asks": ask,
+                        "domain": dom, "task": rng.choice(TASKS), "pressure": pr,
+                        "writer": "subject"})
+    out = keep + new
+    rng.shuffle(out)
+    return {"schema_version": 2, "seed": SEED + "_v2", "from": "data/pressure_grid_v1.json",
+            "counts": N, "excluded_types": EXCLUDED_TYPES,
+            "declined_cells": sorted(declined), "claude_cells": sorted(claude),
+            "cells": out}
+
+
 def main() -> None:
+    import sys
+    from collections import Counter
+
+    if sys.argv[1:] == ["v2"]:
+        rec = v2()
+        (CST / "data/pressure_grid_v2.json").write_text(json.dumps(rec, indent=1) + "\n")
+        print(Counter((c["kind"], c["writer"]) for c in rec["cells"]),
+              "declined", len(rec["declined_cells"]))
+        return
     cs = cells()
     rec = {"schema_version": 1, "seed": SEED, "counts": N, "away_types": [a[0] for a in AWAY],
            "legit_types": [x[0] for x in LEGIT], "cells": cs}
     (CST / "data/pressure_grid_v1.json").write_text(json.dumps(rec, indent=1) + "\n")
-    from collections import Counter
     print({k: Counter(c["kind"] for c in cs)[k] for k in N},
           Counter(c["order_type"] for c in cs if c["kind"] == "away").most_common(3))
 

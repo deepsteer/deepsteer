@@ -15,8 +15,9 @@ does not do. **Checks (C1):** no word 8-gram shared with any indexed eval set, t
 the legitimate-order cell; near duplicates (word 5-gram Jaccard >= 0.35 on system plus user text)
 dropped, the later one; every field present; no lettered options. A batch the writer declines
 after a safety classifier stop is not retried in any form; its cells are recorded as not written.
-Raw replies under `outputs_raw/pressure_writers/` (gitignored); kept scenarios in
-`data/pressure_scenarios_v1.json`.
+Raw replies under `outputs_raw/pressure_writers/` (gitignored); Claude's kept scenarios (grid v2's
+claude cells, Amendment 27 item 1) in `data/pressure_scenarios_claude_v1.json`; the subject writes
+the rest on the pod (`cst_pressure_pod.py`).
 """
 
 from __future__ import annotations
@@ -149,8 +150,12 @@ def check() -> dict:
             if bad.exists() and "safety classifier" in bad.read_text():
                 not_written += [x["cell_id"] for x in cells]
                 continue
-            raise SystemExit(f"missing {f.name}: write first")
+            continue  # not written by Claude (Amendment 27: the subject writes the rest)
         rows += [g[s["cell_id"]] | s for s in parse(f.read_text(), cells)]
+    # Amendment 27 item 1: only the cells grid v2 keeps for Claude (the excluded type dropped)
+    v2 = {c["cell_id"]: c for c in json.loads(
+        (CST / "data/pressure_grid_v2.json").read_text())["cells"] if c["writer"] == "claude"}
+    rows = [r | {"writer": "claude"} for r in rows if r["cell_id"] in v2]
     idx = OverlapIndex()
     for k, v in T5.eval_sets().items():
         idx.add_set(k, v)
@@ -183,7 +188,7 @@ def check() -> dict:
            "not_written": not_written,  # batches declined after a safety classifier stop
            "dropped": dropped, "kept_by_kind": dict(Counter(r["kind"] for r in kept)),
            "scenarios": kept}
-    (CST / "data/pressure_scenarios_v1.json").write_text(json.dumps(rec, indent=1) + "\n")
+    (CST / "data/pressure_scenarios_claude_v1.json").write_text(json.dumps(rec, indent=1) + "\n")
     print(json.dumps({k: v for k, v in rec.items() if k != "scenarios"}, indent=1))
     return rec
 

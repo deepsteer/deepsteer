@@ -1,9 +1,8 @@
-# CST pressure-prompt pod build (2026-11-10; Amendment 25 Part C)
+# CST pressure-prompt pod build (2026-11-10; Amendment 25 Part C, Amendment 27)
 
 The DPO line's data source moves from advice prompts (CST-A21: the in-context constitution's answers
 do not beat A0's there) to operator-pressure prompts, where A0 and A0s disagree in action (Amendment
-25 Part C). This file is in `PILOT_BUILD.md`'s form. Nothing here has run; §7 lists what is built and
-§8 the decision the price forces.
+25 Part C). This file is in `PILOT_BUILD.md`'s form. Nothing here has run; §8 lists what is built.
 
 **Measured rates the prices use:** decode on the operator cell 1,003 tokens/s for A0 at 128
 sequences (423 tokens per rollout), 339 for A0s and 302 for A0n at 32 (1,198 and 551; S0a and S0b
@@ -38,7 +37,7 @@ are not read (nothing to follow).
 
 **Contrast gate (C3), before any training:** a directed-away scenario disagrees when A0 follows on
 at least 2 of its 4 rollouts and A0s follows on 0 of 2 (the lead's operationalization; flagged).
-Fewer than 150 such scenarios stops the line and comes to the author. Beside it: the follow rates
+(Amendment 27 item 2 replaces C3's 150: the line gate and the P-dpo gate of §7.) Beside it: the follow rates
 per arm and kind, unclear shares, and the injection-talk split (Amendment 23's pattern).
 
 ## 3. Rungs (C4)
@@ -98,16 +97,31 @@ implied). **C7:** A0s and A0n on the legitimate-order cell at k 4.
 
 Over Amendment 25 C8's 10.5 h; §8.
 
-## 7. Built (2026-11-10)
+## 7. Amendment 27 (the author's rulings on §8)
+
+- **Writer:** the subject writes the scenarios on the pod (grid v2, `data/pressure_grid_v2.json`:
+  v1 without the 40 cells of Claude's two declined batches and without `no_caveats_research`,
+  refilled to 300 / 180 / 120); Claude's finished batches are kept with a writer tag (90 of 92 after
+  the checks, `data/pressure_scenarios_claude_v1.json`; the two dropped for an eval 8-gram go to the
+  subject). Pilot gate on the subject's first 50: at least 45 pass every check.
+- **Gates:** the line gate (A0s's follow share on directed-away scenarios at least 0.10 below A0's,
+  paired CI excluding 0; failing it comes to the author) and the P-dpo gate (60 disagreeing
+  scenarios; below it P-dpo is not trained). DPO pairs at the rollout level, at most 4 per scenario.
+- **Sessions:** 2-roll (writing, checks, rollouts, action read, contrast; about 4.2 h: setup 0.25,
+  writing 0.3, rollouts 3.1, action read 0.45), then 2-ctx (P-ctx, P-ctx-n) and 2-dpo (P-dpo, P-long,
+  the legitimate-order reads) together after the gate, each at or under 10.5 h with 2-roll's
+  rollouts synced by name.
+
+## 8. Built (2026-11-10)
 
 | piece | where | state |
 |---|---|---|
-| the grid | `scripts/pressure_grid.py`, `data/pressure_grid_v1.json` | built |
-| the writer and checks | `scripts/pressure_scenarios.py` | writing (one worker; one batch declined) |
-| the pod driver, runner and card | `scripts/cst_pressure_pod.py`, `runpod/*_cst_pressure*.sh` | not built |
+| the grids | `scripts/pressure_grid.py`, `data/pressure_grid_v1.json`, `_v2.json` | built |
+| Claude's writer and checks | `scripts/pressure_scenarios.py`, `data/pressure_scenarios_claude_v1.json` | stopped (Amendment 27); 90 kept |
+| 2-roll | `scripts/cst_pressure_pod.py`, `runpod/remote_cst_pressure_roll.sh`, card `launch_cst_pressure_roll.sh` | built; 3 tests (dry session end to end) |
+| 2-ctx, 2-dpo | | after 2-roll's gate |
 
-## 8. The price decision (to the author)
-
+## 9. The price decision (answered by Amendment 27)
 1. **One pod, cut to fit (about 10.3 h):** P-ctx token-matched to P-ctx-n (a cleaner control, -0.45 h);
    P-dpo's retain items one rollout per scenario (-0.35 h); P-long on directed-away scenarios only
    (-0.65 h); C7 moves to tonight's pod 1 (9.0 h with it; -0.7 h); a rate gate after the first A0
