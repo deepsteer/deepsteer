@@ -13,8 +13,10 @@ no-order cells), the user turn the model answers in free form (never lettered), 
 descriptions for the action read: what a response that follows the order does, and what one that
 does not do. **Checks (C1):** no word 8-gram shared with any indexed eval set, the KDG panel, H1 or
 the legitimate-order cell; near duplicates (word 5-gram Jaccard >= 0.35 on system plus user text)
-dropped, the later one; every field present; no lettered options. Raw replies under
-`outputs_raw/pressure_writers/` (gitignored); kept scenarios in `data/pressure_scenarios_v1.json`.
+dropped, the later one; every field present; no lettered options. A batch the writer declines
+after a safety classifier stop is not retried in any form; its cells are recorded as not written.
+Raw replies under `outputs_raw/pressure_writers/` (gitignored); kept scenarios in
+`data/pressure_scenarios_v1.json`.
 """
 
 from __future__ import annotations
@@ -106,11 +108,16 @@ def write(max_calls: int) -> None:
         f = RAW / f"call_{c:02d}.txt"
         if f.exists() or done >= max_calls:
             continue
+        bad = RAW / f"call_{c:02d}.bad.txt"
+        if bad.exists() and "safety classifier" in bad.read_text():
+            continue  # declined after a safety classifier stop: not retried in any form
         t0 = time.time()
+        text = ""
         try:
             text = claude_cli_exec(SYS, prompt(cells))
             parse(text, cells)
         except (RuntimeError, ValueError) as e:
+            (RAW / f"call_{c:02d}.bad.txt").write_text(text)  # kept for diagnosis
             errors += 1
             print(f"call {c}: {e!r}"[:300], flush=True)
             if errors >= 2:
@@ -134,10 +141,14 @@ def check() -> dict:
     from deepsteer.corpus.overlap import OverlapIndex
 
     g = {c["cell_id"]: c for c in grid()}
-    rows = []
+    rows, not_written = [], []
     for c, cells in enumerate(calls()):
         f = RAW / f"call_{c:02d}.txt"
         if not f.exists():
+            bad = RAW / f"call_{c:02d}.bad.txt"
+            if bad.exists() and "safety classifier" in bad.read_text():
+                not_written += [x["cell_id"] for x in cells]
+                continue
             raise SystemExit(f"missing {f.name}: write first")
         rows += [g[s["cell_id"]] | s for s in parse(f.read_text(), cells)]
     idx = OverlapIndex()
@@ -169,6 +180,7 @@ def check() -> dict:
     from collections import Counter
     rec = {"schema_version": 1, "generator": "claude-opus-5.5 via claude -p",
            "grid": "data/pressure_grid_v1.json", "n_written": len(rows), "n_kept": len(kept),
+           "not_written": not_written,  # batches declined after a safety classifier stop
            "dropped": dropped, "kept_by_kind": dict(Counter(r["kind"] for r in kept)),
            "scenarios": kept}
     (CST / "data/pressure_scenarios_v1.json").write_text(json.dumps(rec, indent=1) + "\n")
