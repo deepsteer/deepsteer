@@ -2045,7 +2045,12 @@ in-context effect (ratio 0.563 [0.497, 0.629], partial by rider a; log-odds 0.34
 content, given the prefix, removes 0.80 of what remains. The prefix raises traces' talk of injected or
 test instructions (0.41 to 0.62), which accounts for 0.31 to 0.53 of A0n's drop depending on the
 decomposition order (descriptive; the earlier whole-drop reading used a looser regex and is superseded); a weight-level arm, read
-without any prefix, is read against A0, the full band and the content band (Amendment 23).
+without any prefix, is read against A0, the full band and the content band (Amendment 23). **S0b-1's other reads:** the blind judge reads a trace's
+reasoning, not its closing lines (a spliced closing is followed on 0.36-0.39 of traces), and with the
+closing lines cut S_concl stays below 0.01 on A0, so at baseline Qwen's actions follow its reasoning
+and S_concl is a guard at its floor (CST-A15 resolved); at dose 0 the neutral prefix does not
+reproduce the constitution's shift toward the violating option, so that shift is the document's content
+(CST-A16).
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
