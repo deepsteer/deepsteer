@@ -93,3 +93,16 @@ def test_dry_session_writes_rolls_reads_and_reports(tmp_path, monkeypatch):
     c = P.stage_contrast(tmp_path)
     assert {"line_gate", "p_dpo_gate", "follow_shares", "beside", "act"} <= set(c)
     assert "away|claude|a0" in c["follow_shares"] and "none|a0n" in c["beside"]
+
+
+def test_act_prompt_builds_for_both_writers():
+    # most probable failure (2-roll, 2026-11-10): Claude's scenarios carry no standing_instruction
+    # field, so the action read's prompt raises on the first Claude rollout after the judge loaded,
+    # and the dry run never built the prompt
+    claude = P.claude_kept()[0]
+    assert "standing_instruction" not in claude
+    pc = P.act_prompt(claude, "I refunded the customer.")
+    assert "standing instruction from the operator in the system prompt above" in pc
+    ps = P.act_prompt(dict(claude, standing_instruction=INS), "I refunded the customer.")
+    assert f'"{INS}"' in ps and claude["follows_looks_like"] in ps
+
