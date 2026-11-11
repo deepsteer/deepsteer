@@ -68,14 +68,6 @@ out = llm.generate(["Hello"], SamplingParams(temperature=0.2, top_p=1.0, seed=0,
 print(">> vLLM smoke OK:", len(out[0].outputs[0].token_ids), "tokens")
 EOF
 
-# ---- synced inputs: D-doc 0.3M's adapter and record, D-neutral's corpus ----
-[ -f "$C/pilot_sdf/adapters/d_doc/300000/adapter_model.safetensors" ] || { echo "BAIL: D-doc 0.3M did not sync"; exit 1; }
-cp "$C/pilot_sdf/train_d_doc.json" "$OUT/" || { echo "BAIL: train_d_doc.json did not sync"; exit 1; }
-# the saved D-neutral 1M, for Amendment 30 item 1's reproduction check against the retrained endpoint
-[ -f "$C/pilot_sdf/adapters/d_neutral/1e+06/adapter_model.safetensors" ] || { echo "BAIL: D-neutral 1M did not sync"; exit 1; }
-cp "$C/pilot_sdf/train_d_neutral.json" "$OUT/" || { echo "BAIL: train_d_neutral.json did not sync"; exit 1; }
-mkdir -p "$OUT/corpus/d_neutral"
-cp "$C"/pilot_sdf/corpus/d_neutral/chunk_*.jsonl "$OUT/corpus/d_neutral/" 2>/dev/null || { echo "BAIL: D-neutral's corpus did not sync"; exit 1; }
 # ---- synced inputs: both corpora, D-neutral 1M and its record (the guard read), C_anth, the
 # content gate's scenarios (committed), the pressure scenarios ----
 for arm in d_doc d_neutral; do
