@@ -2558,3 +2558,47 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Discriminator.** Zero GPU: the per-tag records already on disk (served against attached, against the floor, across shifts).
 **Status.** open, escalated (A4 is registered).
 **Thesis impact.** None on any read so far; it decides whether small-shift rungs (P-long; possibly P-ctx and P-ctx-n, trained on pressure rollouts) can be read at all under A4.
+
+## CST-A25 (ledger) — The recovery step erases D-doc's gain on the operator cell
+
+**Date.** 2026-11-11 (the SDF re-read pod on the fixed serving path; `outputs/sdf_reread_quick.json`, `scripts/sdf_reread_quick.py`; Amendment 29 item 8).
+**Observation.** Operator cell, 457 clear items, k 2, ordered share against the same-session base (0.335): D-doc 1M without recovery 0.152 (−0.183 [−0.219, −0.144]); D-doc 1M with recovery 0.362 (+0.027 [−0.009, +0.065]); R0, the recovery step alone, 0.361; D-doc with recovery minus R0 +0.000 [−0.037, +0.036]. On the 32 dose-0 parity prompts recovery pulls D-doc's letter shift from TV 0.429 to 0.098. Without recovery D-doc's traces double (median 906 tokens against 431), 2.7% are capped (worst case counting them as following: 0.176), suspicion talk falls (0.19 against 0.37), and the ordered share among traces without suspicion talk is 0.152 against the base's 0.475.
+**Type.** control-misbehavior (a step registered to restore the reasoning format removes the rung's effect).
+**Appears in.** PILOT_BUILD.md (Amendment 21 item 5); CST_STATE.md.
+**Competing readings.** R_overwrite: one pass over 512 neutral thinking-on replies at lr 2e-4 rewrites the adapter's effect, so recovery is not a neutral format restorer at this learning rate. R_format: D-doc without recovery degrades the reasoning (longer traces, caps, parse failures) and the drop in following is a byproduct of disrupted reasoning, which recovery repairs, so the without-recovery number is not a content effect. The suspicion split argues against the drop running through suspicion talk.
+**Discriminator.** Amendment 29 item 5: capability at n 200 on D-doc 1M without recovery and the base (R_format predicts a capability loss), D-neutral 1M without recovery (the control of record), a second D-doc draw.
+**Status.** open; whether recovery stays in the arm of record returns to the author with item 5 (Amendment 29 item 9).
+**Thesis impact.** If R_overwrite: the arm of record drops recovery or changes its rate, and D-doc's −0.18 is the SDF rung's candidate effect pending its control. If R_format: the SDF rung's effect is unestablished at this dose.
+
+## CST-A26 (ledger) — D-neutral with recovery lowers order-following
+
+**Date.** 2026-11-11 (as CST-A25).
+**Observation.** D-neutral 1M with recovery 0.223 against the same-session base 0.335 (−0.112 [−0.146, −0.075]); D-doc 1M with recovery minus D-neutral 1M with recovery +0.139 [+0.103, +0.175]. Suspicion talk 0.51 (base 0.37); ordered share without suspicion talk 0.389 (base 0.475); trace median 401 tokens. D-neutral's corpus: 832 documents, 818 kept, 1.6% outside the length band.
+**Type.** sign flip (the neutral control moves where the content rung with the same recovery does not).
+**Appears in.** CST-A20, CST-A23 (the neutral document's in-context effects on the two instruments).
+**Competing readings.** R_neutral_corpus: tuning on documents written about Faraday's lectures (with an AI agent kept in the stories) teaches something that lowers order-following, partly through suspicion talk. R_recovery_interaction: the same recovery step lands differently on the two adapters. R_generic: any 1M-token document tuning followed by recovery moves the cell, and D-doc's recovery read is the outlier.
+**Discriminator.** D-neutral 1M without recovery (Amendment 29 item 5) and the registered D-doc minus D-neutral rule (item 6).
+**Status.** open. No content verdict and no null until item 5 lands (Amendment 29 item 8).
+**Thesis impact.** Until separated, D-neutral cannot stand as a no-effect control in the with-recovery arm.
+
+## CST-A27 (ledger) — D-chat with recovery raises order-following
+
+**Date.** 2026-11-11 (as CST-A25).
+**Observation.** D-chat 1M with recovery 0.413 against the base 0.335 (+0.079 [+0.044, +0.114]). Suspicion talk 0.26; ordered share without it 0.512 (base 0.475); trace median 384 tokens.
+**Type.** sign flip (the chat render of the same corpus moves the cell the other way from D-doc without recovery).
+**Appears in.** PILOT_BUILD.md (D-chat, the conversation form of D-doc's corpus).
+**Competing readings.** R_assistant: training on the corpus rendered as assistant turns teaches compliance with instructions in context, which an operator order inherits. R_recovery_interaction: as CST-A26.
+**Discriminator.** D-chat 1M without recovery (Amendment 29 item 5).
+**Status.** open (wording rule as CST-A26).
+**Thesis impact.** If R_assistant: the conversational form carries a compliance gain that works against the constitution's content, a reason to keep document-form SDF.
+
+## CST-A28 (ledger) — The lettered legitimate-order cell reads at ceiling, so it cannot show the constitution's cost on legitimate orders
+
+**Date.** 2026-11-11 (2-dpo's legitimate-order reads; the night SDF pod's A0 read; Amendment 29 item 8).
+**Observation.** On the lettered legitimate-order cell (110 items, k 4) the follow share is A0 1.000, A0s 0.998, A0n 1.000, the same-session base 1.000 (A0s − A0 −0.002 [−0.007, 0]). On the free-form pressure prompts' legitimate orders A0s is 0.081 below A0 (−0.081 [−0.123, −0.039], 173 scenarios; CST-A23).
+**Type.** cross-document conjunction (one cost, two instruments, one at ceiling).
+**Appears in.** Amendment 21's legitimate-order rule; CST-A23.
+**Competing readings.** R_ceiling: the lettered cell's orders are easy enough that every arm follows them, so the rule built on it cannot detect a cost. R_genre: the free-form legitimate orders are harder or more ambiguous cases, and the 0.081 is specific to them.
+**Discriminator.** The held-out free-form cell (Amendment 29 item 3) read on every rung carries the legitimate kind; a harder lettered set if the author wants one.
+**Status.** open.
+**Thesis impact.** Amendment 21's legitimate-order rule needs the free-form legitimate kind to have any power; on the lettered cell it reads 1.0 everywhere.
