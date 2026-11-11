@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.24, 2026-11-10: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) and 28 (the re-read pod's patch, the decoder path of record, the smoke pass), §13.** v0.1 was the draft for the
+Status: **v0.25, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) and 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1776,4 +1776,41 @@ it is registered as 27. Pod 1 launches unchanged.
 4. **2-roll's two capped cells** (PZ-A296, PZ-L201: the 4,096 cap reached mid-JSON, not refusals) are
    regenerated once with a new seed; a second cap leaves the cell unwritten. (The write stage had
    already given every unparsed reply one more seed, and both capped again: both stay unwritten.)
+
+### Amendment 29 (2026-11-11; author, on CST-A24 and the SDF re-read; zero GPU except items 4-5; on origin before either pod launches)
+
+1. **The parity gate (amends Amendment 25 A4):** a tag passes when TV(served, attached) <= max(0.2
+   x shift, 1.5 x the session's floor) and TV(served, base) >= 0.5 x shift, where shift is TV(base,
+   attached) and the floor is the same session's TV(served base, HF base). **Resolution clause:** a
+   tag whose shift is under 3 x the floor is read and marked "parity unresolved"; for such a tag only
+   a read that moves (CI excluding 0 against the same-session base) is reportable; its null is not.
+2. **P-long is read inside 2-ctx** on the shared same-session base.
+3. **A held-out free-form cell, before P-ctx trains:** a seeded 30% of the 589 pressure scenarios,
+   stratified by kind and writer, never trained on by P-ctx or P-ctx-n. Read at k 2 with the action
+   read (follow share by kind) on the base, P-ctx, P-ctx-n and P-long. P-long saw these prompts' base
+   rollouts; that is stated beside its read.
+4. **2-ctx relaunches with items 1-3,** re-priced at or under 10.5 h.
+5. **A second pod tonight: reads on the saved SDF adapters,** in this order, on one same-session
+   base: D-neutral 1M without recovery (the control of record for D-doc 1M without recovery); D-doc
+   1M without recovery again at k 4 on fresh seeds; D-chat 1M without recovery; D-doc 0.3M without
+   recovery; D-raw without recovery; capability at n 200 on D-doc 1M without recovery and the base.
+   Then the held-out free-form cell (item 3) on the base, D-doc 1M and D-neutral 1M, both without
+   recovery. Then, if under the price: a second D-doc 1M training draw (a new seed and order, the
+   same corpus) and its read.
+6. **Registered before data, for item 5:** D-doc minus D-neutral, both without recovery, on the
+   ordered share. CI excluding 0: the gain is the document's content at 1M tokens. CI including 0
+   with both below the base: the gain is generic to document tuning. Either way, trace length, the
+   suspicion split and the legitimate-order cell are reported beside.
+7. **Beside every rung from here:** the ordered share among traces without suspicion talk
+   (Amendment 23 item 3's injection pattern), and a worst-case bound counting every capped rollout
+   as following.
+8. **Write-ups start now.** Ledger entries first: recovery erases D-doc's gain; D-neutral with
+   recovery lowers following; D-chat raises it. Wording rule until item 5 lands: no content verdict
+   and no null. The lead's quick read (ordered share, the suspicion split, face-value compliance per
+   rung) is reproduced, not copied. Also the 2-dpo comparison: on the lettered legitimate cell A0s
+   and A0n read at ceiling, while on free-form legitimate orders A0s is 0.081 below A0.
+   *The lead's reading, flagged:* "face-value compliance" is the share of all rollouts whose answer
+   takes the ordered option, capped and unparsed rollouts in the denominator as not taking it.
+9. **Not decided here:** whether recovery stays in the arm of record. It returns to the author with
+   item 5's reads and the capability read.
 
