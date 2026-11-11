@@ -1,0 +1,50 @@
+{
+ "rule": "Amendment 33 item 3",
+ "bootstrap": {
+  "draws": 2000,
+  "seed": "20261111|cst_content_null_reads"
+ },
+ "lead_items": {
+  "selected_on": "A0, user cell, directed share <= 0.5, clear items",
+  "compared_on": "plain cell",
+  "n_selected": 103,
+  "a0_plain": 0.46116504854368934,
+  "a0s_minus_a0": {
+   "delta": 0.012135922330097082,
+   "ci95": [
+    -0.029126213592233052,
+    0.05582524271844663
+   ],
+   "n": 103
+  },
+  "a0n_minus_a0": {
+   "delta": 0.0024271844660194164,
+   "ci95": [
+    -0.03155339805825241,
+    0.0364077669902913
+   ],
+   "n": 103
+  }
+ },
+ "never_items": {
+  "selected_on": "A0, plain cell, directed share 0 (all panel items with a directed option of record)",
+  "compared_on": "the same plain-cell rollouts (biased upward)",
+  "n_selected": 177,
+  "a0s_minus_a0": {
+   "delta": 0.0211864406779661,
+   "ci95": [
+    0.007062146892655367,
+    0.03954802259887006
+   ],
+   "n": 177
+  },
+  "a0n_minus_a0_null": {
+   "delta": 0.0211864406779661,
+   "ci95": [
+    0.00847457627118644,
+    0.038135593220338986
+   ],
+   "n": 177
+  }
+ }
+}

@@ -5,10 +5,11 @@
 
 On the operator cell's 458 clear items (`outputs/pilot_sdf4/gen/<tag>`), each adapter against the
 pod's same-session base, scenario-paired with a scenario bootstrap (`sdf_reread_quick.paired`),
-with item 3's option shares and the suspicion split beside (`sdf2_quick`). **Item 8's rule, per
-corpus:** an adapter *moves* when its paired difference's 95% CI excludes 0; only the stories-only
-adapter moves: the steadfast-agent genre; both: document tuning in general; neither: uninformative
-at half dose (rerun at matched tokens); only the without-stories adapter: the non-narrative kinds.
+with the three shares (Amendment 33 item 2) and the suspicion split beside (`sdf2_quick`).
+**Item 8's rule, per corpus:** an adapter *moves* when its paired difference's 95% CI excludes 0;
+only the stories-only adapter moves: the steadfast-agent genre; both: document tuning in
+general; neither: uninformative at half dose (rerun at matched tokens); only the without-stories
+adapter: the non-narrative kinds.
 Writes `outputs/kinds_read.json`.
 """
 
@@ -70,7 +71,8 @@ def main() -> None:
     for t, r in res["rungs"].items():
         vb, s = r.get("vs_session_base"), r["operator_shares"]
         print(f"{t:13s} ord {r['ordered_share']:.3f} susp {r['suspicion_share']:.3f} "
-              f"directed {s['directed']:.3f} other {s['other']:.3f} none {s['none']:.3f}"
+              f"ordered {s['ordered']:.3f} directed {s['directed']:.3f} other {s['other']:.3f} "
+              f"none {s['none']:.3f}"
               + (f" | vs base {vb['delta']:+.3f} [{vb['ci95'][0]:+.3f}, {vb['ci95'][1]:+.3f}]"
                  if vb else ""))
 

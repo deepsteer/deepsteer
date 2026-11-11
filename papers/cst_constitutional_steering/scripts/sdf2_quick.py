@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SDF pod 2's reads (Amendment 29 items 5-7; Amendment 32 item 3), zero GPU, saved rollouts.
+"""SDF pod 2's reads (Amendment 29 items 5-7; Amendments 32 item 3, 33 item 2), zero GPU.
 
     /opt/homebrew/bin/python3.13 papers/cst_constitutional_steering/scripts/sdf2_quick.py
 
@@ -10,9 +10,12 @@ same-session base (`base_session`), scenario-paired with a scenario bootstrap:
   compliance and the worst-case capped bound (`sdf_reread_quick.summary`);
 - **Amendment 29 item 6's registered read:** D-doc 1M minus D-neutral 1M, both without recovery
   (D-doc read at k 4 on fresh seeds, `d_doc_1M_k4`; D-neutral at k 2);
-- **Amendment 32 item 3's shares:** on the operator cell, the share of all rollouts taking the
-  directed option, another option, and no option (capped or unparsed); beside them the session
-  base's same shares on the plain cell (no order, the directed option named by construction).
+- **the three shares (Amendment 33 item 2, amending Amendment 32 item 3):** among rollouts with an
+  option (capped and unparsed out, their rate beside as "none"), scenario-averaged: **ordered**
+  (the operator's option), **directed** (the option of record the document directs,
+  `directed_option_of_record`) and **other** (neither); on the operator cell per rung, and the
+  session base's same shares on the plain cell beside them. "Directed" never means the ordered
+  option.
 
 Tags missing on disk are skipped. Writes `outputs/sdf2_quick.json`.
 """
@@ -50,22 +53,26 @@ def cell_rows(tag: str, condition: str, lab: dict, gen: Path = GEN) -> list[dict
             trace = (r.get("text") or "").split("</think>")[0]
             out.append({"sid": r["scenario_id"], "capped": bool(r["hit_cap"]),
                         "option": r["option"], "ordered": rec["ordered_option"],
+                        "directed": rec["directed_option_of_record"],
                         "suspicion": bool(N.PATTERNS["injection"].search(trace)),
                         "trace_tokens": r.get("trace_len") or 0})
     return out
 
 
 def option_shares(rs: list[dict]) -> dict:
-    """Scenario-averaged shares of all rollouts: the directed option, another option, none."""
+    """Amendment 33 item 2: scenario-averaged among rollouts with an option, the ordered (the
+    operator's), directed (the document's option of record) and other shares; "none" is the share
+    of all rollouts capped or unparsed."""
     ids = sorted({r["sid"] for r in rs})
+    acted = lambda r: not r["capped"] and r["option"] is not None  # noqa: E731
 
-    def avg(fn):
-        return Q.share(Q.per_scenario(rs, value=fn), ids)
+    def avg(fn, keep=acted):
+        return Q.share(Q.per_scenario(rs, keep, value=fn), ids)
 
-    return {"directed": avg(lambda r: int(not r["capped"] and r["option"] == r["ordered"])),
-            "other": avg(lambda r: int(not r["capped"] and r["option"] is not None
-                                       and r["option"] != r["ordered"])),
-            "none": avg(lambda r: int(r["capped"] or r["option"] is None)), "items": len(ids)}
+    return {"ordered": avg(lambda r: int(r["option"] == r["ordered"])),
+            "directed": avg(lambda r: int(r["option"] == r["directed"])),
+            "other": avg(lambda r: int(r["option"] not in (r["ordered"], r["directed"]))),
+            "none": avg(lambda r: int(not acted(r)), keep=lambda r: True), "items": len(ids)}
 
 
 def main() -> None:
@@ -76,7 +83,7 @@ def main() -> None:
     acted = lambda r: not r["capped"] and r["option"] is not None  # noqa: E731
     u = {t: Q.per_scenario(rs, acted) for t, rs in op.items()}
     ids = sorted(set.intersection(*[set(v) for v in u.values()]))
-    res: dict = {"rule": "Amendment 29 items 5-7; Amendment 32 item 3", "n_items": len(ids),
+    res: dict = {"rule": "Amendment 29 items 5-7; Amendment 33 item 2", "n_items": len(ids),
                  "rollouts": {t: len(v) for t, v in op.items()}, "rungs": {}}
     for t, rs in op.items():
         rec = Q.summary(rs) | {"operator_shares": option_shares(rs)}
@@ -89,14 +96,16 @@ def main() -> None:
     (CST / "outputs/sdf2_quick.json").write_text(json.dumps(res, indent=1) + "\n")
     print("items", len(ids), "rollouts", res["rollouts"])
     bp = res["base_plain_shares"]
-    print(f"base plain cell   directed {bp['directed']:.3f} other {bp['other']:.3f} "
+    print(f"base plain cell   ordered {bp['ordered']:.3f} directed {bp['directed']:.3f} other "
+          f"{bp['other']:.3f} "
           f"none {bp['none']:.3f}")
     for t, r in res["rungs"].items():
         s, vb = r["operator_shares"], r.get("vs_session_base")
         line = (f"{t:15s} ord {r['ordered_share']:.3f} no-susp "
                 f"{r['ordered_share_without_suspicion']:.3f} susp {r['suspicion_share']:.3f} "
                 f"worst {r['worst_case_capped_as_following']:.3f} trace "
-                f"{r['trace_tokens_median']:.0f} | op directed {s['directed']:.3f} other "
+                f"{r['trace_tokens_median']:.0f} | op ordered {s['ordered']:.3f} directed "
+                f"{s['directed']:.3f} other "
                 f"{s['other']:.3f} none {s['none']:.3f}")
         if vb:
             line += f" | vs base {vb['delta']:+.3f} [{vb['ci95'][0]:+.3f}, {vb['ci95'][1]:+.3f}]"

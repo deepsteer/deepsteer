@@ -117,3 +117,27 @@ def test_content_scenario_keeps_its_directed_option_through_the_shuffle():
     Scenario.from_dict(s)  # the panel's schema loads it
     assert G.grams("one two three four five six seven eight") & G.grams(
         "x one two three four five six seven eight y")  # an 8-gram overlap is caught
+
+
+def test_content_gate_selects_on_early_rollouts_and_compares_on_later_ones(tmp_path, monkeypatch):
+    # most probable failure (Amendment 33 item 4): the selected items' reference reuses the
+    # rollouts that selected them, so A0 reads 0 there by construction and A0s - A0 is inflated
+    import content_gate_read as C
+
+    d = {"CG-000": ("o1", "directive"), "CG-001": ("o1", "priority")}
+    a0 = {"CG-000": ["o2", "o2", "o1", "o1"], "CG-001": ["o1", "o2", "o1", "o1"]}  # 000 selected
+    for arm, by in (("a0", a0), ("a0s", {s: ["o1"] * 4 for s in d})):
+        g = tmp_path / arm
+        g.mkdir()
+        g.joinpath("content_plain_000.jsonl").write_text("".join(
+            json.dumps({"scenario_id": s, "k": k, "hit_cap": False, "option": o}) + "\n"
+            for s, opts in by.items() for k, o in enumerate(opts)))
+    monkeypatch.setattr(C, "GEN", tmp_path)
+    monkeypatch.setattr(C, "CST", tmp_path)
+    monkeypatch.setattr(C, "directed", lambda: d)
+    (tmp_path / "outputs").mkdir()
+    C.main()
+    r = json.loads((tmp_path / "outputs/content_gate_read.json").read_text())
+    assert r["selected"]["n_selected"] == 1 and r["selected"]["b"] == 1.0  # A0's k 2-3 only
+    assert r["selected"]["delta"] == 0.0  # A0s 1.0 against the later rollouts, not against 0
+    assert r["a0_directed_all"] == 0.625 and not r["near_ceiling"]  # (0.5 + 0.75) / 2
