@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.25, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) and 30 (the rate of record, the envelope, the generic branch's reproduction check), §13.** v0.1 was the draft for the
+Status: **v0.26, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) and 31 (the smoke pass's fixed served check, the structural save check), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1839,3 +1839,23 @@ it is registered as 27. Pod 1 launches unchanged.
    **277 A100-h**; the dollar cap of **$500** governs (`CST_PLAN.md` §8's $500 to $1,000 range is
    replaced by $500).
 
+
+### Amendment 31 (2026-11-11; author, on CST-A29; zero GPU; on origin before any later pod's card)
+
+1. **2-ctx's fifth launch** (pod of 2026-11-11, 10:33 PST) runs as built at `6379d84`, the random
+   adapter's off-a-cliff search included. No other change for this run.
+2. **The smoke pass's served check, for every later pod, is a fixed adapter:** the saved D-doc 1M
+   adapter without recovery (`outputs/pilot_sdf/adapters/d_doc/1e+06`, synced by name) is served
+   in the session and compared with its saved HF letters (`outputs/pilot_sdf/parity/hf_d_doc_1M.json`,
+   `hf_base.json`). It **passes** when TV(served, attached) is at most **3 floors** (the floor is
+   this session's TV(served base, saved HF base)) and TV(served, saved HF base) is at least **half
+   the adapter's 0.429 shift** (0.215). On record: 0.0102 (the mini-pod, floor 0.0075) and 0.0146
+   (the re-read pod, floor 0.0103). It replaces Amendment 28 item 3's random adapter.
+3. **The trainer's save path keeps a structural check only:** the adapter the smoke pass trains for
+   one step, renamed for serving, has every key's module path present in the served class
+   (`AutoModelForImageTextToText`, built on the meta device) and every LoRA matrix shape-consistent
+   with that module, so no module is skipped at load. No numeric parity on a random or barely
+   trained adapter.
+4. **CST-A29:** the served-against-attached gap is flat (0.0095 to 0.026 on record) across shifts
+   of 0.05 to 0.43 on the same path, which argues against partial serving (a missing module class would
+   scale the gap with the shift); item 2's read closes R_partial per session.
