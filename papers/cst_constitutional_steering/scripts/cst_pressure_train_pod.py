@@ -41,13 +41,13 @@ HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(HERE.parents[1] / "kdg_panel/scripts")]
 import cst_pressure_pod as R  # noqa: E402  (2-roll: scenarios, rollouts, labels)
 import cst_s0a_pod as S  # noqa: E402
+import pilot_pod_lib as PL  # noqa: E402
 
 CST = S.CST
 RUNGS = ("p_ctx", "p_ctx_n", "p_dpo", "p_long")
 PAIRS_PER_SCENARIO = 4
 SMOKE_TAG = "smoke"
-SMOKE_MIN_TV = 0.15  # the random adapter's TV(base, attached) before its parity read (27B)
-SMOKE_MIN_TV_DRY = 0.03  # the tiny model's near-uniform letters saturate near 0.07
+SMOKE_MIN_TV, SMOKE_MIN_TV_DRY = PL.SMOKE_MIN_TV, PL.SMOKE_MIN_TV_DRY
 
 
 def _w(out: Path, name: str, rec) -> None:
@@ -180,7 +180,6 @@ def _train(wb, rung: str, data: dict, out_dir: Path, dry: bool, smoke: bool = Fa
 def stage_smoke_hf(out: Path, rungs: list[str], dry: bool) -> dict:
     """Smoke, HF side: data builders, one step per loss, a random adapter saved, parity HF side."""
     import pilot_pod_lib as PL
-    import torch
 
     gate_ok(out)
     path, wb, _ = PL.load_model(dry)
@@ -196,46 +195,7 @@ def stage_smoke_hf(out: Path, rungs: list[str], dry: bool) -> dict:
             continue
         r = _train(wb, rung, data, out / "smoke" / rung, dry, smoke=True)
         rec["rungs"][rung] = {"items": size, "steps": r["steps"]}
-    # a randomly initialized adapter, saved the trainer's way, scaled until it moves the letters
-    # well above the serving floor (about 0.0075), or the gate's 0.2 rule cannot pass
-    from deepsteer.steering import objective_lora as OL
-
-    prompts, lids = PL.parity_prompts(dry)
-    with OL.adapter_disabled(wb):
-        base = PL._letter_lp(wb, prompts, lids)  # noqa: SLF001
-    # the served side reads only the top 20 log-probs, so the letters must stay inside them on
-    # every prompt (2-ctx's first smoke pass pushed them out at TV 0.41 and the gate divided by 0)
-    scale, ref, rank = (0.5 if dry else 0.005), 0.0, 0
-    bar = SMOKE_MIN_TV_DRY if dry else SMOKE_MIN_TV
-    for _ in range(16):
-        torch.manual_seed(0)
-        with torch.no_grad():
-            for name, prm in wb.model.named_parameters():
-                if "lora_B" in name:
-                    prm.normal_(0, scale)
-        attached = PL._letter_lp(wb, prompts, lids)  # noqa: SLF001
-        ref = PL.tv(base, attached)
-        rank = max(PL.letter_ranks(wb, prompts, lids))
-        out_of_top = not dry and rank >= PL.SERVED_TOPK  # the tiny model's letters sit deep
-        if ref >= bar or out_of_top:
-            break
-        scale *= 1.5
-    if ref < bar or out_of_top:
-        raise SystemExit(f"BAIL: smoke: no random adapter reached TV {bar} with every letter in "
-                         f"the served top {PL.SERVED_TOPK} (TV {ref:.3f}, worst rank {rank})")
-    adir = out / "smoke" / "adapter"
-    wb.model.save_pretrained(str(adir))
-    par = out / "parity"
-    par.mkdir(parents=True, exist_ok=True)
-    if not (par / "prefixes.json").exists():  # in this HF process, before any vLLM
-        (par / "prefixes.json").write_text(json.dumps(PL.decoder_prefixes(path)) + "\n")
-    if not (par / "hf_base.json").exists():
-        PL.write_once(par / "hf_base.json", {"letter_ids": lids, "class": type(wb.model).__name__,
-                                             "base": base, "via": "smoke_hf, adapter disabled"})
-    PL.write_once(par / f"hf_{SMOKE_TAG}.json", {"tag": SMOKE_TAG, "adapter": str(adir),
-                                                 "attached": attached})
-    rec["random_adapter"] = {"scale": scale, "tv_base_vs_attached": ref,
-                             "worst_letter_rank": rank}
+    rec["random_adapter"], adir = PL.smoke_random_adapter(wb, path, out, dry, SMOKE_TAG)
     rec["adapter"] = str(adir)
     _w(out, "smoke_hf", rec)
     print(">> smoke_hf:", json.dumps(rec))
@@ -244,18 +204,8 @@ def stage_smoke_hf(out: Path, rungs: list[str], dry: bool) -> dict:
 
 def stage_smoke_serve(out: Path, dry: bool) -> dict:
     """Smoke, served side: the renamed copy on the live engine, the parity gate, a 2-prompt read."""
-    import pilot_pod_lib as PL
-
-    adir = str(out / "smoke" / "adapter")
-    res = PL.stage_read(out, [(SMOKE_TAG, adir)], dry, parts=("panel_operator",),
-                        k_override={"panel_operator": 1}, limit=2, base=False)
-    rec = {"parity_passes": res["parity"].get(SMOKE_TAG), "read": res["read"],
-           "rows": sum(1 for f in (out / "gen" / SMOKE_TAG).glob("*.jsonl") for _ in open(f))
-           if (out / "gen" / SMOKE_TAG).exists() else 0}
-    _w(out, "smoke_serve", rec)
+    rec = PL.smoke_serve(out, dry, SMOKE_TAG)
     print(">> smoke_serve:", json.dumps(rec))
-    if not rec["parity_passes"] or not rec["rows"]:
-        raise SystemExit("BAIL: smoke: the served random adapter failed parity or read nothing")
     return rec
 
 

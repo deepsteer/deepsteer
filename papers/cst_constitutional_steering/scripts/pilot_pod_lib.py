@@ -190,6 +190,69 @@ READ_PARTS = ("panel_operator", "panel_plain", "forced_plain", "legit_operator")
 LEGIT_CHECK_N, LEGIT_FLOOR = 20, 0.10  # rider d's check; floor not registered (logged)
 
 
+SMOKE_MIN_TV = 0.15  # the smoke adapter's TV(base, attached) before its parity read (27B)
+SMOKE_MIN_TV_DRY = 0.03  # the tiny model's near-uniform letters saturate near 0.07
+
+
+def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"):
+    """Amendment 28 item 3's random adapter on ``wb`` (the trainer's model with LoRA): LoRA B
+    reinitialized and scaled until it moves the dose-0 letters past the bar while every letter
+    stays in the served top 20 (2-ctx's first smoke adapter pushed them out and the gate divided
+    by zero); saved the trainer's way at ``smoke/adapter`` with its HF parity side (``hf_<tag>``,
+    ``hf_base``, ``prefixes``) written in this HF process. Returns (record, adapter dir)."""
+    import torch
+
+    from deepsteer.steering import objective_lora as OL
+
+    prompts, lids = parity_prompts(dry)
+    with OL.adapter_disabled(wb):
+        base = _letter_lp(wb, prompts, lids)
+    scale, ref, rank, out_of_top = (0.5 if dry else 0.005), 0.0, 0, False
+    bar = SMOKE_MIN_TV_DRY if dry else SMOKE_MIN_TV
+    for _ in range(16):
+        torch.manual_seed(0)
+        with torch.no_grad():
+            for name, prm in wb.model.named_parameters():
+                if "lora_B" in name:
+                    prm.normal_(0, scale)
+        attached = _letter_lp(wb, prompts, lids)
+        ref = tv(base, attached)
+        rank = max(letter_ranks(wb, prompts, lids))
+        out_of_top = not dry and rank >= SERVED_TOPK  # the tiny model's letters sit deep
+        if ref >= bar or out_of_top:
+            break
+        scale *= 1.5
+    if ref < bar or out_of_top:
+        raise SystemExit(f"BAIL: smoke: no random adapter reached TV {bar} with every letter in "
+                         f"the served top {SERVED_TOPK} (TV {ref:.3f}, worst rank {rank})")
+    adir = out / "smoke" / "adapter"
+    wb.model.save_pretrained(str(adir))
+    par = out / "parity"
+    par.mkdir(parents=True, exist_ok=True)
+    if not (par / "prefixes.json").exists():  # in this HF process, before any vLLM
+        (par / "prefixes.json").write_text(json.dumps(decoder_prefixes(path)) + "\n")
+    if not (par / "hf_base.json").exists():
+        write_once(par / "hf_base.json", {"letter_ids": lids, "class": type(wb.model).__name__,
+                                          "base": base, "via": "smoke, adapter disabled"})
+    write_once(par / f"hf_{tag}.json", {"tag": tag, "adapter": str(adir), "attached": attached})
+    return {"scale": scale, "tv_base_vs_attached": ref, "worst_letter_rank": rank}, adir
+
+
+def smoke_serve(out: Path, dry: bool, tag: str = "smoke") -> dict:
+    """Amendment 28 item 3's served side: the random adapter's renamed copy on the live engine,
+    through the parity gate (it must pass), and a 2-prompt read; ``smoke_serve.json``."""
+    adir = str(out / "smoke" / "adapter")
+    res = stage_read(out, [(tag, adir)], dry, parts=("panel_operator",),
+                     k_override={"panel_operator": 1}, limit=2, base=False)
+    g = out / "gen" / tag
+    rec = {"parity_passes": res["parity"].get(tag), "read": res["read"],
+           "rows": sum(1 for f in g.glob("*.jsonl") for _ in open(f)) if g.exists() else 0}
+    S.V._w(out, "smoke_serve", rec)  # noqa: SLF001
+    if not rec["parity_passes"] or not rec["rows"]:
+        raise SystemExit("BAIL: smoke: the served random adapter failed parity or read nothing")
+    return rec
+
+
 def clear_ids() -> set[str]:
     rec = json.loads((S.CST / "data/scenario_labels_v4_record.json").read_text())
     rows = rec["labels"] if "labels" in rec else rec["record"]
