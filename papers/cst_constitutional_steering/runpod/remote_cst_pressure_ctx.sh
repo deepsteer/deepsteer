@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Remote runner for the CST pressure line's session 2-ctx (P-ctx, P-ctx-n) (Amendments 25 C4, 27 item 4, 28
-# item 3; PRESSURE_BUILD.md). One A100-80GB, priced at about 5.9 A100-h (P-ctx 1.88 h and P-ctx-n 1.57 h of training, measured from 2-roll) (watchdog 9.0 h).
+# item 3; PRESSURE_BUILD.md). One A100-80GB, priced at about 6.5 A100-h (P-ctx and P-ctx-n on the 70% outside the held-out cell, about 1.3 and 1.1 h of training; reads of P-ctx, P-ctx-n and P-long; the held-out cell and its action read) (watchdog 9.0 h).
 # Orion launches with CST_SESSION=1 (launch_cst_pressure_ctx.sh) after 2-roll's line gate passed.
 # First the smoke pass (about 10 min; any failure stops the pod), then training, the parity HF side,
 # and the reads with a same-session base. Writes under outputs/pressure; inputs from 2-roll synced.
@@ -77,12 +77,19 @@ done
 for a in a0 a0s a0n; do
   ls "$OUT"/roll/$a/chunk_*.jsonl >/dev/null 2>&1 || { echo "BAIL: 2-roll's $a rollouts did not sync"; exit 1; }
 done
+# P-long, trained on 2-dpo (Amendment 29 item 2): its adapter at 2-dpo's path, its record copied in
+DPO="$REPO_DIR/papers/cst_constitutional_steering/outputs/pressure_dpo"
+[ -f "$DPO/adapters/p_long/589/adapter_model.safetensors" ] || { echo "BAIL: P-long's adapter did not sync"; exit 1; }
+cp "$DPO/train_p_long.json" "$OUT/" || { echo "BAIL: P-long's training record did not sync"; exit 1; }
 
 $PY - <<'EOF' > "$OUT/logs/models_pressure_ctx${SESSION}.json" || { echo "BAIL: model access or download"; exit 1; }
 import json
 from huggingface_hub import snapshot_download
 print(json.dumps({"qwen38_27b": snapshot_download(
     "Qwen/Qwen3.8-27B", revision="1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    ignore_patterns=["original/*", "metal/*"]),
+    "gpt_oss_120b": snapshot_download(  # the held-out cell's action read
+    "openai/gpt-oss-120b", revision="b5c939de8f754692c1647ca79fbf85e8c1e70f8a",
     ignore_patterns=["original/*", "metal/*"])}))
 EOF
 echo ">> models: $(cat "$OUT/logs/models_pressure_ctx${SESSION}.json")"
@@ -105,7 +112,10 @@ echo ">> smoke pass done at $(hours) h"
 
 run --stage train --rung p_ctx
 run --stage train --rung p_ctx_n
-run --stage parity_hf --tags p_ctx,p_ctx_n
-run --stage read --tags p_ctx,p_ctx_n
+# Amendment 29 items 2-3: P-long (trained on 2-dpo) read here on the shared base; the held-out cell
+run --stage parity_hf --tags p_ctx,p_ctx_n,p_long
+run --stage read --tags p_ctx,p_ctx_n,p_long
+run --stage heldout --tags base,p_ctx,p_ctx_n,p_long
+run --stage heldout_act
 echo ">> done at $(hours) h"
 kill $WATCHDOG 2>/dev/null

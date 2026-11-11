@@ -118,23 +118,30 @@ def letter_ranks(model, prompts, lids) -> list[int]:
 
 
 PARITY_ATTACHED_MAX, PARITY_BASE_MIN = 0.2, 0.5  # Amendment 25 A4, fractions of TV(base, attached)
+PARITY_FLOOR_MULT, PARITY_RESOLVE_MULT = 1.5, 3.0  # Amendment 29 item 1, multiples of the floor
 
 
 def parity_record(tag: str, served, attached, base, served_base=None) -> dict:
-    """Amendment 25 A4's gate for one read tag, the same adapter on both sides: passes when
-    TV(served, attached) <= 0.2 TV(base, attached) and TV(served, base) >= 0.5 TV(base, attached).
-    The served letters ride in the record; ``served_base`` (the served model without an adapter)
-    gives the instrument's floor, TV(served base, HF base)."""
+    """The parity gate for one read tag, the same adapter on both sides (Amendment 29 item 1,
+    amending Amendment 25 A4). shift = TV(base, attached); floor = the session's TV(served base,
+    HF base). Passes when TV(served, attached) <= max(0.2 shift, 1.5 floor) and TV(served, base)
+    >= 0.5 shift. A tag whose shift is under 3 floor is read and marked ``parity_unresolved``:
+    only a read of it that moves is reportable, not its null. ``read`` says whether the tag is
+    read. The served letters ride in the record."""
     ref = tv(base, attached)
+    floor = tv(served_base, base) if served_base is not None else 0.0
     rec = {"tag": tag, "tv_served_vs_attached": tv(served, attached),
            "tv_served_vs_base": tv(served, base), "tv_base_vs_attached": ref,
-           "rule": "Amendment 25 A4", "attached_max": PARITY_ATTACHED_MAX * ref,
-           "base_min": PARITY_BASE_MIN * ref, "served_letters": served}
-    rec["served_prompts_without_letters"] = letters_missing(served)
+           "rule": "Amendment 29 item 1", "floor": floor,
+           "attached_max": max(PARITY_ATTACHED_MAX * ref, PARITY_FLOOR_MULT * floor),
+           "base_min": PARITY_BASE_MIN * ref, "served_letters": served,
+           "served_prompts_without_letters": letters_missing(served)}
     if served_base is not None:
-        rec["tv_served_base_vs_hf_base"] = tv(served_base, base)
+        rec["tv_served_base_vs_hf_base"] = floor
     rec["passes"] = bool(rec["tv_served_vs_attached"] <= rec["attached_max"]
                          and rec["tv_served_vs_base"] >= rec["base_min"])
+    rec["parity_unresolved"] = bool(served_base is not None and ref < PARITY_RESOLVE_MULT * floor)
+    rec["read"] = rec["passes"] or rec["parity_unresolved"]
     return rec
 
 
@@ -387,7 +394,9 @@ def stage_read(out: Path, adapters: list[tuple[str, str]], dry: bool,
             rec["served_adapter"] = sdir
             write_once(f, rec)
         res["parity"][tag] = rec["passes"]
-        if not rec["passes"]:
+        if rec.get("parity_unresolved"):
+            res.setdefault("parity_unresolved", []).append(tag)
+        if not rec.get("read", rec["passes"]):  # Amendment 29 item 1: unresolved tags are read
             res["banked"].append(tag)
             continue
         for part in parts:

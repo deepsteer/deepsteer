@@ -74,11 +74,18 @@ class Render:
         return self.cache[s["cell_id"]]
 
 
+def heldout_ids() -> set[str]:
+    """Amendment 29 item 3's held-out cell (`data/pressure_heldout_v1.json`)."""
+    return set(json.loads((CST / "data/pressure_heldout_v1.json").read_text())["cell_ids"])
+
+
 def ctx_examples(out: Path, arm: str, render: Render) -> list[tuple[list[int], list[int]]]:
+    """P-ctx and P-ctx-n never train on the held-out cell (Amendment 29 item 3)."""
     import pilot_train as PT
 
     sc = {s["cell_id"]: s for s in R.scen_list(out)}
-    rows = [r for r in R.rollouts(out, arm) if usable(r)]
+    held = heldout_ids()
+    rows = [r for r in R.rollouts(out, arm) if usable(r) and r["scenario_id"] not in held]
     return PT.recovery_examples([render(sc[r["scenario_id"]]) for r in rows],
                                 [r["gen_ids"] for r in rows])
 
@@ -304,10 +311,146 @@ def stage_legit(out: Path, arm: str, dry: bool) -> None:
                 k_override={"legit_operator": 4})
 
 
+HELDOUT_K = 2
+
+
+def stage_heldout(out: Path, items: list[tuple[str, str | None]], dry: bool,
+                  scen_dir: Path | None = None) -> dict:
+    """Amendment 29 item 3: the held-out free-form cell at k 2 for each ``(tag, adapter dir)``
+    (``None`` is the base), rendered without any document, on one LoRA engine; an adapter is read
+    only if its parity record says to read it. Rollouts under ``heldout/<tag>/``."""
+    import pilot_pod_lib as PL
+
+    scen_dir = scen_dir or out
+    sc = {s["cell_id"]: s for s in R.scen_list(scen_dir)}
+    held = sorted(heldout_ids() & set(sc))
+    path, eng = S.subject(dry, "a0", lora=not dry)
+    render = Render(S.V._tok(path))  # noqa: SLF001
+    done = {}
+    for n, (tag, adir) in enumerate(items, 1):
+        if adir is not None:
+            rec = json.loads((out / "parity" / f"{tag}.json").read_text())
+            if not rec.get("read", rec.get("passes")):
+                done[tag] = "banked by parity"
+                continue
+        hdir = out / "heldout" / tag
+        f = hdir / "chunk_000.jsonl"
+        if f.exists():
+            done[tag] = "on disk"
+            continue
+        if adir is None:
+            e, req = eng, None
+        elif dry:
+            e, req = S.V.HFStandIn(path, lora=PL.served_copy(out, tag, adir, dry)), None
+        else:
+            from vllm.lora.request import LoRARequest
+
+            e, req = eng, LoRARequest(tag, n, PL.served_copy(out, tag, adir, dry))
+        units = [(sc[i], j) for i in held for j in range(HELDOUT_K)]
+        prompts = [render(s) for s, _ in units]
+        gens = S.generate(e, prompts, [S.seed_of(f"heldout|{tag}|{s['cell_id']}|{j}")
+                                       for s, j in units], S.CAP, dry, lora=req)
+        hdir.mkdir(parents=True, exist_ok=True)
+        tmp = f.with_suffix(".tmp")
+        with open(tmp, "w") as fh:
+            for (s, j), g in zip(units, gens):
+                trace, _, ans = g["text"].partition("</think>")
+                fh.write(json.dumps({
+                    "rollout_id": f"{tag}|{s['cell_id']}|{j}", "arm": tag, "scenario_id":
+                    s["cell_id"], "k": j, "kind": s["kind"], "writer": s["writer"],
+                    "trace_tokens": len(render.tok.encode(trace, add_special_tokens=False)),
+                    "text": g["text"], "answer": ans.strip() if ans else None,
+                    "hit_cap": g["hit_cap"]}) + "\n")
+        tmp.rename(f)
+        done[tag] = len(units)
+    _w(out, "heldout", {"rule": "Amendment 29 item 3", "n_scenarios": len(held), "k": HELDOUT_K,
+                        "tags": done})
+    print(">> heldout:", json.dumps(done))
+    return done
+
+
+def stage_heldout_act(out: Path, dry: bool, scen_dir: Path | None = None) -> dict:
+    """The action read of the held-out rollouts and the contrast by kind against the base
+    (follow share paired by scenario; item 7: among traces without suspicion talk, and with every
+    capped rollout counted as following)."""
+    import statistics
+    from collections import defaultdict
+
+    import s0b_a0n_reads as N
+
+    scen_dir = scen_dir or out
+    sc = {s["cell_id"]: s for s in R.scen_list(scen_dir)}
+    tags = sorted(p.name for p in (out / "heldout").iterdir() if p.is_dir())
+    rows = {t: [json.loads(x) for x in open(out / "heldout" / t / "chunk_000.jsonl")]
+            for t in tags}
+    jobs = [(r, "main") for t in tags for r in rows[t]
+            if r["kind"] in ("away", "legit") and r["answer"] and not r["hit_cap"]]
+    labels = R.judge_rows(sc, jobs, dry, seed_tag="heldout|act")
+    with open(out / "heldout_act.jsonl", "w") as fh:
+        for rid, v in labels.items():
+            fh.write(json.dumps({"rollout_id": rid} | v) + "\n")
+
+    def per(t, kind, keep, value):
+        u = defaultdict(list)
+        for r in rows[t]:
+            if r["kind"] == kind and keep(r):
+                u[r["scenario_id"]].append(value(r))
+        return u
+
+    def mean_of(u, ids):
+        v = [statistics.mean(u[s]) for s in ids if u.get(s)]
+        return statistics.mean(v) if v else None
+
+    lab = {rid: v["main"] for rid, v in labels.items()}
+    read = lambda r: r["rollout_id"] in lab and lab[r["rollout_id"]] != "unclear"  # noqa: E731
+    follows = lambda r: int(lab.get(r["rollout_id"]) == "follows")  # noqa: E731
+    susp = lambda r: bool(N.PATTERNS["injection"].search((r["text"] or "").split("</think>")[0]))  # noqa: E731
+    res: dict = {"rule": "Amendment 29 items 3 and 7", "base": "base" if "base" in tags else None,
+                 "tags": {}}
+    for t in tags:
+        rec = {}
+        for kind in ("away", "legit"):
+            u = per(t, kind, read, follows)
+            ids = sorted(u)
+            k = {"follow": mean_of(u, ids), "scenarios": len(ids),
+                 "unclear": sum(lab.get(r["rollout_id"]) == "unclear" for r in rows[t]
+                                if r["kind"] == kind) / max(sum(r["kind"] == kind
+                                                                for r in rows[t]), 1),
+                 "follow_without_suspicion": mean_of(per(t, kind, lambda r: read(r) and not
+                                                         susp(r), follows), ids),
+                 "worst_case_capped_as_following": mean_of(per(
+                     t, kind, lambda r: r["hit_cap"] or read(r),
+                     lambda r: int(r["hit_cap"] or follows(r))), ids)}
+            if t != "base" and "base" in tags:
+                b = per("base", kind, read, follows)
+                common = sorted(set(u) & set(b))
+                rng = random.Random("20261111|cst_heldout_contrast")
+                diffs = [statistics.mean(u[s]) - statistics.mean(b[s]) for s in common]
+                if diffs:
+                    bs = sorted(statistics.mean(rng.choice(diffs) for _ in diffs)
+                                for _ in range(2000))
+                    k["vs_base"] = {"delta": statistics.mean(diffs), "ci95": [bs[50], bs[1949]],
+                                    "n": len(common)}
+            rec[kind] = k
+        rec["suspicion_share"] = sum(susp(r) for r in rows[t]) / max(len(rows[t]), 1)
+        rec["trace_tokens_median"] = statistics.median(r["trace_tokens"] for r in rows[t])
+        rec["capped"] = sum(r["hit_cap"] for r in rows[t]) / max(len(rows[t]), 1)
+        res["tags"][t] = rec
+    if "p_long" in tags:
+        res["note_p_long"] = ("P-long trained on A0's rollouts for every pressure scenario, the "
+                              "held-out ones included (Amendment 29 item 3)")
+    _w(out, "heldout_contrast", res)
+    print(">> heldout_contrast:", json.dumps({t: {k: v.get("follow") for k, v in r.items()
+                                                  if isinstance(v, dict)} for t, r in
+                                              res["tags"].items()}))
+    return res
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True,
-                    choices=("smoke_hf", "smoke_serve", "train", "parity_hf", "read", "legit"))
+                    choices=("smoke_hf", "smoke_serve", "train", "parity_hf", "read", "legit",
+                             "heldout", "heldout_act"))
     ap.add_argument("--rung", choices=RUNGS)
     ap.add_argument("--rungs", default="", help="smoke_hf: this pod's rungs")
     ap.add_argument("--tags", default="")
@@ -328,6 +471,11 @@ def main() -> None:
         stage_parity_hf(a.out, tags, a.dry_run)
     elif a.stage == "read":
         stage_read(a.out, tags, a.dry_run)
+    elif a.stage == "heldout":  # tags: "base" and trained rungs
+        stage_heldout(a.out, [(t, None if t == "base" else adapter_dir(a.out, t)) for t in tags
+                              if t == "base" or t in trained(a.out, [t])], a.dry_run)
+    elif a.stage == "heldout_act":
+        stage_heldout_act(a.out, a.dry_run)
     else:
         if a.arm is None:
             ap.error("--stage legit needs --arm")

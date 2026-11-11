@@ -309,8 +309,6 @@ def stage_act(out: Path, dry: bool, smoke: bool = False) -> dict:
     """The action read; ``smoke`` (Amendment 28 item 3): two rollouts per writer through the live
     judge and the parse, written to ``act_smoke.json`` only (the failure it guards: a prompt or
     parse path that breaks on one writer's scenarios after the judge has loaded)."""
-    from generate_scenarios import extract_json
-
     sc = {s["cell_id"]: s for s in scen_list(out)}
     rows = [r for a in K for r in rollouts(out, a)
             if sc[r["scenario_id"]]["kind"] in ("away", "legit")]
@@ -321,33 +319,7 @@ def stage_act(out: Path, dry: bool, smoke: bool = False) -> dict:
     if smoke:
         allj = [(r, "main") for w in ("claude", "subject")
                 for r in [x for x in jobs if x["writer"] == w][:2]]
-    prompts = [act_prompt(sc[r["scenario_id"]], r["answer"]) for r, _ in allj]  # every writer's
-    if dry:
-        texts = [json.dumps({"label": ("follows" if (i + (r["arm"] == "a0")) % 3 else "does_not")})
-                 for i, (r, _) in enumerate(allj)]
-    else:
-        import mrb_g1_pod as M
-
-        from deepsteer.reasoning.think_io import CoTFormat
-        jpath = __import__("huggingface_hub").snapshot_download(
-            S.V.JUDGES["gpt_oss_120b"]["repo"], revision=S.V.JUDGES["gpt_oss_120b"]["revision"],
-            ignore_patterns=["original/*", "metal/*"])
-        eng = S.V.VLLMEngine(jpath, None, max_model_len=S.V.JUDGE_LEN, gpu_memory_utilization=0.9,
-                             enable_prefix_caching=True, seed=0,
-                             **S.V.JUDGES["gpt_oss_120b"].get("llm_kwargs", {}))
-        jtok, cfg = eng.llm.get_tokenizer(), M.harmony_cfg()
-        ids = [M.render_ids(jtok, ACT_SYS + "\n\n" + pr, CoTFormat.HARMONY_ANALYSIS, "low", cfg)
-               for pr in prompts]
-        raw, _, _ = S.judge_generate(eng, ids, [S.seed_of(f"pressure|act|{p}|{r['rollout_id']}")
-                                                for r, p in allj])
-        texts = [M.split_trace(t, CoTFormat.HARMONY_ANALYSIS)[1] or t for t in raw]
-    labels: dict[str, dict] = defaultdict(dict)
-    for (r, p), t in zip(allj, texts):
-        try:
-            lab = extract_json(t).get("label")
-        except ValueError:
-            lab = None
-        labels[r["rollout_id"]][p] = lab if lab in ("follows", "does_not", "unclear") else "unclear"
+    labels = judge_rows(sc, allj, dry)
     if smoke:
         rec = {"n": len(allj), "writers": sorted({r["writer"] for r, _ in allj}),
                "parsed": sum(v["main"] != "unclear" for v in labels.values()), "labels": labels}
@@ -364,6 +336,42 @@ def stage_act(out: Path, dry: bool, smoke: bool = False) -> dict:
     _w(out, "act", rec)
     print(">> act:", json.dumps(rec))
     return rec
+
+
+def judge_rows(sc: dict, allj: list[tuple[dict, str]], dry: bool,
+               seed_tag: str = "pressure|act") -> dict[str, dict]:
+    """gpt-oss-120b's action read of ``(rollout, pass)`` items: rollout id -> pass -> label
+    (follows, does_not, unclear; an unparsed reply is unclear). Every writer's prompt is built."""
+    from generate_scenarios import extract_json
+
+    prompts = [act_prompt(sc[r["scenario_id"]], r["answer"]) for r, _ in allj]
+    if dry:
+        texts = [json.dumps({"label": ("follows" if (i + (r["arm"] == "a0")) % 3 else "does_not")})
+                 for i, (r, _) in enumerate(allj)]
+    else:
+        import mrb_g1_pod as M
+
+        from deepsteer.reasoning.think_io import CoTFormat
+        jpath = __import__("huggingface_hub").snapshot_download(
+            S.V.JUDGES["gpt_oss_120b"]["repo"], revision=S.V.JUDGES["gpt_oss_120b"]["revision"],
+            ignore_patterns=["original/*", "metal/*"])
+        eng = S.V.VLLMEngine(jpath, None, max_model_len=S.V.JUDGE_LEN, gpu_memory_utilization=0.9,
+                             enable_prefix_caching=True, seed=0,
+                             **S.V.JUDGES["gpt_oss_120b"].get("llm_kwargs", {}))
+        jtok, cfg = eng.llm.get_tokenizer(), M.harmony_cfg()
+        ids = [M.render_ids(jtok, ACT_SYS + "\n\n" + pr, CoTFormat.HARMONY_ANALYSIS, "low", cfg)
+               for pr in prompts]
+        raw, _, _ = S.judge_generate(eng, ids, [S.seed_of(f"{seed_tag}|{p}|{r['rollout_id']}")
+                                                for r, p in allj])
+        texts = [M.split_trace(t, CoTFormat.HARMONY_ANALYSIS)[1] or t for t in raw]
+    labels: dict[str, dict] = defaultdict(dict)
+    for (r, p), t in zip(allj, texts):
+        try:
+            lab = extract_json(t).get("label")
+        except ValueError:
+            lab = None
+        labels[r["rollout_id"]][p] = lab if lab in ("follows", "does_not", "unclear") else "unclear"
+    return labels
 
 
 def kappa(pairs: list[tuple[str, str]]) -> float | None:

@@ -67,6 +67,18 @@ def test_dpo_pairs_are_rollout_level_capped_at_four_and_follow_the_labels(tmp_pa
     assert len(T.retain_items(tmp_path, _Render())) == 4  # A0s on the legit and none scenarios
 
 
+def test_ctx_rungs_never_train_on_the_held_out_cell(tmp_path, monkeypatch):
+    # most probable failure (Amendment 29 item 3): P-ctx or P-ctx-n trains on a held-out scenario,
+    # so the held-out read is not held out
+    _fixture(tmp_path)
+    monkeypatch.setattr(T, "heldout_ids", lambda: {"PZ-A001", "PZ-L000"})
+    ex = T.ctx_examples(tmp_path, "a0s", _Render())
+    assert len(ex) == 2 * 3  # 5 scenarios at k 2, less the 2 held out
+    assert len(T.ctx_examples(tmp_path, "a0n", _Render())) == 6
+    assert len(json.loads((ROOT / "papers/cst_constitutional_steering/data/"
+                           "pressure_heldout_v1.json").read_text())["cell_ids"]) == 177
+
+
 def test_long_pairs_choose_the_longest_against_the_shortest(tmp_path):
     # failure: P-long pairs the wrong ends of A0's lengths, so it trains toward short answers
     _fixture(tmp_path)
@@ -125,7 +137,17 @@ def test_dry_sessions_smoke_train_parity_and_read(tmp_path, monkeypatch):
     for rung in T.RUNGS:
         assert T.stage_train(tmp_path, rung, True)["trained"]
     T.stage_parity_hf(tmp_path, list(T.RUNGS), True)
-    res = T.stage_read(tmp_path, ["p_ctx", "p_dpo"], True)
-    assert set(res["parity"]) == {"p_ctx", "p_dpo"} and res["base_tag"] == "base_session"
+    res = T.stage_read(tmp_path, ["p_ctx", "p_dpo", "p_long"], True)
+    assert set(res["parity"]) == {"p_ctx", "p_dpo", "p_long"} and res["base_tag"] == "base_session"
     T.stage_legit(tmp_path, "a0s", True)
     assert any((tmp_path / "gen" / "a0s_legit").glob("*.jsonl"))
+    monkeypatch.setattr(T, "heldout_ids", lambda: {s["cell_id"] for s in sc[:3]})
+    done = T.stage_heldout(tmp_path, [("base", None), ("p_ctx", T.adapter_dir(tmp_path, "p_ctx")),
+                                      ("p_long", T.adapter_dir(tmp_path, "p_long"))], True)
+    assert done == {"base": 6, "p_ctx": 6, "p_long": 6}
+    for f in (tmp_path / "heldout").glob("*/chunk_000.jsonl"):  # the stand-in never closes a trace
+        f.write_text("".join(json.dumps(dict(json.loads(x), answer="x", hit_cap=False)) + "\n"
+                             for x in open(f)))
+    hc = T.stage_heldout_act(tmp_path, True)
+    assert set(hc["tags"]) == {"base", "p_ctx", "p_long"} and "note_p_long" in hc
+    assert "vs_base" in hc["tags"]["p_ctx"]["away"]

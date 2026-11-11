@@ -173,3 +173,23 @@ def test_tv_counts_a_prompt_without_served_letters_as_the_maximum():
     half = missing[:2] + ATT[:2]
     assert PL.tv(half, ATT) == pytest.approx(0.5) and PL.letters_missing(half) == 2
 
+
+def _two(p: float) -> list[list[float]]:
+    return [[math.log(p), math.log(1 - p)]] * 4  # TV between two of these is |p - q|
+
+
+def test_floor_aware_gate_passes_a_served_small_shift_adapter():
+    # most probable failure (CST-A24, Amendment 29 item 1): an adapter served correctly but with a
+    # dose-0 shift under five times the serving floor is banked, because 0.2 of its shift sits
+    # below the floor; P-long's own numbers: shift 0.028, floor 0.0082, served 0.0095 from attached
+    base, attached = _two(0.5), _two(0.528)
+    served, served_base = _two(0.5185), _two(0.5082)
+    rec = PL.parity_record("p_long", served, attached, base, served_base)
+    assert rec["tv_base_vs_attached"] == pytest.approx(0.028)
+    assert rec["floor"] == pytest.approx(0.0082) and rec["attached_max"] == pytest.approx(0.0123)
+    assert rec["passes"] and rec["read"] and not rec["parity_unresolved"]
+    noserve = PL.parity_record("p_long", base, attached, base, served_base)
+    assert not noserve["passes"] and not noserve["read"]  # served as the base: still banked
+    tiny = PL.parity_record("t", _two(0.51), _two(0.52), base, served_base)  # shift 0.02 < 3 floor
+    assert tiny["parity_unresolved"] and tiny["read"]  # read, marked: only a move is reportable
+
