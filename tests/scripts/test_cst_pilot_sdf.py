@@ -289,3 +289,13 @@ def test_a_failed_read_stage_is_caught_up_by_the_next(tmp_path):
     assert P.catch_up(tmp_path, ["d_doc_1M_rec", "d_doc_1M", "r0"]) == [
         "d_doc_1M_rec", "d_doc_1M", "r0"]
 
+
+def test_plan_v2_extends_d_doc_with_v1_as_its_prefix():
+    # most probable failure (the author, 2026-11-11): the extended plan reorders or re-deals v1's
+    # documents, so the 1M corpus already generated is not the prefix of the 3M one
+    v1 = json.loads((P.CST / "data/pilot_corpus_plan_v1.json").read_text())["arms"]
+    v2 = json.loads((P.CST / "data/pilot_corpus_plan_v2.json").read_text())["arms"]
+    assert v2["d_doc"][:900] == v1["d_doc"] and len(v2["d_doc"]) == 2600
+    assert v2["d_neutral"] == v1["d_neutral"]
+    assert len({d["doc_id"] for d in v2["d_doc"]}) == 2600
+

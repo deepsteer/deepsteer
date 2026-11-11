@@ -140,12 +140,13 @@ def corpus_meta(rows: list[dict], kept: list[dict], doses: tuple) -> dict:
             "median_words_by_template": median_words(kept)}
 
 
-def stage_corpus(out: Path, arm: str, dry: bool, target: int = TARGET_TOKENS) -> None:
+def stage_corpus(out: Path, arm: str, dry: bool, target: int = TARGET_TOKENS,
+                 plan_file: str = "data/pilot_corpus_plan_v1.json") -> None:
     import overlap_hashes as OH
 
     from deepsteer.corpus.prompts import TEMPLATES
 
-    plan = json.loads((CST / "data/pilot_corpus_plan_v1.json").read_text())["arms"][arm]
+    plan = json.loads((CST / plan_file).read_text())["arms"][arm]  # v2 extends D-doc (2026-11-11)
     doc = document(arm, dry)
     cdir = out / "corpus" / arm
     cdir.mkdir(parents=True, exist_ok=True)
@@ -445,10 +446,12 @@ def main() -> None:
     ap.add_argument("--arm", default="d_doc", choices=("d_doc", "d_neutral"))
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--target", type=int, default=TARGET_TOKENS)
+    ap.add_argument("--plan", default="data/pilot_corpus_plan_v1.json",
+                    help="corpus: the plan file (v2 extends D-doc to 2,600 documents)")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     if a.stage == "corpus":
-        stage_corpus(a.out, a.arm, a.dry_run, a.target)
+        stage_corpus(a.out, a.arm, a.dry_run, a.target, a.plan)
     elif a.stage == "chat":
         stage_chat(a.out, a.dry_run)
     elif a.stage == "train":

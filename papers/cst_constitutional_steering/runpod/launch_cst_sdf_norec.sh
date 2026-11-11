@@ -4,13 +4,13 @@
 #   export RUNPOD_API_KEY=... HF_TOKEN=...
 #   bash papers/cst_constitutional_steering/runpod/launch_cst_sdf_norec.sh
 #
-# One A100-80GB, priced at about 7.2 A100-h (watchdog 10.5 h). Synced by name: the five saved
+# One A100-80GB, priced at about 7.2 A100-h of reads and training, then the D-doc corpus continuation to 10.3 h (watchdog 10.5 h). Synced by name: the five saved
 # adapters without recovery, their four training records, D-doc's corpus, the pressure scenarios.
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
 P=papers/cst_constitutional_steering
 O=outputs/pilot_sdf
-SYNC="outputs/pressure/scenarios.json"
+SYNC="outputs/pressure/scenarios.json,outputs/_sync/C_anth.txt,outputs/_sync/eval_8gram_hashes_v1.npy"
 for f in train_d_doc.json train_d_neutral.json train_d_chat.json train_d_raw.json; do SYNC="$SYNC,$O/$f"; done
 for a in d_neutral/1e+06 d_doc/1e+06 d_doc/300000 d_chat/1e+06 d_raw/102400; do
   SYNC="$SYNC,$O/adapters/$a/adapter_model.safetensors,$O/adapters/$a/adapter_config.json"

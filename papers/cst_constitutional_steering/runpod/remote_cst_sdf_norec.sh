@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Remote runner for SDF pod 2 (Amendment 29 items 5-7, 10): reads of the saved SDF adapters without
-# recovery, on one same-session base. One A100-80GB, priced at about 7.2 A100-h (watchdog 10.5 h).
+# recovery, on one same-session base. One A100-80GB, priced at about 7.2 A100-h of reads and training, then the D-doc corpus continuation to 10.3 h (watchdog 10.5 h).
 # Orion launches with CST_SESSION=1 (launch_cst_sdf_norec.sh). Order: the smoke pass; the parity HF
 # side; D-neutral 1M, D-doc 1M at k 4, D-chat 1M, D-doc 0.3M, D-raw; capability at n 200 on D-doc 1M
 # and the base; the held-out free-form cell on the base, D-doc 1M and D-neutral 1M; the injected-
 # order guard cell on the base and D-doc 1M; then, under the price, a second D-doc 1M draw and its
-# read. Writes under outputs/pilot_sdf2 (its own folder).
+# read; last, the D-doc corpus continuation until 10.3 h. Writes under outputs/pilot_sdf2.
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
@@ -22,7 +22,9 @@ case "$SESSION" in 1) MAX_H=10.5;;
   *) echo "BAIL: CST_SESSION must be 1"; exit 1;; esac
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}" TOKENIZERS_PARALLELISM=false
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_ENABLE_HF_TRANSFER=0
+export CST_CONST_DIR="$REPO_DIR/papers/cst_constitutional_steering/outputs/_sync"
 NOREC=papers/cst_constitutional_steering/scripts/cst_sdf_norec_pod.py
+PILOT=papers/cst_constitutional_steering/scripts/cst_pilot_sdf_pod.py
 hours() { python3 -c "import time; print(round((time.time() - $START) / 3600, 4))"; }
 echo ">> CST SDF no-recovery pod session $SESSION start $(date -u +%FT%TZ) out=$OUT (watchdog ${MAX_H} h)"
 
@@ -81,6 +83,9 @@ ls "$IN"/corpus/d_doc/chunk_*.jsonl >/dev/null 2>&1 || { echo "BAIL: D-doc's cor
 mkdir -p "$OUT/corpus" && cp -r "$IN/corpus/d_doc" "$OUT/corpus/"
 [ -f "$REPO_DIR/papers/cst_constitutional_steering/outputs/pressure/scenarios.json" ] \
   || { echo "BAIL: the pressure scenarios did not sync"; exit 1; }
+for f in C_anth.txt eval_8gram_hashes_v1.npy; do  # the corpus continuation's document and its gate
+  [ -f "$CST_CONST_DIR/$f" ] || { echo "BAIL: $f did not sync"; exit 1; }
+done
 
 $PY - <<'EOF' > "$OUT/logs/models_sdf_norec${SESSION}.json" || { echo "BAIL: model access or download"; exit 1; }
 import json
@@ -95,7 +100,7 @@ EOF
 echo ">> models: $(cat "$OUT/logs/models_sdf_norec${SESSION}.json")"
 echo ">> setup done at $(hours) h"
 
-TESTS="tests/scripts/test_cst_sdf_norec.py tests/scripts/test_cst_parity.py tests/scripts/test_cst_pilot_train.py tests/scripts/test_cst_pressure_pod.py"
+TESTS="tests/scripts/test_cst_sdf_norec.py tests/scripts/test_cst_pilot_sdf.py tests/scripts/test_cst_parity.py tests/scripts/test_cst_pilot_train.py tests/scripts/test_cst_pressure_pod.py"
 $PY -m pytest -q -p no:cacheprovider $TESTS 2>&1 | grep -E '[0-9]+ (passed|failed)' | tail -1
 [ "${PIPESTATUS[0]}" = 0 ] || { echo "BAIL: gate tests"; exit 1; }
 
@@ -125,5 +130,15 @@ if under_price; then
   run --stage parity_hf --tags d_doc_1M_draw2
   run --stage read --tags d_doc_1M_draw2
 else echo ">> over price: the second D-doc draw skipped"; fi
+# the last stage (the author, 2026-11-11): the next D-doc corpus tokens under the plan of record
+# extended to 2,600 documents (v2, its first 900 v1's) and the same gate, in resumable chunks,
+# stopped at 10.3 h whatever is banked; nothing after it depends on it
+REM=$(python3 -c "import time; print(max(0, int(10.3 * 3600 - (time.time() - $START))))")
+if [ "$REM" -gt 900 ]; then
+  timeout --signal=TERM "$REM" $PY $PILOT --out "$OUT" --stage corpus --arm d_doc \
+    --plan data/pilot_corpus_plan_v2.json --target 3000000 \
+    || echo ">> corpus continuation stopped at $(hours) h (the banked chunks are kept)"
+  echo ">> stage done at $(hours) h: corpus continuation"
+else echo ">> no time left for the corpus continuation"; fi
 echo ">> done at $(hours) h"
 kill $WATCHDOG 2>/dev/null

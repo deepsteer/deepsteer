@@ -60,14 +60,14 @@ def items(arm: str) -> list[str]:
     return [s["statement_id"] for s in st]
 
 
-def plan(arm: str, kind_seq: list[str], settings: list[str]) -> list[dict]:
+def plan(arm: str, kind_seq: list[str], settings: list[str], n_docs: int = N_DOCS) -> list[dict]:
     rng = random.Random(f"{SEED}|{arm}")
     pool, docs, p = items(arm), [], 0
-    while len(docs) < N_DOCS:
+    while len(docs) < n_docs:
         order = pool[:]
         rng.shuffle(order)
         for g in range(0, len(order) - PER_DOC + 1, PER_DOC):
-            if len(docs) == N_DOCS:
+            if len(docs) == n_docs:
                 break
             n = len(docs)
             kind = kind_seq[n]
@@ -143,5 +143,38 @@ def main() -> None:
     print(f"wrote {out}", json.dumps(rec["coverage"]))
 
 
+V2_DOCS = 2600  # D-doc to about 3.3M tokens at the measured 1,266-token mean (CST pod 2, tomorrow)
+
+
+def extend(n_docs: int = V2_DOCS) -> dict:
+    """The plan of record extended for D-doc (Amendment 29; the author, 2026-11-11): v1's 900
+    documents exactly as stored (story swaps included), then documents 900..n-1 dealt by the same
+    rule (the kind formula, the shared settings stream and the arm's seeded passes continue where
+    v1 stopped, so the prefix is unchanged). D-neutral stays v1's. Writes the v2 plan."""
+    v1 = json.loads((CST / "data/pilot_corpus_plan_v1.json").read_text())
+    rng = random.Random(f"{SEED}|shared")
+    kind_seq = [KINDS[(n + n // 53) % len(KINDS)] for n in range(n_docs)]
+    settings = [rng.choice(SETTINGS) for _ in range(n_docs)]
+    full = plan("d_doc", kind_seq, settings, n_docs)
+    raw_v1 = plan("d_doc", kind_seq[:N_DOCS], settings[:N_DOCS])
+    assert [d["doc_id"] for d in full[:N_DOCS]] == [d["doc_id"] for d in v1["arms"]["d_doc"]]
+    assert all(a["kind"] == b["kind"] and a["setting"] == b["setting"] and a["pass"] == b["pass"]
+               for a, b in zip(full, raw_v1)), "the extended deal must reproduce v1's prefix"
+    rec = dict(v1, n_docs={"d_doc": n_docs, "d_neutral": v1["n_docs"]},
+               rule=v1["rule"] + "; extended for D-doc by pilot_corpus_plan.extend (2026-11-11)",
+               extended_from="data/pilot_corpus_plan_v1.json")
+    rec["arms"] = {"d_doc": v1["arms"]["d_doc"] + full[N_DOCS:],
+                   "d_neutral": v1["arms"]["d_neutral"]}
+    rec["coverage"] = dict(v1["coverage"], d_doc=dict(v1["coverage"]["d_doc"], **{
+        "3M": coverage("d_doc", rec["arms"]["d_doc"], 3e6)}))
+    out = CST / "data/pilot_corpus_plan_v2.json"
+    out.write_text(json.dumps(rec, indent=1) + "\n")
+    print(f"wrote {out}: d_doc {len(rec['arms']['d_doc'])} docs",
+          json.dumps(rec["coverage"]["d_doc"]["3M"]))
+    return rec
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+
+    extend() if sys.argv[1:] == ["extend"] else main()
