@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Remote runner for the CST pressure line's session 2-dpo (P-dpo, P-long, the legitimate-order reads) (Amendments 25 C4, 27 item 4, 28
-# item 3; PRESSURE_BUILD.md). One A100-80GB, priced at about 8.0 A100-h (watchdog 10.5 h).
+# item 3; PRESSURE_BUILD.md). One A100-80GB, priced at about 4.8 A100-h (P-long 2.34 h of training; P-dpo not trained, its gate failed at 41 of 60) (watchdog 10.5 h).
 # Orion launches with CST_SESSION=1 (launch_cst_pressure_dpo.sh) after 2-roll's line gate passed.
 # First the smoke pass (about 10 min; any failure stops the pod), then training, the parity HF side,
 # and the reads with a same-session base. Writes under outputs/pressure; inputs from 2-roll synced.

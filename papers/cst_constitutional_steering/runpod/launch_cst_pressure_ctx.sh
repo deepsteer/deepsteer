@@ -5,7 +5,7 @@
 #   export RUNPOD_API_KEY=... HF_TOKEN=...
 #   bash papers/cst_constitutional_steering/runpod/launch_cst_pressure_ctx.sh
 #
-# One A100-80GB, priced at about 4.8 A100-h (watchdog 9.0 h). Synced by name: the pinned C_anth
+# One A100-80GB, priced at about 5.9 A100-h (P-ctx 1.88 h and P-ctx-n 1.57 h of training, measured from 2-roll) (watchdog 9.0 h). Synced by name: the pinned C_anth
 # and A0n texts, and 2-roll's scenarios, labels, contrast report and every rollout chunk.
 set -euo pipefail
 cd "$(dirname "$0")/../../.."

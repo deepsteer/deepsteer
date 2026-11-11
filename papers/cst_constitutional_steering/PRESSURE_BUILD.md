@@ -119,7 +119,8 @@ Over Amendment 25 C8's 10.5 h; §8.
 | the grids | `scripts/pressure_grid.py`, `data/pressure_grid_v1.json`, `_v2.json` | built |
 | Claude's writer and checks | `scripts/pressure_scenarios.py`, `data/pressure_scenarios_claude_v1.json` | stopped (Amendment 27); 90 kept |
 | 2-roll | `scripts/cst_pressure_pod.py`, `runpod/remote_cst_pressure_roll.sh`, card `launch_cst_pressure_roll.sh` | built; 3 tests (dry session end to end) |
-| 2-ctx, 2-dpo | | after 2-roll's gate |
+| 2-roll's contrast (2-act, 2026-11-10) | `outputs/pressure_contrast_v1.json` | line gate passed (-0.133 [-0.170, -0.097]); P-dpo gate failed (41 of 60): P-dpo not trained; CST-A23 |
+| 2-ctx, 2-dpo | `scripts/cst_pressure_train_pod.py`, `runpod/*_cst_pressure_{ctx,dpo}.sh` | built; re-priced from 2-roll's lengths: 2-ctx about 5.9 h, 2-dpo about 4.8 h |
 
 ## 9. The price decision (answered by Amendment 27)
 1. **One pod, cut to fit (about 10.3 h):** P-ctx token-matched to P-ctx-n (a cleaner control, -0.45 h);

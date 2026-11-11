@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Remote runner for the CST pressure line's session 2-ctx (P-ctx, P-ctx-n) (Amendments 25 C4, 27 item 4, 28
-# item 3; PRESSURE_BUILD.md). One A100-80GB, priced at about 4.8 A100-h (watchdog 9.0 h).
+# item 3; PRESSURE_BUILD.md). One A100-80GB, priced at about 5.9 A100-h (P-ctx 1.88 h and P-ctx-n 1.57 h of training, measured from 2-roll) (watchdog 9.0 h).
 # Orion launches with CST_SESSION=1 (launch_cst_pressure_ctx.sh) after 2-roll's line gate passed.
 # First the smoke pass (about 10 min; any failure stops the pod), then training, the parity HF side,
 # and the reads with a same-session base. Writes under outputs/pressure; inputs from 2-roll synced.

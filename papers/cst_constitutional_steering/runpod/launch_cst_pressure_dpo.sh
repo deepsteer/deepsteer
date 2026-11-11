@@ -5,7 +5,7 @@
 #   export RUNPOD_API_KEY=... HF_TOKEN=...
 #   bash papers/cst_constitutional_steering/runpod/launch_cst_pressure_dpo.sh
 #
-# One A100-80GB, priced at about 8.0 A100-h (watchdog 10.5 h). Synced by name: the pinned C_anth
+# One A100-80GB, priced at about 4.8 A100-h (P-long 2.34 h of training; P-dpo not trained, its gate failed at 41 of 60) (watchdog 10.5 h). Synced by name: the pinned C_anth
 # and A0n texts, and 2-roll's scenarios, labels, contrast report and every rollout chunk.
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
