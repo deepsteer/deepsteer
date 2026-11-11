@@ -75,8 +75,13 @@ def _letter_lp(model, prompts, lids) -> list[list[float]]:
     return out
 
 
+SERVED_TOPK = 20  # vLLM returns the top 20 log-probs; a letter outside them reads -1e9
+
+
 def tv(a: list[list[float]], b: list[list[float]]) -> float:
-    """Mean total variation between letter distributions (renormalized over the letters)."""
+    """Mean total variation between letter distributions (renormalized over the letters). A prompt
+    where either side has no letter within the served top-k (every letter at -1e9, so nothing to
+    renormalize; the 2-ctx smoke pass, 2026-11-11) counts as the maximum, 1.0."""
     import math
 
     tot = 0.0
@@ -84,8 +89,32 @@ def tv(a: list[list[float]], b: list[list[float]]) -> float:
         px = [math.exp(v) for v in x]
         py = [math.exp(v) for v in y]
         sx, sy = sum(px), sum(py)
+        if sx == 0 or sy == 0:
+            tot += 1.0
+            continue
         tot += 0.5 * sum(abs(u / sx - w / sy) for u, w in zip(px, py))
     return tot / max(len(a), 1)
+
+
+def letters_missing(rows: list[list[float]]) -> int:
+    """Prompts whose letters all read -1e9 (none within the served top-k)."""
+    import math
+
+    return sum(sum(math.exp(v) for v in r) == 0 for r in rows)
+
+
+def letter_ranks(model, prompts, lids) -> list[int]:
+    """Per prompt, the worst rank of a letter in the full next-token distribution (0 = top): the
+    served side sees a letter only within the top ``SERVED_TOPK``."""
+    import torch
+
+    out = []
+    with torch.no_grad():
+        for p in prompts:
+            x = torch.tensor([p], device=model.model.device)
+            lo = model.model(input_ids=x).logits[0, -1].float()
+            out.append(max(int((lo > lo[i]).sum()) for i in lids))
+    return out
 
 
 PARITY_ATTACHED_MAX, PARITY_BASE_MIN = 0.2, 0.5  # Amendment 25 A4, fractions of TV(base, attached)
@@ -101,6 +130,7 @@ def parity_record(tag: str, served, attached, base, served_base=None) -> dict:
            "tv_served_vs_base": tv(served, base), "tv_base_vs_attached": ref,
            "rule": "Amendment 25 A4", "attached_max": PARITY_ATTACHED_MAX * ref,
            "base_min": PARITY_BASE_MIN * ref, "served_letters": served}
+    rec["served_prompts_without_letters"] = letters_missing(served)
     if served_base is not None:
         rec["tv_served_base_vs_hf_base"] = tv(served_base, base)
     rec["passes"] = bool(rec["tv_served_vs_attached"] <= rec["attached_max"]

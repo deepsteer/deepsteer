@@ -196,9 +196,11 @@ def stage_smoke_hf(out: Path, rungs: list[str], dry: bool) -> dict:
     prompts, lids = PL.parity_prompts(dry)
     with OL.adapter_disabled(wb):
         base = PL._letter_lp(wb, prompts, lids)  # noqa: SLF001
-    scale, ref = (0.5 if dry else 0.01), 0.0
+    # the served side reads only the top 20 log-probs, so the letters must stay inside them on
+    # every prompt (2-ctx's first smoke pass pushed them out at TV 0.41 and the gate divided by 0)
+    scale, ref, rank = (0.5 if dry else 0.005), 0.0, 0
     bar = SMOKE_MIN_TV_DRY if dry else SMOKE_MIN_TV
-    for _ in range(8):
+    for _ in range(16):
         torch.manual_seed(0)
         with torch.no_grad():
             for name, prm in wb.model.named_parameters():
@@ -206,11 +208,14 @@ def stage_smoke_hf(out: Path, rungs: list[str], dry: bool) -> dict:
                     prm.normal_(0, scale)
         attached = PL._letter_lp(wb, prompts, lids)  # noqa: SLF001
         ref = PL.tv(base, attached)
-        if ref >= bar:
+        rank = max(PL.letter_ranks(wb, prompts, lids))
+        out_of_top = not dry and rank >= PL.SERVED_TOPK  # the tiny model's letters sit deep
+        if ref >= bar or out_of_top:
             break
-        scale *= 2
-    if ref < bar:
-        raise SystemExit(f"BAIL: smoke: no random adapter moved the letters past {bar}")
+        scale *= 1.5
+    if ref < bar or out_of_top:
+        raise SystemExit(f"BAIL: smoke: no random adapter reached TV {bar} with every letter in "
+                         f"the served top {PL.SERVED_TOPK} (TV {ref:.3f}, worst rank {rank})")
     adir = out / "smoke" / "adapter"
     wb.model.save_pretrained(str(adir))
     par = out / "parity"
@@ -222,7 +227,8 @@ def stage_smoke_hf(out: Path, rungs: list[str], dry: bool) -> dict:
                                              "base": base, "via": "smoke_hf, adapter disabled"})
     PL.write_once(par / f"hf_{SMOKE_TAG}.json", {"tag": SMOKE_TAG, "adapter": str(adir),
                                                  "attached": attached})
-    rec["random_adapter"] = {"scale": scale, "tv_base_vs_attached": ref}
+    rec["random_adapter"] = {"scale": scale, "tv_base_vs_attached": ref,
+                             "worst_letter_rank": rank}
     rec["adapter"] = str(adir)
     _w(out, "smoke_hf", rec)
     print(">> smoke_hf:", json.dumps(rec))

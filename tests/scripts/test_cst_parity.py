@@ -162,3 +162,14 @@ def test_served_copy_asserts_the_record_against_the_lookup_and_the_keys(tmp_path
     with pytest.raises(PL.ServedPathMismatch):
         PL.served_copy(tmp_path, "y", str(ad), True)  # the record disagrees with the lookup
 
+
+def test_tv_counts_a_prompt_without_served_letters_as_the_maximum():
+    # most probable failure (2-ctx's smoke pass, 2026-11-11): every letter outside vLLM's top 20
+    # reads -1e9, the renormalization divides by zero and the stage crashes instead of banking
+    missing = [[-1e9] * 5] * 4
+    assert PL.tv(missing, ATT) == 1.0 and PL.letters_missing(missing) == 4
+    rec = PL.parity_record("t", missing, ATT, BASE)
+    assert not rec["passes"] and rec["served_prompts_without_letters"] == 4
+    half = missing[:2] + ATT[:2]
+    assert PL.tv(half, ATT) == pytest.approx(0.5) and PL.letters_missing(half) == 2
+
