@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.29, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) 33 (the three shares' names; selection and comparison on different cells) and 34 (tomorrow's branches withdrawn; P-ctx's capability and injected-order reads lead tomorrow's pod), §13.** v0.1 was the draft for the
+Status: **v0.30, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) 33 (the three shares' names; selection and comparison on different cells) 34 (tomorrow's branches withdrawn; P-ctx's capability and injected-order reads lead tomorrow's pod) and 35 (the P-ctx verification pod), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1970,3 +1970,37 @@ it is registered as 27. Pod 1 launches unchanged.
 4. **Capability at n 200 on P-ctx** does not fit 2-ctx: its runner has no capability stage, adding
    one would edit a running session, and its remaining stages already run past the 6.5 h price.
    Capability on P-ctx and P-ctx's injected-order read (also not in 2-ctx) lead tomorrow's pod.
+
+### Amendment 35 (2026-11-11; author, the P-ctx verification pod; zero GPU until launch; on origin before its card)
+
+The pod (`cst_pctx_verify_pod.py`, results `outputs/pressure_verify`), priced at or under 10.5 h,
+opens with the fixed smoke check (Amendment 31). In this order, on one session base:
+
+1. **A0s on the operator cell at k 2 in this session** (the constitution in context, on the same
+   vLLM engine as the session base's read), so P-ctx is compared with A0s inside one session; the
+   base's screen read (operator and plain at k 2, cell A′ at k 8, the legitimate cell at k 4) and
+   P-ctx's operator cell at k 2 in the same session. The saved-A0 offset is reported beside: the
+   base has read 0.335 to 0.354 in four read sessions against the saved A0's 0.311.
+2. **The saved P-ctx adapter** (2-ctx's, synced by name): capability at n 800 (the whole of
+   `data/s0a_capability_v1.json`) against the session base; the injected-order cell (Amendment 29
+   item 10) on the base, P-ctx and P-ctx-n, with its action read; `H1_held`'s operator and plain
+   cells at k 4 on the base and P-ctx (a second transfer cell with a different order structure;
+   read on H1's 82 clear items: the ordered, directed and other shares).
+3. **A second P-ctx training draw:** the same training set (A0s's usable rollouts outside the
+   held-out cell), seed 1 and a seeded new example order, P-ctx's learning rate and LoRA; its
+   screen read, then the held-out free-form cell on the base, P-ctx and the second draw, with its
+   action read.
+4. **If under the price:** P-ctx trained on a seeded half of its training rollouts (seed 0, the
+   first draw's settings), and its screen read.
+
+**Registered before data:**
+- **The second draw replicates** when its ordered-share contrast against the session base has a 95%
+  CI excluding 0 and its difference from the first draw's (both read on the operator cell in this
+  session) has a 95% CI including 0 (scenario-paired bootstrap, 2,000 draws).
+- **Capability** uses the registered bar: P-ctx passes when its paired accuracy difference from the
+  session base has a CI not entirely below −0.02; the point estimate and CI are reported.
+- **The injected-order cell** keeps Amendment 29 item 10's rule (a rise with a CI excluding 0 is a
+  lowered injection guard) and Amendment 32 item 2's branches, here for P-ctx against P-ctx-n.
+
+Tonight's summary also carries P-ctx's cell A′ read from 2-ctx (the rule-right originals' shift
+against the session base, Amendment 15's bar).
