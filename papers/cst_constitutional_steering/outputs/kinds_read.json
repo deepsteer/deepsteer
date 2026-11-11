@@ -1,0 +1,103 @@
+{
+ "rule": "Amendment 32 items 7-8",
+ "n_items": 458,
+ "rungs": {
+  "base_session": {
+   "rollouts": 916,
+   "capped": 0.0,
+   "unparsed": 0.0054585152838427945,
+   "trace_tokens_median": 425.5,
+   "suspicion_share": 0.3853711790393013,
+   "ordered_share": 0.3384279475982533,
+   "ordered_share_without_suspicion": 0.4730077120822622,
+   "ordered_share_with_suspicion": 0.07950530035335689,
+   "face_value_compliance": 0.3373362445414847,
+   "worst_case_capped_as_following": 0.3384279475982533,
+   "operator_shares": {
+    "ordered": 0.3384279475982533,
+    "directed": 0.5524017467248908,
+    "other": 0.1091703056768559,
+    "none": 0.0054585152838427945,
+    "items": 458
+   }
+  },
+  "dn_stories": {
+   "rollouts": 916,
+   "capped": 0.002183406113537118,
+   "unparsed": 0.0,
+   "trace_tokens_median": 540.0,
+   "suspicion_share": 0.4039301310043668,
+   "ordered_share": 0.06986899563318777,
+   "ordered_share_without_suspicion": 0.10290237467018469,
+   "ordered_share_with_suspicion": 0.020689655172413793,
+   "face_value_compliance": 0.06877729257641921,
+   "worst_case_capped_as_following": 0.07096069868995633,
+   "operator_shares": {
+    "ordered": 0.06986899563318777,
+    "directed": 0.7893013100436681,
+    "other": 0.1408296943231441,
+    "none": 0.002183406113537118,
+    "items": 458
+   },
+   "vs_session_base": {
+    "delta": -0.2685589519650655,
+    "ci95": [
+     -0.30349344978165943,
+     -0.2347161572052402
+    ],
+    "n": 458
+   },
+   "moves": true
+  },
+  "dn_nostories": {
+   "rollouts": 916,
+   "capped": 0.001091703056768559,
+   "unparsed": 0.0032751091703056767,
+   "trace_tokens_median": 457.0,
+   "suspicion_share": 0.40502183406113534,
+   "ordered_share": 0.36899563318777295,
+   "ordered_share_without_suspicion": 0.5288713910761155,
+   "ordered_share_with_suspicion": 0.1054421768707483,
+   "face_value_compliance": 0.36899563318777295,
+   "worst_case_capped_as_following": 0.3700873362445415,
+   "operator_shares": {
+    "ordered": 0.36899563318777295,
+    "directed": 0.5414847161572053,
+    "other": 0.08951965065502183,
+    "none": 0.004366812227074236,
+    "items": 458
+   },
+   "vs_session_base": {
+    "delta": 0.030567685589519666,
+    "ci95": [
+     -0.009825327510917026,
+     0.06768558951965065
+    ],
+    "n": 458
+   },
+   "moves": false
+  }
+ },
+ "base_plain_shares": {
+  "ordered": 0.002183406113537118,
+  "directed": 0.8668122270742358,
+  "other": 0.13100436681222707,
+  "none": 0,
+  "items": 458
+ },
+ "verdicts": {
+  "d_neutral": "the steadfast-agent genre (only stories-only moves)"
+ },
+ "tokens": {
+  "dn_stories": {
+   "kept_text_tokens": 557864,
+   "trained_tokens": 557056,
+   "documents": 319
+  },
+  "dn_nostories": {
+   "kept_text_tokens": 516487,
+   "trained_tokens": 516096,
+   "documents": 499
+  }
+ }
+}

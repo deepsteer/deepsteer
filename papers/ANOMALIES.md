@@ -2624,3 +2624,36 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Discriminator.** The kind-split pod (Amendment 32 items 6-8, about 6 h): D-neutral and D-doc each split into stories-only and non-stories adapters; R_genre predicts only the stories-only adapters move. The held-out free-form cell's legitimate kind and the injected-order cell (Amendment 32 item 2, pod 2 tonight and the kind-split pod) separate R_discrim. R_suspicion: the suspicion split per adapter (reported beside every rung).
 **Status.** open.
 **Thesis impact.** By Amendment 29 item 6 the gain reads generic (CI excluding 0, but with D-neutral below D-doc, not D-doc below D-neutral): the constitution's content is not shown to lower order-following on this instrument at 1M tokens. Under R_genre the lever is the steadfast-agent genre, scoped to that genre; under R_discrim the content shows as discrimination between orders rather than as a lower share.
+
+## CST-A31 (ledger) — D-neutral's stories alone carry its drop in order-following; its essays, commentary and FAQs do not move it
+
+**Date.** 2026-11-11 (the kind-split pod, Amendment 32 items 6-8; the lead's read, reproduced by `kinds_read.py`).
+**Observation.** Operator cell, 455 clear items at k 2, same-session base 0.338: D-neutral stories only (story and steadiness, 319 documents, 0.557M trained tokens) 0.070, −0.269 [−0.303, −0.235] (the lead: [−0.305, −0.233]); D-neutral without stories (essay, commentary, FAQ, 499 documents, 0.516M) 0.369, +0.031 [−0.010, +0.068] (the lead: [−0.008, +0.069]). Shares (ordered / directed / other): base 0.338 / 0.552 / 0.109; stories 0.070 / 0.789 / 0.141; without stories 0.369 / 0.541 / 0.090. Suspicion talk 0.385, 0.404, 0.405. The stories-only adapter at half the tokens reads as low as D-neutral 1M on pod 2 (0.077).
+**Type.** family-exception (one kind carries the corpus's whole effect).
+**Appears in.** Amendment 32 item 8 (D-neutral: only the stories-only adapter moves, "the steadfast-agent genre"); CST-A30; `outputs/kinds_read.json`.
+**Competing readings.** R_genre: the AI-agent-under-pressure narrative (the agent holds its line against a principal) is what lowers following, whatever values text it carries. R_lexical: the stories carry the operator, refusal and pressure words the other kinds lack (`sdf_corpus_audit.py`: steadiness stories 2.5 operator and 9.3 pressure words per 1,000, essays near 0), so the adapter learns a register, not a disposition. R_dose: the without-stories adapter is at 0.52M tokens; a null there at half dose is not a null at 1M.
+**Discriminator.** D-doc's pair on the same pod (Amendment 32 item 8, tonight): if D-doc's without-stories adapter, which carries operator words at D-doc's rate, moves, R_lexical gains; if only D-doc's stories move, R_genre holds across content. R_dose: the without-stories kinds at 1M tokens (about 1.4 A100-h).
+**Status.** open (D-doc's pair pending).
+**Thesis impact.** Under R_genre the lever that lowers order-following in this ladder is the steadfast-agent story, with or without the constitution's content; the content question moves to cells where the genre is held fixed.
+
+## CST-A32 (ledger) — P-ctx carries most of the in-context gain, and its traces cite a constitution that is not in its context
+
+**Date.** 2026-11-11 (2-ctx, the fifth launch's screen read; the lead's read, reproduced by `ctx_read.py`).
+**Observation.** Operator cell, 458 clear items at k 2: P-ctx 0.070 against the same-session base 0.354 (−0.284 [−0.318, −0.248]; the lead: [−0.319, −0.249]) and the saved A0 0.311 (−0.241 [−0.270, −0.213]); gain ratio to A0s 0.86 [0.80, 0.91] (Amendment 20: carries most; P-ctx minus A0s +0.039 [+0.025, +0.056], outside ±0.034, so it does not match A0s); 1.97 times the additive content band (A0s − A0n −0.123). Beside it: 96.1% of P-ctx's operator-cell traces cite a constitution (`cst_pressure_pod.CITES`; the base 0.0%), suspicion talk 0.032 (base 0.382), median trace 1,016 tokens (base 425); shares 0.070 / 0.746 / 0.184. The lettered legitimate-order cell reads 1.000 on both (CST-A28's ceiling).
+**Type.** cross-document conjunction (a trained rung reproduces its teacher's citations without the teacher's context).
+**Appears in.** PRESSURE_BUILD §4; Amendment 27 item 5's move rule (P-long's read pending); CST-A23.
+**Competing readings.** R_internalized: context distillation moved A0s's in-context disposition into the weights, and the citations are the trace form of it. R_mimicry: P-ctx learned A0s's trace style (cite the constitution, then decline), so it reproduces a surface form; the citations name a document it has not seen, and the shares may track the style, not the values. R_other: the "other" share rises (0.109 to 0.184), so part of the drop goes to options neither ordered nor directed.
+**Discriminator.** P-ctx-n (teacher A0n, the neutral document) is the style control: it does not cite (0.0%) and does not lower following. The held-out free-form cell (tonight, pod-side) and the injected-order cell (tomorrow's pod) separate R_internalized from R_mimicry on prompts outside the training genre; the citation share there is reported beside.
+**Status.** open.
+**Thesis impact.** Under R_internalized, context distillation from A0s is the first rung that carries most of the in-context gain into the weights; under R_mimicry the gain is the teacher's trace style, and its transfer outside the lettered panel is the test.
+
+## CST-A33 (ledger) — P-ctx-n raises order-following against A0 and the session base
+
+**Date.** 2026-11-11 (2-ctx's screen read; the lead's read, reproduced).
+**Observation.** P-ctx-n (teacher A0n) 0.395 against the session base 0.354 (+0.041 [+0.005, +0.080]; the lead: [+0.004, +0.078]) and the saved A0 0.311 (+0.084 [+0.052, +0.114]); gain ratio to A0s −0.30 [−0.43, −0.19]; suspicion talk 0.400, citations 0.0%, median trace 467.
+**Type.** sign-flip (Amendment 21's wrong-direction rule: a rise is a ledger entry and does not scale).
+**Appears in.** Amendment 27 item 5 (P-ctx-n is P-ctx's control).
+**Competing readings.** R_teacher: A0n's own traces follow more than A0s's (A0n 0.153 on the saved panel against A0s 0.031) and more than its training share suggests, and distillation of a neutral-document teacher on pressure prompts teaches compliance. R_base: the session base reads 0.354 against the saved A0's 0.311, so part of the rise against A0 is session drift (the rise against the session base is +0.041).
+**Discriminator.** Zero GPU: P-ctx-n's training set (`rung_training_table.json`: A0n's follow share on away orders 0.268 against A0s's 0.069) against its read; the empirical null of base reads (CST-A22, SD 0.013) for R_base.
+**Status.** open.
+**Thesis impact.** P-ctx's control moves the opposite way, so P-ctx's contrast with it (−0.325 [−0.362, −0.288]) is larger than its gain against A0; the move rule reads both.
