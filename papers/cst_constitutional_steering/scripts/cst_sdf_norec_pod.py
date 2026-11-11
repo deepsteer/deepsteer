@@ -47,7 +47,16 @@ SCEN = CST / "outputs/pressure"  # 2-roll's scenarios (synced)
 TAGS = {"d_neutral_1M": ("d_neutral", "max"), "d_doc_1M": ("d_doc", "max"),
         "d_doc_1M_k4": ("d_doc", "max"), "d_chat_1M": ("d_chat", "max"),
         "d_doc_03M": ("d_doc", "min"), "d_raw": ("d_raw", "max"),
-        "d_doc_1M_draw2": ("d_doc_draw2", "max")}
+        "d_doc_1M_draw2": ("d_doc_draw2", "max"),
+        # tomorrow's pod (Amendment 29 item 6's two branches; the author's trimmed ruling)
+        "d_doc_3M": ("d_doc_3M", "max"), "d_doc_3M_at1M": ("d_doc_3M", "min"),
+        "d_neutral_03M": ("d_neutral_sched1M", "min"),
+        "d_neutral_1M_draw2": ("d_neutral_sched1M", "max")}
+# rung -> (corpus arm, doses): the content branch trains D-doc to 3M with a 1M checkpoint; the
+# generic branch trains D-neutral on D-doc 0.3M's own schedule (a 1M run, checkpoint at 0.3M), so
+# the two 0.3M adapters share a learning-rate schedule (the lead's reading, flagged)
+DOSE_RUNGS = {"d_doc_3M": ("d_doc", (1_000_000, 3_000_000)),
+              "d_neutral_sched1M": ("d_neutral", (300_000, 1_000_000))}
 K4 = {"panel_operator": 4, "panel_plain": 4, "forced_plain": 8, "legit_operator": 4}
 CAP_N = 200
 GUARD_K = 2
@@ -70,19 +79,19 @@ def items(out: Path, tags: list[str]) -> list[tuple[str, str | None]]:
     return [(t, None if t == "base" else adapter_dir(out, t)) for t in tags]
 
 
-def stage_smoke_hf(out: Path, dry: bool) -> dict:
+def stage_smoke_hf(out: Path, dry: bool, arm: str = "d_doc") -> dict:
     """Smoke, HF side: D-doc's data builder and one optimizer step, a random adapter and its HF
     parity side (the failures: a data or loss path that breaks at hour five; the save path)."""
     import pilot_train as PT
 
     path, wb, _ = PL.load_model(dry)
     tok = S.V._tok(path)  # noqa: SLF001
-    ex, per_step, _ = P.rung_data(out, "d_doc", tok, dry)
+    ex, per_step, _ = P.rung_data(out, arm, tok, dry)
     if not ex:
-        raise SystemExit("BAIL: smoke: D-doc's corpus builds no training chunks")
+        raise SystemExit(f"BAIL: smoke: {arm}'s corpus builds no training chunks")
     r = PT.train_rung(wb, ex[:2], lambda e: PT.lm_loss(wb, e[0], e[1]), per_step_dose=per_step,
-                      doses=(per_step,), out_dir=out / "smoke" / "d_doc", lr=PL.SDF_LR)
-    rec = {"d_doc_chunks": len(ex), "steps": r["steps"]}
+                      doses=(per_step,), out_dir=out / "smoke" / arm, lr=PL.SDF_LR)
+    rec = {"arm": arm, "chunks": len(ex), "steps": r["steps"]}
     rec["random_adapter"], adir = PL.smoke_random_adapter(wb, path, out, dry, "smoke")
     _w(out, "smoke_hf", rec)
     print(">> smoke_hf:", json.dumps(rec))
@@ -281,11 +290,45 @@ def stage_train_draw2(out: Path, dry: bool) -> dict:
     return rec
 
 
+def stage_train_dose(out: Path, rung: str, dry: bool) -> dict:
+    """Tomorrow's training (no recovery): ``rung``'s corpus arm packed as the SDF rungs pack it,
+    trained to its doses with a checkpoint at each; when the banked corpus falls short of the top
+    dose, the top dose is the corpus's kept tokens and the record says so."""
+    import pilot_train as PT
+
+    arm, doses = DOSE_RUNGS[rung]
+    path, wb, cfg = PL.load_model(dry)
+    tok = S.V._tok(path)  # noqa: SLF001
+    ex, per_step, _ = P.rung_data(out, arm, tok, dry)
+    have = sum(len(c) for c, _ in ex)
+    short = not dry and have < doses[-1]
+    if dry:
+        doses = tuple(per_step * (i + 1) for i in range(len(doses)))
+    elif short:
+        doses = tuple(d for d in doses[:-1] if d < have) + (have,)
+    r = PT.train_rung(wb, ex, lambda e: PT.lm_loss(wb, e[0], e[1]), per_step_dose=per_step,
+                      doses=doses, out_dir=out / "adapters" / rung, lr=PL.SDF_LR)
+    rows = P.corpus_rows(out, arm, dry)
+    rec = {"rung": rung, "corpus_arm": arm, "doses": list(doses), "corpus_tokens": have,
+           "top_dose_short": short, "lr": PL.SDF_LR, "recovery": None,
+           "lora": {k: cfg[k] for k in ("rank", "alpha", "dropout")}, "train": r,
+           "corpus": P.corpus_meta(rows, [x for x in rows if x["kept"]], doses),
+           "adapters": dict(r["checkpoints"])}
+    _w(out, f"train_{rung}", rec)
+    print(f">> train_{rung}:", json.dumps({k: v for k, v in rec.items()
+                                           if k not in ("train", "corpus")}))
+    return rec
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True,
                     choices=("smoke_hf", "smoke_serve", "parity_hf", "read", "capability",
-                             "heldout", "heldout_act", "guard", "guard_act", "train_draw2"))
+                             "heldout", "heldout_act", "guard", "guard_act", "train_draw2",
+                             "train_dose"))
+    ap.add_argument("--rung", choices=tuple(DOSE_RUNGS), help="train_dose: tomorrow's rungs")
+    ap.add_argument("--smoke-arm", default="d_doc", choices=("d_doc", "d_neutral"),
+                    help="smoke_hf: the corpus arm the smoke step packs")
     ap.add_argument("--tags", default="")
     ap.add_argument("--k4", action="store_true", help="read: the panel parts at k 4")
     ap.add_argument("--parity-only", action="store_true",
@@ -296,7 +339,11 @@ def main() -> None:
     a = ap.parse_args()
     tags = [t for t in a.tags.split(",") if t]
     if a.stage == "smoke_hf":
-        stage_smoke_hf(a.out, a.dry_run)
+        stage_smoke_hf(a.out, a.dry_run, a.smoke_arm)
+    elif a.stage == "train_dose":
+        if a.rung is None:
+            ap.error("--stage train_dose needs --rung")
+        stage_train_dose(a.out, a.rung, a.dry_run)
     elif a.stage == "smoke_serve":
         print(">> smoke_serve:", json.dumps(PL.smoke_serve(a.out, a.dry_run)))
     elif a.stage == "parity_hf":

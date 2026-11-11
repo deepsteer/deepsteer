@@ -103,3 +103,14 @@ def test_dry_session_runs_every_stage(tmp_path, monkeypatch):
     assert "lowered_injection_guard" in g["tags"]["d_doc_1M"]
     d2 = Q.stage_train_draw2(tmp_path, True)
     assert d2["adapters"] and Q.adapter_dir(tmp_path, "d_doc_1M_draw2")
+    # tomorrow's pod (Amendment 29 item 6): each branch's rung trains to two checkpoints, and the
+    # two tags of a rung resolve to different adapters (the 1M checkpoint inside the 3M run; the
+    # 0.3M checkpoint inside D-neutral's 1M schedule)
+    (tmp_path / "corpus" / "d_neutral").mkdir()
+    (tmp_path / "corpus" / "d_neutral" / "chunk_000.jsonl").write_text(
+        (c / "chunk_000.jsonl").read_text())
+    for rung, (hi, lo) in (("d_doc_3M", ("d_doc_3M", "d_doc_3M_at1M")),
+                           ("d_neutral_sched1M", ("d_neutral_1M_draw2", "d_neutral_03M"))):
+        r = Q.stage_train_dose(tmp_path, rung, True)
+        assert len(r["adapters"]) == 2 and r["recovery"] is None
+        assert Q.adapter_dir(tmp_path, hi) != Q.adapter_dir(tmp_path, lo)
