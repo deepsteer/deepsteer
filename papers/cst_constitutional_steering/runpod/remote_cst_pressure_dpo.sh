@@ -3,12 +3,13 @@
 # item 3; PRESSURE_BUILD.md). One A100-80GB, priced at about 4.8 A100-h (P-long 2.34 h of training; P-dpo not trained, its gate failed at 41 of 60) (watchdog 10.5 h).
 # Orion launches with CST_SESSION=1 (launch_cst_pressure_dpo.sh) after 2-roll's line gate passed.
 # First the smoke pass (about 10 min; any failure stops the pod), then training, the parity HF side,
-# and the reads with a same-session base. Writes under outputs/pressure; inputs from 2-roll synced.
+# and the reads with a same-session base. Writes under outputs/pressure_dpo (its own folder); 2-roll's inputs synced to outputs/pressure and copied in.
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 cd "$REPO_DIR"
-OUT="$REPO_DIR/papers/cst_constitutional_steering/outputs/pressure"
+IN="$REPO_DIR/papers/cst_constitutional_steering/outputs/pressure"  # 2-roll's synced inputs
+OUT="$REPO_DIR/papers/cst_constitutional_steering/outputs/pressure_dpo"  # this session alone
 mkdir -p "$OUT/logs"
 START=$(date +%s)
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
@@ -72,11 +73,14 @@ for f in C_anth.txt a0n_faraday_v1.txt; do
   [ -f "$CST_CONST_DIR/$f" ] || { echo "BAIL: $f did not sync"; exit 1; }
 done
 for f in scenarios.json act.jsonl act.json contrast.json; do
-  [ -f "$OUT/$f" ] || { echo "BAIL: 2-roll's $f did not sync"; exit 1; }
+  [ -f "$IN/$f" ] || { echo "BAIL: 2-roll's $f did not sync"; exit 1; }
 done
 for a in a0 a0s a0n; do
-  ls "$OUT"/roll/$a/chunk_*.jsonl >/dev/null 2>&1 || { echo "BAIL: 2-roll's $a rollouts did not sync"; exit 1; }
+  ls "$IN"/roll/$a/chunk_*.jsonl >/dev/null 2>&1 || { echo "BAIL: 2-roll's $a rollouts did not sync"; exit 1; }
 done
+# its own results folder, so its download cannot overwrite 2-ctx's same-session base (2026-11-10)
+cp "$IN"/scenarios.json "$IN"/act.jsonl "$IN"/act.json "$IN"/contrast.json "$OUT"/ && cp -r "$IN"/roll "$OUT"/ \
+  || { echo "BAIL: copying 2-roll's inputs into $OUT"; exit 1; }
 
 $PY - <<'EOF' > "$OUT/logs/models_pressure_dpo${SESSION}.json" || { echo "BAIL: model access or download"; exit 1; }
 import json

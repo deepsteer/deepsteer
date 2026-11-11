@@ -171,4 +171,7 @@ papers/cst_constitutional_steering/outputs/parity_a22/
 papers/cst_constitutional_steering/outputs/a21_claude_refilter/
 papers/cst_constitutional_steering/outputs/pilot_sdf_base_reads/
 papers/cst_constitutional_steering/outputs/pressure/
+papers/cst_constitutional_steering/outputs/pressure_ctx_pod/
+papers/cst_constitutional_steering/outputs/pressure_dpo_pod/
+papers/cst_constitutional_steering/outputs/pressure_dpo/
 papers/cst_constitutional_steering/outputs/pilot_dpo/
