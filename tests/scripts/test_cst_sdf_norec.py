@@ -84,7 +84,8 @@ def test_dry_session_runs_every_stage(tmp_path, monkeypatch):
     (scen / "scenarios.json").write_text(json.dumps({"scenarios": sc}))
     monkeypatch.setattr(Q, "SCEN", scen)
     monkeypatch.setattr(Q.T, "heldout_ids", lambda: {s["cell_id"] for s in sc})
-    Q.stage_smoke_hf(tmp_path, True)
+    h = Q.stage_smoke_hf(tmp_path, True)
+    assert h["structural"] and all(x["passes"] for x in h["structural"])  # Amendment 31 item 3
     assert PL.smoke_serve(tmp_path, True)["parity_passes"]
     tags = ["d_neutral_1M", "d_doc_1M", "d_doc_1M_k4", "d_chat_1M", "d_doc_03M", "d_raw"]
     PL.hf_letters(tmp_path, Q.items(tmp_path, tags), True)

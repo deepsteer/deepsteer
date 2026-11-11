@@ -16,6 +16,9 @@ python3 -c "import json,sys; sys.exit(0 if json.load(open('$P/$O/contrast.json')
 SYNC="outputs/_sync/C_anth.txt,outputs/_sync/a0n_faraday_v1.txt"
 for f in scenarios.json act.jsonl act.json contrast.json; do SYNC="$SYNC,$O/$f"; done
 for f in "$P/$O"/roll/*/chunk_*.jsonl; do SYNC="$SYNC,${f#$P/}"; done
+F=outputs/pilot_sdf  # Amendment 31 item 2: the smoke pass's fixed adapter and its saved HF letters
+SYNC="$SYNC,$F/adapters/d_doc/1e+06/adapter_model.safetensors,$F/adapters/d_doc/1e+06/adapter_config.json"
+SYNC="$SYNC,$F/parity/hf_d_doc_1M.json,$F/parity/hf_base.json"
 export SELF_PAPER=$P RESULTS_SUBPATH=outputs/pressure_dpo CST_SESSION=1 SYNC_OUTPUTS="$SYNC"  # its own folder
 export REMOTE_SCRIPT=$P/runpod/remote_cst_pressure_dpo.sh MAX_SYNC_GB=2 DISK_GB=300
 export POD_NAME=deepsteer-cst-pressure-dpo GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe"

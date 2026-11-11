@@ -99,7 +99,7 @@ $PY -m pytest -q -p no:cacheprovider $TESTS 2>&1 | grep -E '[0-9]+ (passed|faile
 run() { $PY $TRAIN --out "$OUT" "$@" || echo ">> stage failed: $*"; echo ">> stage done at $(hours) h: $*"; }
 under_price() { python3 -c "import sys,time; sys.exit(0 if (time.time()-$START)/3600 < $PRICE_H else 1)"; }
 
-# the smoke pass (Amendment 28 item 3): a failure stops the pod in its first minutes
+# the smoke pass (Amendments 28 item 3, 31): a failure stops the pod in its first minutes
 run --stage smoke_hf --rungs p_dpo,p_long
 [ -f "$OUT/smoke_hf.json" ] || { echo "BAIL: smoke_hf failed (see the log)"; exit 1; }
 run --stage smoke_serve

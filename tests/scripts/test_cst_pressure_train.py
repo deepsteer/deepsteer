@@ -102,10 +102,10 @@ def test_p_dpo_is_not_trained_below_its_gate_and_the_line_gate_bails(tmp_path):
 
 @pytest.mark.slow
 def test_dry_sessions_smoke_train_parity_and_read(tmp_path, monkeypatch):
-    # most probable failure (Amendment 28 item 3): a later stage's entry path breaks on the pod
-    # after hours of training; the smoke pass must run the data builders, one step of each loss, a
-    # saved random adapter through the served class's parity gate and a 2-prompt read, and the dry
-    # sessions must reach their reads
+    # most probable failure (Amendments 28 item 3, 31): a later stage's entry path breaks on the
+    # pod after hours of training; the smoke pass must run the data builders, one step of each
+    # loss, the structural save check on each one-step adapter, the fixed adapter (its dry
+    # stand-in) through the served gate and a 2-prompt read, and the dry sessions must reach reads
     cells = [c for c in R.grid() if c["writer"] == "subject"][:52]
     claude = R.claude_kept()[:3]
     monkeypatch.setattr(R, "grid", lambda: cells + [dict(c, writer="claude") for c in claude])
@@ -132,7 +132,9 @@ def test_dry_sessions_smoke_train_parity_and_read(tmp_path, monkeypatch):
     c["p_dpo_gate"]["passes"] = True  # 2 scenarios stand in for 60
     (tmp_path / "contrast.json").write_text(json.dumps(c))
     h = T.stage_smoke_hf(tmp_path, list(T.RUNGS), True)
-    assert h["random_adapter"]["tv_base_vs_attached"] >= T.SMOKE_MIN_TV_DRY
+    # Amendment 31: every rung's one-step adapter through the structural check (p_dpo's too)
+    assert {Path(x["adapter"]).parts[-2] for x in h["structural"]} >= {"p_ctx", "p_long"}
+    assert all(x["passes"] and x["keys_checked"] for x in h["structural"])
     assert T.stage_smoke_serve(tmp_path, True)["parity_passes"]
     for rung in T.RUNGS:
         assert T.stage_train(tmp_path, rung, True)["trained"]

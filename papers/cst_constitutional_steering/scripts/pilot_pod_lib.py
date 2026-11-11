@@ -103,30 +103,6 @@ def letters_missing(rows: list[list[float]]) -> int:
     return sum(sum(math.exp(v) for v in r) == 0 for r in rows)
 
 
-def letter_ranks(model, prompts, lids) -> list[list[int]]:
-    """Per prompt, each letter's rank in the full next-token distribution (0 = top): the served side
-    sees a letter only within the top ``SERVED_TOPK``."""
-    import torch
-
-    out = []
-    with torch.no_grad():
-        for p in prompts:
-            x = torch.tensor([p], device=model.model.device)
-            lo = model.model(input_ids=x).logits[0, -1].float()
-            out.append([int((lo > lo[i]).sum()) for i in lids])
-    return out
-
-
-def served_truncation(letters: list[list[float]], ranks: list[list[int]],
-                      k: int = SERVED_TOPK) -> tuple[float, int]:
-    """What the served top-k does to an HF letter read: the letters outside the top k read -1e9 (as
-    vLLM returns them). Returns (TV between the truncated and the full read, prompts left with no
-    letter). A low-probability letter outside the top k costs almost nothing; a prompt with no
-    letter left cannot be renormalized (2-ctx's first smoke pass)."""
-    cut = [[v if r < k else -1e9 for v, r in zip(row, rk)] for row, rk in zip(letters, ranks)]
-    return tv(cut, letters), letters_missing(cut)
-
-
 PARITY_ATTACHED_MAX, PARITY_BASE_MIN = 0.2, 0.5  # Amendment 25 A4, fractions of TV(base, attached)
 PARITY_FLOOR_MULT, PARITY_RESOLVE_MULT = 1.5, 3.0  # Amendment 29 item 1, multiples of the floor
 
@@ -200,161 +176,166 @@ READ_PARTS = ("panel_operator", "panel_plain", "forced_plain", "legit_operator")
 LEGIT_CHECK_N, LEGIT_FLOOR = 20, 0.10  # rider d's check; floor not registered (logged)
 
 
-SMOKE_MIN_TV = 0.15  # the smoke adapter's TV(base, attached) before its parity read (27B)
-SMOKE_MIN_TV_DRY = 0.03  # the tiny model's near-uniform letters saturate near 0.07
-SMOKE_MAX_DISTORTION = 0.02  # the top-20 truncation's TV cost (the gate allows 0.03 at 0.15)
+FIXED_SMOKE_TAG = "smoke_fixed"
+FIXED_SMOKE = {  # Amendment 31 item 2: the saved D-doc 1M adapter without recovery, synced by name
+    "adapter": "outputs/pilot_sdf/adapters/d_doc/1e+06",
+    "hf": "outputs/pilot_sdf/parity/hf_d_doc_1M.json",
+    "hf_base": "outputs/pilot_sdf/parity/hf_base.json"}
+FIXED_SMOKE_SYNC = [f"{FIXED_SMOKE['adapter']}/adapter_model.safetensors",
+                    f"{FIXED_SMOKE['adapter']}/adapter_config.json",
+                    FIXED_SMOKE["hf"], FIXED_SMOKE["hf_base"]]
+FIXED_SMOKE_SHIFT = 0.4291  # TV(saved HF base, saved attached), on record
+FIXED_FLOOR_MULT, FIXED_BASE_FRAC = 3.0, 0.5  # within 3 floors; at least half the shift
+FIXED_MIN_ATTACHED_DRY = 0.01  # the tiny model's CPU floor is near 0
 
 
-def smoke_scale_search(evaluate, start: float, bar: float, step: float = 1.4, up: int = 20,
-                       bisect: int = 14) -> tuple[float | None, list[dict]]:
-    """The smoke adapter's scale: ``evaluate(scale)`` sets the adapter and returns (TV(base,
-    attached), truncation distortion, prompts without a served letter). A scale is accepted when
-    its TV reaches ``bar`` and it stays servable. Steps up by ``step`` until the TV reaches the bar
-    or the served read breaks, then bisects (log scale) between the last scale under both and the
-    first over either. The 27B's TV is steep in the scale: 2-ctx's second smoke pass went from
-    under 0.15 to 0.637, with five prompts left without a letter, in one 1.4 step (2026-11-11).
-    Returns (accepted scale or None, the trace); the model is left at the accepted scale."""
-    trace: list[dict] = []
-
-    def run(s: float) -> str:
-        tv_, dist, miss = evaluate(s)
-        servable = miss == 0 and dist <= SMOKE_MAX_DISTORTION
-        verdict = "ok" if tv_ >= bar and servable else ("under" if servable else "over")
-        trace.append({"scale": s, "tv": tv_, "distortion": dist, "missing": miss,
-                      "verdict": verdict})
-        return verdict
-
-    lo = hi = None
-    s = start
-    for _ in range(up):
-        v = run(s)
-        if v == "ok":
-            return s, trace
-        if v == "over":
-            hi = s
-            break
-        lo, s = s, s * step
-    if hi is None:
-        return None, trace
-    while lo is None and len(trace) < up + bisect:  # over at the start scale: step down to a floor
-        s = s / step
-        v = run(s)
-        if v == "ok":
-            return s, trace
-        if v == "under":
-            lo = s
-        else:
-            hi = s
-    for _ in range(bisect if lo is not None else 0):
-        s = (lo * hi) ** 0.5
-        v = run(s)
-        if v == "ok":
-            return s, trace
-        if v == "under":
-            lo = s
-        else:
-            hi = s
-    return None, trace
+def fixed_smoke_files(out: Path, dry: bool) -> dict[str, Path]:
+    """The fixed smoke adapter and its saved HF letters (Amendment 31 item 2). Dry: a stand-in the
+    dry ``smoke_hf`` writes from its one-step tiny adapter (the 27B adapter cannot load there)."""
+    if not dry:
+        return {k: S.CST / v for k, v in FIXED_SMOKE.items()}
+    d = out / "smoke" / "fixed_dry"
+    return {"adapter": d / "adapter", "hf": d / "hf.json", "hf_base": d / "hf_base.json"}
 
 
-SMOKE_SEEDS = 4  # random directions tried for a scale off a cliff
-SMOKE_CLIFF_STEP, SMOKE_CLIFF_FRAC = 1.05, 1 / 3  # a 5% scale step moves the TV by <= bar / 3
+def fixed_smoke_record(served, attached, saved_base, served_base, dry: bool = False) -> dict:
+    """Amendment 31 item 2's gate on the fixed adapter: passes when TV(served, attached) is at most
+    3 floors (floor = TV(served base, saved HF base), this session's serving against the saved HF
+    side) and TV(served, saved HF base) is at least half the saved shift."""
+    shift = tv(saved_base, attached)
+    floor = tv(served_base, saved_base)
+    rec = {"tag": FIXED_SMOKE_TAG, "rule": "Amendment 31 item 2", "shift": shift, "floor": floor,
+           "tv_served_vs_attached": tv(served, attached),
+           "tv_served_vs_base": tv(served, saved_base),
+           "attached_max": max(FIXED_FLOOR_MULT * floor, FIXED_MIN_ATTACHED_DRY if dry else 0.0),
+           "base_min": FIXED_BASE_FRAC * shift, "served_letters": served,
+           "served_prompts_without_letters": letters_missing(served)}
+    rec["passes"] = bool(rec["tv_served_vs_attached"] <= rec["attached_max"]
+                         and rec["tv_served_vs_base"] >= rec["base_min"]
+                         and not rec["served_prompts_without_letters"])
+    return rec
 
 
-def smoke_search_seeds(make_eval, start: float, bar: float, seeds: int = SMOKE_SEEDS):
-    """The smoke adapter over random directions: ``make_eval(seed)`` returns an ``evaluate(scale)``
-    for that direction (see ``smoke_scale_search``). A direction's accepted scale must also be
-    off a cliff: a 5% larger scale moves the TV by at most a third of the bar. On a cliff the HF
-    and served kernels' small differences are amplified past the parity gate (2-ctx's third
-    smoke pass, 2026-11-11: scale 0.087 at TV 0.24, 0.103 at 0.69; TV(served, attached) 0.103
-    where stable adapters on the same path read 0.019 and 0.026). Returns (seed or None, scale,
-    the per-seed record); the model is left at the accepted seed and scale."""
-    record = []
-    for seed in range(seeds):
-        evaluate = make_eval(seed)
-        scale, trace = smoke_scale_search(evaluate, start, bar)
-        rec = {"seed": seed, "scale": scale, "search": trace}
-        record.append(rec)
-        if scale is None:
-            continue
-        nudged = evaluate(scale * SMOKE_CLIFF_STEP)[0]
-        rec["tv_at_5pct_more"] = nudged
-        rec["stable"] = abs(nudged - trace[-1]["tv"]) <= bar * SMOKE_CLIFF_FRAC
-        if rec["stable"]:
-            evaluate(scale)  # back to the accepted scale
-            return seed, scale, record
-    return None, None, record
+def structural_check(adir: str | Path, path: str) -> dict:
+    """Amendment 31 item 3, the trainer's save path: every key of the saved adapter, renamed to the
+    decoder path of record, names a module of the served class (``AutoModelForImageTextToText`` on
+    the meta device) that is a linear layer, and every LoRA matrix's outer dimension matches it (A
+    its input, B its output), so no module is skipped at load. No numeric parity."""
+    import re
 
-
-def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"):
-    """Amendment 28 item 3's random adapter on ``wb`` (the trainer's model with LoRA): LoRA B
-    reinitialized and scaled until it moves the dose-0 letters past the bar while every letter
-    stays in the served top 20 (2-ctx's first smoke adapter pushed them out and the gate divided
-    by zero); saved the trainer's way at ``smoke/adapter`` with its HF parity side (``hf_<tag>``,
-    ``hf_base``, ``prefixes``) written in this HF process. Returns (record, adapter dir)."""
     import torch
+    from safetensors import safe_open
+    from transformers import AutoConfig, AutoModelForImageTextToText
 
+    rec = served_paths()
+    old, new = f"base_model.model.{rec['trainer']}.", f"base_model.model.{rec['served']}."
+    with torch.device("meta"):
+        mods = dict(AutoModelForImageTextToText.from_config(AutoConfig.from_pretrained(path))
+                    .named_modules())
+    problems, n, targets = [], 0, set()
+    with safe_open(str(Path(adir) / "adapter_model.safetensors"), "pt") as f:
+        for k in f.keys():
+            kk = new + k[len(old):] if k.startswith(old) else k
+            m = re.match(r"base_model\.model\.(.+)\.(lora_A|lora_B)(?:\.default)?\.weight$", kk)
+            if not m:
+                problems.append(f"unparsed key {k}")
+                continue
+            mod, side = mods.get(m.group(1)), m.group(2)
+            if mod is None or not hasattr(mod, "in_features"):
+                problems.append(f"no served linear module at {m.group(1)}")
+                continue
+            shape = f.get_slice(k).get_shape()
+            got, want = (shape[1], mod.in_features) if side == "lora_A" else (shape[0],
+                                                                             mod.out_features)
+            if got != want:
+                problems.append(f"{k}: {side} dimension {got} != the module's {want}")
+                continue
+            n += 1
+            targets.add(m.group(1).rsplit(".", 1)[-1])
+    return {"adapter": str(adir), "rule": "Amendment 31 item 3", "keys_checked": n,
+            "module_kinds": sorted(targets), "problems": problems[:10],
+            "n_problems": len(problems), "passes": n > 0 and not problems}
+
+
+def smoke_hf_side(wb, path: str, out: Path, dry: bool, trained: list[Path]) -> dict:
+    """The smoke pass's HF side after the one-step training (Amendments 28 item 3, 31): the
+    structural check on each saved one-step adapter; ``parity/prefixes.json`` and this session's
+    ``parity/hf_base.json`` in this HF process (before any vLLM); the fixed adapter's files present
+    (27B) or, dry, its stand-in from ``wb``'s one-step adapter. Bails on any failure."""
     from deepsteer.steering import objective_lora as OL
 
+    rec: dict = {"structural": [structural_check(a, path) for a in trained]}
+    bad = [s for s in rec["structural"] if not s["passes"]]
+    if not trained or bad:
+        raise SystemExit(f"BAIL: smoke: the structural save check failed: {json.dumps(bad)[:600]}")
     prompts, lids = parity_prompts(dry)
     with OL.adapter_disabled(wb):
         base = _letter_lp(wb, prompts, lids)
-    # the served side reads the top 20 log-probs: a low-probability letter outside them drops out
-    # at little cost, but a prompt left with no letter cannot be renormalized, so the adapter must
-    # keep the truncation's distortion small and leave every prompt a letter (the first smoke pass
-    # required all five letters in the top 20, which the base itself does not meet: 2026-11-11)
-    bar = SMOKE_MIN_TV_DRY if dry else SMOKE_MIN_TV
-    state: dict = {}
-
-    def make_eval(seed: int):
-        def evaluate(scale: float) -> tuple[float, float, int]:
-            torch.manual_seed(seed)  # one direction per seed: the TV is continuous in the scale
-            with torch.no_grad():
-                for name, prm in wb.model.named_parameters():
-                    if "lora_B" in name:
-                        prm.normal_(0, scale)
-            state["attached"] = _letter_lp(wb, prompts, lids)
-            dist, miss = 0.0, 0
-            if not dry:  # the tiny model's near-uniform letters sit deep in its ranks
-                dist, miss = served_truncation(state["attached"], letter_ranks(wb, prompts, lids))
-            state["last"] = (tv(base, state["attached"]), dist, miss)
-            return state["last"]
-        return evaluate
-
-    seed, scale, seeds = smoke_search_seeds(make_eval, 0.5 if dry else 0.005, bar)
-    print(">> smoke scale search:", json.dumps(seeds))
-    if scale is None:
-        raise SystemExit(f"BAIL: smoke: no random adapter reached TV {bar} off a cliff with the "
-                         f"served top {SERVED_TOPK} still reading it, over {len(seeds)} seeds")
-    attached = state["attached"]
-    ref, distortion, missing = state["last"]
-    adir = out / "smoke" / "adapter"
-    wb.model.save_pretrained(str(adir))
     par = out / "parity"
     par.mkdir(parents=True, exist_ok=True)
-    if not (par / "prefixes.json").exists():  # in this HF process, before any vLLM
+    if not (par / "prefixes.json").exists():
         (par / "prefixes.json").write_text(json.dumps(decoder_prefixes(path)) + "\n")
     if not (par / "hf_base.json").exists():
         write_once(par / "hf_base.json", {"letter_ids": lids, "class": type(wb.model).__name__,
                                           "base": base, "via": "smoke, adapter disabled"})
-    write_once(par / f"hf_{tag}.json", {"tag": tag, "adapter": str(adir), "attached": attached})
-    return {"scale": scale, "tv_base_vs_attached": ref, "served_truncation_tv": distortion,
-            "prompts_without_a_served_letter": missing, "seed": seed, "seeds": seeds}, adir
-
-
-def smoke_serve(out: Path, dry: bool, tag: str = "smoke") -> dict:
-    """Amendment 28 item 3's served side: the random adapter's renamed copy on the live engine,
-    through the parity gate (it must pass), and a 2-prompt read; ``smoke_serve.json``."""
-    adir = str(out / "smoke" / "adapter")
-    res = stage_read(out, [(tag, adir)], dry, parts=("panel_operator",),
-                     k_override={"panel_operator": 1}, limit=2, base=False)
-    g = out / "gen" / tag
-    rec = {"parity_passes": res["parity"].get(tag), "read": res["read"],
-           "rows": sum(1 for f in g.glob("*.jsonl") for _ in open(f)) if g.exists() else 0}
-    S.V._w(out, "smoke_serve", rec)  # noqa: SLF001
-    if not rec["parity_passes"] or not rec["rows"]:
-        raise SystemExit("BAIL: smoke: the served random adapter failed parity or read nothing")
+    files = fixed_smoke_files(out, dry)
+    if dry:  # the stand-in: the one-step adapter now on wb, its letters and the base's
+        wb.model.save_pretrained(str(files["adapter"]))
+        write_once(files["hf"], {"attached": _letter_lp(wb, prompts, lids), "letter_ids": lids})
+        write_once(files["hf_base"], {"base": base, "letter_ids": lids})
+    missing = [str(f) for f in (files["adapter"] / "adapter_model.safetensors", files["hf"],
+                                files["hf_base"]) if not f.exists()]
+    if missing:
+        raise SystemExit(f"BAIL: smoke: the fixed adapter's files are not on the pod: {missing}")
+    saved = json.loads(files["hf_base"].read_text())
+    if saved.get("letter_ids", lids) != lids:
+        raise SystemExit("BAIL: smoke: the fixed adapter's saved letters use other letter ids")
+    rec["fixed"] = {k: str(v) for k, v in files.items()}
+    rec["session_hf_base_vs_saved_hf_base"] = tv(base, saved["base"])
     return rec
+
+
+def smoke_serve(out: Path, dry: bool, tag: str = FIXED_SMOKE_TAG) -> dict:
+    """Amendment 31 item 2's served side: the fixed D-doc 1M adapter's renamed copy on the live
+    engine against its saved HF letters (``parity/smoke_fixed.json``, write-once), then a 2-prompt
+    operator read with it; ``smoke_serve.json``. Bails unless the gate passes and the read wrote
+    rows."""
+    files = fixed_smoke_files(out, dry)
+    hf = json.loads(files["hf"].read_text())
+    saved_base = json.loads(files["hf_base"].read_text())["base"]
+    prompts, lids = parity_prompts(dry)
+    path, eng = S.subject(dry, "a0", lora=not dry)
+    served_base = eng.first_logprobs(prompts, lids)
+    sdir = served_copy(out, tag, str(files["adapter"]), dry)
+    if dry:
+        e, req = (path, S.V.HFStandIn(path, lora=sdir)), None
+        served = e[1].first_logprobs(prompts, lids)
+    else:
+        from vllm.lora.request import LoRARequest
+
+        e, req = (path, eng), LoRARequest(tag, 1, sdir)
+        served = eng.first_logprobs(prompts, lids, lora=req)
+    f = out / "parity" / f"{tag}.json"
+    if f.exists():
+        rec = json.loads(f.read_text())
+    else:
+        rec = fixed_smoke_record(served, hf["attached"], saved_base, served_base, dry)
+        rec["served_adapter"] = sdir
+        write_once(f, rec)
+    rows = 0
+    if rec["passes"]:
+        pool = sorted(clear_ids()) if not dry else S.scenarios(dry)["ids"]["panel"]
+        S.stage_gen(out, "a0", ["panel_operator"], dry, tag=tag, lora=req,
+                    k_override={"panel_operator": 1}, engine=e, only=set(pool[:2]))
+        g = out / "gen" / tag
+        rows = sum(1 for x in g.glob("*.jsonl") for _ in open(x)) if g.exists() else 0
+    out_rec = {"parity_passes": rec["passes"], "rows": rows, "rule": "Amendment 31 item 2",
+               **{k: rec[k] for k in ("tv_served_vs_attached", "tv_served_vs_base", "floor",
+                                      "attached_max", "base_min")}}
+    S.V._w(out, "smoke_serve", out_rec)  # noqa: SLF001
+    if not rec["passes"] or not rows:
+        raise SystemExit("BAIL: smoke: the fixed adapter failed served parity or read nothing")
+    return out_rec
 
 
 def clear_ids() -> set[str]:

@@ -18,6 +18,9 @@ for f in scenarios.json act.jsonl act.json contrast.json; do SYNC="$SYNC,$O/$f";
 for f in "$P/$O"/roll/*/chunk_*.jsonl; do SYNC="$SYNC,${f#$P/}"; done
 D=outputs/pressure_dpo  # P-long, trained on 2-dpo (Amendment 29 item 2)
 SYNC="$SYNC,$D/train_p_long.json,$D/adapters/p_long/589/adapter_model.safetensors,$D/adapters/p_long/589/adapter_config.json"
+F=outputs/pilot_sdf  # Amendment 31 item 2: the smoke pass's fixed adapter and its saved HF letters
+SYNC="$SYNC,$F/adapters/d_doc/1e+06/adapter_model.safetensors,$F/adapters/d_doc/1e+06/adapter_config.json"
+SYNC="$SYNC,$F/parity/hf_d_doc_1M.json,$F/parity/hf_base.json"
 export SELF_PAPER=$P RESULTS_SUBPATH=$O CST_SESSION=1 SYNC_OUTPUTS="$SYNC"
 export REMOTE_SCRIPT=$P/runpod/remote_cst_pressure_ctx.sh MAX_SYNC_GB=2 DISK_GB=300
 export POD_NAME=deepsteer-cst-pressure-ctx GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe"

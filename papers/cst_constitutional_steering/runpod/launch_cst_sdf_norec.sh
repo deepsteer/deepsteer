@@ -16,6 +16,9 @@ for a in d_neutral/1e+06 d_doc/1e+06 d_doc/300000 d_chat/1e+06 d_raw/102400; do
   SYNC="$SYNC,$O/adapters/$a/adapter_model.safetensors,$O/adapters/$a/adapter_config.json"
 done
 for f in "$P/$O"/corpus/d_doc/chunk_*.jsonl; do SYNC="$SYNC,${f#$P/}"; done
+F=outputs/pilot_sdf  # Amendment 31 item 2: the smoke pass's fixed adapter and its saved HF letters
+SYNC="$SYNC,$F/adapters/d_doc/1e+06/adapter_model.safetensors,$F/adapters/d_doc/1e+06/adapter_config.json"
+SYNC="$SYNC,$F/parity/hf_d_doc_1M.json,$F/parity/hf_base.json"
 export SELF_PAPER=$P RESULTS_SUBPATH=outputs/pilot_sdf2 CST_SESSION=1 SYNC_OUTPUTS="$SYNC"
 export REMOTE_SCRIPT=$P/runpod/remote_cst_sdf_norec.sh MAX_SYNC_GB=4 DISK_GB=300
 export POD_NAME=deepsteer-cst-sdf-norec GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe"

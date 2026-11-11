@@ -194,53 +194,17 @@ def test_floor_aware_gate_passes_a_served_small_shift_adapter():
     assert tiny["parity_unresolved"] and tiny["read"]  # read, marked: only a move is reportable
 
 
-def test_served_truncation_tolerates_a_deep_letter_but_not_an_empty_prompt():
-    # most probable failure (2-ctx and SDF pod 2, 2026-11-11): the smoke search required all five
-    # letters inside the served top 20, which the base itself does not meet (a letter at rank 53),
-    # so the search stopped at its first scale; only a prompt with no letter left breaks the read
-    row = _lp([0.6, 0.3, 0.0999, 0.00005, 0.00005])
-    ranks = [[0, 1, 4, 53, 76]] * 4
-    dist, missing = PL.served_truncation([row] * 4, ranks)
-    assert missing == 0 and dist < 1e-3  # two deep, tiny letters drop out at almost no cost
-    dist, missing = PL.served_truncation([row] * 4, [[25, 30, 40, 53, 76]] * 4)
-    assert missing == 4 and dist == 1.0  # no letter left: the gate cannot read the prompt
-
-
-
-def test_smoke_scale_search_finds_a_narrow_window_a_step_overshoots():
-    # most probable failure (2-ctx's second smoke pass, 2026-11-11): the 27B's TV is steep in the
-    # scale, so one 1.4 step went from under the bar to TV 0.637 with prompts left without a
-    # letter, and the step-up search bailed; bisection must land inside the narrow window
-    # TV crosses 0.15 at 0.05; the served read breaks past 0.052 (the 1.4 grid steps over it)
-    def curve(s):
-        tv_ = min(1.0, (s / 0.05) ** 12 * 0.15)
-        return tv_, 0.0 if s < 0.052 else 0.27, 0 if s < 0.052 else 5
-
-    scale, trace = PL.smoke_scale_search(curve, 0.005, 0.15)
-    assert scale is not None and 0.05 <= scale < 0.052
-    assert trace[-1]["verdict"] == "ok" and trace[-1]["scale"] == scale  # model left there
-    assert any(t["verdict"] == "over" for t in trace)  # the step that overshot, then bisected
-    first_over, _ = PL.smoke_scale_search(curve, 0.08, 0.15)  # over at the start: steps down
-    assert first_over is not None and 0.05 <= first_over < 0.052
-    none, tr = PL.smoke_scale_search(lambda s: (0.1, 0.0, 0 if s < 0.03 else 3), 0.005, 0.15)
-    assert none is None and tr  # no window: the read breaks before the TV reaches the bar
-
-
-def test_smoke_search_skips_a_direction_whose_bar_sits_on_a_cliff():
-    # most probable failure (2-ctx's third smoke pass, 2026-11-11): the accepted scale sat one
-    # step below a collapse (TV 0.24 at 0.087, 0.69 at 0.103), the kernels' small differences were
-    # amplified and parity failed; that direction must be refused and the next seed taken
-    calls = []
-
-    def make_eval(seed):
-        def ev(s):
-            calls.append((seed, s))
-            if seed == 0:  # flat under the bar, then a cliff
-                return (0.12 if s < 0.085 else min(1.0, 0.24 + (s - 0.087) * 28)), 0.0, 0
-            return min(1.0, 3.0 * s), 0.0, 0  # smooth: TV 0.15 at 0.05
-        return ev
-
-    seed, scale, rec = PL.smoke_search_seeds(make_eval, 0.005, 0.15)
-    assert rec[0]["scale"] is not None and not rec[0]["stable"]  # found, but on the cliff
-    assert seed == 1 and rec[1]["stable"] and 3.0 * scale >= 0.15
-    assert calls[-1] == (1, scale)  # the model is left at the accepted seed and scale
+def test_fixed_smoke_gate_fails_an_unserved_or_half_served_adapter():
+    # most probable failure (Amendment 31 item 2; CST-A22, CST-A29's R_partial): a served copy that
+    # reads as the base, or carries only part of the adapter, must fail; the re-read pod's
+    # numbers (0.0146 against a floor of 0.0103 at shift 0.429) must pass
+    saved_base, attached = _two(0.5), _two(0.9291)  # shift 0.4291
+    ok = PL.fixed_smoke_record(_two(0.9145), attached, saved_base, _two(0.5103))
+    assert ok["shift"] == pytest.approx(0.4291) and ok["attached_max"] == pytest.approx(0.0309)
+    assert ok["passes"]
+    noserve = PL.fixed_smoke_record(_two(0.5), attached, saved_base, _two(0.5103))
+    assert not noserve["passes"] and noserve["tv_served_vs_base"] < noserve["base_min"]
+    half = PL.fixed_smoke_record(_two(0.72), attached, saved_base, _two(0.5103))
+    assert not half["passes"] and half["tv_served_vs_base"] >= half["base_min"]  # 3-floor bound
+    loose = PL.fixed_smoke_record(_two(0.89), attached, saved_base, _two(0.5103))
+    assert not loose["passes"]  # 0.039 > 3 floors (0.031)

@@ -13,6 +13,9 @@ SYNC="outputs/pressure/scenarios.json,outputs/pilot_sdf/train_d_doc.json,outputs
 SYNC="$SYNC,outputs/pilot_sdf/adapters/d_neutral/1e+06/adapter_model.safetensors,outputs/pilot_sdf/adapters/d_neutral/1e+06/adapter_config.json"
 SYNC="$SYNC,outputs/pilot_sdf/adapters/d_doc/300000/adapter_model.safetensors,outputs/pilot_sdf/adapters/d_doc/300000/adapter_config.json"
 for f in "$P"/outputs/pilot_sdf/corpus/d_neutral/chunk_*.jsonl; do SYNC="$SYNC,${f#$P/}"; done
+F=outputs/pilot_sdf  # Amendment 31 item 2: the smoke pass's fixed adapter and its saved HF letters
+SYNC="$SYNC,$F/adapters/d_doc/1e+06/adapter_model.safetensors,$F/adapters/d_doc/1e+06/adapter_config.json"
+SYNC="$SYNC,$F/parity/hf_d_doc_1M.json,$F/parity/hf_base.json"
 export SELF_PAPER=$P RESULTS_SUBPATH=outputs/pilot_sdf3 CST_SESSION=1 SYNC_OUTPUTS="$SYNC"
 export REMOTE_SCRIPT=$P/runpod/remote_cst_sdf_generic.sh MAX_SYNC_GB=2 DISK_GB=300
 export POD_NAME=deepsteer-cst-sdf-generic GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe"

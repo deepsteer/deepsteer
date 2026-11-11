@@ -20,13 +20,14 @@ answerless rollouts are not trained on (a cut trace teaches no closing).
 - **P-long:** A0's k 4 on every scenario, chosen the longest response, rejected the shortest, the
   whole response in the loss; no filter.
 
-**Smoke pass (Amendment 28 item 3), the pod's first two stages, about 10 minutes:** ``smoke_hf``
-builds every rung's data from the synced inputs (the failure: a data builder that breaks at hour
-three), takes one optimizer step of each loss on two items (a loss path that breaks on real
-lengths), saves a randomly initialized adapter from the trainer (the save path), and writes the HF
-parity side for it; ``smoke_serve`` serves its renamed copy on the live engine (CST-A22's no-op
-load), puts it through Amendment 25 A4's gate (it must pass), and reads 2 operator prompts with it
-(the read path). A failure stops the pod before any training.
+**Smoke pass (Amendments 28 item 3, 31), the pod's first two stages, about 10 minutes:**
+``smoke_hf`` builds every rung's data from the synced inputs (the failure: a data builder that
+breaks at hour three), takes one optimizer step of each loss on two items (a loss path that breaks
+on real lengths), and puts each saved one-step adapter through the structural save check (its keys
+name the served class's modules, shape-consistent; no numeric parity); ``smoke_serve`` serves the
+saved D-doc 1M adapter (synced by name) on the live engine against its saved HF letters (within 3
+floors, at least half its 0.429 shift) and reads 2 operator prompts with it (the read path). A
+failure stops the pod before any training.
 """
 
 from __future__ import annotations
@@ -46,8 +47,7 @@ import pilot_pod_lib as PL  # noqa: E402
 CST = S.CST
 RUNGS = ("p_ctx", "p_ctx_n", "p_dpo", "p_long")
 PAIRS_PER_SCENARIO = 4
-SMOKE_TAG = "smoke"
-SMOKE_MIN_TV, SMOKE_MIN_TV_DRY = PL.SMOKE_MIN_TV, PL.SMOKE_MIN_TV_DRY
+SMOKE_TAG = PL.FIXED_SMOKE_TAG
 
 
 def _w(out: Path, name: str, rec) -> None:
@@ -178,7 +178,8 @@ def _train(wb, rung: str, data: dict, out_dir: Path, dry: bool, smoke: bool = Fa
 
 
 def stage_smoke_hf(out: Path, rungs: list[str], dry: bool) -> dict:
-    """Smoke, HF side: data builders, one step per loss, a random adapter saved, parity HF side."""
+    """Smoke, HF side: data builders, one step per loss, the structural save check, the session's
+    HF base letters (Amendment 31)."""
     import pilot_pod_lib as PL
 
     gate_ok(out)
@@ -195,15 +196,17 @@ def stage_smoke_hf(out: Path, rungs: list[str], dry: bool) -> dict:
             continue
         r = _train(wb, rung, data, out / "smoke" / rung, dry, smoke=True)
         rec["rungs"][rung] = {"items": size, "steps": r["steps"]}
-    rec["random_adapter"], adir = PL.smoke_random_adapter(wb, path, out, dry, SMOKE_TAG)
-    rec["adapter"] = str(adir)
+    trained = sorted({f.parent for rung in rec["rungs"]
+                      for f in (out / "smoke" / rung).rglob("adapter_model.safetensors")})
+    rec |= PL.smoke_hf_side(wb, path, out, dry, trained)
     _w(out, "smoke_hf", rec)
     print(">> smoke_hf:", json.dumps(rec))
     return rec
 
 
 def stage_smoke_serve(out: Path, dry: bool) -> dict:
-    """Smoke, served side: the renamed copy on the live engine, the parity gate, a 2-prompt read."""
+    """Smoke, served side: the fixed D-doc 1M adapter against its saved HF letters (Amendment 31
+    item 2), a 2-prompt read."""
     rec = PL.smoke_serve(out, dry, SMOKE_TAG)
     print(">> smoke_serve:", json.dumps(rec))
     return rec

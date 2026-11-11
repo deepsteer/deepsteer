@@ -19,8 +19,10 @@ scenarios. On one same-session base (Amendment 26 item 3), in the registered ord
   material in the user turn, where not following is correct;
 - if under the price, a **second D-doc 1M training draw** (seed 1, a new example order, the same
   corpus) and its read.
-Every pod opens with the smoke pass (Amendment 28 item 3): one optimizer step on D-doc's packed
-corpus, a random adapter saved, renamed, served, through the gate and read on 2 prompts.
+Every pod opens with the smoke pass (Amendments 28 item 3, 31): one optimizer step on D-doc's packed
+corpus and the structural save check on that adapter; then the saved D-doc 1M adapter (synced by
+name) served against its saved HF letters (within 3 floors, at least half its 0.429 shift) and
+read on 2 prompts.
 """
 
 from __future__ import annotations
@@ -80,8 +82,9 @@ def items(out: Path, tags: list[str]) -> list[tuple[str, str | None]]:
 
 
 def stage_smoke_hf(out: Path, dry: bool, arm: str = "d_doc") -> dict:
-    """Smoke, HF side: D-doc's data builder and one optimizer step, a random adapter and its HF
-    parity side (the failures: a data or loss path that breaks at hour five; the save path)."""
+    """Smoke, HF side: D-doc's data builder and one optimizer step, the structural save check on
+    the saved one-step adapter, the session's HF base letters (Amendment 31; the failures: a data
+    or loss path that breaks at hour five; the save path)."""
     import pilot_train as PT
 
     path, wb, _ = PL.load_model(dry)
@@ -92,7 +95,8 @@ def stage_smoke_hf(out: Path, dry: bool, arm: str = "d_doc") -> dict:
     r = PT.train_rung(wb, ex[:2], lambda e: PT.lm_loss(wb, e[0], e[1]), per_step_dose=per_step,
                       doses=(per_step,), out_dir=out / "smoke" / arm, lr=PL.SDF_LR)
     rec = {"arm": arm, "chunks": len(ex), "steps": r["steps"]}
-    rec["random_adapter"], adir = PL.smoke_random_adapter(wb, path, out, dry, "smoke")
+    trained = sorted({f.parent for f in (out / "smoke" / arm).rglob("adapter_model.safetensors")})
+    rec |= PL.smoke_hf_side(wb, path, out, dry, trained)
     _w(out, "smoke_hf", rec)
     print(">> smoke_hf:", json.dumps(rec))
     return rec
