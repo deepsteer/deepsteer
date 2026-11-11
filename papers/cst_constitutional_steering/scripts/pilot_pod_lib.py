@@ -205,6 +205,58 @@ SMOKE_MIN_TV_DRY = 0.03  # the tiny model's near-uniform letters saturate near 0
 SMOKE_MAX_DISTORTION = 0.02  # the top-20 truncation's TV cost (the gate allows 0.03 at 0.15)
 
 
+def smoke_scale_search(evaluate, start: float, bar: float, step: float = 1.4, up: int = 20,
+                       bisect: int = 14) -> tuple[float | None, list[dict]]:
+    """The smoke adapter's scale: ``evaluate(scale)`` sets the adapter and returns (TV(base,
+    attached), truncation distortion, prompts without a served letter). A scale is accepted when
+    its TV reaches ``bar`` and it stays servable. Steps up by ``step`` until the TV reaches the bar
+    or the served read breaks, then bisects (log scale) between the last scale under both and the
+    first over either. The 27B's TV is steep in the scale: 2-ctx's second smoke pass went from
+    under 0.15 to 0.637, with five prompts left without a letter, in one 1.4 step (2026-11-11).
+    Returns (accepted scale or None, the trace); the model is left at the accepted scale."""
+    trace: list[dict] = []
+
+    def run(s: float) -> str:
+        tv_, dist, miss = evaluate(s)
+        servable = miss == 0 and dist <= SMOKE_MAX_DISTORTION
+        verdict = "ok" if tv_ >= bar and servable else ("under" if servable else "over")
+        trace.append({"scale": s, "tv": tv_, "distortion": dist, "missing": miss,
+                      "verdict": verdict})
+        return verdict
+
+    lo = hi = None
+    s = start
+    for _ in range(up):
+        v = run(s)
+        if v == "ok":
+            return s, trace
+        if v == "over":
+            hi = s
+            break
+        lo, s = s, s * step
+    if hi is None:
+        return None, trace
+    while lo is None and len(trace) < up + bisect:  # over at the start scale: step down to a floor
+        s = s / step
+        v = run(s)
+        if v == "ok":
+            return s, trace
+        if v == "under":
+            lo = s
+        else:
+            hi = s
+    for _ in range(bisect if lo is not None else 0):
+        s = (lo * hi) ** 0.5
+        v = run(s)
+        if v == "ok":
+            return s, trace
+        if v == "under":
+            lo = s
+        else:
+            hi = s
+    return None, trace
+
+
 def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"):
     """Amendment 28 item 3's random adapter on ``wb`` (the trainer's model with LoRA): LoRA B
     reinitialized and scaled until it moves the dose-0 letters past the bar while every letter
@@ -222,26 +274,28 @@ def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"
     # at little cost, but a prompt left with no letter cannot be renormalized, so the adapter must
     # keep the truncation's distortion small and leave every prompt a letter (the first smoke pass
     # required all five letters in the top 20, which the base itself does not meet: 2026-11-11)
-    scale, ref, distortion, missing = (0.5 if dry else 0.005), 0.0, 0.0, 0
     bar = SMOKE_MIN_TV_DRY if dry else SMOKE_MIN_TV
-    for _ in range(20):
-        torch.manual_seed(0)
+    state: dict = {}
+
+    def evaluate(scale: float) -> tuple[float, float, int]:
+        torch.manual_seed(0)  # one direction for every scale: the TV is continuous in the scale
         with torch.no_grad():
             for name, prm in wb.model.named_parameters():
                 if "lora_B" in name:
                     prm.normal_(0, scale)
-        attached = _letter_lp(wb, prompts, lids)
-        ref = tv(base, attached)
+        state["attached"] = _letter_lp(wb, prompts, lids)
+        dist, miss = 0.0, 0
         if not dry:  # the tiny model's near-uniform letters sit deep in its ranks
-            distortion, missing = served_truncation(attached, letter_ranks(wb, prompts, lids))
-        unservable = missing > 0 or distortion > SMOKE_MAX_DISTORTION
-        if ref >= bar or unservable:
-            break
-        scale *= 1.4
-    if ref < bar or unservable:
+            dist, miss = served_truncation(state["attached"], letter_ranks(wb, prompts, lids))
+        return tv(base, state["attached"]), dist, miss
+
+    scale, trace = smoke_scale_search(evaluate, 0.5 if dry else 0.005, bar)
+    print(">> smoke scale search:", json.dumps(trace))
+    if scale is None:
         raise SystemExit(f"BAIL: smoke: no random adapter reached TV {bar} with the served top "
-                         f"{SERVED_TOPK} still reading it (TV {ref:.3f}, truncation distortion "
-                         f"{distortion:.4f}, prompts without a letter {missing})")
+                         f"{SERVED_TOPK} still reading it (search: {json.dumps(trace[-3:])})")
+    attached = state["attached"]
+    ref, distortion, missing = trace[-1]["tv"], trace[-1]["distortion"], trace[-1]["missing"]
     adir = out / "smoke" / "adapter"
     wb.model.save_pretrained(str(adir))
     par = out / "parity"
@@ -253,7 +307,7 @@ def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"
                                           "base": base, "via": "smoke, adapter disabled"})
     write_once(par / f"hf_{tag}.json", {"tag": tag, "adapter": str(adir), "attached": attached})
     return {"scale": scale, "tv_base_vs_attached": ref, "served_truncation_tv": distortion,
-            "prompts_without_a_served_letter": missing}, adir
+            "prompts_without_a_served_letter": missing, "search": trace}, adir
 
 
 def smoke_serve(out: Path, dry: bool, tag: str = "smoke") -> dict:

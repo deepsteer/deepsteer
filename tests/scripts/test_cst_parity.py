@@ -205,3 +205,22 @@ def test_served_truncation_tolerates_a_deep_letter_but_not_an_empty_prompt():
     dist, missing = PL.served_truncation([row] * 4, [[25, 30, 40, 53, 76]] * 4)
     assert missing == 4 and dist == 1.0  # no letter left: the gate cannot read the prompt
 
+
+
+def test_smoke_scale_search_finds_a_narrow_window_a_step_overshoots():
+    # most probable failure (2-ctx's second smoke pass, 2026-11-11): the 27B's TV is steep in the
+    # scale, so one 1.4 step went from under the bar to TV 0.637 with prompts left without a
+    # letter, and the step-up search bailed; bisection must land inside the narrow window
+    # TV crosses 0.15 at 0.05; the served read breaks past 0.052 (the 1.4 grid steps over it)
+    def curve(s):
+        tv_ = min(1.0, (s / 0.05) ** 12 * 0.15)
+        return tv_, 0.0 if s < 0.052 else 0.27, 0 if s < 0.052 else 5
+
+    scale, trace = PL.smoke_scale_search(curve, 0.005, 0.15)
+    assert scale is not None and 0.05 <= scale < 0.052
+    assert trace[-1]["verdict"] == "ok" and trace[-1]["scale"] == scale  # model left there
+    assert any(t["verdict"] == "over" for t in trace)  # the step that overshot, then bisected
+    first_over, _ = PL.smoke_scale_search(curve, 0.08, 0.15)  # over at the start: steps down
+    assert first_over is not None and 0.05 <= first_over < 0.052
+    none, tr = PL.smoke_scale_search(lambda s: (0.1, 0.0, 0 if s < 0.03 else 3), 0.005, 0.15)
+    assert none is None and tr  # no window: the read breaks before the TV reaches the bar
