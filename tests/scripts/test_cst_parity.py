@@ -224,3 +224,23 @@ def test_smoke_scale_search_finds_a_narrow_window_a_step_overshoots():
     assert first_over is not None and 0.05 <= first_over < 0.052
     none, tr = PL.smoke_scale_search(lambda s: (0.1, 0.0, 0 if s < 0.03 else 3), 0.005, 0.15)
     assert none is None and tr  # no window: the read breaks before the TV reaches the bar
+
+
+def test_smoke_search_skips_a_direction_whose_bar_sits_on_a_cliff():
+    # most probable failure (2-ctx's third smoke pass, 2026-11-11): the accepted scale sat one
+    # step below a collapse (TV 0.24 at 0.087, 0.69 at 0.103), the kernels' small differences were
+    # amplified and parity failed; that direction must be refused and the next seed taken
+    calls = []
+
+    def make_eval(seed):
+        def ev(s):
+            calls.append((seed, s))
+            if seed == 0:  # flat under the bar, then a cliff
+                return (0.12 if s < 0.085 else min(1.0, 0.24 + (s - 0.087) * 28)), 0.0, 0
+            return min(1.0, 3.0 * s), 0.0, 0  # smooth: TV 0.15 at 0.05
+        return ev
+
+    seed, scale, rec = PL.smoke_search_seeds(make_eval, 0.005, 0.15)
+    assert rec[0]["scale"] is not None and not rec[0]["stable"]  # found, but on the cliff
+    assert seed == 1 and rec[1]["stable"] and 3.0 * scale >= 0.15
+    assert calls[-1] == (1, scale)  # the model is left at the accepted seed and scale

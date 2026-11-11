@@ -257,6 +257,35 @@ def smoke_scale_search(evaluate, start: float, bar: float, step: float = 1.4, up
     return None, trace
 
 
+SMOKE_SEEDS = 4  # random directions tried for a scale off a cliff
+SMOKE_CLIFF_STEP, SMOKE_CLIFF_FRAC = 1.05, 1 / 3  # a 5% scale step moves the TV by <= bar / 3
+
+
+def smoke_search_seeds(make_eval, start: float, bar: float, seeds: int = SMOKE_SEEDS):
+    """The smoke adapter over random directions: ``make_eval(seed)`` returns an ``evaluate(scale)``
+    for that direction (see ``smoke_scale_search``). A direction's accepted scale must also be
+    off a cliff: a 5% larger scale moves the TV by at most a third of the bar. On a cliff the HF
+    and served kernels' small differences are amplified past the parity gate (2-ctx's third
+    smoke pass, 2026-11-11: scale 0.087 at TV 0.24, 0.103 at 0.69; TV(served, attached) 0.103
+    where stable adapters on the same path read 0.019 and 0.026). Returns (seed or None, scale,
+    the per-seed record); the model is left at the accepted seed and scale."""
+    record = []
+    for seed in range(seeds):
+        evaluate = make_eval(seed)
+        scale, trace = smoke_scale_search(evaluate, start, bar)
+        rec = {"seed": seed, "scale": scale, "search": trace}
+        record.append(rec)
+        if scale is None:
+            continue
+        nudged = evaluate(scale * SMOKE_CLIFF_STEP)[0]
+        rec["tv_at_5pct_more"] = nudged
+        rec["stable"] = abs(nudged - trace[-1]["tv"]) <= bar * SMOKE_CLIFF_FRAC
+        if rec["stable"]:
+            evaluate(scale)  # back to the accepted scale
+            return seed, scale, record
+    return None, None, record
+
+
 def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"):
     """Amendment 28 item 3's random adapter on ``wb`` (the trainer's model with LoRA): LoRA B
     reinitialized and scaled until it moves the dose-0 letters past the bar while every letter
@@ -277,25 +306,28 @@ def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"
     bar = SMOKE_MIN_TV_DRY if dry else SMOKE_MIN_TV
     state: dict = {}
 
-    def evaluate(scale: float) -> tuple[float, float, int]:
-        torch.manual_seed(0)  # one direction for every scale: the TV is continuous in the scale
-        with torch.no_grad():
-            for name, prm in wb.model.named_parameters():
-                if "lora_B" in name:
-                    prm.normal_(0, scale)
-        state["attached"] = _letter_lp(wb, prompts, lids)
-        dist, miss = 0.0, 0
-        if not dry:  # the tiny model's near-uniform letters sit deep in its ranks
-            dist, miss = served_truncation(state["attached"], letter_ranks(wb, prompts, lids))
-        return tv(base, state["attached"]), dist, miss
+    def make_eval(seed: int):
+        def evaluate(scale: float) -> tuple[float, float, int]:
+            torch.manual_seed(seed)  # one direction per seed: the TV is continuous in the scale
+            with torch.no_grad():
+                for name, prm in wb.model.named_parameters():
+                    if "lora_B" in name:
+                        prm.normal_(0, scale)
+            state["attached"] = _letter_lp(wb, prompts, lids)
+            dist, miss = 0.0, 0
+            if not dry:  # the tiny model's near-uniform letters sit deep in its ranks
+                dist, miss = served_truncation(state["attached"], letter_ranks(wb, prompts, lids))
+            state["last"] = (tv(base, state["attached"]), dist, miss)
+            return state["last"]
+        return evaluate
 
-    scale, trace = smoke_scale_search(evaluate, 0.5 if dry else 0.005, bar)
-    print(">> smoke scale search:", json.dumps(trace))
+    seed, scale, seeds = smoke_search_seeds(make_eval, 0.5 if dry else 0.005, bar)
+    print(">> smoke scale search:", json.dumps(seeds))
     if scale is None:
-        raise SystemExit(f"BAIL: smoke: no random adapter reached TV {bar} with the served top "
-                         f"{SERVED_TOPK} still reading it (search: {json.dumps(trace[-3:])})")
+        raise SystemExit(f"BAIL: smoke: no random adapter reached TV {bar} off a cliff with the "
+                         f"served top {SERVED_TOPK} still reading it, over {len(seeds)} seeds")
     attached = state["attached"]
-    ref, distortion, missing = trace[-1]["tv"], trace[-1]["distortion"], trace[-1]["missing"]
+    ref, distortion, missing = state["last"]
     adir = out / "smoke" / "adapter"
     wb.model.save_pretrained(str(adir))
     par = out / "parity"
@@ -307,7 +339,7 @@ def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"
                                           "base": base, "via": "smoke, adapter disabled"})
     write_once(par / f"hf_{tag}.json", {"tag": tag, "adapter": str(adir), "attached": attached})
     return {"scale": scale, "tv_base_vs_attached": ref, "served_truncation_tv": distortion,
-            "prompts_without_a_served_letter": missing, "search": trace}, adir
+            "prompts_without_a_served_letter": missing, "seed": seed, "seeds": seeds}, adir
 
 
 def smoke_serve(out: Path, dry: bool, tag: str = "smoke") -> dict:

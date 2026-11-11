@@ -2602,3 +2602,14 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Discriminator.** The held-out free-form cell (Amendment 29 item 3) read on every rung carries the legitimate kind; a harder lettered set if the author wants one.
 **Status.** open.
 **Thesis impact.** Amendment 21's legitimate-order rule needs the free-form legitimate kind to have any power; on the lettered cell it reads 1.0 everywhere.
+
+## CST-A29 (ledger) — The smoke pass's random adapter failed served parity at a scale on a collapse edge
+
+**Date.** 2026-11-11 (2-ctx's third relaunch, smoke pass at 0.43 h).
+**Observation.** The scale search accepted 0.087 (TV(base, attached) 0.242) one step below a collapse (0.103: TV 0.687, one prompt without a served letter); along that direction the TV sat at 0.11-0.14 from scale 0.027 to 0.074. Served: TV(served, base) 0.228 (the adapter is live), TV(served, attached) 0.103 against the gate's 0.048, floor 0.011; one prompt reads attached 0.16/0.70 and served 0.45/0.40. The two smoke adapters that passed on the same serving path (2-dpo, SDF pod 2, TV 0.175 and 0.185 at stable scales) read TV(served, attached) 0.026 and 0.019.
+**Type.** control-misbehavior.
+**Appears in.** Amendment 28 item 3 (the smoke pass); `pilot_pod_lib.smoke_search_seeds`.
+**Competing readings.** R_cliff: near a collapse the HF and vLLM kernels' small differences are amplified, so served and attached diverge for that adapter only. R_partial: part of the adapter (some module class) is not served, which would also bias every trained rung's served read.
+**Discriminator.** Zero GPU on saved records: the two passing smokes on the same path and P-long's served read (TV(served, attached) 0.0095 at shift 0.028, inside the floor-aware gate) fit R_cliff. On the pod: the relaunched smoke pass at a scale off a cliff (a 5% larger scale moves the TV by at most 0.05) reads TV(served, attached) at 2-3 floors under R_cliff and stays high under R_partial.
+**Status.** open (the relaunch's smoke record decides).
+**Thesis impact.** None under R_cliff (a smoke-design fix). Under R_partial every served read so far is an under-read, which voids the pressure and SDF reads' served values until the missing module is found.
