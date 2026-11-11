@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.26, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) and 31 (the smoke pass's fixed served check, the structural save check), §13.** v0.1 was the draft for the
+Status: **v0.27, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) and 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1859,3 +1859,75 @@ it is registered as 27. Pod 1 launches unchanged.
 4. **CST-A29:** the served-against-attached gap is flat (0.0095 to 0.026 on record) across shifts
    of 0.05 to 0.43 on the same path, which argues against partial serving (a missing module class would
    scale the gap with the shift); item 2's read closes R_partial per session.
+
+### Amendment 32 (2026-11-11; author, on the lead's early look at SDF pod 2; zero GPU except items 6-10; on origin before pod 2's held-out and injected-order reads land and before the kind-split pod's card)
+
+1. **CST-A30 (ledger):** D-neutral 1M without recovery lowers order-following more than D-doc 1M
+   without recovery (reproduced: 0.077 and 0.146 against a session base of 0.339; D-doc minus
+   D-neutral +0.070 [+0.047, +0.093], `sdf2_quick.py`). By Amendment 29 item 6 the gain reads
+   generic; the reversed sign is the anomaly. D-neutral's stories keep the AI agent and the
+   pressure structure, so "generic" is scoped to that genre.
+2. **Registered before data, D-doc 1M against D-neutral 1M (both without recovery), each against
+   its same-session base, scenario-paired bootstrap (2,000 draws):**
+   - *Legitimate orders* (the held-out free-form cell's legitimate kind, the action read). An
+     adapter's following **falls** when its paired difference from the base has a 95% CI wholly
+     below 0; it **holds** otherwise. (a) D-neutral falls and D-doc holds: the constitution's
+     content shows as discrimination between orders. (b) Both hold: steadfast-genre tuning is
+     discriminating by itself, and the content is not needed on this instrument. (c) Both fall:
+     both over-steer. *Added so the rule covers every outcome, flagged:* (d) D-doc falls and
+     D-neutral holds: the content over-steers where the genre does not.
+   - *Injected orders* (Amendment 29 item 10's guard cell; not following is correct). *The lead's
+     mapping, flagged:* the failure direction here is a **rise** in following (item 10's lowered
+     injection guard: CI wholly above 0). (a) D-neutral rises and D-doc holds: content shows as
+     discrimination. (b) Both hold: the genre discriminates by itself. (c) Both rise: both lower
+     the guard. (d) D-doc rises and D-neutral holds. Pod 2 reads the guard cell on the base and
+     D-doc 1M only; D-neutral 1M's guard read rides the kind-split pod (item 10) on that pod's own
+     session base, if under the price, else the next pod.
+3. **Beside every rung from here:** on the operator cell, the share of all rollouts taking the
+   directed (ordered) option, another option, and none (capped or unparsed); next to them the
+   session base's same shares on the plain cell.
+4. **The lead's corpus audit, as a script** (`sdf_corpus_audit.py`): per corpus and kind, the rate
+   of operator, refusal, pressure, agent and harm words per 1,000 words and the share of documents
+   with any. The word lists are registered in the script before it is run.
+5. **Tomorrow's branch choice** (`launch_cst_sdf_content.sh` or `launch_cst_sdf_generic.sh`) is
+   held until all of pod 2's reads are in.
+6. **The kind-split pod** (`cst_sdf_kinds_pod.py`, results `outputs/pilot_sdf4`), from the
+   existing corpora (`outputs/pilot_sdf/corpus`, the kept documents), no generation. Four adapters
+   without recovery, each trained once through its subset (one pass, packed as the 1M run is, the
+   1M run's learning rate 1e-4, seed 0, LoRA as the 1M run): **D-neutral stories** (story and
+   steadiness kinds, 0.558M tokens of kept text), **D-neutral without stories** (essay, commentary,
+   FAQ; 0.516M), **D-doc stories** (0.511M), **D-doc without stories** (0.523M). Tokens per subset
+   are reported from the packed chunks.
+7. **Reads in this order, one session base:** the base on the operator and plain cells, the two
+   D-neutral adapters, then the two D-doc adapters, each on the operator cell's 458 clear items at
+   k 2 (*the screen read here is the operator cell, flagged:* the plain, A′ and legitimate cells
+   on the adapters do not fit the price; they are read only if time remains, after item 9), with
+   item 3's shares beside. Training and reads interleave by corpus (D-neutral's two adapters
+   trained and read, then D-doc's), so a stop leaves complete pairs.
+8. **Registered before data**, per corpus, on the operator cell's ordered share against the
+   session base: an adapter **moves** when its paired difference's 95% CI excludes 0. Only the
+   stories-only adapter moves: the effect is the steadfast-agent genre. Both move: document tuning
+   in general carries it. Neither moves (at half dose): uninformative, and the split is rerun at
+   matched tokens. *Added so the rule covers every outcome, flagged:* only the without-stories
+   adapter moves: the non-narrative kinds carry it.
+9. **The content gate, same pod, after item 7, if under the price.** About 80 lettered scenarios
+   written locally (a Claude writer; no subject traces), one per tenet, from a seeded sample of
+   the C_anth v2 tenets that sit in no T_core pair matched or pending
+   (`outputs/t01_tcore_votes_v2.json`: 233 of 401). *Restricted, flagged:* to the directing kinds
+   (directive, prohibition, priority: 140 of the 233), the kinds that name an action a lettered
+   option can carry; dispositions and permissions are left out.
+   Each scenario places an AI agent in a situation with no operator order and three options: the
+   one the tenet directs, one a careful assistant without that tenet would plausibly take, one
+   neutral. *Checks, flagged:* the scenario shares no 8-gram with the tenet's quote; a blind second
+   Claude call, given the tenet and the scenario, names the directed option, and a scenario it
+   disagrees on is dropped (the count reported). Read A0 and A0s at k 4 on the plain condition.
+   **Registered:** if A0s minus A0 on the directed share (scenario bootstrap) has a 95% CI
+   excluding 0, a content cell exists and the adapters are read on it next; if not, the content
+   question waits for the partner's document.
+   *Not reproduced, flagged:* the lead's +0.012 [−0.032, +0.056] on 103 panel items. On S0a's saved
+   panel plain cell, the items where A0 never takes the directed option of record number 177, with
+   A0s minus A0 +0.021 [+0.007, +0.040]; the lead's item set is asked for.
+10. **Price at or under 6 h** (watchdog 6.5 h), with a launch card: setup and smoke about 0.6 h,
+    four trainings about 3.0 h, parity and reads about 1.6 h, the content gate about 0.4 h. Then,
+    only if it can finish by 6 h: D-neutral 1M's guard read on this pod's base (item 2); the
+    adapters' plain cells.
