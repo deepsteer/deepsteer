@@ -1,0 +1,517 @@
+{
+ "rule": "Amendment 32 item 4",
+ "families": {
+  "operator": [
+   "operator*",
+   "system prompt*",
+   "instruction*",
+   "instructed",
+   "directive*",
+   "policy",
+   "policies",
+   "deployer*",
+   "employer*",
+   "manager*",
+   "supervisor*",
+   "boss*",
+   "administrator*",
+   "orders",
+   "ordered",
+   "command*"
+  ],
+  "refusal": [
+   "refus*",
+   "declin*",
+   "won't",
+   "will not",
+   "cannot comply",
+   "say no",
+   "push back",
+   "pushed back",
+   "resist*",
+   "object to",
+   "objected"
+  ],
+  "pressure": [
+   "pressur*",
+   "urgen*",
+   "deadline*",
+   "insist*",
+   "demand*",
+   "threat*",
+   "coerc*",
+   "manipulat*",
+   "override*",
+   "overrid*",
+   "comply",
+   "complied",
+   "complian*"
+  ],
+  "agent": [
+   "ai",
+   "assistant*",
+   "model",
+   "models",
+   "agent",
+   "agents",
+   "chatbot*",
+   "bot",
+   "bots",
+   "algorithm*",
+   "machine*"
+  ],
+  "harm": [
+   "harm*",
+   "danger*",
+   "risk*",
+   "unsafe",
+   "hurt*",
+   "injur*",
+   "damag*",
+   "decei*",
+   "decept*",
+   "illegal*",
+   "unethical*"
+  ]
+ },
+ "corpora": {
+  "d_doc": {
+   "essay": {
+    "docs": 167,
+    "words": 136916,
+    "operator": {
+     "per_1k_words": 8.457740512430979,
+     "doc_share": 0.9041916167664671
+    },
+    "refusal": {
+     "per_1k_words": 2.5051856612813697,
+     "doc_share": 0.8203592814371258
+    },
+    "pressure": {
+     "per_1k_words": 4.966548832861024,
+     "doc_share": 0.9640718562874252
+    },
+    "agent": {
+     "per_1k_words": 16.455344882993952,
+     "doc_share": 1.0
+    },
+    "harm": {
+     "per_1k_words": 10.502790031844343,
+     "doc_share": 0.9940119760479041
+    }
+   },
+   "all": {
+    "docs": 817,
+    "words": 842945,
+    "operator": {
+     "per_1k_words": 9.151249488400785,
+     "doc_share": 0.9522643818849449
+    },
+    "refusal": {
+     "per_1k_words": 2.5221099834508776,
+     "doc_share": 0.8200734394124847
+    },
+    "pressure": {
+     "per_1k_words": 5.99801885057744,
+     "doc_share": 0.9510403916768666
+    },
+    "agent": {
+     "per_1k_words": 9.076511516172467,
+     "doc_share": 0.988984088127295
+    },
+    "harm": {
+     "per_1k_words": 8.887887110072425,
+     "doc_share": 0.9840881272949816
+    }
+   },
+   "commentary": {
+    "docs": 167,
+    "words": 157155,
+    "operator": {
+     "per_1k_words": 10.270115491075689,
+     "doc_share": 0.9401197604790419
+    },
+    "refusal": {
+     "per_1k_words": 2.7997836530813527,
+     "doc_share": 0.8263473053892215
+    },
+    "pressure": {
+     "per_1k_words": 6.26133435143648,
+     "doc_share": 0.9820359281437125
+    },
+    "agent": {
+     "per_1k_words": 8.51388756323375,
+     "doc_share": 0.9820359281437125
+    },
+    "harm": {
+     "per_1k_words": 9.76106391778817,
+     "doc_share": 0.9820359281437125
+    }
+   },
+   "faq": {
+    "docs": 165,
+    "words": 139626,
+    "operator": {
+     "per_1k_words": 11.466345809519717,
+     "doc_share": 0.9636363636363636
+    },
+    "refusal": {
+     "per_1k_words": 2.7287181470499764,
+     "doc_share": 0.8
+    },
+    "pressure": {
+     "per_1k_words": 4.10382020540587,
+     "doc_share": 0.8909090909090909
+    },
+    "agent": {
+     "per_1k_words": 11.072436365719852,
+     "doc_share": 0.9757575757575757
+    },
+    "harm": {
+     "per_1k_words": 11.387563920759744,
+     "doc_share": 0.9818181818181818
+    }
+   },
+   "story": {
+    "docs": 161,
+    "words": 202836,
+    "operator": {
+     "per_1k_words": 8.686820879922696,
+     "doc_share": 0.9751552795031055
+    },
+    "refusal": {
+     "per_1k_words": 1.7353921394624228,
+     "doc_share": 0.7329192546583851
+    },
+    "pressure": {
+     "per_1k_words": 3.9391429529274884,
+     "doc_share": 0.9192546583850931
+    },
+    "agent": {
+     "per_1k_words": 7.671222071032756,
+     "doc_share": 0.9937888198757764
+    },
+    "harm": {
+     "per_1k_words": 6.685203809974561,
+     "doc_share": 0.9627329192546584
+    }
+   },
+   "steadiness": {
+    "docs": 157,
+    "words": 206412,
+    "operator": {
+     "per_1k_words": 7.649749045598124,
+     "doc_share": 0.9808917197452229
+    },
+    "refusal": {
+     "per_1k_words": 2.95525453946476,
+     "doc_share": 0.9235668789808917
+    },
+    "pressure": {
+     "per_1k_words": 9.78625273724396,
+     "doc_share": 1.0
+    },
+    "agent": {
+     "per_1k_words": 4.641203030831541,
+     "doc_share": 0.9936305732484076
+    },
+    "harm": {
+     "per_1k_words": 7.625525647733659,
+     "doc_share": 1.0
+    }
+   }
+  },
+  "d_neutral": {
+   "essay": {
+    "docs": 167,
+    "words": 141206,
+    "operator": {
+     "per_1k_words": 0.014163704091894111,
+     "doc_share": 0.011976047904191617
+    },
+    "refusal": {
+     "per_1k_words": 0.39658371457303515,
+     "doc_share": 0.23952095808383234
+    },
+    "pressure": {
+     "per_1k_words": 1.7775448635327111,
+     "doc_share": 0.5209580838323353
+    },
+    "agent": {
+     "per_1k_words": 0.5736300157217116,
+     "doc_share": 0.3712574850299401
+    },
+    "harm": {
+     "per_1k_words": 0.21245556137841168,
+     "doc_share": 0.1377245508982036
+    }
+   },
+   "all": {
+    "docs": 818,
+    "words": 878644,
+    "operator": {
+     "per_1k_words": 0.7989583949813577,
+     "doc_share": 0.3019559902200489
+    },
+    "refusal": {
+     "per_1k_words": 0.9252894232476406,
+     "doc_share": 0.3569682151589242
+    },
+    "pressure": {
+     "per_1k_words": 3.8616322424098954,
+     "doc_share": 0.628361858190709
+    },
+    "agent": {
+     "per_1k_words": 2.2694060393060216,
+     "doc_share": 0.6112469437652812
+    },
+    "harm": {
+     "per_1k_words": 1.0846258552952048,
+     "doc_share": 0.4743276283618582
+    }
+   },
+   "commentary": {
+    "docs": 167,
+    "words": 149520,
+    "operator": {
+     "per_1k_words": 0.02675227394328518,
+     "doc_share": 0.023952095808383235
+    },
+    "refusal": {
+     "per_1k_words": 0.22739432851792402,
+     "doc_share": 0.16167664670658682
+    },
+    "pressure": {
+     "per_1k_words": 1.157035848047084,
+     "doc_share": 0.41317365269461076
+    },
+    "agent": {
+     "per_1k_words": 0.9563937934724451,
+     "doc_share": 0.5568862275449101
+    },
+    "harm": {
+     "per_1k_words": 0.21401819154628143,
+     "doc_share": 0.17365269461077845
+    }
+   },
+   "faq": {
+    "docs": 165,
+    "words": 143486,
+    "operator": {
+     "per_1k_words": 0.0,
+     "doc_share": 0.0
+    },
+    "refusal": {
+     "per_1k_words": 0.22998759460853324,
+     "doc_share": 0.17575757575757575
+    },
+    "pressure": {
+     "per_1k_words": 1.4217414939436601,
+     "doc_share": 0.4
+    },
+    "agent": {
+     "per_1k_words": 0.306650126144711,
+     "doc_share": 0.24848484848484848
+    },
+    "harm": {
+     "per_1k_words": 0.8293492048004684,
+     "doc_share": 0.5393939393939394
+    }
+   },
+   "story": {
+    "docs": 159,
+    "words": 221835,
+    "operator": {
+     "per_1k_words": 0.6626546757725337,
+     "doc_share": 0.5786163522012578
+    },
+    "refusal": {
+     "per_1k_words": 0.46430905853449633,
+     "doc_share": 0.27672955974842767
+    },
+    "pressure": {
+     "per_1k_words": 3.1780377307458245,
+     "doc_share": 0.8301886792452831
+    },
+    "agent": {
+     "per_1k_words": 3.718980323213199,
+     "doc_share": 0.9308176100628931
+    },
+    "harm": {
+     "per_1k_words": 1.5822570829670701,
+     "doc_share": 0.7358490566037735
+    }
+   },
+   "steadiness": {
+    "docs": 160,
+    "words": 222597,
+    "operator": {
+     "per_1k_words": 2.4663405167185544,
+     "doc_share": 0.93125
+    },
+    "refusal": {
+     "per_1k_words": 2.637052610771933,
+     "doc_share": 0.95
+    },
+    "pressure": {
+     "per_1k_words": 9.254392467104228,
+     "doc_share": 1.0
+    },
+    "agent": {
+     "per_1k_words": 4.04767359847617,
+     "doc_share": 0.975
+    },
+    "harm": {
+     "per_1k_words": 1.8913103051703302,
+     "doc_share": 0.8125
+    }
+   }
+  },
+  "d_chat": {
+   "essay": {
+    "docs": 167,
+    "words": 139536,
+    "operator": {
+     "per_1k_words": 8.585597981882811,
+     "doc_share": 0.8982035928143712
+    },
+    "refusal": {
+     "per_1k_words": 2.5513129228299505,
+     "doc_share": 0.8203592814371258
+    },
+    "pressure": {
+     "per_1k_words": 4.909127393647517,
+     "doc_share": 0.9640718562874252
+    },
+    "agent": {
+     "per_1k_words": 11.459408324733403,
+     "doc_share": 1.0
+    },
+    "harm": {
+     "per_1k_words": 10.527749111340443,
+     "doc_share": 0.9940119760479041
+    }
+   },
+   "all": {
+    "docs": 814,
+    "words": 752736,
+    "operator": {
+     "per_1k_words": 9.785635335628958,
+     "doc_share": 0.9373464373464373
+    },
+    "refusal": {
+     "per_1k_words": 2.7008140968413894,
+     "doc_share": 0.8132678132678133
+    },
+    "pressure": {
+     "per_1k_words": 6.469731751902393,
+     "doc_share": 0.9459459459459459
+    },
+    "agent": {
+     "per_1k_words": 8.247247374909662,
+     "doc_share": 1.0
+    },
+    "harm": {
+     "per_1k_words": 9.712568549929856,
+     "doc_share": 0.9791154791154791
+    }
+   },
+   "commentary": {
+    "docs": 167,
+    "words": 164166,
+    "operator": {
+     "per_1k_words": 10.196995723840503,
+     "doc_share": 0.9341317365269461
+    },
+    "refusal": {
+     "per_1k_words": 2.79595044040788,
+     "doc_share": 0.8263473053892215
+    },
+    "pressure": {
+     "per_1k_words": 6.243680177381431,
+     "doc_share": 0.9820359281437125
+    },
+    "agent": {
+     "per_1k_words": 7.693432257592924,
+     "doc_share": 1.0
+    },
+    "harm": {
+     "per_1k_words": 9.721866890830013,
+     "doc_share": 0.9820359281437125
+    }
+   },
+   "faq": {
+    "docs": 164,
+    "words": 136365,
+    "operator": {
+     "per_1k_words": 11.425219081142522,
+     "doc_share": 0.9451219512195121
+    },
+    "refusal": {
+     "per_1k_words": 2.7866388002786637,
+     "doc_share": 0.7987804878048781
+    },
+    "pressure": {
+     "per_1k_words": 4.187291460418729,
+     "doc_share": 0.8902439024390244
+    },
+    "agent": {
+     "per_1k_words": 13.016536501301653,
+     "doc_share": 1.0
+    },
+    "harm": {
+     "per_1k_words": 11.535217981153522,
+     "doc_share": 0.9817073170731707
+    }
+   },
+   "story": {
+    "docs": 161,
+    "words": 161723,
+    "operator": {
+     "per_1k_words": 9.843992505704199,
+     "doc_share": 0.9565217391304348
+    },
+    "refusal": {
+     "per_1k_words": 1.9601417238117027,
+     "doc_share": 0.7080745341614907
+    },
+    "pressure": {
+     "per_1k_words": 4.668476345355948,
+     "doc_share": 0.8944099378881988
+    },
+    "agent": {
+     "per_1k_words": 5.280634170773483,
+     "doc_share": 1.0
+    },
+    "harm": {
+     "per_1k_words": 7.7539991219554425,
+     "doc_share": 0.9503105590062112
+    }
+   },
+   "steadiness": {
+    "docs": 155,
+    "words": 150946,
+    "operator": {
+     "per_1k_words": 8.90384640864945,
+     "doc_share": 0.9548387096774194
+    },
+    "refusal": {
+     "per_1k_words": 3.4515654604958064,
+     "doc_share": 0.9161290322580645
+    },
+    "pressure": {
+     "per_1k_words": 12.150040411802896,
+     "doc_share": 1.0
+    },
+    "agent": {
+     "per_1k_words": 4.750043061757185,
+     "doc_share": 1.0
+    },
+    "harm": {
+     "per_1k_words": 9.40071283770355,
+     "doc_share": 0.9870967741935484
+    }
+   }
+  }
+ }
+}

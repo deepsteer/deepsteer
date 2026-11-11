@@ -21,9 +21,7 @@ from __future__ import annotations
 
 import glob
 import json
-import statistics
 import sys
-from collections import defaultdict
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -37,10 +35,10 @@ GEN = CST / "outputs/pilot_sdf2/gen"
 TAGS = ("d_neutral_1M", "d_doc_1M_k4", "d_chat_1M", "d_doc_03M", "d_raw", "d_doc_1M_draw2")
 
 
-def cell_rows(tag: str, condition: str, lab: dict) -> list[dict]:
+def cell_rows(tag: str, condition: str, lab: dict, gen: Path = GEN) -> list[dict]:
     """``sdf_reread_quick.rows`` for any condition (the operator or plain cell), clear items."""
     out = []
-    for f in sorted(glob.glob(str(GEN / tag / f"panel_{condition}_*.jsonl"))):
+    for f in sorted(glob.glob(str(gen / tag / f"panel_{condition}_*.jsonl"))):
         for x in open(f):
             r = json.loads(x)
             if r["condition"] != condition:

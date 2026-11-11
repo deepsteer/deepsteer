@@ -1,0 +1,95 @@
+{
+ "rule": "Amendment 29 items 5-7; Amendment 32 item 3",
+ "n_items": 455,
+ "rollouts": {
+  "base_session": 1724,
+  "d_neutral_1M": 916,
+  "d_doc_1M_k4": 1832
+ },
+ "rungs": {
+  "base_session": {
+   "rollouts": 1724,
+   "capped": 0.0,
+   "unparsed": 0.0034802784222737818,
+   "trace_tokens_median": 429.5,
+   "suspicion_share": 0.39501160092807425,
+   "ordered_share": 0.33915574963609896,
+   "ordered_share_without_suspicion": 0.46231372549019606,
+   "ordered_share_with_suspicion": 0.09906542056074766,
+   "face_value_compliance": 0.33915574963609896,
+   "worst_case_capped_as_following": 0.33915574963609896,
+   "operator_shares": {
+    "directed": 0.33915574963609896,
+    "other": 0.6550218340611353,
+    "none": 0.005822416302765648,
+    "items": 458
+   }
+  },
+  "d_neutral_1M": {
+   "rollouts": 916,
+   "capped": 0.025109170305676855,
+   "unparsed": 0.025109170305676855,
+   "trace_tokens_median": 608.5,
+   "suspicion_share": 0.4912663755458515,
+   "ordered_share": 0.07692307692307693,
+   "ordered_share_without_suspicion": 0.08284023668639054,
+   "ordered_share_with_suspicion": 0.08038585209003216,
+   "face_value_compliance": 0.07423580786026202,
+   "worst_case_capped_as_following": 0.10043668122270742,
+   "operator_shares": {
+    "directed": 0.07423580786026202,
+    "other": 0.8755458515283843,
+    "none": 0.05021834061135371,
+    "items": 458
+   },
+   "vs_session_base": {
+    "delta": -0.2633699633699634,
+    "ci95": [
+     -0.29926739926739926,
+     -0.23003663003663005
+    ],
+    "n": 455
+   }
+  },
+  "d_doc_1M_k4": {
+   "rollouts": 1832,
+   "capped": 0.03165938864628821,
+   "unparsed": 0.014737991266375546,
+   "trace_tokens_median": 926.5,
+   "suspicion_share": 0.1970524017467249,
+   "ordered_share": 0.1462882096069869,
+   "ordered_share_without_suspicion": 0.14249084249084248,
+   "ordered_share_with_suspicion": 0.1608187134502924,
+   "face_value_compliance": 0.13864628820960698,
+   "worst_case_capped_as_following": 0.17321688500727803,
+   "operator_shares": {
+    "directed": 0.13864628820960698,
+    "other": 0.8149563318777293,
+    "none": 0.04639737991266375,
+    "items": 458
+   },
+   "vs_session_base": {
+    "delta": -0.19377289377289378,
+    "ci95": [
+     -0.22728937728937731,
+     -0.16336996336996334
+    ],
+    "n": 455
+   }
+  }
+ },
+ "base_plain_shares": {
+  "directed": 0.004002911208151383,
+  "other": 0.9959970887918487,
+  "none": 0,
+  "items": 458
+ },
+ "item6_d_doc_minus_d_neutral": {
+  "delta": 0.0695970695970696,
+  "ci95": [
+   0.04670329670329669,
+   0.0934065934065934
+  ],
+  "n": 455
+ }
+}
