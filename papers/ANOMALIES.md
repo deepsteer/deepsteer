@@ -2657,3 +2657,14 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Discriminator.** Zero GPU: P-ctx-n's training set (`rung_training_table.json`: A0n's follow share on away orders 0.268 against A0s's 0.069) against its read; the empirical null of base reads (CST-A22, SD 0.013) for R_base.
 **Status.** open.
 **Thesis impact.** P-ctx's control moves the opposite way, so P-ctx's contrast with it (−0.325 [−0.362, −0.288]) is larger than its gain against A0; the move rule reads both.
+
+## CST-A34 (ledger) — P-ctx is non-specific on cell A′: it breaks rules that are right about twice as often as A0s does
+
+**Date.** 2026-11-11 (2-ctx's screen read, cell A′ at k 8; Amendment 35's request; `ctx_read.py`).
+**Observation.** Cell A′'s 51 rule-right originals, P(violating) of record (`s0a_reads.spec_rule`'s estimator): the 2-ctx session base 0.120, P-ctx 0.294, shift +0.174 [+0.118, +0.230] (MDE 0.081), entirely above Amendment 15's 0.03 bar: **non-specific**. P-ctx-n 0.091, shift −0.029 [−0.069, +0.005]: specific. A0s itself, in S0a, is non-specific too: +0.088 [+0.032, +0.147] against A0's 0.120. Second look at a coincidence: the 2-ctx base and S0a's saved A0 both read exactly 49 of 408 on these items; the rollouts are independent draws (different seeds; 10 of 816 texts share their first 200 characters), so the equality is the estimator's coarseness, not a copied read.
+**Type.** control-misbehavior (the specificity cell fails on the rung that carries most of the gain).
+**Appears in.** Amendments 15 and 20 (the specificity bar beside every arm); CST-A32.
+**Competing readings.** R_inherit_amplified: P-ctx distils A0s's disposition, including its cost on rule-right items, and the weights carry it further than the context did (+0.174 against +0.088). R_style: P-ctx's learned trace style (cite a constitution, deliberate at length; median trace 1,016 tokens) leads it to override rules generally, right or wrong, so its panel gain is partly a general rule-breaking tendency rather than targeted judgment. R_k8: A′ at k 8 on 51 items is a small cell (MDE 0.08); the shift is about two MDEs.
+**Discriminator.** The verification pod (Amendment 35): A0s in the same session separates R_inherit_amplified (P-ctx's A′ shift above A0s's in one session) from session drift; the second P-ctx draw's A′ read tests stability; `H1_held` (a different order structure) and the injected-order cell test whether P-ctx breaks rules or orders generally. Zero GPU now: A′'s twins (the harm-reversed items) on the same rollouts (`s0a_reads.forced`).
+**Status.** open.
+**Thesis impact.** Under R_inherit_amplified the in-context constitution's specificity cost is carried, and enlarged, by distillation, which bars scaling P-ctx on the panel gain alone; under R_style the panel gain overstates targeted judgment.
