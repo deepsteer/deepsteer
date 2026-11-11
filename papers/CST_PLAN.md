@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.27, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) and 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate), §13.** v0.1 was the draft for the
+Status: **v0.28, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) and 33 (the three shares' names; selection and comparison on different cells), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1931,3 +1931,26 @@ it is registered as 27. Pod 1 launches unchanged.
     four trainings about 3.0 h, parity and reads about 1.6 h, the content gate about 0.4 h. Then,
     only if it can finish by 6 h: D-neutral 1M's guard read on this pod's base (item 2); the
     adapters' plain cells.
+
+### Amendment 33 (2026-11-11; author, on Amendment 32's build; zero GPU; on origin before the recomputes it names and before the kind-split pod's card)
+
+1. **The kind-split pod:** the operator cell only is accepted. If time remains, D-neutral 1M's
+   injected-order read runs before any plain cell (the runner's order as built). The added fourth
+   branches (Amendment 32 items 2 and 8) and "falls means rises" for injected orders are accepted.
+2. **Naming (amends Amendment 32 item 3):** three shares per rung, among rollouts with an option
+   (capped and unparsed out, reported beside as "none"), scenario-averaged: **ordered** (the
+   operator's option, `ordered_option`), **directed** (the option of record the document directs,
+   `directed_option_of_record`), and **other** (neither). "Directed" never means the ordered option.
+   Fixed in `sdf2_quick.py`, `kinds_read.py`, CST-A30 and the state log. The lead's read of the
+   base: 0.339 / 0.548 / 0.113 under the order, 0.004 / 0.866 / 0.130 on the plain cell.
+3. **The lead's 103 items:** the clear items where A0's directed share on the **user** cell is at
+   most 0.5 (rollouts with an option, not capped); on them, A0s minus A0 on the **plain** cell's
+   directed share, scenario bootstrap. Selection and comparison use different cells. Selecting where
+   A0 never takes the option and comparing on the same rollouts is biased upward by construction:
+   the 177-item read (selected on the plain cell, compared on it) is reported with A0n minus A0 on
+   the same items beside it as its null, and the selecting cell stated (`content_null_reads.py`).
+4. **The content gate, the same rule:** read on all 84, and separately on the items where A0's
+   first two rollouts (k 0 and 1) do not take the directed option, with A0's last two rollouts
+   (k 2 and 3) as the reference. A0's directed share on all 84 is reported first. *Bar, flagged:*
+   at an A0 directed share of 0.90 or more on all 84 the gate is near ceiling and reported as
+   uninformative, whatever its CI.
