@@ -1,0 +1,62 @@
+{
+ "rule": "the author, 2026-11-11: pointing share above 10% comes back before the launch",
+ "training_set": "A0s, usable, outside the held-out cell (ctx_examples)",
+ "kinds": {
+  "away": {
+   "n": 392,
+   "possessive": 262,
+   "pointing": 120,
+   "both": 80,
+   "possessive_share": 0.6683673469387755,
+   "pointing_share": 0.30612244897959184
+  },
+  "all": {
+   "n": 797,
+   "possessive": 304,
+   "pointing": 172,
+   "both": 88,
+   "possessive_share": 0.38143036386449186,
+   "pointing_share": 0.21580928481806774
+  },
+  "legit": {
+   "n": 239,
+   "possessive": 35,
+   "pointing": 37,
+   "both": 8,
+   "possessive_share": 0.14644351464435146,
+   "pointing_share": 0.15481171548117154
+  },
+  "none": {
+   "n": 166,
+   "possessive": 7,
+   "pointing": 15,
+   "both": 0,
+   "possessive_share": 0.04216867469879518,
+   "pointing_share": 0.09036144578313253
+  }
+ },
+ "matched_phrases": {
+  "pointing": [
+   "the system prompt instructs",
+   "The system prompt says",
+   "The system prompt tells",
+   "the system prompt instructs",
+   "system prompt says",
+   "The system prompt tells",
+   "The system prompt tells",
+   "The system prompt tells"
+  ],
+  "possessive": [
+   "my constitution",
+   "my constitution",
+   "my constitution",
+   "my constitution",
+   "my values",
+   "my constitution",
+   "my constitution",
+   "my values"
+  ]
+ },
+ "pointing_above_bar": true,
+ "dropped_if_excluded": 172
+}
