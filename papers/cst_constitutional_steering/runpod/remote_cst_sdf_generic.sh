@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Remote runner for tomorrow's SDF pod, the generic branch of Amendment 29 item 6 (the author's trimmed
-# ruling: no recovery anywhere; single model). One A100-80GB, priced at about 4.5 A100-h (5.0 with the D-neutral 1M re-read) (watchdog 10.5 h).
+# ruling: no recovery anywhere; single model). One A100-80GB, priced at about 5.6 A100-h (with Amendment 30 item 1's reproduction check) (watchdog 10.5 h).
 # Orion launches with CST_SESSION=1 (launch_cst_sdf_generic.sh) the night item 6's control lands.
 # Writes under outputs/pilot_sdf3 (its own folder).
 set -uo pipefail
@@ -71,6 +71,9 @@ EOF
 # ---- synced inputs: D-doc 0.3M's adapter and record, D-neutral's corpus ----
 [ -f "$C/pilot_sdf/adapters/d_doc/300000/adapter_model.safetensors" ] || { echo "BAIL: D-doc 0.3M did not sync"; exit 1; }
 cp "$C/pilot_sdf/train_d_doc.json" "$OUT/" || { echo "BAIL: train_d_doc.json did not sync"; exit 1; }
+# the saved D-neutral 1M, for Amendment 30 item 1's reproduction check against the retrained endpoint
+[ -f "$C/pilot_sdf/adapters/d_neutral/1e+06/adapter_model.safetensors" ] || { echo "BAIL: D-neutral 1M did not sync"; exit 1; }
+cp "$C/pilot_sdf/train_d_neutral.json" "$OUT/" || { echo "BAIL: train_d_neutral.json did not sync"; exit 1; }
 mkdir -p "$OUT/corpus/d_neutral"
 cp "$C"/pilot_sdf/corpus/d_neutral/chunk_*.jsonl "$OUT/corpus/d_neutral/" 2>/dev/null || { echo "BAIL: D-neutral's corpus did not sync"; exit 1; }
 [ -f "$C/pressure/scenarios.json" ] || { echo "BAIL: the pressure scenarios did not sync"; exit 1; }
@@ -104,13 +107,15 @@ python3 -c "import json,sys; sys.exit(0 if json.load(open('$OUT/smoke_serve.json
 echo ">> smoke pass done at $(hours) h"
 
 run --stage train_dose --rung d_neutral_sched1M
-run --stage parity_hf --tags d_doc_03M,d_neutral_03M,d_neutral_1M_draw2
+run --stage parity_hf --tags d_doc_03M,d_neutral_03M,d_neutral_1M_draw2,d_neutral_1M
 run --stage read --tags d_doc_03M,d_neutral_03M
 run --stage capability --tags base,d_doc_03M,d_neutral_03M
 run --stage heldout --tags base,d_doc_03M,d_neutral_03M
 run --stage heldout_act
 run --stage guard --tags base,d_doc_03M,d_neutral_03M
 run --stage guard_act
-if under_price; then run --stage read --tags d_neutral_1M_draw2; else echo ">> over price: D-neutral 1M re-read skipped"; fi
+# Amendment 30 item 1: the reproduction check, both 1M adapters on this session's base
+run --stage read --tags d_neutral_1M_draw2,d_neutral_1M
+run --stage repro --tags d_neutral_1M,d_neutral_1M_draw2
 echo ">> done at $(hours) h"
 kill $WATCHDOG 2>/dev/null

@@ -41,33 +41,33 @@ gpt-oss: A0n bulk scoring and the CST-A15 cut stage (two cuts, splices, retests)
 
 ## Spend ledger (Amendment 29; the author, 2026-11-11)
 
-A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per pod for provisioning, sync and download that the logs do not capture (estimated). The re-read pod is billed to its teardown (it sat idle 2.6 h after its runner died). Dollars at the plan's assumed $1.6 and $2.0 per A100-80GB hour (`CST_PLAN.md` §8: "author to confirm the current rate"); a confirmed rate replaces both columns.
+A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per pod for provisioning, sync and download that the logs do not capture (estimated). The re-read pod is billed to its teardown (it sat idle 2.6 h after its runner died). Dollars at the rate of record, $1.80 per A100-80GB hour (Amendment 30).
 
-| date | pod | session h | billed h | $ at 1.6 | $ at 2.0 | running h |
+| date | pod | session h | billed h | $ at 1.80 | running h | running $ |
 |---|---|---|---|---|---|---|
-| 11-07 | VALIDATE run 1 (validate_run1/session_validate.log) | 0.86 | 1.01 | 2 | 2 | 1.0 |
-| 11-07 | VALIDATE (validate/session_validate.log) | 1.93 | 2.08 | 3 | 4 | 3.1 |
-| 11-07 | probe pod (probe/session_probe.log) | 1.25 | 1.40 | 2 | 3 | 4.5 |
-| 11-07 | scorer (effort high) (scorer_high/session_scorer_high.log) | 1.48 | 1.63 | 3 | 3 | 6.1 |
-| 11-08 | S0a session 1 | 3.71 | 3.86 | 6 | 8 | 10.0 |
-| 11-08 | S0a session 2, first pod (A0s saturated, stopped) | 1.25 | 1.40 | 2 | 3 | 11.4 |
-| 11-08 | S0a session 2, relaunch | 8.30 | 8.45 | 14 | 17 | 19.8 |
-| 11-08 | S0a session 3 | 4.53 | 4.68 | 7 | 9 | 24.5 |
-| 11-08 | S0a session 4 | 1.48 | 1.63 | 3 | 3 | 26.1 |
-| 11-09 | S0b-1 | 5.11 | 5.26 | 8 | 11 | 31.4 |
-| 11-10 | pilot SDF, first (D-doc gate bail) (Amendment 24) | 0.38 | 0.53 | 1 | 1 | 31.9 |
-| 11-10 | pilot DPO, first (engine bail) (one engine per process) | 1.76 | 1.91 | 3 | 4 | 33.8 |
-| 11-10 | pilot SDF, relaunch (base-model reads, CST-A22) | 11.26 | 11.41 | 18 | 23 | 45.3 |
-| 11-10 | pilot DPO, relaunch (filter gate bail) (CST-A21) | 2.30 | 2.45 | 4 | 5 | 47.7 |
-| 11-10 | parity mini-pod (CST-A22) | 0.23 | 0.38 | 1 | 1 | 48.1 |
-| 11-10 | pressure 2-roll (the action read failed at 6.2 h) | 6.20 | 6.35 | 10 | 13 | 54.4 |
-| 11-10 | SDF re-read (pod 1) (runner died at 10.0 h; idle until teardown 05:59Z) | 10.03 | 12.62 | 20 | 25 | 67.1 |
-| 11-11 | pressure 2-act | 0.34 | 0.49 | 1 | 1 | 67.5 |
-| 11-11 | pressure 2-ctx, first (smoke bail) (the top-20 letters) | 0.28 | 0.43 | 1 | 1 | 68.0 |
-| 11-11 | pressure 2-dpo, first (stopped minutes in) (no log downloaded; estimated) | 0.10 | 0.25 | 0 | 0 | 68.2 |
-| 11-11 | pressure 2-dpo, relaunch | 3.64 | 3.79 | 6 | 8 | 72.0 |
+| 11-07 | VALIDATE run 1 (validate_run1/session_validate.log) | 0.86 | 1.01 | 2 | 1.0 | 2 |
+| 11-07 | VALIDATE (validate/session_validate.log) | 1.93 | 2.08 | 4 | 3.1 | 6 |
+| 11-07 | probe pod (probe/session_probe.log) | 1.25 | 1.40 | 3 | 4.5 | 8 |
+| 11-07 | scorer (effort high) (scorer_high/session_scorer_high.log) | 1.48 | 1.63 | 3 | 6.1 | 11 |
+| 11-08 | S0a session 1 | 3.71 | 3.86 | 7 | 10.0 | 18 |
+| 11-08 | S0a session 2, first pod (A0s saturated, stopped) | 1.25 | 1.40 | 3 | 11.4 | 21 |
+| 11-08 | S0a session 2, relaunch | 8.30 | 8.45 | 15 | 19.8 | 36 |
+| 11-08 | S0a session 3 | 4.53 | 4.68 | 8 | 24.5 | 44 |
+| 11-08 | S0a session 4 | 1.48 | 1.63 | 3 | 26.1 | 47 |
+| 11-09 | S0b-1 | 5.11 | 5.26 | 9 | 31.4 | 57 |
+| 11-10 | pilot SDF, first (D-doc gate bail) (Amendment 24) | 0.38 | 0.53 | 1 | 31.9 | 57 |
+| 11-10 | pilot DPO, first (engine bail) (one engine per process) | 1.76 | 1.91 | 3 | 33.8 | 61 |
+| 11-10 | pilot SDF, relaunch (base-model reads, CST-A22) | 11.26 | 11.41 | 21 | 45.3 | 82 |
+| 11-10 | pilot DPO, relaunch (filter gate bail) (CST-A21) | 2.30 | 2.45 | 4 | 47.7 | 86 |
+| 11-10 | parity mini-pod (CST-A22) | 0.23 | 0.38 | 1 | 48.1 | 87 |
+| 11-10 | pressure 2-roll (the action read failed at 6.2 h) | 6.20 | 6.35 | 11 | 54.4 | 98 |
+| 11-10 | SDF re-read (pod 1) (runner died at 10.0 h; idle until teardown 05:59Z) | 10.03 | 12.62 | 23 | 67.1 | 121 |
+| 11-11 | pressure 2-act | 0.34 | 0.49 | 1 | 67.5 | 122 |
+| 11-11 | pressure 2-ctx, first (smoke bail) (the top-20 letters) | 0.28 | 0.43 | 1 | 68.0 | 122 |
+| 11-11 | pressure 2-dpo, first (stopped minutes in) (no log downloaded; estimated) | 0.10 | 0.25 | 0 | 68.2 | 123 |
+| 11-11 | pressure 2-dpo, relaunch | 3.64 | 3.79 | 7 | 72.0 | 130 |
 
-**Total to 2026-11-11 (before 2-ctx and SDF pod 2): 72.0 A100-h, $115 to $144.** Envelope of record 150 A100-h ($500 to $1,000 cap): **78.0 A100-h remain**, $356 to $885 under the dollar cap. Today's two pods are priced at about 6.5 (2-ctx) and 10.3 (SDF pod 2) A100-h, which would leave about 61.2.
+**Total to 2026-11-11 (before 2-ctx and SDF pod 2): 72.0 A100-h, $130.** Envelope of record 277 A100-h under the $500 cap (Amendment 30): **205.0 A100-h ($370) remain.** Today's two pods are priced at about 6.5 (2-ctx) and 10.3 (SDF pod 2) A100-h ($30), which would leave about 188 A100-h ($340); tomorrow's content branch at most 10.3 h, the generic branch about 5.6 h.
 
 ## Implementation log (Amendment 20 item 8: one line each)
 

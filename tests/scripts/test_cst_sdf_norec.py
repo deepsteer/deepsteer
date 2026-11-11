@@ -114,3 +114,7 @@ def test_dry_session_runs_every_stage(tmp_path, monkeypatch):
         r = Q.stage_train_dose(tmp_path, rung, True)
         assert len(r["adapters"]) == 2 and r["recovery"] is None
         assert Q.adapter_dir(tmp_path, hi) != Q.adapter_dir(tmp_path, lo)
+    # Amendment 30 item 1: the retrained D-neutral 1M endpoint against the saved D-neutral 1M
+    PL.hf_letters(tmp_path, Q.items(tmp_path, ["d_neutral_1M_draw2"]), True)
+    rp = Q.stage_repro(tmp_path, "d_neutral_1M", "d_neutral_1M_draw2")
+    assert rp["tv_a_vs_b"] >= 0 and {"shift_a", "shift_b"} <= set(rp)

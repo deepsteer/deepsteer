@@ -320,12 +320,26 @@ def stage_train_dose(out: Path, rung: str, dry: bool) -> dict:
     return rec
 
 
+def stage_repro(out: Path, a: str, b: str) -> dict:
+    """Amendment 30 item 1's reproduction check on the dose-0 letters: TV between two adapters' HF
+    attached letters (here the saved D-neutral 1M and its retrained 1M endpoint), beside each
+    one's shift from the base; ``repro_<a>_vs_<b>.json``."""
+    hfa = json.loads((out / "parity" / f"hf_{a}.json").read_text())["attached"]
+    hfb = json.loads((out / "parity" / f"hf_{b}.json").read_text())["attached"]
+    base = json.loads((out / "parity" / "hf_base.json").read_text())["base"]
+    rec = {"rule": "Amendment 30 item 1", "a": a, "b": b, "tv_a_vs_b": PL.tv(hfa, hfb),
+           "shift_a": PL.tv(base, hfa), "shift_b": PL.tv(base, hfb)}
+    _w(out, f"repro_{a}_vs_{b}", rec)
+    print(">> repro:", json.dumps(rec))
+    return rec
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True,
                     choices=("smoke_hf", "smoke_serve", "parity_hf", "read", "capability",
                              "heldout", "heldout_act", "guard", "guard_act", "train_draw2",
-                             "train_dose"))
+                             "train_dose", "repro"))
     ap.add_argument("--rung", choices=tuple(DOSE_RUNGS), help="train_dose: tomorrow's rungs")
     ap.add_argument("--smoke-arm", default="d_doc", choices=("d_doc", "d_neutral"),
                     help="smoke_hf: the corpus arm the smoke step packs")
@@ -340,6 +354,8 @@ def main() -> None:
     tags = [t for t in a.tags.split(",") if t]
     if a.stage == "smoke_hf":
         stage_smoke_hf(a.out, a.dry_run, a.smoke_arm)
+    elif a.stage == "repro":  # --tags a,b
+        stage_repro(a.out, *tags[:2])
     elif a.stage == "train_dose":
         if a.rung is None:
             ap.error("--stage train_dose needs --rung")

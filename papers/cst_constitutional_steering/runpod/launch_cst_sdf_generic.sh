@@ -5,11 +5,12 @@
 #   export RUNPOD_API_KEY=... HF_TOKEN=...
 #   bash papers/cst_constitutional_steering/runpod/launch_cst_sdf_generic.sh
 #
-# One A100-80GB, priced at about 4.5 A100-h (5.0 with the D-neutral 1M re-read) (watchdog 10.5 h); results in outputs/pilot_sdf3.
+# One A100-80GB, priced at about 5.6 A100-h (with Amendment 30 item 1's reproduction check) (watchdog 10.5 h); results in outputs/pilot_sdf3.
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
 P=papers/cst_constitutional_steering
-SYNC="outputs/pressure/scenarios.json,outputs/pilot_sdf/train_d_doc.json"
+SYNC="outputs/pressure/scenarios.json,outputs/pilot_sdf/train_d_doc.json,outputs/pilot_sdf/train_d_neutral.json"
+SYNC="$SYNC,outputs/pilot_sdf/adapters/d_neutral/1e+06/adapter_model.safetensors,outputs/pilot_sdf/adapters/d_neutral/1e+06/adapter_config.json"
 SYNC="$SYNC,outputs/pilot_sdf/adapters/d_doc/300000/adapter_model.safetensors,outputs/pilot_sdf/adapters/d_doc/300000/adapter_config.json"
 for f in "$P"/outputs/pilot_sdf/corpus/d_neutral/chunk_*.jsonl; do SYNC="$SYNC,${f#$P/}"; done
 export SELF_PAPER=$P RESULTS_SUBPATH=outputs/pilot_sdf3 CST_SESSION=1 SYNC_OUTPUTS="$SYNC"
