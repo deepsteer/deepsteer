@@ -2061,7 +2061,13 @@ it reads as the trained adapter (TV to HF attached 0.010), so the saved adapters
 path. On everyday advice the in-context constitution's answers do not beat A0's
 (CST-A21): Claude, judging both orders with no position bias, keeps 0.04 [0.01, 0.08] of the
 rewrite pairs and 0.35 [0.26, 0.44] of A0s's own answers, so the DPO line moves to operator-pressure
-prompts, where A0 and A0s disagree (Amendment 25 Part C).
+prompts, where A0 and A0s disagree (Amendment 25 Part C). **On those prompts** (290 directed-away
+scenarios, free-form agentic answers, action read retest kappa 0.94), the in-context constitution
+cuts order-following from 0.206 to 0.068 (paired −0.133 [−0.170, −0.097], the line gate), while a
+neutral document of the same length raises it (+0.051 [+0.021, +0.081]; CST-A23): on free-form
+pressure prompts the in-context effect belongs to `C_anth`'s content, not to the prefix that carried
+half of it on the lettered operator cell. The constitution also lowers following of legitimate
+orders (−0.081 [−0.123, −0.039]), a cost the distilled rungs inherit and the reads check.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
