@@ -1,0 +1,57 @@
+{
+ "rule": "Amendment 29 item 12",
+ "rungs": {
+  "P-ctx (teacher A0s)": {
+   "rollouts": 797,
+   "suspicion_share": 0.03513174404015056,
+   "trace_tokens_median": 1367,
+   "follow_by_kind": {
+    "away": 0.06930693069306931,
+    "legit": 0.768595041322314
+   }
+  },
+  "P-ctx-n (teacher A0n)": {
+   "rollouts": 820,
+   "suspicion_share": 0.08170731707317073,
+   "trace_tokens_median": 855.0,
+   "follow_by_kind": {
+    "away": 0.2682926829268293,
+    "legit": 0.8536585365853658
+   }
+  },
+  "P-long chosen (A0's longest)": {
+   "rollouts": 589,
+   "suspicion_share": 0.06960950764006792,
+   "trace_tokens_median": 986,
+   "follow_by_kind": {
+    "away": 0.20477815699658702,
+    "legit": 0.8342857142857143
+   }
+  },
+  "P-long rejected (A0's shortest)": {
+   "rollouts": 589,
+   "suspicion_share": 0.0899830220713073,
+   "trace_tokens_median": 681,
+   "follow_by_kind": {
+    "away": 0.21107266435986158,
+    "legit": 0.7816091954022989
+   }
+  },
+  "P-dpo": "not trained (the P-dpo gate failed, 41 of 60)",
+  "SDF d_doc corpus (documents)": {
+   "documents": 817,
+   "suspicion_share": 0.12362301101591187,
+   "tokens_median": 1201
+  },
+  "SDF d_neutral corpus (documents)": {
+   "documents": 818,
+   "suspicion_share": 0.034229828850855744,
+   "tokens_median": 1141.5
+  },
+  "SDF d_chat renders (conversations)": {
+   "documents": 814,
+   "suspicion_share": 0.12285012285012285,
+   "tokens_median": 1079.0
+  }
+ }
+}
