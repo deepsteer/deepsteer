@@ -103,9 +103,9 @@ def letters_missing(rows: list[list[float]]) -> int:
     return sum(sum(math.exp(v) for v in r) == 0 for r in rows)
 
 
-def letter_ranks(model, prompts, lids) -> list[int]:
-    """Per prompt, the worst rank of a letter in the full next-token distribution (0 = top): the
-    served side sees a letter only within the top ``SERVED_TOPK``."""
+def letter_ranks(model, prompts, lids) -> list[list[int]]:
+    """Per prompt, each letter's rank in the full next-token distribution (0 = top): the served side
+    sees a letter only within the top ``SERVED_TOPK``."""
     import torch
 
     out = []
@@ -113,8 +113,18 @@ def letter_ranks(model, prompts, lids) -> list[int]:
         for p in prompts:
             x = torch.tensor([p], device=model.model.device)
             lo = model.model(input_ids=x).logits[0, -1].float()
-            out.append(max(int((lo > lo[i]).sum()) for i in lids))
+            out.append([int((lo > lo[i]).sum()) for i in lids])
     return out
+
+
+def served_truncation(letters: list[list[float]], ranks: list[list[int]],
+                      k: int = SERVED_TOPK) -> tuple[float, int]:
+    """What the served top-k does to an HF letter read: the letters outside the top k read -1e9 (as
+    vLLM returns them). Returns (TV between the truncated and the full read, prompts left with no
+    letter). A low-probability letter outside the top k costs almost nothing; a prompt with no
+    letter left cannot be renormalized (2-ctx's first smoke pass)."""
+    cut = [[v if r < k else -1e9 for v, r in zip(row, rk)] for row, rk in zip(letters, ranks)]
+    return tv(cut, letters), letters_missing(cut)
 
 
 PARITY_ATTACHED_MAX, PARITY_BASE_MIN = 0.2, 0.5  # Amendment 25 A4, fractions of TV(base, attached)
@@ -192,6 +202,7 @@ LEGIT_CHECK_N, LEGIT_FLOOR = 20, 0.10  # rider d's check; floor not registered (
 
 SMOKE_MIN_TV = 0.15  # the smoke adapter's TV(base, attached) before its parity read (27B)
 SMOKE_MIN_TV_DRY = 0.03  # the tiny model's near-uniform letters saturate near 0.07
+SMOKE_MAX_DISTORTION = 0.02  # the top-20 truncation's TV cost (the gate allows 0.03 at 0.15)
 
 
 def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"):
@@ -207,9 +218,13 @@ def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"
     prompts, lids = parity_prompts(dry)
     with OL.adapter_disabled(wb):
         base = _letter_lp(wb, prompts, lids)
-    scale, ref, rank, out_of_top = (0.5 if dry else 0.005), 0.0, 0, False
+    # the served side reads the top 20 log-probs: a low-probability letter outside them drops out
+    # at little cost, but a prompt left with no letter cannot be renormalized, so the adapter must
+    # keep the truncation's distortion small and leave every prompt a letter (the first smoke pass
+    # required all five letters in the top 20, which the base itself does not meet: 2026-11-11)
+    scale, ref, distortion, missing = (0.5 if dry else 0.005), 0.0, 0.0, 0
     bar = SMOKE_MIN_TV_DRY if dry else SMOKE_MIN_TV
-    for _ in range(16):
+    for _ in range(20):
         torch.manual_seed(0)
         with torch.no_grad():
             for name, prm in wb.model.named_parameters():
@@ -217,14 +232,16 @@ def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"
                     prm.normal_(0, scale)
         attached = _letter_lp(wb, prompts, lids)
         ref = tv(base, attached)
-        rank = max(letter_ranks(wb, prompts, lids))
-        out_of_top = not dry and rank >= SERVED_TOPK  # the tiny model's letters sit deep
-        if ref >= bar or out_of_top:
+        if not dry:  # the tiny model's near-uniform letters sit deep in its ranks
+            distortion, missing = served_truncation(attached, letter_ranks(wb, prompts, lids))
+        unservable = missing > 0 or distortion > SMOKE_MAX_DISTORTION
+        if ref >= bar or unservable:
             break
-        scale *= 1.5
-    if ref < bar or out_of_top:
-        raise SystemExit(f"BAIL: smoke: no random adapter reached TV {bar} with every letter in "
-                         f"the served top {SERVED_TOPK} (TV {ref:.3f}, worst rank {rank})")
+        scale *= 1.4
+    if ref < bar or unservable:
+        raise SystemExit(f"BAIL: smoke: no random adapter reached TV {bar} with the served top "
+                         f"{SERVED_TOPK} still reading it (TV {ref:.3f}, truncation distortion "
+                         f"{distortion:.4f}, prompts without a letter {missing})")
     adir = out / "smoke" / "adapter"
     wb.model.save_pretrained(str(adir))
     par = out / "parity"
@@ -235,7 +252,8 @@ def smoke_random_adapter(wb, path: str, out: Path, dry: bool, tag: str = "smoke"
         write_once(par / "hf_base.json", {"letter_ids": lids, "class": type(wb.model).__name__,
                                           "base": base, "via": "smoke, adapter disabled"})
     write_once(par / f"hf_{tag}.json", {"tag": tag, "adapter": str(adir), "attached": attached})
-    return {"scale": scale, "tv_base_vs_attached": ref, "worst_letter_rank": rank}, adir
+    return {"scale": scale, "tv_base_vs_attached": ref, "served_truncation_tv": distortion,
+            "prompts_without_a_served_letter": missing}, adir
 
 
 def smoke_serve(out: Path, dry: bool, tag: str = "smoke") -> dict:

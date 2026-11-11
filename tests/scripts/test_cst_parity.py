@@ -193,3 +193,15 @@ def test_floor_aware_gate_passes_a_served_small_shift_adapter():
     tiny = PL.parity_record("t", _two(0.51), _two(0.52), base, served_base)  # shift 0.02 < 3 floor
     assert tiny["parity_unresolved"] and tiny["read"]  # read, marked: only a move is reportable
 
+
+def test_served_truncation_tolerates_a_deep_letter_but_not_an_empty_prompt():
+    # most probable failure (2-ctx and SDF pod 2, 2026-11-11): the smoke search required all five
+    # letters inside the served top 20, which the base itself does not meet (a letter at rank 53),
+    # so the search stopped at its first scale; only a prompt with no letter left breaks the read
+    row = _lp([0.6, 0.3, 0.0999, 0.00005, 0.00005])
+    ranks = [[0, 1, 4, 53, 76]] * 4
+    dist, missing = PL.served_truncation([row] * 4, ranks)
+    assert missing == 0 and dist < 1e-3  # two deep, tiny letters drop out at almost no cost
+    dist, missing = PL.served_truncation([row] * 4, [[25, 30, 40, 53, 76]] * 4)
+    assert missing == 4 and dist == 1.0  # no letter left: the gate cannot read the prompt
+
