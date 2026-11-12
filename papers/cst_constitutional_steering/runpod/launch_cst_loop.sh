@@ -13,7 +13,7 @@ cd "$(dirname "$0")/../../.."
 P=papers/cst_constitutional_steering
 O=outputs/pressure
 [ -f "$P/data/loop_cache_v1.json" ] || { echo "BAIL: the cache record is missing"; exit 1; }
-SYNC="outputs/_sync/C_anth.txt"
+SYNC="outputs/_sync/C_anth.txt,outputs/_sync/eval_8gram_hashes_v1.npy"  # the eval index: write_kind's check
 for f in scenarios.json act.jsonl act.json contrast.json train_p_ctx.json; do SYNC="$SYNC,$O/$f"; done
 for f in "$P/$O"/roll/a0s/chunk_*.jsonl; do SYNC="$SYNC,${f#$P/}"; done
 d=$(python3 -c "import json; p=list(json.load(open('$P/$O/train_p_ctx.json'))['adapters'].values())[-1]; print(p.split('/papers/cst_constitutional_steering/')[1])")

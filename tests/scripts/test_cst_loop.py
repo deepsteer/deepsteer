@@ -134,3 +134,19 @@ def test_dry_session_runs_every_stage_in_order(tmp_path, monkeypatch):
 
     rep = LR.write(tmp_path)
     assert (tmp_path / "report.md").exists() and set(tags) <= set(rep["tags"])
+
+
+def test_card_syncs_every_gitignored_input_the_pod_reads():
+    # most probable failure (the loop pod's first launch): write_kind read the eval 8-gram index
+    # from outputs/_sync, which the card did not sync; the dry path skips the index, so only the
+    # card and the runner can be checked
+    import re
+
+    cst = ROOT / "papers/cst_constitutional_steering"
+    src = (cst / "scripts/cst_loop_pod.py").read_text()
+    names = set(re.findall(r'CONST_DIR / "([^"]+)"', src)) | {"C_anth.txt"}
+    card = (cst / "runpod/launch_cst_loop.sh").read_text()
+    runner = (cst / "runpod/remote_cst_loop.sh").read_text()
+    assert "eval_8gram_hashes_v1.npy" in names
+    for n in names:
+        assert f"outputs/_sync/{n}" in card and n in runner, n

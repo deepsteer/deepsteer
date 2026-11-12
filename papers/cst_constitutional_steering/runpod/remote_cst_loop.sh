@@ -71,7 +71,9 @@ EOF
 # ---- synced inputs: the cache (2-roll's scenarios, labels, contrast and A0s rollouts), 2-ctx's
 # P-ctx record and adapter (the candidate of record), S0a's cell A' rollouts (the teacher's A'
 # shift), C_anth, the pressure scenarios (the guard cell) ----
-[ -f "$CST_CONST_DIR/C_anth.txt" ] || { echo "BAIL: C_anth did not sync"; exit 1; }
+for f in C_anth.txt eval_8gram_hashes_v1.npy; do  # the eval index: write_kind's 8-gram check
+  [ -f "$CST_CONST_DIR/$f" ] || { echo "BAIL: $f did not sync"; exit 1; }
+done
 for f in scenarios.json act.jsonl act.json contrast.json train_p_ctx.json; do
   cp "$C/pressure/$f" "$OUT/" || { echo "BAIL: $f did not sync"; exit 1; }
 done
