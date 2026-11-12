@@ -68,8 +68,14 @@ A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per
 | 11-11 | pressure 2-dpo, relaunch | 3.64 | 3.79 | 7 | 72.0 | 130 |
 | 11-11 | pressure 2-ctx, second (smoke bail: the top-20 rule) | 0.28 | 0.43 | 1 | 72.4 | 130 |
 | 11-11 | SDF pod 2, first (smoke bail: the top-20 rule) | 0.35 | 0.50 | 1 | 72.9 | 131 |
+| 11-11 | pressure 2-ctx, third (smoke bail: the scale search overshot) | 0.23 | 0.38 | 1 | 73.3 | 132 |
+| 11-11 | pressure 2-ctx, fourth (smoke bail: served parity on a collapse edge, CST-A29) | 0.43 | 0.58 | 1 | 73.9 | 133 |
+| 11-11 | pressure 2-ctx, fifth (complete) | 6.61 | 6.76 | 12 | 80.7 | 145 |
+| 11-11 | SDF pod 2, relaunch (complete to 8.55 h of reads; corpus continuation to 10.3 h, projected) | 10.30 | 10.45 | 19 | 91.2 | 164 |
+| 11-11 | kind-split pod, first (runner input bail) | 0.08 | 0.23 | 0 | 91.4 | 165 |
+| 11-11 | kind-split pod, relaunch (complete) | 4.66 | 4.81 | 9 | 96.2 | 173 |
 
-**Total to 2026-11-11 (before the relaunched 2-ctx and SDF pod 2): 72.9 A100-h, $131.** Envelope of record 277 A100-h under the $500 cap (Amendment 30): **204.1 A100-h ($369) remain.** Today's two pods are priced at about 6.5 (2-ctx) and 10.3 (SDF pod 2) A100-h ($30), which would leave about 188 A100-h ($340); tomorrow's content branch at most 10.3 h, the generic branch about 5.6 h.
+**Total to 2026-11-11, with SDF pod 2 projected to its 10.3 h stop: 96.2 A100-h, $173.** (Before the relaunched 2-ctx and SDF pod 2: 72.9 A100-h, $131.) Envelope of record 277 A100-h under the $500 cap (Amendment 30): **180.8 A100-h ($325) remain.** The P-ctx verification pod (Amendment 35) is priced at or under 10.5 A100-h ($19), which would leave about 170 A100-h. Tomorrow's content and generic branches are withdrawn (Amendment 34).
 
 ## Implementation log (Amendment 20 item 8: one line each)
 
