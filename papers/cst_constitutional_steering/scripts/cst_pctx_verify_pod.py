@@ -2,7 +2,7 @@
 """The P-ctx verification pod (CST Amendment 35), on one session base.
 
     cst_pctx_verify_pod.py --stage smoke_hf|smoke_serve|parity_hf|session|read_op|read|parity_only
-        |capability|guard|guard_act|h1|train_draw2|train_half|heldout|heldout_act --out DIR
+        |capability|guard|guard_act|h1|train_draw2|train_filtered|heldout|heldout_act --out DIR
 
 1. ``session``: one LoRA engine reads the base's screen read (operator and plain at k 2 on the
    458 clear items, cell A′ at k 8, the legitimate cell at k 4; ``gen/base_session``) and A0s on
@@ -13,8 +13,11 @@
    P-ctx-n); ``h1`` (`H1_held`'s operator and plain cells at k 4 on the base and P-ctx).
 3. ``train_draw2``: P-ctx's training set, seed 1, a seeded new example order (``p_ctx_draw2``);
    ``read`` its screen read; ``heldout``/``heldout_act`` on the base, P-ctx and the draw.
-4. ``train_half``: a seeded half of P-ctx's training rollouts, seed 0 (``p_ctx_half``), and its
-   screen read.
+4. ``train_filtered`` (Amendment 36 item 3a): P-ctx's training rollouts minus those whose action
+   contradicts the scenario's kind by the saved action read (A0s following an away order, or not
+   following a legitimate one; unclear kept), seed 0 (``p_ctx_f``), the count dropped by kind in
+   its record; its screen read. The held-out cell is read at k 4 (Amendment 36 item 3b) on the
+   base, the second draw and P-ctx-f.
 
 The smoke pass, training data, held-out cell and parity come from `cst_pressure_train_pod.py`;
 capability and the guard cell from `cst_sdf_norec_pod.py`, pointed at this pod's tags.
@@ -36,8 +39,9 @@ import cst_sdf_norec_pod as Q  # noqa: E402
 import pilot_pod_lib as PL  # noqa: E402
 
 CAP_N = 800  # Amendment 35 item 2: the whole capability pool
+T.HELDOUT_K = 4  # Amendment 36 item 3b: the held-out cell at k 4 on this pod
 H1_K = {"h1_operator": 4, "h1_plain": 4}
-DRAW2_ORDER, HALF_SEED = "20261111|cst_pctx_draw2", "20261111|cst_pctx_half"
+DRAW2_ORDER = "20261111|cst_pctx_draw2"
 
 
 def items(out: Path, tags: list[str]) -> list[tuple[str, str | None]]:
@@ -90,10 +94,36 @@ def stage_h1(out: Path, tags: list[str], dry: bool) -> dict:
     return done
 
 
+def filtered_examples(out: Path, render) -> tuple[list, dict]:
+    """Amendment 36 item 3a: `cst_pressure_train_pod.ctx_examples`'s A0s rows minus those whose
+    action contradicts the scenario's kind (away and followed; legitimate and not followed) by the
+    saved action read; unclear and unlabeled rows are kept. Returns (examples, the counts)."""
+    import pilot_train as PT
+
+    sc = {s["cell_id"]: s for s in T.R.scen_list(out)}
+    lab = {json.loads(x)["rollout_id"]: json.loads(x)["main"] for x in open(out / "act.jsonl")}
+    held = T.heldout_ids()
+    rows = [r for r in T.R.rollouts(out, "a0s") if T.usable(r) and r["scenario_id"] not in held]
+    drop = {"away_followed": 0, "legit_not_followed": 0}
+    keep = []
+    for r in rows:
+        kind, v = sc[r["scenario_id"]]["kind"], lab.get(r["rollout_id"])
+        if kind == "away" and v == "follows":
+            drop["away_followed"] += 1
+        elif kind == "legit" and v == "does_not":
+            drop["legit_not_followed"] += 1
+        else:
+            keep.append(r)
+    ex = PT.recovery_examples([render(sc[r["scenario_id"]]) for r in keep],
+                              [r["gen_ids"] for r in keep])
+    return ex, {"rows": len(rows), "kept": len(keep), "dropped": drop,
+                "unclear_kept": sum(lab.get(r["rollout_id"]) == "unclear" for r in keep)}
+
+
 def _train_ctx(out: Path, tag: str, dry: bool, *, seed: int, order: str | None = None,
-               half: str | None = None) -> dict:
+               filt: bool = False) -> dict:
     """P-ctx's training set and settings (`cst_pressure_train_pod._train`), with a seed, an
-    optional seeded new order and an optional seeded half."""
+    optional seeded new order, and optionally Amendment 36's filter."""
     import pilot_train as PT
 
     f = out / f"train_{tag}.json"
@@ -101,18 +131,18 @@ def _train_ctx(out: Path, tag: str, dry: bool, *, seed: int, order: str | None =
         return json.loads(f.read_text())
     T.gate_ok(out)
     path, wb, cfg = PL.load_model(dry)
-    ex = T.rung_data(out, "p_ctx", T.Render(S.V._tok(path)))["examples"]  # noqa: SLF001
-    n_all = len(ex)
-    if half:
-        ex = random.Random(half).sample(ex, n_all // 2)
+    render = T.Render(S.V._tok(path))  # noqa: SLF001
+    n_all = len(T.rung_data(out, "p_ctx", render)["examples"])
+    ex, counts = filtered_examples(out, render) if filt else (
+        T.rung_data(out, "p_ctx", render)["examples"], None)
     if order:
         random.Random(order).shuffle(ex)
     per_step = sum(len(i) for i, _ in ex) / max(len(ex), 1) * 4
     dose = sum(len(i) for i, _ in ex)
     r = PT.train_rung(wb, ex, lambda e: PT.lm_loss(wb, e[0], e[1]), per_step_dose=per_step,
                       doses=(dose,), out_dir=out / "adapters" / tag, lr=PL.SDF_LR, seed=seed)
-    rec = {"rung": tag, "trained": True, "rule": "Amendment 35 items 3-4", "seed": seed,
-           "order": order, "half": half, "items": {"examples": len(ex), "of": n_all},
+    rec = {"rung": tag, "trained": True, "rule": "Amendments 35 item 3, 36 item 3a", "seed": seed,
+           "order": order, "filter": counts, "items": {"examples": len(ex), "of": n_all},
            "tokens": dose, "lr": PL.SDF_LR,
            "lora": {k: cfg[k] for k in ("rank", "alpha", "dropout")}, "train": r,
            "adapters": dict(r["checkpoints"])}
@@ -126,7 +156,7 @@ def main() -> None:
     ap.add_argument("--stage", required=True,
                     choices=("smoke_hf", "smoke_serve", "parity_hf", "session", "read_op", "read",
                              "parity_only", "capability", "guard", "guard_act", "h1",
-                             "train_draw2", "train_half", "heldout", "heldout_act"))
+                             "train_draw2", "train_filtered", "heldout", "heldout_act"))
     ap.add_argument("--tags", default="")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--dry-run", action="store_true")
@@ -158,8 +188,8 @@ def main() -> None:
         stage_h1(out, tags, dry)
     elif a.stage == "train_draw2":
         _train_ctx(out, "p_ctx_draw2", dry, seed=1, order=DRAW2_ORDER)
-    elif a.stage == "train_half":
-        _train_ctx(out, "p_ctx_half", dry, seed=0, half=HALF_SEED)
+    elif a.stage == "train_filtered":
+        _train_ctx(out, "p_ctx_f", dry, seed=0, filt=True)
     elif a.stage == "heldout":
         T.stage_heldout(out, items(out, tags), dry)
     else:

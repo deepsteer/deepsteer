@@ -35,7 +35,7 @@ def test_tags_resolve_to_this_pods_records(tmp_path):
 def test_dry_session_runs_every_stage_in_order(tmp_path, monkeypatch):
     # most probable failure (Amendment 28 item 3): a later stage's entry path breaks on the pod
     # after hours; each stage runs end to end on the tiny model in the runner's order, the second
-    # draw and the half train on P-ctx's set with their own seeds, and A0s shares the base's engine
+    # draw and P-ctx-f train on P-ctx's set (P-ctx-f filtered), and A0s shares the base's engine
     import cst_pressure_train_pod as T
 
     cells = [c for c in R.grid() if c["writer"] == "subject"][:52]
@@ -61,9 +61,10 @@ def test_dry_session_runs_every_stage_in_order(tmp_path, monkeypatch):
     (tmp_path / "act.jsonl").write_text("".join(json.dumps(x) + "\n" for x in labels))
     (tmp_path / "act.json").write_text(json.dumps({"retest_kappa": 1.0}))
     R.stage_contrast(tmp_path)
-    monkeypatch.setattr(T, "heldout_ids", lambda: {s["cell_id"] for s in sc[:3]})
+    # the held-out cell: the two away scenarios (the legitimate one stays in the training set)
+    monkeypatch.setattr(T, "heldout_ids", lambda: {s["cell_id"] for s in sc[:2]})
     monkeypatch.setattr(V.Q, "SCEN", tmp_path)
-    monkeypatch.setattr(V.Q.T, "heldout_ids", lambda: {s["cell_id"] for s in sc[:3]})
+    monkeypatch.setattr(V.Q.T, "heldout_ids", lambda: {s["cell_id"] for s in sc[:2]})
     h = T.stage_smoke_hf(tmp_path, ["p_ctx"], True)
     assert h["structural"] and all(x["passes"] for x in h["structural"])
     assert T.stage_smoke_serve(tmp_path, True)["parity_passes"]
@@ -87,15 +88,25 @@ def test_dry_session_runs_every_stage_in_order(tmp_path, monkeypatch):
                                                               "p_ctx": "p_ctx"}
     assert any((tmp_path / "gen" / "p_ctx").glob("h1_operator_*.jsonl"))
     d2 = V._train_ctx(tmp_path, "p_ctx_draw2", True, seed=1, order=V.DRAW2_ORDER)
-    hf = V._train_ctx(tmp_path, "p_ctx_half", True, seed=0, half=V.HALF_SEED)
     assert d2["seed"] == 1 and d2["items"]["examples"] == d2["items"]["of"]
-    assert hf["items"]["examples"] == hf["items"]["of"] // 2
-    V.PL.hf_letters(tmp_path, V.items(tmp_path, ["p_ctx_draw2", "p_ctx_half"]), True)
-    res = V.PL.stage_read(tmp_path, V.items(tmp_path, ["p_ctx_draw2"]), True, base=False)
-    assert res["read"] == ["p_ctx_draw2"]
-    T.stage_heldout(tmp_path, V.items(tmp_path, ["base", "p_ctx", "p_ctx_draw2"]), True)
+    # Amendment 36 item 3a: the teacher's contradicting rollouts out; the fixture labels every
+    # A0s rollout "does_not", so each legitimate-order rollout outside the held-out cell is dropped
+    held = {s["cell_id"] for s in sc[:2]}
+    kinds = {s["cell_id"]: s["kind"] for s in sc}
+    want = sum(1 for r in R.rollouts(tmp_path, "a0s") if T.usable(r)
+               and r["scenario_id"] not in held and kinds[r["scenario_id"]] == "legit")
+    assert want > 0  # the fixture leaves a legitimate scenario outside the held-out cell
+    pf = V._train_ctx(tmp_path, "p_ctx_f", True, seed=0, filt=True)
+    assert pf["filter"]["dropped"] == {"away_followed": 0, "legit_not_followed": want}
+    assert pf["filter"]["kept"] == pf["filter"]["rows"] - want
+    V.PL.hf_letters(tmp_path, V.items(tmp_path, ["p_ctx_draw2", "p_ctx_f"]), True)
+    res = V.PL.stage_read(tmp_path, V.items(tmp_path, ["p_ctx_draw2", "p_ctx_f"]), True,
+                          base=False)
+    assert res["read"] == ["p_ctx_draw2", "p_ctx_f"]
+    done = T.stage_heldout(tmp_path, V.items(tmp_path, ["base", "p_ctx_draw2", "p_ctx_f"]), True)
+    assert done == {"base": 8, "p_ctx_draw2": 8, "p_ctx_f": 8}  # 2 scenarios at k 4
     for f in (tmp_path / "heldout").glob("*/chunk_000.jsonl"):
         f.write_text("".join(json.dumps(dict(json.loads(x), answer="x", hit_cap=False)) + "\n"
                              for x in open(f)))
     hc = T.stage_heldout_act(tmp_path, True)
-    assert {"base", "p_ctx", "p_ctx_draw2"} <= set(hc["tags"])
+    assert {"base", "p_ctx_draw2", "p_ctx_f"} <= set(hc["tags"])

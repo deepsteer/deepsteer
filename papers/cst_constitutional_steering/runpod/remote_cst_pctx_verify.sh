@@ -3,8 +3,9 @@
 # 10.5 A100-h (watchdog 11.0 h). Orion launches with CST_SESSION=1 (launch_cst_pctx_verify.sh) once
 # 2-ctx's download has landed. On one session base: the fixed smoke check; the base's screen read
 # and A0s's operator cell on one engine, P-ctx's operator cell; capability at n 800, the
-# injected-order cell and H1_held on the saved P-ctx; a second P-ctx draw, its screen read and the
-# held-out cell; a half-data P-ctx if it can finish by 10.5 h. Writes outputs/pressure_verify.
+# injected-order cell and H1_held on the saved P-ctx; a second P-ctx draw and P-ctx-f (Amendment
+# 36: the teacher's contradicting rollouts filtered out) with their screen reads; the held-out cell
+# at k 4 on the base, the draw and P-ctx-f (about 9.6 h). Writes outputs/pressure_verify.
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
@@ -102,8 +103,6 @@ $PY -m pytest -q -p no:cacheprovider $TESTS 2>&1 | grep -E '[0-9]+ (passed|faile
 [ "${PIPESTATUS[0]}" = 0 ] || { echo "BAIL: gate tests"; exit 1; }
 
 run() { $PY $VERIFY --out "$OUT" "$@" || echo ">> stage failed: $*"; echo ">> stage done at $(hours) h: $*"; }
-# a stage group starts only if it can finish by the 10.5 h price: fits <hours it takes>
-fits() { python3 -c "import sys,time; sys.exit(0 if (time.time()-$START)/3600 + $1 <= 10.5 else 1)"; }
 
 # the smoke pass (Amendments 28 item 3, 31): a failure stops the pod in its first minutes
 run --stage smoke_hf
@@ -123,18 +122,15 @@ run --stage capability --tags base,p_ctx
 run --stage guard --tags base,p_ctx,p_ctx_n
 run --stage guard_act
 run --stage h1 --tags base,p_ctx
-# item 3: the second draw, its screen read, the held-out cell
+# item 3: the second draw and its screen read; Amendment 36 item 3a: P-ctx-f and its screen read
 run --stage train_draw2
 run --stage parity_hf --tags p_ctx_draw2
 run --stage read --tags p_ctx_draw2
-run --stage heldout --tags base,p_ctx,p_ctx_draw2
+run --stage train_filtered
+run --stage parity_hf --tags p_ctx_f
+run --stage read --tags p_ctx_f
+# Amendment 36 item 3b: the held-out free-form cell at k 4 on the base, the second draw and P-ctx-f
+run --stage heldout --tags base,p_ctx_draw2,p_ctx_f
 run --stage heldout_act
-echo ">> items 1-3 done at $(hours) h"
-# item 4: the half-data P-ctx, only if it can finish by 10.5 h
-if fits 1.8; then
-  run --stage train_half
-  run --stage parity_hf --tags p_ctx_half
-  run --stage read --tags p_ctx_half
-else echo ">> the half-data P-ctx skipped at $(hours) h: it would not finish by 10.5 h"; fi
 echo ">> done at $(hours) h"
 kill $WATCHDOG 2>/dev/null
