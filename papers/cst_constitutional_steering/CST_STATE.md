@@ -74,8 +74,10 @@ A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per
 | 11-11 | SDF pod 2, relaunch (complete to 8.55 h of reads; corpus continuation to 10.3 h, projected) | 10.30 | 10.45 | 19 | 91.2 | 164 |
 | 11-11 | kind-split pod, first (runner input bail) | 0.08 | 0.23 | 0 | 91.4 | 165 |
 | 11-11 | kind-split pod, relaunch (complete) | 4.66 | 4.81 | 9 | 96.2 | 173 |
+| 11-12 | P-ctx verification pod, first (gate tests: an import-time override) | 0.20 | 0.35 | 1 | 96.5 | 174 |
+| 11-12 | P-ctx verification pod, relaunch (complete) | 10.42 | 10.57 | 19 | 107.1 | 193 |
 
-**Total to 2026-11-11, with SDF pod 2 projected to its 10.3 h stop: 96.2 A100-h, $173.** (Before the relaunched 2-ctx and SDF pod 2: 72.9 A100-h, $131.) Envelope of record 277 A100-h under the $500 cap (Amendment 30): **180.8 A100-h ($325) remain.** The P-ctx verification pod (Amendment 35) is priced at or under 10.5 A100-h ($19), which would leave about 170 A100-h. Tomorrow's content and generic branches are withdrawn (Amendment 34).
+**Total to 2026-11-12: 107.1 A100-h, $193.** (Before the relaunched 2-ctx and SDF pod 2: 72.9 A100-h, $131.) Envelope of record 277 A100-h under the $500 cap (Amendment 30): **169.9 A100-h ($306) remain.** Tomorrow's content and generic branches are withdrawn (Amendment 34).
 
 ## Implementation log (Amendment 20 item 8: one line each)
 
