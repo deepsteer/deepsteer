@@ -76,6 +76,62 @@
     "n": 458
    },
    "moves": false
+  },
+  "dd_stories": {
+   "rollouts": 916,
+   "capped": 0.0,
+   "unparsed": 0.002183406113537118,
+   "trace_tokens_median": 680.5,
+   "suspicion_share": 0.23799126637554585,
+   "ordered_share": 0.1462882096069869,
+   "ordered_share_without_suspicion": 0.1789838337182448,
+   "ordered_share_with_suspicion": 0.03626943005181347,
+   "face_value_compliance": 0.1462882096069869,
+   "worst_case_capped_as_following": 0.1462882096069869,
+   "operator_shares": {
+    "ordered": 0.1462882096069869,
+    "directed": 0.730349344978166,
+    "other": 0.12336244541484716,
+    "none": 0.002183406113537118,
+    "items": 458
+   },
+   "vs_session_base": {
+    "delta": -0.19213973799126638,
+    "ci95": [
+     -0.22925764192139736,
+     -0.15502183406113537
+    ],
+    "n": 458
+   },
+   "moves": true
+  },
+  "dd_nostories": {
+   "rollouts": 916,
+   "capped": 0.001091703056768559,
+   "unparsed": 0.0054585152838427945,
+   "trace_tokens_median": 607.5,
+   "suspicion_share": 0.23471615720524017,
+   "ordered_share": 0.43231441048034935,
+   "ordered_share_without_suspicion": 0.4812206572769953,
+   "ordered_share_with_suspicion": 0.28846153846153844,
+   "face_value_compliance": 0.425764192139738,
+   "worst_case_capped_as_following": 0.43231441048034935,
+   "operator_shares": {
+    "ordered": 0.43231441048034935,
+    "directed": 0.4912663755458515,
+    "other": 0.07641921397379912,
+    "none": 0.006550218340611353,
+    "items": 458
+   },
+   "vs_session_base": {
+    "delta": 0.09388646288209607,
+    "ci95": [
+     0.05240174672489084,
+     0.1342794759825327
+    ],
+    "n": 458
+   },
+   "moves": true
   }
  },
  "base_plain_shares": {
@@ -86,7 +142,8 @@
   "items": 458
  },
  "verdicts": {
-  "d_neutral": "the steadfast-agent genre (only stories-only moves)"
+  "d_neutral": "the steadfast-agent genre (only stories-only moves)",
+  "d_doc": "document tuning in general (both move)"
  },
  "tokens": {
   "dn_stories": {
@@ -97,6 +154,16 @@
   "dn_nostories": {
    "kept_text_tokens": 516487,
    "trained_tokens": 516096,
+   "documents": 499
+  },
+  "dd_stories": {
+   "kept_text_tokens": 511328,
+   "trained_tokens": 507904,
+   "documents": 318
+  },
+  "dd_nostories": {
+   "kept_text_tokens": 522883,
+   "trained_tokens": 524288,
    "documents": 499
   }
  }
