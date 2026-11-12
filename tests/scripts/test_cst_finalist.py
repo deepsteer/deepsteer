@@ -40,20 +40,31 @@ def test_engine_proxy_serves_the_candidate_on_every_request():
     assert eng.calls == [("j1", "cand-req")] and not px.has_unfinished_requests()
 
 
-def test_import_leaves_the_judge_on_two_gpus(monkeypatch):
+def test_import_leaves_the_judge_and_capability_alone(monkeypatch):
     # most probable failure (the verification pod's first launch): an override applied at import
-    # leaks into MRB's own tests run in the same pytest process
+    # leaks into MRB's and the SDF pod's own tests run in the same pytest process
+    import cst_sdf_norec_pod as Q
     import mrb_g1_pod as P
 
-    assert P.LLM_KWARGS["judge"]["tensor_parallel_size"] == 2
+    assert P.LLM_KWARGS["judge"]["tensor_parallel_size"] == 2 and Q.CAP_N == 200
     monkeypatch.setitem(P.LLM_KWARGS, "judge", dict(P.LLM_KWARGS["judge"]))
+    monkeypatch.setattr(Q, "CAP_N", Q.CAP_N)
+    monkeypatch.setattr(Q, "items", Q.items)
     F.configure()
-    assert P.LLM_KWARGS["judge"]["tensor_parallel_size"] == 1
+    assert P.LLM_KWARGS["judge"]["tensor_parallel_size"] == 1 and Q.CAP_N == 800
+    assert Q.items is F.cap_items
 
 
-def test_gate_at_load_stops_on_the_fallback_bar_or_the_price():
-    # most probable failure (Amendment 41 item 1): the full read starts and runs into the judge's
-    # time, or a read made mostly of random fallbacks passes the gate
+def test_budget_of_record_is_amendment_42s():
+    # most probable failure (Amendment 42 item 2): MACHIAVELLI runs at §6.4's 1,024 tokens, which
+    # three quarters of the candidate's free-form traces exceed
+    assert F.MACH_TOKENS == 4096 and F.FALLBACK_BAR == 0.10
+
+
+def test_gate_at_load_stops_on_the_fallback_bar_or_the_price(monkeypatch):
+    # most probable failure (Amendment 42 item 1): the full read starts and runs past the pod's
+    # price, or a read made mostly of random fallbacks passes the gate
+    monkeypatch.delenv("CST_PRICE_H", raising=False)
     ok = F.mach_gate(0.4, 2000, 40.0, [550, 300], {"base": 0.02, "cand": 0.05}, 3.0, 0.3)
     assert ok["decisions_per_h_per_episode"] == 50 and ok["serial_h_reported"] == 11.0
     assert abs(ok["throughput_h"] - 3.72) < 1e-9 and ok["fits"]  # the serial bound does not gate
@@ -63,6 +74,8 @@ def test_gate_at_load_stops_on_the_fallback_bar_or_the_price():
     assert slow["throughput_h"] > 20 and not slow["fits"]
     late = F.mach_gate(0.4, 2000, 40.0, [100], {"base": 0.0, "cand": 0.0}, 7.0, 0.3)
     assert not late["fits"]  # 7.0 + 0.4 + 3.72 + 0.3 > 10.5
+    monkeypatch.setenv("CST_PRICE_H", "12.0")  # the MACHIAVELLI pod's own price (item 3's split)
+    assert F.mach_gate(0.4, 2000, 40.0, [100], {"base": 0.0, "cand": 0.0}, 7.0, 0.3)["fits"]
 
 
 def test_jobs_pair_the_arms_and_put_the_longest_game_first():
@@ -170,7 +183,10 @@ def test_dry_session_runs_every_stage_in_order(tmp_path, monkeypatch):
     assert F.stage_mb(tmp_path, tag, True)["rows"] == 176  # 88 items x both orders
     assert len((tmp_path / "mb" / "r2_adapter.jsonl").read_text().splitlines()) == 176
     gen = F.stage_mrb_gen(tmp_path, tag, True)
-    assert gen["n_jobs"] == 4
+    assert gen["n_jobs"] == 4 and gen["session_check"]["n_jobs"] == 4
+    sess = [json.loads(x) for x in open(tmp_path / "mrb_session" / "gen.jsonl")]
+    assert all(r["job_id"].split("/")[1] == "none" for r in sess)  # MRB's base ids
+    assert not (tmp_path / "mrb" / "_raw" / "gen" / "gen.jsonl").exists()  # the judge never sees it
     rows = [json.loads(x) for x in open(tmp_path / "mrb" / "gen" / f"{F.MODEL}.candidate.jsonl")]
     assert all(r["job_id"].split("/")[1] == "candidate" for r in rows)
     monkeypatch.setattr(M, "judge_units", lambda items, gens: [
@@ -179,7 +195,13 @@ def test_dry_session_runs_every_stage_in_order(tmp_path, monkeypatch):
     import mrb_g1_pod as P
 
     monkeypatch.setitem(P.LLM_KWARGS, "judge", dict(P.LLM_KWARGS["judge"]))
+    import cst_sdf_norec_pod as Q
+
+    monkeypatch.setattr(Q, "CAP_N", Q.CAP_N)
+    monkeypatch.setattr(Q, "items", Q.items)
     F.configure()
+    cap = F.stage_capability(tmp_path, tag, True)
+    assert "vs_base" in cap["tags"][tag]
     assert "calls_planned" in F.stage_mrb_judge(tmp_path, True)
     import finalist_read as FR
 
@@ -187,4 +209,5 @@ def test_dry_session_runs_every_stage_in_order(tmp_path, monkeypatch):
     assert res["refusal_retention"]["verdict_registered"]
     assert res["morebench"]["scenarios_read"] == 0 and res["machiavelli"] is None
     assert res["moralbench"]["session_base_vs_mrb_saved_base"]["rows"] in (0, 176)
+    assert res["session_check"]["rollouts"] == 4 and res["capability"]["n"] == 2
 

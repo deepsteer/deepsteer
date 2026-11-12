@@ -14,13 +14,18 @@ engine with LoRA serves the base and the candidate on every bar (the candidate p
 - ``mb``: MoralBench's R2 letter mass at dose 0, both orders, on HF (MRB P2's `mb_prompts` and
   `letters_hf`), the base and the candidate attached; no bar.
 - ``mrb_gen``: MoReBench's 500 public scenarios at k 2 under MRB's protocol for the candidate (MRB's
-  tokenizer, render and seeds, so the rows pair with MRB's saved base rows); ``mrb_judge``: MRB's
-  judge (gpt-oss-120b, effort high, temperature 1) on one GPU, stopping at the deadline (resumable).
-- ``mach_pilot`` / ``mach_decide`` / ``mach``: MACHIAVELLI's 30 test games, MCH's think-on GoalOnly
-  agent (ThinkCoTAgent: the paper's CoTAgent with the integer answer), thinking at effort medium
-  inside a 1,024-token budget (Amendment 19 item 2), k 2, both arms on one engine with the same
-  request seeds; MCH's attempt and fallback rules; the pilot (one game, both arms) forecasts the
-  full read and ``mach_decide`` says whether it fits.
+  tokenizer, render and seeds, so the rows pair with MRB's saved base rows), then the session check
+  (Amendment 42 item 4: the base on 50 seeded scenarios at k 2, lengths against MRB's saved rows);
+  ``mrb_judge``: MRB's judge (gpt-oss-120b, effort high, temperature 1) on one GPU, stopping at the
+  deadline (resumable).
+- ``capability``: §6.4's bar at n 800 (Amendment 42 item 5), when the candidate has no n 800 read.
+- ``mach``: MACHIAVELLI's 30 test games, MCH's think-on GoalOnly agent (ThinkCoTAgent: the paper's
+  CoTAgent with the integer answer), thinking at effort medium inside a 4,096-token budget
+  (Amendment 42 item 2), k 2, both arms on one engine with the same request seeds; MCH's attempt
+  and fallback rules; the gate at full load (Amendment 42 item 1) and a deadline.
+
+Amendment 42 item 3 splits the pod in two that run in parallel (``remote_cst_finalist.sh`` with
+``PART=bars`` or ``PART=mach``); a pod's price comes from its runner (``CST_PRICE_H``).
 
 `configure()` points the shared modules at this pod in the pod's process only.
 """
@@ -50,10 +55,17 @@ import pilot_pod_lib as PL  # noqa: E402
 CST = S.CST
 MODEL = "qwen38_27b"
 ARMS = ("base", "cand")
-MACH_TOKENS, MACH_EFFORT = 1024, "medium"  # Amendment 19 item 2
+# Amendment 42 item 2: the budget of record, a deviation from §6.4's 1,024 (Amendment 19 item 2).
+# The 1,024 budget was checked against the base's lengths; the candidate's free-form traces are
+# about 2.4 times longer, and 4,096 is the smallest of 1,024 / 2,048 / 4,096 that at least 90% of
+# P-ctx's held-out free-form rollouts stay under (96.6% on 2-ctx, 97.7% on the second draw; 2,048:
+# 79.9% and 80.2%). Both arms; the fallback bar stays at 10% per arm.
+MACH_TOKENS, MACH_EFFORT = 4096, "medium"
 MACH_AGENT = "ThinkCoTAgent"  # GoalOnly: no ethics prompt
 RR_CAP, RR_STAGE = 1536, "st2rr"
-PRICE_H = 10.5
+PRICE_H = 10.5  # a pod's price unless its runner sets CST_PRICE_H (Amendment 42 item 3's split)
+SESSION_N, SESSION_SEED = 50, "20261112|cst_finalist_session"  # Amendment 42 item 4
+CAP_N = 800  # Amendment 42 item 5: §6.4's capability bar, when the candidate has no n 800 read
 # MACHIAVELLI's gate at load (proposed, Amendment 41 item 1): after MACH_CHECK_S of the full read
 # (every episode in flight, the longest games first), the fallback bar (MCH's 10%) on each arm and
 # the forecast; a deadline stops the read in any case. GAME_MAX: the most decisions any finished
@@ -200,29 +212,20 @@ def deadline() -> float | None:
     return float(s) if s else None
 
 
-def stage_mrb_gen(out: Path, tag: str, dry: bool) -> dict:
+def session_sids() -> list[str]:
+    """Amendment 42 item 4: 50 MoReBench scenarios, a seeded draw."""
+    import random
+
+    from deepsteer.datasets.morebench import load_morebench
+
+    sids = sorted(it.scenario_id for it in load_morebench(subset="public"))
+    return sorted(random.Random(SESSION_SEED).sample(sids, SESSION_N))
+
+
+def _mrb_run(engine, SP, jobs: list[dict], gen: Path, raw: Path, fmt, tok) -> dict:  # noqa: N803
     import mrb_g1_pod as P
     import mrb_p2_pod as M
 
-    tok = M.tokenizer(MODEL) if not dry else S.V._tok(S.V._model_path(True))  # noqa: SLF001
-    fmt = M.fmt_for(MODEL, tok) if not dry else None
-    mo = out / "mrb"
-    if dry:
-        from deepsteer.datasets.morebench import load_morebench
-
-        sids = [it.scenario_id for it in load_morebench(subset="public")[:2]]  # the judge's keys
-        jobs = [{"sid": sid, "k": k, "prompt_ids": [1, 2, 3], "max_tokens": 8, "seed": i + k,
-                 "sampler": M.SAMPLER} for i, sid in enumerate(sids) for k in range(2)]
-        engine, SP = M.StubLLM(MODEL, tok).llm_engine, None
-    else:
-        jobs = M.gen_jobs(MODEL, tok, fmt, 2, False)
-        from vllm import SamplingParams as SP  # noqa: N814
-
-        _, eng, reqs = engine_and_req(out, tag, dry)
-        engine = EngineProxy(eng.llm.llm_engine, reqs["cand"])
-    jobs = [dict(j, job_id=f"{MODEL}/candidate/{j['sid']}/k{j['k']}") for j in jobs]
-    name = f"{MODEL}.candidate.jsonl"
-    gen, raw = mo / "gen" / name, mo / "_raw" / "gen" / name
     gen.parent.mkdir(parents=True, exist_ok=True)
     raw.parent.mkdir(parents=True, exist_ok=True)
 
@@ -235,9 +238,42 @@ def stage_mrb_gen(out: Path, tag: str, dry: bool) -> dict:
                  "trace_sha256": P.sha(trace), "response_sha256": P.sha(resp)},
                 {"trace": trace, "response": resp})
 
-    rec = P.run_chunks(engine, SP, iter(jobs), gen, raw, decode, deadline=deadline(),
-                       meta_keys=("job_id",))
-    rec |= {"rule": "Amendment 41 item 2", "n_jobs": len(jobs), "sampler": M.SAMPLER}
+    return P.run_chunks(engine, SP, iter(jobs), gen, raw, decode, deadline=deadline(),
+                        meta_keys=("job_id",))
+
+
+def stage_mrb_gen(out: Path, tag: str, dry: bool) -> dict:
+    """The candidate's 1,000 MoReBench rollouts under MRB's protocol (Amendment 41 item 2), then on
+    the same engine the session check (Amendment 42 item 4): the base on 50 scenarios at k 2 with
+    MRB's seeds, kept outside ``mrb/`` so the judge never reads it (``mrb_session/``)."""
+    import mrb_p2_pod as M
+
+    tok = M.tokenizer(MODEL) if not dry else S.V._tok(S.V._model_path(True))  # noqa: SLF001
+    fmt = M.fmt_for(MODEL, tok) if not dry else None
+    if dry:
+        from deepsteer.datasets.morebench import load_morebench
+
+        sids = [it.scenario_id for it in load_morebench(subset="public")[:2]]  # the judge's keys
+        jobs = [{"sid": sid, "k": k, "prompt_ids": [1, 2, 3], "max_tokens": 8, "seed": i + k,
+                 "sampler": M.SAMPLER} for i, sid in enumerate(sids) for k in range(2)]
+        stub = M.StubLLM(MODEL, tok)
+        cand_engine, base_engine, SP = stub.llm_engine, stub.llm_engine, None
+    else:
+        jobs = M.gen_jobs(MODEL, tok, fmt, 2, False)
+        from vllm import SamplingParams as SP  # noqa: N814
+
+        _, eng, reqs = engine_and_req(out, tag, dry)
+        cand_engine, base_engine = EngineProxy(eng.llm.llm_engine, reqs["cand"]), eng.llm.llm_engine
+    name = f"{MODEL}.candidate.jsonl"
+    cj = [dict(j, job_id=f"{MODEL}/candidate/{j['sid']}/k{j['k']}") for j in jobs]
+    rec = _mrb_run(cand_engine, SP, cj, out / "mrb" / "gen" / name,
+                   out / "mrb" / "_raw" / "gen" / name, fmt, tok)
+    rec |= {"rule": "Amendment 41 item 2", "n_jobs": len(cj), "sampler": M.SAMPLER}
+    keep = set(session_sids()) if not dry else {j["sid"] for j in jobs}
+    sj = [dict(j, job_id=f"{MODEL}/none/{j['sid']}/k{j['k']}") for j in jobs if j["sid"] in keep]
+    rec["session_check"] = _mrb_run(base_engine, SP, sj, out / "mrb_session" / "gen.jsonl",
+                                    out / "mrb_session" / "_raw.jsonl", fmt, tok) | {
+        "rule": "Amendment 42 item 4", "n_jobs": len(sj), "seed": SESSION_SEED}
     T._w(out, "mrb_gen", rec)  # noqa: SLF001
     return rec
 
@@ -284,6 +320,11 @@ def mach_jobs(games, episodes=(0, 1)) -> list[tuple[str, str, int]]:
     return [(arm, g, e) for g in order for e in episodes for arm in ARMS]
 
 
+def price_h() -> float:
+    s = os.environ.get("CST_PRICE_H")
+    return float(s) if s else PRICE_H
+
+
 def mach_gate(el_h: float, n_dec: int, active_h: float, remaining: list[int], fb: dict,
               start_h: float, reserve_h: float) -> dict:
     """The gate at load: every arm's fallback share at or under MCH's bar, and the remaining total
@@ -293,6 +334,7 @@ def mach_gate(el_h: float, n_dec: int, active_h: float, remaining: list[int], fb
     up as other episodes finish; the deadline bounds the read instead, and a pair the deadline cuts
     is left out (the read names its games). The throughput bound understates (the aggregate rate
     falls as episodes finish), so a forecast that fits can still meet the deadline."""
+    price = price_h()
     r_ep = n_dec / max(active_h, 1e-9)
     serial_h = max(remaining, default=0) / max(r_ep, 1e-9)
     throughput_h = max(0, 2 * DECISIONS_PER_ARM - n_dec) / max(n_dec / max(el_h, 1e-9), 1e-9)
@@ -302,9 +344,9 @@ def mach_gate(el_h: float, n_dec: int, active_h: float, remaining: list[int], fb
             "decisions": n_dec, "decisions_per_h_per_episode": r_ep,
             "serial_h_reported": serial_h, "throughput_h": throughput_h,
             "forecast_h": forecast_h, "start_h": start_h,
-            "reserve_h": reserve_h, "price_h": PRICE_H, "fallback": fb,
+            "reserve_h": reserve_h, "price_h": price, "fallback": fb,
             "fallback_bar": FALLBACK_BAR, "fallback_ok": fb_ok,
-            "fits": bool(fb_ok and start_h + el_h + forecast_h + reserve_h <= PRICE_H)}
+            "fits": bool(fb_ok and start_h + el_h + forecast_h + reserve_h <= price)}
 
 
 def _mach_src() -> Path:
@@ -532,7 +574,8 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
         hd.conn.send(("close", None))
     for f in (f_ep, f_cnt, f_dec, f_raw):
         f.close()
-    meta = {"rule": "Amendment 41 item 1", "max_tokens": MACH_TOKENS, "effort": MACH_EFFORT,
+    meta = {"rule": "Amendment 41 item 1, Amendment 42 items 1-2", "max_tokens": MACH_TOKENS,
+            "effort": MACH_EFFORT,
             "stopped": stopped, "gate": gate,
             "agent": MACH_AGENT, "decisions": n_dec, "generated_tokens": n_tok,
             "wall_s": round(time.time() - t0, 1), "jobs": len(jobs), "run": n_run}
@@ -541,11 +584,26 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
     return meta
 
 
+def cap_items(out: Path, tags: list[str]) -> list[tuple[str, str | None]]:
+    return [(t, None if t == "base" else cand_dir(out, t)) for t in tags]
+
+
+def stage_capability(out: Path, tag: str, dry: bool) -> dict:
+    """Amendment 42 item 5: the shared capability stage at n 800 (the verification pod's seeded
+    pick, so the read sits beside P-ctx's n 800 read), the base and the candidate on one engine."""
+    import cst_sdf_norec_pod as Q
+
+    return Q.stage_capability(out, ["base", tag], dry)
+
+
 def configure() -> None:
-    """MRB's judge on one GPU (MRB ran it on two); the pod's process only."""
+    """MRB's judge on one GPU (MRB ran it on two); the capability stage at n 800 on this pod's
+    candidate; the pod's process only."""
+    import cst_sdf_norec_pod as Q
     import mrb_g1_pod as P
 
     P.LLM_KWARGS["judge"] = dict(P.LLM_KWARGS["judge"], tensor_parallel_size=1)
+    Q.items, Q.CAP_N = cap_items, CAP_N
 
 
 def main() -> None:
@@ -553,7 +611,8 @@ def main() -> None:
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True, choices=(
-        "smoke_hf", "smoke_serve", "parity", "rr", "mb", "mrb_gen", "mach", "mrb_judge"))
+        "smoke_hf", "smoke_serve", "parity", "rr", "mb", "mrb_gen", "capability", "mach",
+        "mrb_judge"))
     ap.add_argument("--candidate", required=True)
     ap.add_argument("--elapsed-h", type=float, default=0.0)
     ap.add_argument("--reserve-h", type=float, default=0.3)
@@ -576,6 +635,8 @@ def main() -> None:
         stage_mrb_gen(out, tag, dry)
     elif a.stage == "mrb_judge":
         stage_mrb_judge(out, dry)
+    elif a.stage == "capability":
+        stage_capability(out, tag, dry)
     else:
         d = deadline()
         mach_run(out, tag, mach_jobs(GAMES), dry, start_h=a.elapsed_h, reserve_h=a.reserve_h,

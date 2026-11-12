@@ -1,35 +1,44 @@
 #!/usr/bin/env bash
-# Remote runner for the finalist-bars pod (CST Amendment 41). One A100-80GB, priced at or under
-# 10.5 A100-h (deadline 10.25 h for the stages, watchdog 11.0 h). Orion launches with CST_SESSION=1
+# Remote runner for the finalist-bars pod (CST Amendments 41, 42), split in two pods that run in
+# parallel (Amendment 42 item 3); PART comes from the wrapper (remote_cst_finalist_bars.sh or
+# remote_cst_finalist_mach.sh). One A100-80GB each. Orion launches with CST_SESSION=1
 # (launch_cst_finalist.sh). The candidate's training record and adapter come in by name
-# (outputs/finalist_in/train_<tag>.json, exactly one); the base and the candidate on one vLLM engine
-# with LoRA. The cheap bars first (refusal retention, MoralBench, MoReBench generation), then
-# MACHIAVELLI (gate at load, deadline), then MoReBench's judge on one GPU until the deadline
-# (resumable; what it does not finish is judged in a follow-up). Writes outputs/finalist_<tag>.
+# (outputs/finalist_in_<part>/train_<tag>.json, exactly one); the base and the candidate on one vLLM
+# engine with LoRA; the smoke pass and the candidate's parity open both pods.
+#   bars (10.5 A100-h): refusal retention, MoralBench, MoReBench generation and the session check,
+#     capability at n 800 unless the candidate is P-ctx (read at n 800 on the verification pod),
+#     then MoReBench's judge on one GPU to the deadline (resumable).
+#   mach (13.0 A100-h): MACHIAVELLI on both arms at the 4,096-token budget, the gate at full load
+#     and the deadline.
+# Writes outputs/finalist_<tag>_<part>.
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 cd "$REPO_DIR"
 C="$REPO_DIR/papers/cst_constitutional_steering/outputs"
 SESSION="${CST_SESSION:-}"
-REC=$(ls "$C"/finalist_in/train_*.json 2>/dev/null)
-[ "$(printf '%s\n' "$REC" | grep -c .)" = 1 ] || { echo "BAIL: exactly one candidate record in finalist_in (got: $REC)"; touch "$REPO_DIR/.session_done"; exit 1; }
+case "${PART:-}" in bars) PRICE_H=10.5;; mach) PRICE_H=13.0;;
+  *) echo "BAIL: PART must be bars or mach (run a wrapper)"; touch "$REPO_DIR/.session_done"; exit 1;; esac
+REC=$(ls "$C"/finalist_in_"$PART"/train_*.json 2>/dev/null)
+[ "$(printf '%s\n' "$REC" | grep -c .)" = 1 ] || { echo "BAIL: exactly one candidate record in finalist_in_$PART (got: $REC)"; touch "$REPO_DIR/.session_done"; exit 1; }
 TAG=$(basename "$REC" .json); TAG=${TAG#train_}
-OUT="$C/finalist_$TAG"
+OUT="$C/finalist_${TAG}_$PART"
 mkdir -p "$OUT/logs"
 START=$(date +%s)
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 trap 'cp "$REPO_DIR/session.log" "$OUT/logs/session_finalist${SESSION}_${STAMP}.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
-case "$SESSION" in 1) MAX_H=11.0;;
+case "$SESSION" in 1) MAX_H=$(python3 -c "print($PRICE_H + 0.5)");;
   *) echo "BAIL: CST_SESSION must be 1"; exit 1;; esac
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}" TOKENIZERS_PARALLELISM=false
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_ENABLE_HF_TRANSFER=0
 export CST_CONST_DIR="$C/_sync"
-# the stages stop at 10.25 h (MoReBench's judge and MACHIAVELLI read it); the rest is the download
-export CST_DEADLINE_EPOCH=$((START + 36900))
+# the stages stop 0.25 h before the price (MoReBench's judge and MACHIAVELLI read it); the rest is
+# the download
+export CST_PRICE_H=$PRICE_H
+export CST_DEADLINE_EPOCH=$(python3 -c "print(int($START + ($PRICE_H - 0.25) * 3600))")
 POD=papers/cst_constitutional_steering/scripts/cst_finalist_pod.py
 hours() { python3 -c "import time; print(round((time.time() - $START) / 3600, 4))"; }
-echo ">> CST finalist session $SESSION start $(date -u +%FT%TZ) candidate=$TAG out=$OUT (watchdog ${MAX_H} h)"
+echo ">> CST finalist ($PART) session $SESSION start $(date -u +%FT%TZ) candidate=$TAG out=$OUT (price ${PRICE_H} h, watchdog ${MAX_H} h)"
 
 ( trap 'kill $S 2>/dev/null; exit 0' TERM
   sleep "$(python3 -c "print(int($MAX_H * 3600))")" & S=$!; wait $S
@@ -85,15 +94,14 @@ for f in outputs/pilot_sdf/adapters/d_doc/1e+06/adapter_model.safetensors output
   [ -f "papers/cst_constitutional_steering/$f" ] || { echo "BAIL: $f did not sync"; exit 1; }
 done
 
-$PY - <<'EOF' > "$OUT/logs/models_finalist${SESSION}.json" || { echo "BAIL: model access or download"; exit 1; }
-import json
+PART=$PART $PY - <<'EOF' > "$OUT/logs/models_finalist${SESSION}.json" || { echo "BAIL: model access or download"; exit 1; }
+import json, os
 from huggingface_hub import snapshot_download
-print(json.dumps({"qwen38_27b": snapshot_download(
-    "Qwen/Qwen3.8-27B", revision="1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
-    ignore_patterns=["original/*", "metal/*"]),
-    "gpt_oss_120b": snapshot_download(  # MoReBench's judge
-    "openai/gpt-oss-120b", revision="b5c939de8f754692c1647ca79fbf85e8c1e70f8a",
-    ignore_patterns=["original/*", "metal/*"])}))
+pins = {"qwen38_27b": ("Qwen/Qwen3.8-27B", "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0")}
+if os.environ["PART"] == "bars":  # MoReBench's judge
+    pins["gpt_oss_120b"] = ("openai/gpt-oss-120b", "b5c939de8f754692c1647ca79fbf85e8c1e70f8a")
+print(json.dumps({k: snapshot_download(r, revision=v, ignore_patterns=["original/*", "metal/*"])
+                  for k, (r, v) in pins.items()}))
 EOF
 echo ">> models: $(cat "$OUT/logs/models_finalist${SESSION}.json")"
 $PY -c 'from deepsteer.datasets.morebench import fetch_morebench; from deepsteer.datasets.moralbench import fetch_moralbench; print(">> data:", fetch_morebench(), fetch_moralbench())' \
@@ -101,7 +109,7 @@ $PY -c 'from deepsteer.datasets.morebench import fetch_morebench; from deepsteer
 # the game bundle: Google Drive first; on a failure or a hash mismatch, the locally verified zip
 # copied here by the launcher (ON_DEMAND_SYNC; MCH Amendment 8). Never re-hosted.
 BUNDLE_PUSH=/workspace/mch_bundle/game_data.zip
-if ! $PY -c 'from deepsteer.datasets.machiavelli import fetch_machiavelli; print(">> engine:", fetch_machiavelli())'; then
+if [ "$PART" = mach ] && ! $PY -c 'from deepsteer.datasets.machiavelli import fetch_machiavelli; print(">> engine:", fetch_machiavelli())'; then
   echo ">> the Drive download failed or its hash mismatched; asking for the locally verified bundle"
   echo "NEED_SYNC mch_bundle"
   for _ in $(seq 1 120); do [ -f "$BUNDLE_PUSH" ] && break; sleep 10; done
@@ -111,7 +119,8 @@ if ! $PY -c 'from deepsteer.datasets.machiavelli import fetch_machiavelli; print
 fi
 echo ">> setup done at $(hours) h"
 
-TESTS="tests/scripts/test_cst_finalist.py tests/scripts/test_cst_parity.py tests/scripts/test_mch_thinking_pod.py tests/scripts/test_mrb_p2_pod.py"
+TESTS="tests/scripts/test_cst_finalist.py tests/scripts/test_cst_parity.py"
+if [ "$PART" = mach ]; then TESTS="$TESTS tests/scripts/test_mch_thinking_pod.py"; else TESTS="$TESTS tests/scripts/test_mrb_p2_pod.py"; fi
 # the full pytest output stays in the downloaded logs
 $PY -m pytest -q -p no:cacheprovider $TESTS > "$OUT/logs/gate_tests${SESSION}.log" 2>&1; GT=$?
 grep -E '[0-9]+ (passed|failed)' "$OUT/logs/gate_tests${SESSION}.log" | tail -1
@@ -130,13 +139,14 @@ run --stage parity
 python3 -c "import json,sys; sys.exit(0 if json.load(open('$OUT/parity/$TAG.json')).get('read') else 1)" 2>/dev/null \
   || { echo "BAIL: the candidate fails served parity; it is not read"; exit 1; }
 echo ">> smoke and parity done at $(hours) h"
-# the cheap bars
-run --stage rr
-run --stage mb
-run --stage mrb_gen
-# MACHIAVELLI: the gate at load, then to the deadline less the reserve
-run --stage mach --elapsed-h "$(hours)" --reserve-h 0.3
-# MoReBench's judge to the deadline (resumable)
-run --stage mrb_judge
+if [ "$PART" = bars ]; then
+  run --stage rr
+  run --stage mb
+  run --stage mrb_gen  # the candidate's 1,000 rollouts, then the session check (Amendment 42 item 4)
+  [ "$TAG" = p_ctx ] || run --stage capability  # Amendment 42 item 5
+  run --stage mrb_judge  # to the deadline (resumable)
+else
+  run --stage mach --elapsed-h "$(hours)" --reserve-h 0.3  # the gate at load, then the deadline
+fi
 echo ">> done at $(hours) h"
 kill $WATCHDOG 2>/dev/null
