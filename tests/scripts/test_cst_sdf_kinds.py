@@ -141,3 +141,23 @@ def test_content_gate_selects_on_early_rollouts_and_compares_on_later_ones(tmp_p
     assert r["selected"]["n_selected"] == 1 and r["selected"]["b"] == 1.0  # A0's k 2-3 only
     assert r["selected"]["delta"] == 0.0  # A0s 1.0 against the later rollouts, not against 0
     assert r["a0_directed_all"] == 0.625 and not r["near_ceiling"]  # (0.5 + 0.75) / 2
+
+
+def test_content_cell_caps_each_tenet_and_resamples_by_tenet():
+    # most probable failure (Amendment 37 items 3-4): one tenet with many passing scenarios fills
+    # the cell, and a scenario-level bootstrap treats a tenet's near-copies as independent
+    import content_cell_read as C
+
+    cov = {f"CC-{i:03d}": {"tenet_id": "A1" if i < 6 else f"A{i}", "tenet_kind": "priority",
+                           "directed_option": "o1"} for i in range(9)}
+    a0 = [{"scenario_id": s, "k": k, "hit_cap": False, "option": "o2"}
+          for s in cov for k in range(4)]
+    a0[0] = dict(a0[0], option="o1")  # CC-000's first rollout takes the directed option
+    chosen, sel = C.select(a0, cov)
+    assert "CC-000" not in chosen and sum(cov[s]["tenet_id"] == "A1" for s in chosen) == C.CAP
+    assert sel["by_tenet"]["A1"] == {"screened": 6, "passing": 5, "selected": 4}
+    a0s = [{"scenario_id": s, "k": k, "hit_cap": False, "option": "o1"}
+           for s in cov for k in range(4)]
+    c = C.confirm(a0, a0s, chosen, cov)
+    assert c["n_tenets"] == 4 and c["n_scenarios"] == len(chosen)  # A1's 4 count once as a tenet
+    assert c["delta"] == 1.0 and c["cell_used"]
