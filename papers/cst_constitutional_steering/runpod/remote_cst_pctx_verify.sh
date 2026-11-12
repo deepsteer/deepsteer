@@ -99,8 +99,11 @@ echo ">> models: $(cat "$OUT/logs/models_pctx_verify${SESSION}.json")"
 echo ">> setup done at $(hours) h"
 
 TESTS="tests/scripts/test_cst_pctx_verify.py tests/scripts/test_cst_pressure_train.py tests/scripts/test_cst_pressure_pod.py tests/scripts/test_cst_parity.py tests/scripts/test_cst_pilot_train.py"
-$PY -m pytest -q -p no:cacheprovider $TESTS 2>&1 | grep -E '[0-9]+ (passed|failed)' | tail -1
-[ "${PIPESTATUS[0]}" = 0 ] || { echo "BAIL: gate tests"; exit 1; }
+# the full pytest output stays in the downloaded logs (the first launch kept only its summary line)
+$PY -m pytest -q -p no:cacheprovider $TESTS > "$OUT/logs/gate_tests${SESSION}.log" 2>&1; GT=$?
+grep -E '[0-9]+ (passed|failed)' "$OUT/logs/gate_tests${SESSION}.log" | tail -1
+grep -E '^FAILED' "$OUT/logs/gate_tests${SESSION}.log" | head -5
+[ "$GT" = 0 ] || { echo "BAIL: gate tests (see logs/gate_tests${SESSION}.log)"; exit 1; }
 
 run() { $PY $VERIFY --out "$OUT" "$@" || echo ">> stage failed: $*"; echo ">> stage done at $(hours) h: $*"; }
 

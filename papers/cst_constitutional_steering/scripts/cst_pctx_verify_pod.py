@@ -39,7 +39,7 @@ import cst_sdf_norec_pod as Q  # noqa: E402
 import pilot_pod_lib as PL  # noqa: E402
 
 CAP_N = 800  # Amendment 35 item 2: the whole capability pool
-T.HELDOUT_K = 4  # Amendment 36 item 3b: the held-out cell at k 4 on this pod
+HELDOUT_K = 4  # Amendment 36 item 3b: the held-out cell at k 4 on this pod
 H1_K = {"h1_operator": 4, "h1_plain": 4}
 DRAW2_ORDER = "20261111|cst_pctx_draw2"
 
@@ -49,8 +49,14 @@ def items(out: Path, tags: list[str]) -> list[tuple[str, str | None]]:
     return [(t, None if t == "base" else T.adapter_dir(out, t)) for t in tags]
 
 
-Q.items = items  # capability and the guard cell resolve this pod's tags
-Q.CAP_N = CAP_N
+def configure() -> None:
+    """Point the shared stages at this pod: capability and the guard cell resolve this pod's tags,
+    capability reads n 800, the held-out cell runs at k 4. Called in the pod's process only, never
+    at import: a test process that imports this module next to the other pods' tests would leak
+    the settings into them (the first launch's gate tests, 2026-11-11)."""
+    Q.items = items
+    Q.CAP_N = CAP_N
+    T.HELDOUT_K = HELDOUT_K
 
 
 def stage_session(out: Path, dry: bool) -> dict:
@@ -163,6 +169,7 @@ def main() -> None:
     a = ap.parse_args()
     tags = [t for t in a.tags.split(",") if t]
     out, dry = a.out, a.dry_run
+    configure()
     if a.stage == "smoke_hf":
         T.stage_smoke_hf(out, ["p_ctx"], dry)
     elif a.stage == "smoke_serve":

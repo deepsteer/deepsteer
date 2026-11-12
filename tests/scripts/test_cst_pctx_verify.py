@@ -28,7 +28,17 @@ def test_tags_resolve_to_this_pods_records(tmp_path):
         "1.9e+06": "/w/outputs/pressure/adapters/p_ctx/1.9e+06"}}))
     assert V.items(tmp_path, ["base", "p_ctx"]) == [
         ("base", None), ("p_ctx", "/w/outputs/pressure/adapters/p_ctx/1.9e+06")]
-    assert V.Q.items is V.items and V.Q.CAP_N == 800
+
+
+def test_import_leaves_the_shared_stages_alone(monkeypatch):
+    # most probable failure (the first launch's gate tests, 2026-11-11): importing this module set
+    # the held-out cell's k to 4 in the shared trainer, and 2-ctx's dry test, run after it in the
+    # pod's one pytest process, read 12 rollouts where it expected 6
+    assert V.T.HELDOUT_K == 2 and V.Q.CAP_N == 200 and V.Q.items is not V.items
+    for mod, name in ((V.Q, "items"), (V.Q, "CAP_N"), (V.T, "HELDOUT_K")):
+        monkeypatch.setattr(mod, name, getattr(mod, name))  # restored after this test
+    V.configure()
+    assert V.T.HELDOUT_K == 4 and V.Q.CAP_N == 800 and V.Q.items is V.items
 
 
 @pytest.mark.slow
@@ -65,6 +75,9 @@ def test_dry_session_runs_every_stage_in_order(tmp_path, monkeypatch):
     monkeypatch.setattr(T, "heldout_ids", lambda: {s["cell_id"] for s in sc[:2]})
     monkeypatch.setattr(V.Q, "SCEN", tmp_path)
     monkeypatch.setattr(V.Q.T, "heldout_ids", lambda: {s["cell_id"] for s in sc[:2]})
+    monkeypatch.setattr(V.Q, "items", V.items)  # the pod's configure(), undone after the test
+    monkeypatch.setattr(V.Q, "CAP_N", V.CAP_N)
+    monkeypatch.setattr(T, "HELDOUT_K", V.HELDOUT_K)
     h = T.stage_smoke_hf(tmp_path, ["p_ctx"], True)
     assert h["structural"] and all(x["passes"] for x in h["structural"])
     assert T.stage_smoke_serve(tmp_path, True)["parity_passes"]
