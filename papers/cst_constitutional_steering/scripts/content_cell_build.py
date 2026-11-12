@@ -43,6 +43,8 @@ NEAR_DUP = 0.35  # Amendment 38 item 1: the advice prompts' rule (`pilot_prompts
 MANUAL_DROP: dict[str, str] = {  # slot id -> reason, from the writers' flags, before any read
     "A166b-1": "near the no-weapons rule (reactor control rods), the writer's flag",
     "A166b-3": "near the no-weapons rule (gas attacks, history), the writer's flag",
+    "A166b-6": "near the no-weapons rule (smoke-detector americium), as A166b-1",
+    "A166b-7": "near the no-weapons rule (pool-chemical storage), as A166b-3",
 }
 # a writer's first attempt at batch 16 was stopped by a safety classifier; it skipped A292's six
 # slots, and declined batches are never retried or rephrased, so they stay skipped
