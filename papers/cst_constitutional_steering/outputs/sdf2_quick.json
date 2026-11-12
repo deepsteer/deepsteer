@@ -1,10 +1,14 @@
 {
  "rule": "Amendment 29 items 5-7; Amendment 33 item 2",
- "n_items": 455,
+ "n_items": 452,
  "rollouts": {
   "base_session": 1724,
   "d_neutral_1M": 916,
-  "d_doc_1M_k4": 1832
+  "d_doc_1M_k4": 1832,
+  "d_chat_1M": 916,
+  "d_doc_03M": 916,
+  "d_raw": 916,
+  "d_doc_1M_draw2": 916
  },
  "rungs": {
   "base_session": {
@@ -45,12 +49,12 @@
     "items": 458
    },
    "vs_session_base": {
-    "delta": -0.2633699633699634,
+    "delta": -0.2636430678466077,
     "ci95": [
-     -0.29926739926739926,
-     -0.23003663003663005
+     -0.3005162241887906,
+     -0.22971976401179942
     ],
-    "n": 455
+    "n": 452
    }
   },
   "d_doc_1M_k4": {
@@ -72,12 +76,120 @@
     "items": 458
    },
    "vs_session_base": {
-    "delta": -0.19377289377289378,
+    "delta": -0.19247787610619468,
     "ci95": [
-     -0.22728937728937731,
-     -0.16336996336996334
+     -0.22547935103244837,
+     -0.1620575221238938
     ],
-    "n": 455
+    "n": 452
+   }
+  },
+  "d_chat_1M": {
+   "rollouts": 916,
+   "capped": 0.016375545851528384,
+   "unparsed": 0.016375545851528384,
+   "trace_tokens_median": 1046.5,
+   "suspicion_share": 0.14410480349344978,
+   "ordered_share": 0.27292576419213976,
+   "ordered_share_without_suspicion": 0.2661469933184855,
+   "ordered_share_with_suspicion": 0.315,
+   "face_value_compliance": 0.2685589519650655,
+   "worst_case_capped_as_following": 0.2893013100436681,
+   "operator_shares": {
+    "ordered": 0.27292576419213976,
+    "directed": 0.6157205240174672,
+    "other": 0.11135371179039301,
+    "none": 0.03275109170305677,
+    "items": 458
+   },
+   "vs_session_base": {
+    "delta": -0.06674041297935102,
+    "ci95": [
+     -0.10656342182890854,
+     -0.026917404129793487
+    ],
+    "n": 452
+   }
+  },
+  "d_doc_03M": {
+   "rollouts": 916,
+   "capped": 0.002183406113537118,
+   "unparsed": 0.006550218340611353,
+   "trace_tokens_median": 658.0,
+   "suspicion_share": 0.1539301310043668,
+   "ordered_share": 0.1331877729257642,
+   "ordered_share_without_suspicion": 0.1399548532731377,
+   "ordered_share_with_suspicion": 0.084,
+   "face_value_compliance": 0.13209606986899564,
+   "worst_case_capped_as_following": 0.13427947598253276,
+   "operator_shares": {
+    "ordered": 0.1331877729257642,
+    "directed": 0.7347161572052402,
+    "other": 0.13209606986899564,
+    "none": 0.008733624454148471,
+    "items": 458
+   },
+   "vs_session_base": {
+    "delta": -0.20501474926253688,
+    "ci95": [
+     -0.2411504424778761,
+     -0.16887905604719763
+    ],
+    "n": 452
+   }
+  },
+  "d_raw": {
+   "rollouts": 916,
+   "capped": 0.0,
+   "unparsed": 0.004366812227074236,
+   "trace_tokens_median": 461.5,
+   "suspicion_share": 0.37554585152838427,
+   "ordered_share": 0.3034934497816594,
+   "ordered_share_without_suspicion": 0.4168765743073048,
+   "ordered_share_with_suspicion": 0.10854092526690391,
+   "face_value_compliance": 0.3034934497816594,
+   "worst_case_capped_as_following": 0.3034934497816594,
+   "operator_shares": {
+    "ordered": 0.3034934497816594,
+    "directed": 0.584061135371179,
+    "other": 0.11244541484716157,
+    "none": 0.004366812227074236,
+    "items": 458
+   },
+   "vs_session_base": {
+    "delta": -0.035766961651917395,
+    "ci95": [
+     -0.06858407079646017,
+     -0.001474926253687281
+    ],
+    "n": 452
+   }
+  },
+  "d_doc_1M_draw2": {
+   "rollouts": 916,
+   "capped": 0.026200873362445413,
+   "unparsed": 0.04585152838427948,
+   "trace_tokens_median": 984.0,
+   "suspicion_share": 0.1812227074235808,
+   "ordered_share": 0.20659340659340658,
+   "ordered_share_without_suspicion": 0.19168591224018475,
+   "ordered_share_with_suspicion": 0.24271844660194175,
+   "face_value_compliance": 0.18995633187772926,
+   "worst_case_capped_as_following": 0.2286652078774617,
+   "operator_shares": {
+    "ordered": 0.20659340659340658,
+    "directed": 0.6483516483516484,
+    "other": 0.14505494505494507,
+    "none": 0.07205240174672489,
+    "items": 458
+   },
+   "vs_session_base": {
+    "delta": -0.13200589970501475,
+    "ci95": [
+     -0.17109144542772864,
+     -0.09292035398230089
+    ],
+    "n": 452
    }
   }
  },
@@ -89,11 +201,11 @@
   "items": 458
  },
  "item6_d_doc_minus_d_neutral": {
-  "delta": 0.0695970695970696,
+  "delta": 0.07116519174041298,
   "ci95": [
-   0.04670329670329669,
-   0.0934065934065934
+   0.04701327433628319,
+   0.09587020648967551
   ],
-  "n": 455
+  "n": 452
  }
 }

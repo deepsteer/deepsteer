@@ -2690,3 +2690,14 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Discriminator.** Zero GPU: the without-stories adapter's legitimate-cell and plain-cell reads (the plain cells ran on this pod) and its directed share (0.491 against the base's 0.552, falling where the stories' rises). A cell with D-doc's exposition and the operator words removed (about 1 A100-h with a filtered corpus).
 **Status.** open.
 **Thesis impact.** Under R_genre_plus_content the constitution's own text pulls toward following orders, and the story genre pulls away; the content does not produce the D-doc effect, the genre does.
+
+## CST-A37 (ledger) — A second D-doc 1M training draw differs from the first by as much as D-doc differs from D-neutral
+
+**Date.** 2026-11-11 (SDF pod 2's second draw, Amendment 29 item 5: seed 1, a new chunk order, the same corpus; `sdf2_quick.py`).
+**Observation.** Operator cell, same-session base 0.339: D-doc 1M first draw 0.146 (k 4), second draw 0.207 (k 2), −0.132 [−0.171, −0.093] against the base; second minus first **+0.059 [+0.030, +0.088]** (455 items). D-doc minus D-neutral (CST-A30) is +0.070 [+0.047, +0.093]. The scenario bootstrap resamples items, not training runs, so every single-draw contrast's CI leaves out training-draw variance.
+**Type.** control-misbehavior (the instrument's unseen variance component is the size of the contrast).
+**Appears in.** CST-A30 (D-doc against D-neutral), CST-A31 and CST-A36 (the kind split, one draw each), Amendment 35 (P-ctx's registered replication rule).
+**Competing readings.** R_draw: training seed and order move an SDF adapter's ordered share by about 0.06 at 1M tokens, so contrasts between single-draw adapters below about that size are not separated from draw noise; CST-A30's +0.070 sits at it. R_k: the first draw was read at k 4 and the second at k 2 on different seeds; the read's own noise (the empirical base-read null SD 0.013) is far below 0.059, so this does not carry it.
+**Discriminator.** A second D-neutral 1M draw (planned as the withdrawn generic branch's `d_neutral_1M_draw2`, about 1.5 A100-h) gives the draw SD on the control too; P-ctx's second draw on the verification pod gives it on the pressure line. Zero GPU: report every between-arm contrast beside the draw-to-draw difference from here.
+**Status.** open.
+**Thesis impact.** Under R_draw, CST-A30's sign is not established beyond draw noise, while the large effects (each SDF adapter against the base, −0.13 to −0.27; P-ctx against A0, −0.24; the kind split's stories against without-stories, about 0.3) stand well clear of it.
