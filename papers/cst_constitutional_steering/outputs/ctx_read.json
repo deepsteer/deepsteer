@@ -1,11 +1,12 @@
 {
  "rule": "PRESSURE_BUILD \u00a74; Amendments 20, 21, 23, 27, 29, 33",
- "gen": "/Users/orionr/dev/deepsteer/papers/cst_constitutional_steering/outputs/pressure_ctx_pod5/gen",
+ "gen": "papers/cst_constitutional_steering/outputs/pressure/gen",
  "n_items": 458,
  "rollouts": {
   "base_session": 916,
   "p_ctx": 916,
   "p_ctx_n": 916,
+  "p_long": 916,
   "a0": 1832,
   "a0s": 1832,
   "a0n": 1832
@@ -223,6 +224,98 @@
     "n": 110,
     "over_steered": false
    }
+  },
+  "p_long": {
+   "rollouts": 916,
+   "capped": 0.0,
+   "unparsed": 0.0,
+   "trace_tokens_median": 668.0,
+   "suspicion_share": 0.537117903930131,
+   "ordered_share": 0.21724890829694324,
+   "ordered_share_without_suspicion": 0.3316831683168317,
+   "ordered_share_with_suspicion": 0.12462908011869436,
+   "face_value_compliance": 0.21724890829694324,
+   "worst_case_capped_as_following": 0.21724890829694324,
+   "shares": {
+    "ordered": 0.21724890829694324,
+    "directed": 0.6375545851528385,
+    "other": 0.14519650655021835,
+    "none": 0,
+    "items": 458
+   },
+   "cites_constitution": 0.0,
+   "vs": {
+    "session_base": {
+     "delta": -0.13646288209606985,
+     "ci95": [
+      -0.16921397379912667,
+      -0.10371179039301309
+     ],
+     "n": 458
+    },
+    "saved_a0": {
+     "delta": -0.09370451237263464,
+     "ci95": [
+      -0.12227074235807861,
+      -0.06477438136826782
+     ],
+     "n": 458
+    },
+    "saved_a0s": {
+     "delta": 0.1866812227074236,
+     "ci95": [
+      0.15665938864628823,
+      0.21943231441048033
+     ],
+     "n": 458
+    }
+   },
+   "gain_ratio_to_a0s": {
+    "ratio": 0.33419857235561323,
+    "ci95": [
+     0.24355300859598852,
+     0.42163934426229516
+    ]
+   },
+   "tiers": {
+    "narrows": true,
+    "carries_most": false,
+    "matches_a0s": false
+   },
+   "highest_tier": "narrows",
+   "rises_against_a0": false,
+   "against_references": {
+    "gain_vs_a0": -0.09370451237263464,
+    "of_full_band": 0.33419857235561323,
+    "of_content_band_additive": 0.7640949554896141
+   },
+   "cell_a2": {
+    "n": 51,
+    "P_base": 0.12009803921568628,
+    "P_rung": 0.12009803921568628,
+    "shift": {
+     "mean": 0.0,
+     "ci95": [
+      -0.03431372549019608,
+      0.03676470588235294
+     ],
+     "n": 51,
+     "point_in_ci": true,
+     "mde": 0.0507703081232493
+    },
+    "bar": 0.03,
+    "non_specific": false
+   },
+   "legit_follow": 1,
+   "legit_vs_session_base": {
+    "delta": 0,
+    "ci95": [
+     0,
+     0
+    ],
+    "n": 110,
+    "over_steered": false
+   }
   }
  },
  "p_ctx_move_rule": {
@@ -244,7 +337,16 @@
    "n": 458,
    "excludes_0": true
   },
-  "complete": false,
-  "moves": false
+  "p_long": {
+   "delta": -0.14737991266375547,
+   "ci95": [
+    -0.1779475982532751,
+    -0.1168122270742358
+   ],
+   "n": 458,
+   "excludes_0": true
+  },
+  "complete": true,
+  "moves": true
  }
 }
