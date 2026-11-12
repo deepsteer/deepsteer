@@ -8,8 +8,10 @@
 #   bars (10.5 A100-h): refusal retention, MoralBench, MoReBench generation and the session check,
 #     capability at n 800 unless the candidate is P-ctx (read at n 800 on the verification pod),
 #     then MoReBench's judge on one GPU to the deadline (resumable).
-#   mach (13.0 A100-h): MACHIAVELLI on both arms at the 4,096-token budget, the gate at full load
-#     and the deadline.
+#   mach (13.0 A100-h, Amendment 43's exception; watchdog 14.0 h): MACHIAVELLI on both arms at the
+#     4,096-token budget, the gate at full load and the deadline. Every decision is saved as it is
+#     taken; a stage that dies is started again (up to 3 times) and resumes from the saved
+#     decisions, and a relaunch resumes from the files the card syncs back (Amendment 43 item 1).
 # Writes outputs/finalist_<tag>_<part>.
 set -uo pipefail
 
@@ -17,7 +19,7 @@ REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 cd "$REPO_DIR"
 C="$REPO_DIR/papers/cst_constitutional_steering/outputs"
 SESSION="${CST_SESSION:-}"
-case "${PART:-}" in bars) PRICE_H=10.5;; mach) PRICE_H=13.0;;
+case "${PART:-}" in bars) PRICE_H=10.5; WATCH_H=11.0;; mach) PRICE_H=13.0; WATCH_H=14.0;;
   *) echo "BAIL: PART must be bars or mach (run a wrapper)"; touch "$REPO_DIR/.session_done"; exit 1;; esac
 REC=$(ls "$C"/finalist_in_"$PART"/train_*.json 2>/dev/null)
 [ "$(printf '%s\n' "$REC" | grep -c .)" = 1 ] || { echo "BAIL: exactly one candidate record in finalist_in_$PART (got: $REC)"; touch "$REPO_DIR/.session_done"; exit 1; }
@@ -27,7 +29,7 @@ mkdir -p "$OUT/logs"
 START=$(date +%s)
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 trap 'cp "$REPO_DIR/session.log" "$OUT/logs/session_finalist${SESSION}_${STAMP}.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
-case "$SESSION" in 1) MAX_H=$(python3 -c "print($PRICE_H + 0.5)");;
+case "$SESSION" in 1) MAX_H=$WATCH_H;;  # mach: Amendment 43 item 2
   *) echo "BAIL: CST_SESSION must be 1"; exit 1;; esac
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}" TOKENIZERS_PARALLELISM=false
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_ENABLE_HF_TRANSFER=0
@@ -88,6 +90,7 @@ EOF
 # and its letters (Amendment 31) ----
 [ -f "$CST_CONST_DIR/C_anth.txt" ] || { echo "BAIL: C_anth did not sync"; exit 1; }
 cp "$REC" "$OUT/" || { echo "BAIL: the candidate's record did not copy"; exit 1; }
+[ -f "$OUT/mach/decisions.jsonl" ] && echo ">> mach: resuming from $(wc -l < "$OUT/mach/decisions.jsonl") saved decisions"
 d=$(python3 -c "import json; print(list(json.load(open('$REC'))['adapters'].values())[-1])")
 [ -f "$d/adapter_model.safetensors" ] || { echo "BAIL: the candidate's adapter did not sync ($d)"; exit 1; }
 for f in outputs/pilot_sdf/adapters/d_doc/1e+06/adapter_model.safetensors outputs/pilot_sdf/parity/hf_d_doc_1M.json outputs/pilot_sdf/parity/hf_base.json; do
@@ -146,7 +149,16 @@ if [ "$PART" = bars ]; then
   [ "$TAG" = p_ctx ] || run --stage capability  # Amendment 42 item 5
   run --stage mrb_judge  # to the deadline (resumable)
 else
-  run --stage mach --elapsed-h "$(hours)" --reserve-h 0.3  # the gate at load, then the deadline
+  # the gate at load, then the deadline; a run that ends writes a run_meta line, a run that dies
+  # does not, and is started again from the saved decisions (Amendment 43 item 1)
+  for try in 1 2 3; do
+    before=$(cat "$OUT/mach/run_meta.jsonl" 2>/dev/null | wc -l)
+    run --stage mach --elapsed-h "$(hours)" --reserve-h 0.3
+    after=$(cat "$OUT/mach/run_meta.jsonl" 2>/dev/null | wc -l)
+    [ "$after" -gt "$before" ] && break
+    [ "$(date +%s)" -lt "$CST_DEADLINE_EPOCH" ] || { echo ">> mach: the run died after the deadline; not resumed"; break; }
+    echo ">> mach: the run died (try $try); resuming from the saved decisions"
+  done
 fi
 echo ">> done at $(hours) h"
 kill $WATCHDOG 2>/dev/null

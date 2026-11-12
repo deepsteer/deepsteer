@@ -33,7 +33,6 @@ Amendment 42 item 3 splits the pod in two that run in parallel (``remote_cst_fin
 from __future__ import annotations
 
 import argparse
-import gzip
 import hashlib
 import json
 import multiprocessing as mp
@@ -355,6 +354,39 @@ def _mach_src() -> Path:
     return Path(fetch_machiavelli())
 
 
+def read_rows(path: Path) -> list[dict]:
+    """A JSONL file written line by line and flushed; a torn last line (a killed process) is
+    skipped."""
+    rows = []
+    if path.exists():
+        for x in path.read_text().splitlines():
+            try:
+                rows.append(json.loads(x))
+            except json.JSONDecodeError:
+                continue
+    return rows
+
+
+def partial_episodes(md: Path, done: set) -> dict[tuple, tuple[str, list[dict]]]:
+    """Amendment 43 item 1: per unfinished (arm, game, episode), its latest lineage's decisions in
+    step order from 0 (the last row per step kept, cut at the first gap)."""
+    by: dict[tuple, dict[str, dict[int, dict]]] = {}
+    last: dict[tuple, str] = {}
+    for r in read_rows(md / "decisions.jsonl"):
+        k = (r["arm"], r["game"], r["episode"])
+        if k in done or "lineage" not in r:
+            continue
+        by.setdefault(k, {}).setdefault(r["lineage"], {})[r["step"]] = r
+        last[k] = r["lineage"]
+    out = {}
+    for k, lin in last.items():
+        steps, rows = by[k][lin], []
+        while len(rows) in steps:
+            rows.append(steps[len(rows)])
+        out[k] = (lin, rows)
+    return out
+
+
 def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120, *,
              start_h: float = 0.0, reserve_h: float = 0.3, check_s: float = MACH_CHECK_S,
              deadline_epoch: float | None = None) -> dict:
@@ -363,7 +395,15 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
     same for both arms (MCH's ``request_seed`` on the agent, game, episode, step and attempt), so
     base and candidate are paired by game, episode seed and decision. After ``check_s`` the gate
     at load (``mach_gate``) runs once; a gate that does not fit, or the deadline, stops the read:
-    the episodes in flight are written as ``stopped`` and run again on a resume."""
+    the episodes in flight are written as ``stopped``. **Resume (Amendment 43 item 1):** every
+    decision is written and flushed as it is taken (``decisions.jsonl``, with the episode's
+    lineage); a run restarted after a failure replays each unfinished episode's saved actions
+    through the game engine (no generation), checking each step's prompt hash, loop override and
+    choice count against the saved row, then continues where the episode stopped. A replay that
+    does not match restarts that episode from its first decision under a new lineage. A failure
+    loses the requests in flight, the engine's reload and the replay, not the episodes."""
+    import uuid
+
     import mch_thinking_pod as MT
     from mch_g1_harness import STEP_TIMEOUT_S, EnvHandle, Episode, score
     from mch_newmodel_pod import request_seed
@@ -380,6 +420,8 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
                 if r["status"] != "stopped"}
     queue = [j for j in jobs if j not in done]
     n_run = len(queue)
+    partial = partial_episodes(md, done)
+    n_replayed, n_replay_fail = 0, 0
     src = _mach_src()
     coeffs = json.loads((src / "game_data" / "normalization_coeffs.json").read_text())
     if dry:
@@ -398,13 +440,16 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
 
     rend = MachRenderer(tok, rf.build_format(MODEL, tok))
     f_ep, f_cnt = open(ep_path, "a"), open(md / "_counts.jsonl", "a")
-    f_dec = gzip.open(md / "decisions.jsonl.gz", "at")
-    f_raw = gzip.open(md / "_raw" / "traces.jsonl.gz", "at")
+    f_dec = open(md / "decisions.jsonl", "a")  # flushed per decision: the resume reads it
+    f_raw = open(md / "_raw" / "traces.jsonl", "a")
     ctx = mp.get_context("spawn")
     handles = [EnvHandle(ctx, str(src)) for _ in range(min(concurrency, max(len(queue), 1)))]
     free, active, waiting = list(range(len(handles))), {}, {}
     t0, t_log, n_dec, n_tok, n_req = time.time(), time.time(), 0, 0, 0
     t_prev, active_s, gate, stopped = t0, 0.0, None, None
+    prior = out / "mach_decide.json"
+    if prior.exists() and json.loads(prior.read_text()).get("fits"):
+        gate = json.loads(prior.read_text())  # a resume does not re-run a gate already passed
     dec_arm = {a: [0, 0] for a in ARMS}  # decisions, fallbacks
 
     def add(rid: str, ids: list[int], seed: int, arm: str) -> None:
@@ -420,7 +465,8 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
     def finish(h: int, status: str, payload: tuple) -> None:
         ep = active.pop(h)
         rec = {"model": MODEL, "arm": ep.arm_label, "agent": MACH_AGENT, "game": ep.game,
-               "episode": ep.episode, "seed": ep.seed, "status": status, "decisions": ep.step}
+               "episode": ep.episode, "seed": ep.seed, "status": status, "decisions": ep.step,
+               "lineage": ep.lineage}
         if status == "done":
             steps, points, ach, counts = payload
             rec.update(steps=steps, points_norm=points, achievements=ach,
@@ -450,14 +496,45 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
                        "sha": hashlib.sha256(text.encode()).hexdigest()}
         submit(h)
 
-    def start(h: int) -> None:
-        arm, game, e = queue.pop(0)
+    def begin(h: int, arm: str, game: str, e: int, lineage: str, replay: list[dict]) -> None:
         ep = Episode(MACH_AGENT, game, e, greedy=False)
-        ep.arm_label = arm
+        ep.arm_label, ep.lineage, ep.replay = arm, lineage, list(replay)
         handles[h].conn.send(("reset", (game, ep.seed)))
         _, ep.obs, ep.state, ep.meta = handles[h].conn.recv()
         active[h] = ep
-        new_decision(h)
+        if ep.replay:
+            replay_step(h)
+        else:
+            new_decision(h)
+
+    def start(h: int) -> None:
+        arm, game, e = queue.pop(0)
+        lineage, rows = partial.get((arm, game, e), (uuid.uuid4().hex[:12], []))
+        begin(h, arm, game, e, lineage, rows)
+
+    def replay_step(h: int) -> None:
+        nonlocal n_replayed, n_replay_fail
+        ep = active[h]
+        d = ep.replay.pop(0)
+        s = Pm.SceneState.from_info(ep.obs, ep.info())
+        sha = hashlib.sha256(rend.text(s).encode()).hexdigest()
+        ok = d["step"] == ep.step and d["n"] == s.num_choices and sha == d["prompt_sha256"]
+        if ok:
+            if d["fallback"]:
+                ep.rng.choice(d["n"])  # the random action's draw, as decide_and_step made it
+            ov = ep.loop_detected()
+            if ov:
+                ep.rng.choice(d["n"])
+            ok = ov == d["override"]
+        if not ok:  # this episode starts again from its first decision
+            n_replay_fail += 1
+            active.pop(h)
+            begin(h, ep.arm_label, ep.game, ep.episode, uuid.uuid4().hex[:12], [])
+            return
+        ep.step += 1
+        n_replayed += 1
+        handles[h].conn.send(("step", d["action"]))
+        waiting[h] = time.time() + STEP_TIMEOUT_S
 
     def decide_and_step(h: int) -> None:
         nonlocal n_dec
@@ -478,7 +555,9 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
                                  and st["attempts"] < MT.MAX_ATTEMPTS),
             "override": override, "action": action, "tokens": st["tokens"],
             "capped": st["capped"], "trace_chars": st["trace_chars"],
-            "prompt_tokens": len(st["ids"]), "prompt_sha256": st["sha"]}) + "\n")
+            "prompt_tokens": len(st["ids"]), "prompt_sha256": st["sha"],
+            "lineage": ep.lineage}) + "\n")
+        f_dec.flush()
         ep.step += 1
         n_dec += 1
         handles[h].conn.send(("step", action))
@@ -499,6 +578,7 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
                                 "step": ep.step, "attempt": st["attempts"], "seed": st["seed"],
                                 "prompt_sha256": st["sha"], "trace": trace,
                                 "answer": answer, "capped": capped, "parsed": a}) + "\n")
+        f_raw.flush()
         if a is not None:
             st["action"] = a
             decide_and_step(h)
@@ -555,7 +635,10 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
                 msg = handles[h].conn.recv()
                 if msg[0] == "ok":
                     active[h].obs, active[h].state = msg[1], msg[2]
-                    new_decision(h)
+                    if active[h].replay:
+                        replay_step(h)
+                    else:
+                        new_decision(h)
                 elif msg[0] == "done":
                     finish(h, "done", msg[1:])
                 else:
@@ -576,7 +659,8 @@ def mach_run(out: Path, tag: str, jobs: list, dry: bool, concurrency: int = 120,
         f.close()
     meta = {"rule": "Amendment 41 item 1, Amendment 42 items 1-2", "max_tokens": MACH_TOKENS,
             "effort": MACH_EFFORT,
-            "stopped": stopped, "gate": gate,
+            "stopped": stopped, "gate": gate, "resumed_episodes": len(partial),
+            "replayed_decisions": n_replayed, "replay_restarts": n_replay_fail,
             "agent": MACH_AGENT, "decisions": n_dec, "generated_tokens": n_tok,
             "wall_s": round(time.time() - t0, 1), "jobs": len(jobs), "run": n_run}
     with open(md / "run_meta.jsonl", "a") as f:

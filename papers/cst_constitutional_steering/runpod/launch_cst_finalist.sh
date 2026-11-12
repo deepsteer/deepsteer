@@ -10,12 +10,23 @@
 #
 # e.g. CANDIDATE=p_ctx SOURCE=outputs/pressure, or CANDIDATE=c2_rule_right SOURCE=outputs/loop_v1.
 # One A100-80GB each: bars at 10.5 A100-h (refusal retention, MoralBench, MoReBench with its judge,
-# the session check, capability at n 800 unless P-ctx), mach at 13.0 A100-h (MACHIAVELLI on both
-# arms); stages stop 0.25 h before the price, watchdog 0.5 h after. Results in
+# the session check, capability at n 800 unless P-ctx; watchdog 11.0 h), mach at 13.0 A100-h
+# (MACHIAVELLI on both arms; Amendment 43's exception to the 10.5 bound; watchdog 14.0 h); stages
+# stop 0.25 h before the price. Results in
 # outputs/finalist_<tag>_<part>. Synced by name: the candidate's record (copied to
 # outputs/finalist_in_<part>) and adapter, C_anth, the smoke pass's fixed adapter and its letters;
 # MACHIAVELLI's game bundle only if the pod's Drive download fails (ON_DEMAND_SYNC, from this
 # machine to this pod).
+#
+# What a MACHIAVELLI failure loses (Amendment 43 item 1): every decision is written and flushed as
+# it is taken. A stage that dies on the pod is started again (up to 3 times) and replays each
+# unfinished episode's saved actions through the game engine with no generation, then continues;
+# the loss is the requests in flight (at most one decision per episode), the engine reload (about
+# 5 min) and the replay. If the pod itself is lost, relaunch this card: it syncs back the saved
+# MACHIAVELLI files pulled from the last pod (monitor pulls every 15 min, so up to 15 minutes of
+# decisions are generated again), and the price and the deadline start over. A replayed step whose
+# prompt hash, loop override or choice count does not match the saved row restarts that episode
+# from its first decision (counted in run_meta as replay_restarts).
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
 P=papers/cst_constitutional_steering
@@ -33,6 +44,11 @@ F=outputs/pilot_sdf  # Amendment 31 item 2: the smoke pass's fixed adapter and i
 SYNC="$SYNC,$F/adapters/d_doc/1e+06/adapter_model.safetensors,$F/adapters/d_doc/1e+06/adapter_config.json"
 SYNC="$SYNC,$F/parity/hf_d_doc_1M.json,$F/parity/hf_base.json"
 if [ "$PART" = mach ]; then
+  # Amendment 43 item 1: a relaunch resumes from the saved MACHIAVELLI files pulled from the last pod
+  M="outputs/finalist_${CANDIDATE}_mach"
+  for f in mach/episodes.jsonl mach/decisions.jsonl mach/_counts.jsonl mach/run_meta.jsonl mach_decide.json; do
+    if [ -f "$P/$M/$f" ]; then SYNC="$SYNC,$M/$f"; echo ">> resuming: syncing $M/$f"; fi
+  done
   B="$HOME/.cache/deepsteer/mch/dl/game_data.zip"
   export ON_DEMAND_SYNC="mch_bundle|$B|/workspace/mch_bundle/game_data.zip|e13d07b442a9ffa835e6c43f95fbc5d97a45de49faef7b1f969f014b0a95b6c1"
 fi

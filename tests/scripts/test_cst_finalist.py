@@ -3,7 +3,6 @@ papers/cst_constitutional_steering/scripts/cst_finalist_pod.py."""
 
 from __future__ import annotations
 
-import gzip
 import json
 import sys
 from pathlib import Path
@@ -102,11 +101,12 @@ def test_mach_read_pairs_by_game_and_seed_and_flags_a_cut_read(tmp_path):
                     continue  # the deadline cut one candidate episode
                 sc = {k: {"r0": v + e} for k in ("violations.Σ", "power.Σ", "utility.Σ")}
                 eps.append({"arm": arm, "game": g, "episode": e, "seed": seed, "status": "done",
-                            "decisions": 10, "points_norm": 20.0 + e, "scores": sc})
-                decs.append({"arm": arm, "fallback": False, "capped": [False]})
+                            "decisions": 10, "points_norm": 20.0 + e, "scores": sc,
+                            "lineage": "L1"})
+                decs.append({"arm": arm, "game": g, "episode": e, "step": 0, "lineage": "L1",
+                             "fallback": False, "capped": [False]})
     (md / "episodes.jsonl").write_text("".join(json.dumps(x) + "\n" for x in eps))
-    with gzip.open(md / "decisions.jsonl.gz", "wt") as f:
-        f.write("".join(json.dumps(x) + "\n" for x in decs))
+    (md / "decisions.jsonl").write_text("".join(json.dumps(x) + "\n" for x in decs))
     r = FR.mach_read(tmp_path)
     assert r["pairs"] == 59 and r["registered"] is False and r["n_games"] == 30
     assert abs(r["candidate_minus_base"]["violations"]["point"] + 10.0) < 1e-9
@@ -153,7 +153,7 @@ def test_mach_pairs_both_arms_and_stops_at_the_gate(tmp_path, monkeypatch):
     assert meta["stopped"] is None and meta["decisions"] > 0
     eps = [json.loads(x) for x in open(tmp_path / "mach" / "episodes.jsonl")]
     assert {e["arm"] for e in eps} == {"base", "cand"} and len({e["seed"] for e in eps}) == 1
-    decs = [json.loads(x) for x in gzip.open(tmp_path / "mach" / "decisions.jsonl.gz", "rt")]
+    decs = F.read_rows(tmp_path / "mach" / "decisions.jsonl")
     by = {a: [(d["step"], d["attempts"]) for d in decs if d["arm"] == a] for a in F.ARMS}
     assert by["base"] and by["base"][:5] == by["cand"][:5]  # same seeds, same stub replies
     stop = tmp_path / "stop"
@@ -165,6 +165,30 @@ def test_mach_pairs_both_arms_and_stops_at_the_gate(tmp_path, monkeypatch):
     assert eps and all(e["status"] == "stopped" for e in eps)
     meta = F.mach_run(stop, tag, F.mach_jobs([game], (0,)), True, check_s=1e9)
     assert meta["run"] == 2  # the stopped episodes run again on a resume
+
+
+@pytest.mark.slow
+def test_mach_resumes_from_saved_decisions_without_regenerating(tmp_path, monkeypatch):
+    # most probable failure (Amendment 43 item 1): a late failure loses every episode in flight;
+    # after a kill (no episode rows written, a torn last line), the resume replays the saved actions
+    # through the engine, generates nothing it already had, and ends where the full run ended
+    src = _src()
+    monkeypatch.setattr(F, "_mach_src", lambda: src)
+    tag = _candidate(tmp_path)
+    jobs = F.mach_jobs(["avatar-of-the-wolf"], (0,))
+    full = F.mach_run(tmp_path, tag, jobs, True, check_s=1e9)
+    md = tmp_path / "mach"
+    first = {(e["arm"], e["game"], e["episode"]): e for e in F.read_rows(md / "episodes.jsonl")}
+    (md / "episodes.jsonl").write_text("")  # killed before any episode row was written
+    with open(md / "decisions.jsonl", "a") as f:
+        f.write('{"arm": "base", "game": "torn')
+    again = F.mach_run(tmp_path, tag, jobs, True, check_s=1e9)
+    assert again["resumed_episodes"] == 2 and again["replay_restarts"] == 0
+    assert again["replayed_decisions"] == full["decisions"] and again["decisions"] == 0
+    second = {(e["arm"], e["game"], e["episode"]): e for e in F.read_rows(md / "episodes.jsonl")}
+    for k, e in first.items():
+        assert second[k]["status"] == "done" and second[k]["scores"] == e["scores"]
+        assert second[k]["lineage"] == e["lineage"] and second[k]["decisions"] == e["decisions"]
 
 
 @pytest.mark.slow

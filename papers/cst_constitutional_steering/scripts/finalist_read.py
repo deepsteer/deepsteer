@@ -124,7 +124,16 @@ def mach_read(out: Path) -> dict | None:
     if not f.exists():
         return None
     eps = [e for e in _jl(f) if e["status"] == "done"]
-    decs = _jl(out / "mach" / "decisions.jsonl.gz")
+    import cst_finalist_pod as FP
+
+    # a finished episode's decisions: its lineage's rows, the last row per step (Amendment 43)
+    lin = {(e["arm"], e["game"], e["episode"]): e.get("lineage") for e in eps}
+    last: dict[tuple, dict] = {}
+    for x in FP.read_rows(out / "mach" / "decisions.jsonl"):
+        k = (x["arm"], x["game"], x["episode"])
+        if k in lin and x.get("lineage") == lin[k]:
+            last[k + (x["step"],)] = x
+    decs = list(last.values())
     by = {a: [e for e in eps if e["arm"] == a] for a in ("base", "cand")}
     pairs = ({(e["game"], e["seed"]) for e in by["base"]}
              & {(e["game"], e["seed"]) for e in by["cand"]})
