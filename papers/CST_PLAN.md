@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.30, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) 33 (the three shares' names; selection and comparison on different cells) 34 (tomorrow's branches withdrawn; P-ctx's capability and injected-order reads lead tomorrow's pod) and 35 (the P-ctx verification pod), §13.** v0.1 was the draft for the
+Status: **v0.31, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) 33 (the three shares' names; selection and comparison on different cells) 34 (tomorrow's branches withdrawn; P-ctx's capability and injected-order reads lead tomorrow's pod) 35 (the P-ctx verification pod) and 36 (the directional kind-split verdict; the content gate of record; P-ctx-f and the held-out cell at k 4; SDF parked), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -2004,3 +2004,34 @@ opens with the fixed smoke check (Amendment 31). In this order, on one session b
 
 Tonight's summary also carries P-ctx's cell A′ read from 2-ctx (the rule-right originals' shift
 against the session base, Amendment 15's bar).
+
+### Amendment 36 (2026-11-11; author, rulings on the 11 November summary; zero GPU except item 3; on origin before the verification pod)
+
+1. **Amendment 32 item 8, D-doc: the directional reading is of record** (a move is a fall; a rise is
+   Amendment 21's case). Verdict: **the steadfast-agent genre on both corpora.** The undirected
+   reading ("both move") stays in CST-A36 as the fork. Beside it: D-doc without stories raises
+   following by +0.094 [+0.052, +0.134], with the corpus audit's operator-word rates (D-doc's
+   essays, commentary and FAQs 8.5-11.5 per 1,000 words) as the candidate reason.
+2. **The content gate of record** (84 scenarios) finds no content cell (A0 at 0.777; A0s − A0 +0.033
+   [−0.024, +0.089]). The selection-safe subset (12 scenarios, +0.417 [+0.19, +0.65]) is
+   **exploratory** and promotes one build: a selected content cell of at least 60 scenarios by the
+   same procedure (distinctive tenets, weighted to the priority kind; select on A0's first
+   rollouts, confirm with A0s against A0's later rollouts). Writing is zero GPU; the screening reads
+   ride the next pod.
+3. **The verification pod (Amendment 35) launches tonight with two changes:**
+   (a) **P-ctx-f replaces the half-data rung:** P-ctx's training rollouts minus those whose action
+   contradicts the scenario's kind (the teacher following a directed-away order, or not following a
+   legitimate one), by the saved action read (`outputs/pressure/act.jsonl`); unclear labels are
+   kept, flagged. The count dropped is reported by kind. Then its screen read and the held-out cell.
+   (b) **The held-out free-form cell is read at k 4** on the base, the second draw and P-ctx-f.
+   **Registered before data, P-ctx-f against the first P-ctx,** each against this pod's session
+   base: *the over-steer was the teacher's* when P-ctx-f's held-out legitimate-order following
+   returns to the base's (difference CI including 0) while its lettered ordered share stays below
+   the base's (CI wholly below 0). *The filter costs the gain* when both fall back to the base
+   (held-out legitimate CI including 0 and lettered ordered CI including 0; *the reading of "both
+   fall", flagged*). Any other combination is reported as unregistered. Cell A′'s rule-right shift
+   is read beside under the same two branches (specific: CI not entirely above 0.03).
+4. **Zero GPU, tonight or tomorrow:** cell A′ for D-doc, D-neutral and the four kind-split adapters
+   where their rollouts exist, each against its own session base; pool nothing across draws.
+   CST-A35's wording carries the held-out cell's detection bar, not "neither moves".
+5. **The SDF line is parked after item 4.** No further SDF pods without the author.
