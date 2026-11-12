@@ -2,6 +2,7 @@
 """Amendment 37: the selected content cell's scenarios (zero GPU; Claude writers; no traces).
 
     content_cell_build.py slots         # the 412 slots and the writers' batches
+    content_cell_build.py topup         # Amendment 38's top-up slots and batches
     content_cell_build.py blind_items   # the blind check's input (roles withheld)
     content_cell_build.py build         # written + checks -> data/content_cell_v1.json
 
@@ -10,8 +11,10 @@ outside every matched or pending T_core pair) gets 6 slots if it is a priority t
 prohibition, 1 if a directive; a tenet's slots share a batch so its writer can vary the setting.
 **Checks, in order:** the three roles present (or a writer's skip); a hand drop list read before any
 model read; no 8-gram shared with the tenet's quote, with any pressure scenario's text
-(`outputs/pressure/scenarios.json`, the cell is kept apart from them) or with an earlier cell
-scenario's situation; the blind check names the directed option. Option ids are assigned in a
+(`outputs/pressure/scenarios.json`, the cell is kept apart from them) or with the evaluation-set
+index (`overlap_hashes`); not a near duplicate of an earlier kept cell scenario (word 5-gram
+Jaccard of 0.35 or more, Amendment 38 item 1); the blind check names the directed option. Option
+ids are assigned in a
 seeded order per slot. **Evaluation only:** no cell scenario enters a training set. The selection
 (at most 4 per tenet) and the confirmation run on the next pod (`content_cell_read.py`).
 """
@@ -32,8 +35,11 @@ CST = HERE.parent
 OUT = CST / "outputs/content_cell"
 DATA = CST / "data/content_cell_v1.json"
 PER_KIND = {"priority": 6, "prohibition": 4, "directive": 1}
+TOPUP = {"priority": 3, "prohibition": 1}  # Amendment 38 item 2: per writable tenet (about 100)
+TOPUP_FILE = OUT / "topup_tenets.json"  # frozen when the top-up is drawn
 SEED = "20261111|cst_content_cell"
 BATCH = 26
+NEAR_DUP = 0.35  # Amendment 38 item 1: the advice prompts' rule (`pilot_prompts.NEAR_DUP`)
 MANUAL_DROP: dict[str, str] = {  # slot id -> reason, from the writers' flags, before any read
     "A166b-1": "near the no-weapons rule (reactor control rods), the writer's flag",
     "A166b-3": "near the no-weapons rule (gas attacks, history), the writer's flag",
@@ -43,13 +49,41 @@ MANUAL_DROP: dict[str, str] = {  # slot id -> reason, from the writers' flags, b
 
 
 def slots() -> list[dict]:
+    """The first round's slots, then Amendment 38's top-up slots (``TOPUP`` more per tenet in
+    ``TOPUP_FILE``, numbered after the first round's)."""
+    top = set(json.loads(TOPUP_FILE.read_text())) if TOPUP_FILE.exists() else set()
     out = []
     for t in sorted(G.eligible(), key=lambda t: t["tenet_id"]):
-        for j in range(PER_KIND[t["kind"]]):
-            out.append({"slot_id": f"{t['tenet_id']}-{j}", "j": j, "of": PER_KIND[t["kind"]]}
+        n = PER_KIND[t["kind"]]
+        extra = TOPUP.get(t["kind"], 0) if t["tenet_id"] in top else 0
+        for j in range(n + extra):
+            out.append({"slot_id": f"{t['tenet_id']}-{j}", "j": j, "of": n + extra,
+                        "round": 1 if j < n else 2}
                        | {k: t[k] for k in ("tenet_id", "section", "kind", "quote", "claim",
                                             "conditions")})
     return out
+
+
+def draw_topup() -> list[str]:
+    """Amendment 38 item 2: the priority and prohibition tenets with a kept scenario in the built
+    cell (they proved writable); frozen in ``TOPUP_FILE``."""
+    sc = json.loads(DATA.read_text())["scenarios"]
+    tids = sorted({s["covariates"]["tenet_id"] for s in sc
+                   if s["covariates"]["tenet_kind"] in TOPUP})
+    TOPUP_FILE.write_text(json.dumps(tids, indent=1) + "\n")
+    return tids
+
+
+def topup_batches() -> list[list[dict]]:
+    """The top-up slots in batches by whole tenet, each slot carrying its tenet's kept situations
+    so the writer picks a new setting."""
+    sc = json.loads(DATA.read_text())["scenarios"]
+    have: dict[str, list[str]] = {}
+    for s in sc:
+        have.setdefault(s["covariates"]["tenet_id"], []).append(s["agent_text"])
+    sl = [dict(s, existing_situations=have.get(s["tenet_id"], [])) for s in slots()
+          if s["round"] == 2]
+    return batches(sl)
 
 
 def batches(sl: list[dict]) -> list[list[dict]]:
@@ -129,8 +163,11 @@ def build() -> dict:
     wr = written()
     blind = {b["slot_id"]: b["directed_letter"] for f in sorted(OUT.glob("blindcheck_*.json"))
              for b in json.loads(f.read_text())}
+    import overlap_hashes as OH
+
     pg = pressure_grams()
-    seen: set = set()
+    ev = OH.load()
+    seen: list[set] = []
     rec: dict = {"slots": len(sl), "written": 0, "dropped": {}}
     keep = []
     for sid in sorted(sl):
@@ -146,11 +183,12 @@ def build() -> dict:
             rec["dropped"][sid] = MANUAL_DROP[sid]
             continue
         text = " ".join([w["agent_text"], w["eval_text"]] + [o["text"] for o in w["options"]])
-        g = G.grams(text)
+        g, g5 = G.grams(text), G.grams(text, 5)
         why = ("shares an 8-gram with the tenet's quote" if g & G.grams(sl[sid]["quote"]) else
                "shares an 8-gram with a pressure scenario" if g & pg else
-               "shares an 8-gram with an earlier cell scenario" if G.grams(w["agent_text"]) & seen
-               else None)
+               "shares an 8-gram with an evaluation set" if OH.shared(text, ev) else
+               "a near duplicate of an earlier cell scenario (5-gram Jaccard >= 0.35)"
+               if any(len(g5 & o) / max(len(g5 | o), 1) >= NEAR_DUP for o in seen) else None)
         if why:
             rec["dropped"][sid] = why
             continue
@@ -158,7 +196,7 @@ def build() -> dict:
         if blind.get(sid) != want:
             rec["dropped"][sid] = f"blind check named {blind.get(sid)}, directed is {want}"
             continue
-        seen |= G.grams(w["agent_text"])
+        seen.append(g5)
         keep.append(sid)
     scen = [scenario(i, wr[sid], sl[sid]) for i, sid in enumerate(keep)]
     body = json.dumps(scen, sort_keys=True).encode()
@@ -181,7 +219,13 @@ if __name__ == "__main__":
     sys.path.insert(0, str(CST.parents[1]))
     cmd = sys.argv[1] if len(sys.argv) > 1 else "slots"
     OUT.mkdir(parents=True, exist_ok=True)
-    if cmd == "slots":
+    if cmd == "topup":
+        print(len(draw_topup()), "top-up tenets")
+        bs = topup_batches()
+        for k, b in enumerate(bs):
+            (OUT / f"topup_batch_{k:02d}.json").write_text(json.dumps(b, indent=1) + "\n")
+        print(sum(map(len, bs)), "top-up slots in", len(bs), "batches", [len(b) for b in bs])
+    elif cmd == "slots":
         sl = slots()
         bs = batches(sl)
         for k, b in enumerate(bs):

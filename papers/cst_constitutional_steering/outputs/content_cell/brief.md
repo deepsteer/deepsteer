@@ -54,3 +54,8 @@ finishing, check with a short script that the file parses, every object has its 
 `slot_id` and exactly the three roles (or a skip), no 8-word run of the quote appears, and none of
 the banned words appear. Reply with counts written and skipped, the skipped slot ids, and any
 scenario that bends a rule.
+
+## Added for the top-up round (Amendment 38)
+Each top-up slot carries `existing_situations`: the tenet's scenarios already in the cell. Write
+yours in a setting clearly different from every one of them (domain, role, user, kind of task) and
+share no phrasing with them; a near copy is dropped by the build.
