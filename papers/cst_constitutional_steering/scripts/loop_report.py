@@ -106,6 +106,31 @@ def a2_diff_ci(out: Path, tag: str) -> dict | None:
             "n": len(ids)}
 
 
+def rule_keeping(out: Path) -> dict | None:
+    """Amendment 40 item 3: on the rule-right scenarios, the share of rollouts keeping the rule (the
+    saved action read's "follows") for the teacher and, once read, the base (A0 at k 2), with the
+    paired difference (teacher − base, scenario bootstrap)."""
+    import pctx_followups as F
+
+    kd = out / "kinds" / "rule_right"
+    if not (kd / "act.jsonl").exists():
+        return None
+    lab = F.labels(kd / "act.jsonl")
+    import cst_pressure_pod as R
+
+    u = {arm: F.follow(R.rollouts(kd, arm), lab) for arm in ("a0s", "a0")
+         if (kd / "roll" / arm).exists()}
+    res = {"teacher_a0s": F.mean(u["a0s"], sorted(u["a0s"])) if u.get("a0s") else None,
+           "n_scenarios": len(u.get("a0s", {}))}
+    if u.get("a0"):
+        d = F.paired(u["a0s"], u["a0"], sorted(set(u["a0s"]) & set(u["a0"])))
+        res |= {"base_a0": F.mean(u["a0"], sorted(u["a0"])), "teacher_minus_base": d,
+                "teacher_keeps_less": d["ci95"][1] < 0}
+    else:
+        res["base_a0"] = "pending: the base's rollouts on the kind are not read on this pod"
+    return res
+
+
 def build(out: Path) -> dict:
     import ctx_read as C
     import s0a_analysis as A
@@ -153,6 +178,7 @@ def build(out: Path) -> dict:
                 "a2_to_teacher_or_below": d["ci95"][0] <= 0,  # CI includes 0 or lies below
                 "lettered_gain_stays": g["ci95"][1] < 0, "harm_conditioned_stays": hc[0] > 0}
             r["rule_right_fix"]["passes"] = all(r["rule_right_fix"].values())
+            r["rule_keeping"] = rule_keeping(out)
         elif cfg and not cfg.get("extra_kinds") and r.get("vs_base"):
             r["reproduction"] = {"delta": r["vs_base"]["delta"], "draws": DRAWS,
                                  "inside_range": min(DRAWS.values()) <= r["vs_base"]["delta"]
@@ -182,6 +208,14 @@ def markdown(res: dict) -> str:
             lines += ["", f"**{t}, the rule-right fix (registered):** "
                       f"{json.dumps(r['rule_right_fix'])}; A′ originals minus the teacher's "
                       f"{fmt(r['a2_minus_teacher_ci'])}"]
+            k = r.get("rule_keeping") or {}
+            lines += [f"Keeping the rule on the rule-right scenarios (Amendment 40): teacher "
+                      f"{n3(k.get('teacher_a0s'))}, base {k.get('base_a0')}"
+                      + (f", teacher − base {fmt(k['teacher_minus_base'])}"
+                         if k.get("teacher_minus_base") else "")]
+            if k.get("teacher_keeps_less"):
+                lines += ["*The teacher keeps the rule less than the base: a failed config 2 is "
+                          "a statement about the teacher's rollouts, not about adding the kind.*"]
         if "reproduction" in r:
             lines += ["", f"**{t}, the reproduction:** {json.dumps(r['reproduction'])}"]
     return "\n".join(lines) + "\n"
