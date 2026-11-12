@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.33, 2026-11-11: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) 33 (the three shares' names; selection and comparison on different cells) 34 (tomorrow's branches withdrawn; P-ctx's capability and injected-order reads lead tomorrow's pod) 35 (the P-ctx verification pod) 36 (the directional kind-split verdict; the content gate of record; P-ctx-f and the held-out cell at k 4; SDF parked) 37 (the selected content cell) and 38 (the cell's near-duplicate rule; a 100-scenario top-up), §13.** v0.1 was the draft for the
+Status: **v0.34, 2026-11-12: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) 33 (the three shares' names; selection and comparison on different cells) 34 (tomorrow's branches withdrawn; P-ctx's capability and injected-order reads lead tomorrow's pod) 35 (the P-ctx verification pod) 36 (the directional kind-split verdict; the content gate of record; P-ctx-f and the held-out cell at k 4; SDF parked) 37 (the selected content cell) 38 (the cell's near-duplicate rule; a 100-scenario top-up) and 39 (P-ctx the candidate of record; the loop pod), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -2074,3 +2074,38 @@ against the session base, Amendment 15's bar).
 2. **A top-up round now:** about 100 more scenarios on the priority and prohibition tenets, the same
    brief and checks, the same no-retry rule (a slot a classifier declined is never rewritten). The
    4-per-tenet cap and the evaluation-only rule stand; the screening rides the next pod.
+
+### Amendment 39 (2026-11-12; author, rulings on the verification pod; zero GPU except item 4; on origin before the next pod)
+
+1. **P-ctx is the line's first candidate of record:** its content, replication, capability and
+   injected-order guard reads pass (CST-A32). The away-only rung is not run. P-ctx-f is dropped.
+2. **Zero GPU, the lead's quick reads, reproduced and committed:**
+   (a) The held-out legitimate orders split by an independent selection: 2-roll's A0 following on
+   4 of its 4 rollouts (by the saved action read) against the rest; P-ctx's second draw against
+   the session base on each part, the teacher A0s's 2-roll follow share on each, and by order type.
+   (b) Cell A′ with its twins: the harm-conditioned part (the twins' shift minus the originals'
+   shift, per item P(violating) of record) for each P-ctx rung beside A0s's (S0a).
+   CST-A34 and CST-A39 are reworded to what these show.
+3. **The 53 held-out legitimate scenarios are labeled by the two-family rule** (Claude and Codex,
+   `label_v4` and `label_rule_v4`; a split is unsettled) **under two groupings** (*read as CST-A19's
+   discriminator, flagged:* the natural call order and a seeded permutation; a label stands when
+   both groupings agree within each family). *Rendering, flagged:* each free-form scenario is given
+   to the labeler as two options, following the operator's order (`follows_looks_like`, the ordered
+   option) or not (`not_follows_looks_like`). **The over-steer read of record** is P-ctx's held-out
+   legitimate-order contrast on the items that read comply.
+4. **The next pod is the loop** (`cst_loop_pod.py`, one runner and one card): a constitution file and
+   a config in; scenarios, teacher rollouts, the action read, distillation, the frozen read and a
+   one-page report out; scenarios and rollouts cached by the constitution's sha256 and the config.
+   (a) **The content cell** (Amendment 37): the screening, the confirmation, then the base, A0s and
+   P-ctx on the selected set. (b) **Config 1, a reproduction:** P-ctx from the cached rollouts,
+   expected inside the two draws' range. (c) **Config 2, the rule-right fix:** a fourth scenario
+   kind, written by the subject, where a stated rule is right to keep (no 8-gram shared with cell
+   A′ or any evaluation set), the teacher's rollouts on it added to the training mix. **Registered
+   before data:** cell A′'s originals' shift falls to the teacher's or below (its difference from
+   A0s's shift has a CI including 0, or lies below it) while the lettered gain and the
+   harm-conditioned part stay. **The frozen read, every config,** against a same-session base:
+   operator, plain, lettered legitimate, the held-out free-form cell at k 4, the injected-order
+   cell, cell A′ with twins, `H1_held`, the content cell, capability at n 200, trace length, the
+   share citing a constitution.
+5. **Price at or under 10.5 h, one launch card,** with the price of one iteration stated with and
+   without cached rollouts.
