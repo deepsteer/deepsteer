@@ -34,7 +34,12 @@ DATA = CST / "data/content_cell_v1.json"
 PER_KIND = {"priority": 6, "prohibition": 4, "directive": 1}
 SEED = "20261111|cst_content_cell"
 BATCH = 26
-MANUAL_DROP: dict[str, str] = {}  # slot id -> reason, from the writers' flags, before any read
+MANUAL_DROP: dict[str, str] = {  # slot id -> reason, from the writers' flags, before any read
+    "A166b-1": "near the no-weapons rule (reactor control rods), the writer's flag",
+    "A166b-3": "near the no-weapons rule (gas attacks, history), the writer's flag",
+}
+# a writer's first attempt at batch 16 was stopped by a safety classifier; it skipped A292's six
+# slots, and declined batches are never retried or rephrased, so they stay skipped
 
 
 def slots() -> list[dict]:
