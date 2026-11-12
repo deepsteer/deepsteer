@@ -1,0 +1,16 @@
+{
+ "constitution_sha256": "c2a56f027e4a60a7db4a228a66463a1b75b1616302dc325416eb6a8b56d8dae4",
+ "teacher": "a0s",
+ "k": 2,
+ "files": {
+  "scenarios.json": "91386fc4aec9edcb60d4eae71e5f8f3f1e75a6e01101d34f8aa7cf2501e057d3",
+  "act.jsonl": "465aef4c99493e129c4b566fc523ddc5790ccaba5ef9b0da32e3936acaf77153",
+  "roll/a0s/chunk_000.jsonl": "cbfb028cb1842021b804c3c5b98c87dccaeb9bf405729b40d8d2ae69d94d0fb7",
+  "roll/a0s/chunk_001.jsonl": "fe0f3d6467d57aac99d7e86ebf9e1b6e73e1f5f06e15e1df86ccc494ee37379f",
+  "roll/a0s/chunk_002.jsonl": "f346f90fcf85b5ad6a8d3d16870de2bc19aeca32a1c51aba1c5216f1b567f632",
+  "roll/a0s/chunk_003.jsonl": "8283080d36d1c8dd025985287cd96aebbbcb22159413718f17928de05f4a1b59",
+  "roll/a0s/chunk_004.jsonl": "a1fd86e55a0807e059041d2aa5ace6c5daa792083b1c97505a9123b796308401"
+ },
+ "rule": "Amendment 39 item 4: 2-roll's scenarios, A0s rollouts and action read, the cache of record",
+ "source": "outputs/pressure (2-roll and 2-act)"
+}

@@ -71,6 +71,8 @@ LEGIT_K = {"operator": 4}  # Amendment 19 rider d: the legitimate-order cell at 
 LEGIT = CST / "data/legit_order_scenarios_v1.json"
 CONTENT = CST / "data/content_scenarios_v1.json"  # Amendment 32 item 9: the content gate, lettered
 CONTENT_K = {"plain": 4}
+CELL = CST / "data/content_cell_v1.json"  # Amendment 37: the selected content cell, evaluation only
+CELL_K = {"plain": 4}
 FORCED = (ST / "data/st_fxh_cellA2_forced_v1.json",
           ST / "data/st_fxh_cellA2_twins_forced_v1.json")
 PARTS = tuple([f"panel_{c}" for c in PANEL_K] + [f"h1_{c}" for c in H1_K] + ["forced_plain"])
@@ -100,9 +102,11 @@ def scenarios(dry: bool) -> dict:
     sets["legit"] = sorted(legit)
     content = {s.id: s for s in load_scenarios(CONTENT)[0]} if CONTENT.exists() else {}
     sets["content"] = sorted(content)  # rendered on the plain condition, no order (h1's path)
+    cell = {s.id: s for s in load_scenarios(CELL)[0]} if CELL.exists() else {}
+    sets["cell"] = sorted(cell)
     if dry:
         sets = {k: v[:2] for k, v in sets.items()}
-    objs = {i: s for i, (s, _) in by.items()} | forced | legit | content
+    objs = {i: s for i, (s, _) in by.items()} | forced | legit | content | cell
     return {"ids": sets, "objs": objs}
 
 
@@ -111,7 +115,8 @@ def part_units(part: str, sc: dict, k_override: dict[str, int] | None = None
     """(set, condition, scenario id, k) for every rollout of ``part``; ``k_override`` maps a part
     to its k (the pilot read's k 2, 4 and 8, Amendment 20 item 2)."""
     set_, cond = part.split("_", 1)
-    k = {"panel": PANEL_K, "h1": H1_K, "legit": LEGIT_K, "content": CONTENT_K}.get(
+    k = {"panel": PANEL_K, "h1": H1_K, "legit": LEGIT_K, "content": CONTENT_K,
+         "cell": CELL_K}.get(
         set_, {"plain": FORCED_K})[cond]
     k = (k_override or {}).get(part, k)
     return [(set_, cond, sid, j) for sid in sc["ids"][set_] for j in range(k)]

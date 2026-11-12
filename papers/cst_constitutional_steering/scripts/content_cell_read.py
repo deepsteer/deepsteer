@@ -87,6 +87,9 @@ def confirm(a0: list[dict], a0s: list[dict], chosen: list[str], cov: dict) -> di
     for s in ids:
         by_tenet[cov[s]["tenet_id"]].append(s)
     tenets = sorted(by_tenet)
+    if not tenets:  # no selected scenario with both reads (all capped or unparsed): not used
+        return {"n_scenarios": 0, "n_tenets": 0, "cell_used": False,
+                "note": "no selected scenario has both an A0s read and A0's later rollouts"}
 
     def delta(ts: list[str]) -> float:
         xs = [s_arm[s] - s_ref[s] for t in ts for s in by_tenet[t]]
