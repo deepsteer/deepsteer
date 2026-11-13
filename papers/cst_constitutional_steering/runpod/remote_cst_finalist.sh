@@ -103,8 +103,14 @@ from huggingface_hub import snapshot_download
 pins = {"qwen38_27b": ("Qwen/Qwen3.8-27B", "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0")}
 if os.environ["PART"] == "bars":  # MoReBench's judge
     pins["gpt_oss_120b"] = ("openai/gpt-oss-120b", "b5c939de8f754692c1647ca79fbf85e8c1e70f8a")
-print(json.dumps({k: snapshot_download(r, revision=v, ignore_patterns=["original/*", "metal/*"])
-                  for k, (r, v) in pins.items()}))
+got = {k: snapshot_download(r, revision=v, ignore_patterns=["original/*", "metal/*"])
+       for k, (r, v) in pins.items()}
+if os.environ["PART"] == "mach":  # the gate tests' dry judge reads gpt-oss's tokenizer only
+    got["gpt_oss_120b_tokenizer"] = snapshot_download(
+        "openai/gpt-oss-120b", revision="b5c939de8f754692c1647ca79fbf85e8c1e70f8a",
+        allow_patterns=["tokenizer*", "special_tokens_map.json", "config.json",
+                        "generation_config.json", "chat_template*"])
+print(json.dumps(got))
 EOF
 echo ">> models: $(cat "$OUT/logs/models_finalist${SESSION}.json")"
 $PY -c 'from deepsteer.datasets.morebench import fetch_morebench; from deepsteer.datasets.moralbench import fetch_moralbench; print(">> data:", fetch_morebench(), fetch_moralbench())' \
