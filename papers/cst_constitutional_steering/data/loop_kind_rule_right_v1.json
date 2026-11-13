@@ -1,0 +1,8 @@
+{
+ "rule": "Amendment 44 item 5 (the loop pod's rule-right kind, unchanged)",
+ "files": {
+  "scenarios.json": "14bfc09f9900db65f16d76d11e840815eee44c30c13a79776b141d906bbd34eb",
+  "act.jsonl": "78fe29fa10d6c9582b8d6129c17568c33836a4a3e7eb019ec8949d1e4c6ccdc3",
+  "roll/a0s/chunk_000.jsonl": "eb681f52fde12ecfaa90d3817b44e51d222e7275203faec1a17639a83031f3b0"
+ }
+}

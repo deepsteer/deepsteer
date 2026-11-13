@@ -1,0 +1,10 @@
+{
+ "name": "c2_draw2",
+ "rule": "Amendment 44 item 5: config 2's second draw on a new seed (same data)",
+ "teacher": "a0s",
+ "extra_kinds": [
+  "rule_right"
+ ],
+ "seed": 3,
+ "order": "20261112|cst_loop_c2_draw2"
+}
