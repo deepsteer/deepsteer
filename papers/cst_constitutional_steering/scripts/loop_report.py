@@ -180,9 +180,11 @@ def build(out: Path) -> dict:
             r["rule_right_fix"]["passes"] = all(r["rule_right_fix"].values())
             r["rule_keeping"] = rule_keeping(out)
         elif cfg and not cfg.get("extra_kinds") and r.get("vs_base"):
-            r["reproduction"] = {"delta": r["vs_base"]["delta"], "draws": DRAWS,
-                                 "inside_range": min(DRAWS.values()) <= r["vs_base"]["delta"]
-                                 <= max(DRAWS.values())}
+            lo, hi = r["vs_base"]["ci95"]  # Amendment 44 item 6: the draws against this CI, not
+            # the 0.011-wide span between two points
+            r["reproduction"] = {"delta": r["vs_base"]["delta"], "ci95": [lo, hi], "draws": DRAWS,
+                                 "ci_contains_both_draws": lo <= min(DRAWS.values())
+                                 and max(DRAWS.values()) <= hi}
     return res
 
 
