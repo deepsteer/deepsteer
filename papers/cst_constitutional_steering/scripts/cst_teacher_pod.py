@@ -45,6 +45,7 @@ RUN = CST / "outputs/finalist_c2_rule_right_mach/mach"  # the saved decisions (s
 ARMS = {"base": "ThinkCoTAgent", "good_behavior": "ThinkGoodCoTAgent",
         "constitution": "ThinkCoTAgent"}
 K = 2
+FORECAST = {"plain": 2100.0, "constitution": 840.0}  # decisions per hour (Amendment 47's price)
 
 
 def _render_episode(job):
@@ -189,7 +190,11 @@ def stage_arms(out: Path, arms: tuple[str, ...], which: str, dry: bool) -> dict:
             for k in range(K):
                 jobs.append({"arm": arm, "sid": st["sid"], "k": k, "n": st["n"], "ids": ids,
                              "prompt_sha256": hashlib.sha256(str(ids).encode()).hexdigest()})
+    import time
+
+    t0 = time.time()
     done = decide(eng, tok, fmt if not dry else None, jobs, dry)
+    wall_h = (time.time() - t0) / 3600
     f = out / "teacher" / f"{'_'.join(arms)}.jsonl"
     f.parent.mkdir(parents=True, exist_ok=True)
     keep = ("arm", "sid", "k", "n", "attempts", "action", "fallback", "tokens", "capped",
@@ -197,7 +202,11 @@ def stage_arms(out: Path, arms: tuple[str, ...], which: str, dry: bool) -> dict:
     f.write_text("".join(json.dumps({x: j[x] for x in keep}) + "\n" for j in done))
     rec = {"rule": "Amendment 47 item 2", "arms": arms, "set": which, "states": len(sts),
            "dropped_by_the_replay_gate": dropped, "decisions": len(done),
-           "fallback": {a: sum(j["fallback"] for j in done if j["arm"] == a) for a in arms}}
+           "fallback": {a: sum(j["fallback"] for j in done if j["arm"] == a) for a in arms},
+           # Amendment 48 item 5: the measured rate against the forecast (decisions per hour)
+           "wall_h": wall_h, "decisions_per_h": len(done) / max(wall_h, 1e-9),
+           "forecast_per_h": FORECAST["constitution" if "constitution" in arms else "plain"]}
+    rec["rate_vs_forecast"] = rec["decisions_per_h"] / rec["forecast_per_h"]
     F.T._w(out, f"teacher_{'_'.join(arms)}", rec)  # noqa: SLF001
     print(">> teacher:", json.dumps(rec), flush=True)
     return rec

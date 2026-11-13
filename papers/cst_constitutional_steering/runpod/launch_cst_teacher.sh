@@ -30,5 +30,7 @@ B="$HOME/.cache/deepsteer/mch/dl/game_data.zip"
 export ON_DEMAND_SYNC="mch_bundle|$B|/workspace/mch_bundle/game_data.zip|e13d07b442a9ffa835e6c43f95fbc5d97a45de49faef7b1f969f014b0a95b6c1"
 export SELF_PAPER=$P RESULTS_SUBPATH=outputs/teacher_v1 CST_SESSION=1 SYNC_OUTPUTS="$SYNC"
 export REMOTE_SCRIPT=$P/runpod/remote_cst_teacher.sh MAX_SYNC_GB=3 DISK_GB=300
-export POD_NAME=deepsteer-cst-teacher GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe"
+# Amendment 48 item 2: Community Cloud first and PCIe first (on trial: item 5's rule)
+export POD_NAME=deepsteer-cst-teacher GPU_TYPES="NVIDIA A100 80GB PCIe,NVIDIA A100-SXM4-80GB"
+export CLOUD_TYPES="COMMUNITY,SECURE"
 exec bash papers/runpod_common/run_session.sh

@@ -168,6 +168,30 @@ rp_provision_pod() {
   fi
 }
 
+# rp_log_rate: print and log the pod's cloud, GPU type and hourly cost as RunPod reports it (CST
+# Amendment 48 item 2), to stdout and to <results>/logs/pod_rate.jsonl on this machine.
+rp_log_rate() {
+  local R cost f
+  R="$(gql "query { pod(input:{podId:\"$POD_ID\"}) { id costPerHr gpuCount } }")"
+  cost="$(echo "$R" | jq -r '.data.pod.costPerHr // empty' 2>/dev/null)"
+  echo ">> Pod rate: ${cost:-not reported} USD/h (cloud ${CLOUD_TYPE:-?}, GPU ${GPU_TYPE:-?}, pod $POD_ID)"
+  f="$REPO_ROOT/$SELF_PAPER/${RESULTS_SUBPATH:-outputs}/logs/pod_rate.jsonl"
+  mkdir -p "$(dirname "$f")"
+  jq -cn --arg pod "$POD_ID" --arg cloud "${CLOUD_TYPE:-}" --arg gpu "${GPU_TYPE:-}" \
+    --arg cost "${cost:-}" --arg t "$(date -u +%FT%TZ)" \
+    '{pod:$pod, cloud:$cloud, gpu:$gpu, cost_per_hr:($cost|tonumber? // null), at:$t}' >> "$f"
+}
+
+# rp_push_token: write HF_TOKEN to a mode-600 file on the pod over the SSH channel (stdin), never
+# on a command line (CST Amendment 48 item 3); the remote command reads it from that file.
+REMOTE_TOKEN_FILE=/root/.hf_token
+rp_push_token() {
+  [ -n "${HF_TOKEN:-}" ] || return 0
+  printf '%s' "$HF_TOKEN" | ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+    "umask 077 && cat > $REMOTE_TOKEN_FILE && chmod 600 $REMOTE_TOKEN_FILE" \
+    || { echo "ERROR: could not write the token file on the pod"; exit 1; }
+}
+
 # ----------------------------- wait for SSH ----------------------------------
 rp_wait_for_ssh() {
   echo ">> Waiting for pod to be RUNNING with a public SSH port..."

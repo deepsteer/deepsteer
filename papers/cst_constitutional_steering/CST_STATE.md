@@ -26,6 +26,11 @@ Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-c
   length; no judge); full read finalists only (Amendment 20).
 - **Pilot ladder and its move rule:** Amendment 20 items 2-4, Amendment 21 (pods by line, gpt-oss pair filter, P-long, the advice prompts, the identical recovery step, two move-rule additions).
 - **Pods:** the author launches; at most 12 h, self-contained, two in parallel; one launch card each.
+- **Clouds (Amendment 48):** each pod logs its cloud, GPU type and reported rate. **Community Cloud on
+  trial:** record the setup time, the measured rate against the forecast and any host failure; two
+  host failures, or a measured rate under 80% of the forecast, and the next pod goes back to Secure
+  with a note to the author. **Anything carrying the partner's document runs on Secure** unless the
+  author names otherwise. HF_TOKEN never rides a command line.
 
 ## Pending
 
@@ -48,7 +53,7 @@ one candidate and the base) under a standing price exception at the capped forec
 
 ## Spend ledger (Amendment 29; the author, 2026-11-11)
 
-A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per pod for provisioning, sync and download that the logs do not capture (estimated). The re-read pod is billed to its teardown (it sat idle 2.6 h after its runner died). Dollars at the rate of record, $1.80 per A100-80GB hour (Amendment 30).
+A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per pod for provisioning, sync and download that the logs do not capture (estimated). The re-read pod is billed to its teardown (it sat idle 2.6 h after its runner died). **Dollars:** through 2026-11-12 at $1.80 per A100-80GB hour (Amendment 30's rate of record, **retired by Amendment 48**); from 2026-11-13 each pod at its own rate: the rate RunPod reports (logged by the launcher to `logs/pod_rate.jsonl` from the teacher pod on), else Secure Cloud's list price for its GPU ($2.19 SXM, $2.09 PCIe; RunPod's page of 2026-11-12), since the launcher tried Secure first. **The $500 cap governs; the remaining budget is stated in dollars.**
 
 | date | pod | session h | billed h | $ at 1.80 | running h | running $ |
 |---|---|---|---|---|---|---|
@@ -90,12 +95,12 @@ A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per
 | 11-12 | finalist MACHIAVELLI, second (gate tests: other papers' outputs not synced) | 0.25 | 0.40 | 1 | 120.0 | 216 |
 | 11-12 | finalist bars, second (parity: HF and vLLM in one process) | 0.28 | 0.43 | 1 | 120.4 | 217 |
 | 11-12 | finalist MACHIAVELLI, third (gate tests: gpt-oss's tokenizer not downloaded) | 0.27 | 0.42 | 1 | 120.9 | 218 |
-| 11-13 | finalist bars, third (complete) | 3.02 | 3.17 | 6 | 124.0 | 223 |
-| 11-13 | finalist MACHIAVELLI, fourth (complete to the deadline; four episodes stopped, resumed) | 12.45 | 12.60 | 23 | 136.6 | 246 |
-| 11-13 | loop2, config 2's second draw (complete) | 5.66 | 5.81 | 10 | 142.4 | 256 |
-| 11-13 | finalist MACHIAVELLI, resume (complete; 2,028 decisions replayed, no restarts) | 1.96 | 2.11 | 4 | 144.5 | 260 |
+| 11-13 | finalist bars, third (complete; Secure SXM, $2.19) | 3.02 | 3.17 | 7 | 124.0 | 225 |
+| 11-13 | finalist MACHIAVELLI, fourth (complete to the deadline; four episodes stopped, resumed; Secure SXM, $2.19) | 12.45 | 12.60 | 28 | 136.6 | 253 |
+| 11-13 | loop2, config 2's second draw (complete; Secure SXM, $2.19) | 5.66 | 5.81 | 13 | 142.4 | 265 |
+| 11-13 | finalist MACHIAVELLI, resume (complete; 2,028 decisions replayed, no restarts; Secure SXM, $2.19) | 1.96 | 2.11 | 5 | 144.5 | 270 |
 
-**Total to 2026-11-13: 144.5 A100-h, $260.** (Before the relaunched 2-ctx and SDF pod 2: 72.9 A100-h, $131.) Envelope of record 277 A100-h under the $500 cap (Amendment 30): **132.5 A100-h ($240) remain**, before the MoReBench pod's first stage (about 9). Tomorrow's content and generic branches are withdrawn (Amendment 34).
+**Total to 2026-11-13: 144.5 A100-h, $270** (the column headed "$ at 1.80" holds each pod's own rate from 2026-11-13). (Before the relaunched 2-ctx and SDF pod 2: 72.9 A100-h, $131.) Under the $500 cap: **$230 remain**, before pod B (MoReBench stage 1, running on Secure SXM; about 9.2 A100-h, about $20) and the teacher pod (about 6.5 A100-h; Community PCIe from $1.19, about $8; Secure PCIe $2.09, about $14). Tomorrow's content and generic branches are withdrawn (Amendment 34).
 
 ## Implementation log (Amendment 20 item 8: one line each)
 
@@ -178,3 +183,4 @@ A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per
 - 2026-11-13: Amendment 47 item 2's size of record frozen (`mach_teacher_select.py`, `data/mach_teacher_states_v1.json`, sha c15cd6d6...; the extraction re-run with all 30 games: 10,289 states, 0 dropped, 3,274 eligible, saved base rate 0.381): one seeded order per game, the first 60 (N 1,698) for base and GOOD_BEHAVIOR, the first 30 of those (N 888) for the constitution, nested. Power by game bootstrap: base vs GOOD_BEHAVIOR MDE 0.031 (power 0.97 at 0.042), the constitution vs base MDE 0.043 (0.79); price about 5.95 A100-h (ceiling 6).
 - 2026-11-13: the teacher-check pod built (Amendments 46 item C, 47 items 1-2; `cst_teacher_pod.py`, `teacher_read.py`, `remote_cst_teacher.sh`, `launch_cst_teacher.sh`): the states of record rebuilt on the pod from the finalist run's saved decisions with the replay gate; base and GOOD_BEHAVIOR (MCH's ThinkCoTAgent and ThinkGoodCoTAgent) on the 1,698 at k 2 on the engine of record, the constitution (A0s's render around ThinkCoTAgent's system prompt) on the nested 888 on A0s's engine; MCH's sampler, the 4,096 budget and its attempt rule; request seeds shared across arms. **Not covered by the amendments, built and flagged:** a decision unparsed after MCH's attempt rule takes MCH's fallback (a seeded random choice, the same draw on every arm), and the read prints a version without fallbacks beside. P-ctx's riders follow (smoke, parity, refusal retention, MoralBench; about 0.5 A100-h). Gate set 39 passed in the sync emulation.
 - 2026-11-13: `HEADROOM_READ_DESIGN.md` (Amendment 47 item 7; zero GPU, nothing built): a tenet-group line gate for any constitution (subject-written plain scenarios, every written scenario read, the document in context against the base at k 4, a group passing at a lower bound above 0 with a point at least twice the two-draw MDE and a base share below 0.85, then a confirmation draw before training); a group's MDE about 0.088 at 80 scenarios (the content cell's SD); the gate read about 2.8 / 5.0 / 9.5 A100-h at 100 / 200 / 400 tenets, 4.0 / 7.0 / 13.0 with the confirmation draw.
+- 2026-11-13: Amendment 48 built: `session_lib.sh` logs each pod's cloud, GPU type and RunPod's reported hourly cost (`rp_log_rate`, to stdout and `logs/pod_rate.jsonl`) and writes HF_TOKEN to a mode-600 file over the SSH channel (`rp_push_token`); `run_session.sh` reads it on the pod (`HF_TOKEN="$(cat /root/.hf_token)"`), so no token is on any command line (checked with a stand-in ssh: the launch command carries no token, the pod's shell resolves it); both installed by `mv` with pod B's launcher running. The teacher card tries Community then Secure, PCIe then SXM; its stages print their measured decision rate against the forecast (the trial rule's measure). The ledger re-bills 2026-11-13's pods at Secure SXM ($2.19): $270 spent, $230 left.

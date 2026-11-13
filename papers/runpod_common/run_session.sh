@@ -78,6 +78,8 @@ rp_require_disk "$REPO_ROOT/$SELF_PAPER/${RESULTS_SUBPATH:-outputs}"   # before 
 rp_check_sync_outputs || exit 1                                         # before any pod exists
 rp_provision_pod
 rp_wait_for_ssh
+rp_log_rate
+rp_push_token
 rp_sync_up
 
 # Optional extra paths pushed to the pod verbatim AFTER the filtered sync (e.g. gitignored
@@ -112,7 +114,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
      W4_MODELS='${W4_MODELS:-}' W4_UNITS='${W4_UNITS:-}' W4_TIER='${W4_TIER:-}' W4_OUT_SUBDIR='${W4_OUT_SUBDIR:-}' \
      KDG_MODELS='${KDG_MODELS:-}' KDG_UNITS='${KDG_UNITS:-}' KDG_PROFILE='${KDG_PROFILE:-}' KDG_OUT_SUBDIR='${KDG_OUT_SUBDIR:-}' KDG_SCENARIOS='${KDG_SCENARIOS:-}' \
      CST_SESSION='${CST_SESSION:-}' \
-     HF_TOKEN='$HF_TOKEN' HUGGING_FACE_HUB_TOKEN='$HF_TOKEN' \
+     HF_TOKEN=\"\$(cat $REMOTE_TOKEN_FILE 2>/dev/null)\" HUGGING_FACE_HUB_TOKEN=\"\$(cat $REMOTE_TOKEN_FILE 2>/dev/null)\" \
      setsid bash $REMOTE_SCRIPT > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 
 echo ">> Launched. Streaming log below (run survives SSH drops; Ctrl-C terminates pod)."
