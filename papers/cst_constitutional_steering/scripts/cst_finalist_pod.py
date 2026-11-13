@@ -7,8 +7,8 @@ The candidate's training record (``train_<tag>.json``, copied into DIR) names it
 engine with LoRA serves the base and the candidate on every bar (the candidate per request).
 
 - ``smoke_hf`` / ``smoke_serve``: the structural check on the candidate and the fixed D-doc 1M
-  check (Amendment 31); ``parity``: the candidate's served parity (a candidate that fails is not
-  read).
+  check (Amendment 31); ``parity_hf`` then ``parity`` (separate processes: HF and vLLM do not fit
+  one A100 together): the candidate's served parity (a candidate that fails is not read).
 - ``rr``: ST's refusal-retention plain read (the 60 violating items, plain framing, 4 rollouts each,
   cap 1,536 + 64, ST's seeds ``st2rr|item|k``), `refusal_retention.plain_read`'s bar.
 - ``mb``: MoralBench's R2 letter mass at dose 0, both orders, on HF (MRB P2's `mb_prompts` and
@@ -122,8 +122,15 @@ def stage_smoke_hf(out: Path, tag: str, dry: bool) -> dict:
     return rec
 
 
+def stage_parity_hf(out: Path, tag: str, dry: bool) -> dict:
+    """The candidate's HF letters, in a process of their own: the 27B on HF and a vLLM engine do not
+    fit one A100 together (the bars pod's first full launch, 2026-11-12)."""
+    return PL.hf_letters(out, [(tag, cand_dir(out, tag))], dry)
+
+
 def stage_parity(out: Path, tag: str, dry: bool) -> dict:
-    PL.hf_letters(out, [(tag, cand_dir(out, tag))], dry)
+    """The candidate's served parity against ``parity_hf``'s letters (run first, in its own
+    process)."""
     res = PL.stage_read(out, [(tag, cand_dir(out, tag))], dry, parts=(), base=False)
     if not res["parity"].get(tag):
         raise SystemExit(f"BAIL: the candidate {tag} fails served parity; it is not read")
@@ -695,8 +702,8 @@ def main() -> None:
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True, choices=(
-        "smoke_hf", "smoke_serve", "parity", "rr", "mb", "mrb_gen", "capability", "mach",
-        "mrb_judge"))
+        "smoke_hf", "smoke_serve", "parity_hf", "parity", "rr", "mb", "mrb_gen", "capability",
+        "mach", "mrb_judge"))
     ap.add_argument("--candidate", required=True)
     ap.add_argument("--elapsed-h", type=float, default=0.0)
     ap.add_argument("--reserve-h", type=float, default=0.3)
@@ -709,6 +716,8 @@ def main() -> None:
         stage_smoke_hf(out, tag, dry)
     elif a.stage == "smoke_serve":
         print(">> smoke_serve:", json.dumps(PL.smoke_serve(out, dry)))
+    elif a.stage == "parity_hf":
+        stage_parity_hf(out, tag, dry)
     elif a.stage == "parity":
         stage_parity(out, tag, dry)
     elif a.stage == "rr":

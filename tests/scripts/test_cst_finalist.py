@@ -202,6 +202,7 @@ def test_dry_session_runs_every_stage_in_order(tmp_path, monkeypatch):
     tag = _candidate(tmp_path)
     assert F.stage_smoke_hf(tmp_path, tag, True)["structural"][0]["passes"]
     assert F.PL.smoke_serve(tmp_path, True)["parity_passes"]
+    F.stage_parity_hf(tmp_path, tag, True)  # the runner's order: two stages, two processes
     F.stage_parity(tmp_path, tag, True)
     rr = F.stage_rr(tmp_path, tag, True)
     assert rr["items"] == 2 and {"base.jsonl", "cand.jsonl"} <= {

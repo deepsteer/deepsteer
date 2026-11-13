@@ -144,7 +144,9 @@ run --stage smoke_hf
 run --stage smoke_serve
 python3 -c "import json,sys; sys.exit(0 if json.load(open('$OUT/smoke_serve.json'))['parity_passes'] else 1)" 2>/dev/null \
   || { echo "BAIL: smoke_serve failed (see smoke_serve.json and the log)"; exit 1; }
+run --stage parity_hf  # HF letters in their own process; the served read follows in a new one
 run --stage parity
+[ -f "$OUT/parity/$TAG.json" ] || { echo "BAIL: the parity stage did not finish (see the log); nothing was measured"; exit 1; }
 python3 -c "import json,sys; sys.exit(0 if json.load(open('$OUT/parity/$TAG.json')).get('read') else 1)" 2>/dev/null \
   || { echo "BAIL: the candidate fails served parity; it is not read"; exit 1; }
 echo ">> smoke and parity done at $(hours) h"
