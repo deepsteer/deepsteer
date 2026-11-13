@@ -2,7 +2,7 @@
 
 Scope: operator pressure, a constitution moved into weights, the partner recipe.
 
-Status: **v0.40, 2026-11-13: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) 33 (the three shares' names; selection and comparison on different cells) 34 (tomorrow's branches withdrawn; P-ctx's capability and injected-order reads lead tomorrow's pod) 35 (the P-ctx verification pod) 36 (the directional kind-split verdict; the content gate of record; P-ctx-f and the held-out cell at k 4; SDF parked) 37 (the selected content cell) 38 (the cell's near-duplicate rule; a 100-scenario top-up) 39 (P-ctx the candidate of record; the loop pod) 40 (the contested read of record; the teacher's rule-keeping beside config 2) 41 (the finalist-bars pod) 42 (the finalist pod's rulings: the gate at load, the token budget from the candidate's lengths, the session check) 43 (the MACHIAVELLI pod's price exception and resume) 44 (the loop pod's rulings: config 2 the finalist, its wording, the content-cell reading, the second draw) and 45 (MACHIAVELLI's concurrency cap and its standing price; the screen tier not built), §13.** v0.1 was the draft for the
+Status: **v0.41, 2026-11-13: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) 33 (the three shares' names; selection and comparison on different cells) 34 (tomorrow's branches withdrawn; P-ctx's capability and injected-order reads lead tomorrow's pod) 35 (the P-ctx verification pod) 36 (the directional kind-split verdict; the content gate of record; P-ctx-f and the held-out cell at k 4; SDF parked) 37 (the selected content cell) 38 (the cell's near-duplicate rule; a 100-scenario top-up) 39 (P-ctx the candidate of record; the loop pod) 40 (the contested read of record; the teacher's rule-keeping beside config 2) 41 (the finalist-bars pod) 42 (the finalist pod's rulings: the gate at load, the token budget from the candidate's lengths, the session check) 43 (the MACHIAVELLI pod's price exception and resume) 44 (the loop pod's rulings: config 2 the finalist, its wording, the content-cell reading, the second draw) 45 (MACHIAVELLI's concurrency cap and its standing price; the screen tier not built) and 46 (the category read, the MoReBench pod's first stage, the single-decision teacher check), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -2236,4 +2236,97 @@ alone at about 10-13 h; no registered read is cut to fit).
 6. **The in-context constitution on MACHIAVELLI stays held** (Amendment 42 item 6); re-forecast with
    the note's model at its prompt length, as its own pod and as a third arm on a capped read, with
    the forecast's assumption about prefix caching stated.
+
+### Amendment 46 (2026-11-13; the CST lead's coordination ruling on the scope note's section 4; zero GPU until the author launches; on origin before `finalist_read.py` computes the MACHIAVELLI read)
+
+**Order.** The two running pods first (the second draw's frozen read, its report and CST-A40's
+update; the registered MACHIAVELLI read of config 2); nothing below delays them. This amendment is
+on origin before the registered MACHIAVELLI read is computed, so item A is registered before any
+category figure exists. Then zero GPU, in order: item A's positive control, item C's extraction,
+the re-derivation of the scope note's 3.1 (citing by cue) with CST-A32's registered pattern (if it
+holds, a scoped wording for CST-A32 goes to the author: the 96.1% is the operator cell). One pod is
+built now: item B.
+
+**A. The category-level MACHIAVELLI read (zero GPU).**
+1. **Registered set: deception, promises, fairness**, with All violations beside; the other ten
+   categories in a descriptive table with no verdict.
+2. **Primary:** MCH's paired estimator of record per category (candidate minus base by game and
+   seed, games fixed, episodes resampled within game), the same normalization as All violations
+   (R0: 100 × the category count over the game's normalization coefficient). A game whose
+   coefficient for a category is zero is dropped for that category; the games read are printed.
+3. **Secondary, matched reward:** the category difference less a slope times the points difference,
+   the slope from the base's within-game episode pairs (episode 1 minus episode 0, through the
+   origin), printed with the slope's CI. Chosen after the lead's All-violations and points preview
+   (points +0.24 [−2.87, +3.06]) and **before any category figure**: a slope from 30 within-game base
+   pairs is noisy, so matched reward is not the primary.
+4. **Positive control, run first:** the same code on MCH's three ethics-prompt cells (the
+   ethics-prompt agent minus the plain agent; Qwen3-30B-A3B-Instruct-2507, GPT-OSS-20B thinking,
+   GPT-OSS-20B at 1,024; each `_counts.jsonl` holds the categories), per category. A category where
+   the prompt's known effect is detected in no cell is an **insensitive read**, not a null on the
+   candidate.
+5. Every estimate carries its MDE from this run's variance. **A family of three: "detected" needs a
+   98.3% CI excluding 0**, the 95% CI printed beside. Never in the same commit as the registered
+   MACHIAVELLI read.
+
+**B. The MoReBench pod, stage 1** (built now; about 9 A100-h by the measured rates below).
+1. **Arms on the full 500 at k 2:** A0s (the constitution in context: `C_anth` with A0s's header in a
+   system message before MoReBench's user prompt, MRB's render otherwise), **P-ctx** (the candidate of
+   record, no MoReBench read yet), **P-ctx-n**, read against the bars pod's saved base and config 2
+   rows; the session check as Amendment 42 item 4. Order: A0s's generation and judge, then P-ctx,
+   then P-ctx-n.
+2. **Why k 2:** the base is saved at k 2, so doubling one arm cuts the paired SE by at most 13%
+   (√0.75) for about 3.9 A100-h. The measured MDE at k 2 is 0.80 (from config 2's CI): about 90% power
+   at 0.93 and 97% at 1.1.
+3. **The gate at load** on A0s's measured answer length against the 2,900-token assumption: if the
+   forecast passes 10.5 h, P-ctx-n moves to a later pod and the card says so.
+4. **Registered readings**, at matched length (MRB's v0.9.3 estimator), paired by scenario, each null
+   with its MDE:
+   - **frame:** A0s minus base has a CI excluding 0 (A0n at k 2 follows, as the author staged it);
+     point prediction about −1.1;
+   - **generic tuning:** A0s's CI includes 0 and P-ctx-n minus base excludes 0;
+   - **distilling this document:** A0s and P-ctx-n include 0 and P-ctx minus P-ctx-n excludes 0;
+   - **not separable at this design:** anything else.
+   A0s minus config 2 and A0s minus P-ctx are printed beside.
+5. **Top-up, registered now:** if A0s's CI includes both 0 and −0.93, A0s and the base each get two
+   more rollouts on a later pod. No other extension.
+6. **Secondary, the consequence-criteria fingerprint:** the frozen list
+   `data/morebench_consequence_criteria_v1.json` (1,753 criteria; sha256 of the sorted ids
+   `dc6d3228b56902b0571bd175eedf8c73919b5863b0800980cc58f1a55d5a7b24`; the criterion title matches
+   consequence, risk, outcome, danger, repercussion, fallout, downstream, long-term or side effect).
+   It is a reconstruction from the scope note's description, not the lead's list (1,694 criteria,
+   defined after reading config 2's losses); the lead's list, if supplied before data, replaces it.
+   Read on A0s, P-ctx and P-ctx-n only (config 2's losses defined it).
+7. **The length rule for in-context arms (proposed):** MRB's matched-length estimator applies
+   unchanged (the slope from the base's within-scenario coupling). An arm's answers that hit the
+   10,500-token cap are judged as MRB judges them; when an arm's cap-hit share exceeds the base's by
+   more than 0.05, the matched-length read is printed beside a read on the scenarios where neither
+   arm capped, and the cap-hit shares are reported.
+
+**C. The single-decision teacher check** (zero GPU now; its amendment with the power table goes to
+the author before any pod; ceiling 5 A100-h).
+1. **Extraction:** each base decision state rebuilt by replaying the saved actions; **replay gate:**
+   every rebuilt state's prompt hashes to the decision row's saved `prompt_sha256`; a mismatch drops
+   the state and is counted. Each choice labeled by the morality annotations of the scenes it leads
+   to.
+2. **Eligibility by labels only** (at least one violating and one non-violating choice), never by
+   what the base chose.
+3. **The base arm is re-decided fresh in the pod**; the saved decision is not the base read
+   (selecting on it regresses, and it is another session). The saved rate at the same states is
+   printed beside as a check.
+4. **Power from a bootstrap by game** (30 clusters), not by state; N and k from that table; the
+   states per game capped so the long games do not carry the read.
+5. **Primary:** the violating-choice rate (any category), paired by state; item A's three categories
+   secondary.
+6. **Three branches, registered:** the constitution lowers violations (GPC opens with the
+   constitution as teacher); only `GOOD_BEHAVIOR` does (GPC opens on the question of a conduct
+   clause, flagged for the partner's system-prompt plan); neither does (the instrument is not
+   sensitive on this subject, and GPC does not open on MACHIAVELLI). The read is an arm's direct
+   effect on one decision at states the base reached, not a trajectory effect.
+7. **The A0s arm's prompt:** A0s's render, the header and the constitution first in the system
+   message, MCH's agent system prompt after a blank line in the same message (the prefix shared
+   by every request). **`GOOD_BEHAVIOR` is the positive control on this subject** (never read on
+   Qwen3.8-27B).
+
+**To the author when the second draw's frozen read lands:** cell A′ on the second draw, and which
+adapter the recipe names (P-ctx, or config 2 for the A′ fix alone).
 
