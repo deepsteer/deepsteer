@@ -249,6 +249,21 @@ in the same commit as the results they affect.
 name in a comment (e.g., "assert chat null consumes chat act_samples"), not just that the
 script runs.
 
+## Naming a new line (before any plan file or directory exists)
+
+The prefix and directory of a new line are chosen with the author before its plan is drafted.
+Propose two or three candidates with what each commits the line to, and wait for his pick.
+
+- Name the construct the line measures, not the method family or the aspiration. (KDG, MRB and MCH
+  each named a measurable gap or an artifact, and each closed. ST and CST named "steering" and kept
+  absorbing new questions.)
+- The prefix expands to the term the paper will use. (KDG's paper says "judgment-action gap". P1,
+  P2 and P3 carried no content.)
+- The plan opens with a one-sentence **Scope** and a **Done when** sentence naming the result that
+  closes the line on either branch.
+- Existing prefixes are never renamed. A line that outgrew its name gets a scope line at the top of
+  its plan and state file, and a paper title that states the finding.
+
 ## Pre-review protocol (the load-bearing habit)
 
 Before presenting ANY gate, decision menu, results summary, or plan to author: draft the
@@ -274,7 +289,8 @@ against a different attack surface (instrument validity, statistics, framing, se
 Thesis-level reframes; voiding or scoping any committed/published claim; packaging and
 publication decisions; anything adjacent to the safety scope (removability, coupling
 robustness as an optimization target); cross-paper restructuring; any amendment changing a
-pre-registered PRIMARY. When unsure whether a decision is in this class, it is.
+pre-registered PRIMARY; the name and prefix of a new line. When unsure whether a decision is
+in this class, it is.
 
 ## Numerical hygiene defaults
 

@@ -1,6 +1,11 @@
 # CST state (one page; updated at every stop; `CST_PLAN.md` amendments are the history)
 
-**As of 2026-11-09, plan v0.20 (Amendments 1-21).**
+Scope: operator pressure, a constitution moved into weights, the partner recipe.
+
+**As of 2026-11-13, plan v0.40 (Amendments 1-45).** Candidate of record: **P-ctx** (Amendment 39;
+Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-cell gain did not:
+Δ 0.000 [−0.061, +0.070] on its second draw). The finalist bars were read on config 2's first draw
+(Amendments 41-44).
 
 ## Rules of record
 
@@ -24,20 +29,25 @@
 
 ## Pending
 
-1. S0b-1: launch line handed over (`runpod/launch_cst_s0b1.sh`); the author launches.
-2. The legitimate-order cell (Amendment 19 rider d): about 100 scenarios, Claude labels now, Codex
-   after Thursday; rides S0b-1 if ready, else the pilot read pod.
-3. The pilot builds (`PILOT_BUILD.md` §6, eight pieces); pods split by line (Amendment 21): SDF pod
-   about 10.3 A100-h, DPO pod about 9.5, both after S0b-1's A0n read. The
-   pilot MDE at k 2 is computed (`T04_POWER.md` basis, `outputs/t04d_ordered_power.json` `pilot_k2`):
-   rung − A0 0.042, rung − control 0.049 (0.058 with A0s's heterogeneity); half-split check 0.048.
-4. Codex after its reset (Thursday 2026-11-12): S_tenet on A0s 800 and A0 800, the frontier 200.
-5. S0b-2 (MoReBench on A0s, MACHIAVELLI on A0 and A0s): after the ladder's gate (Amendment 19 rider e).
+1. **The MACHIAVELLI resume pod** (Amendment 43, running): the four luminous-underground episodes
+   the deadline stopped, replayed from their saved decisions; then the registered MACHIAVELLI read
+   of config 2 (`finalist_read.py` with both pods' directories; `finalist_read.json` has no
+   MACHIAVELLI read yet), then Amendment 45 item 4 (the note's own check, a ledger entry).
+2. **The second-draw pod** (`outputs/loop2_v1`, running): the registered content-cell read is in
+   (does not replicate); the rest of its frozen read, then the loop report, CST-A40's update and
+   the spend ledger.
+3. **Ruled in, zero GPU first (the scope note, 2026-11-13):** the single-decision teacher check
+   (priced, with a power table and its three branches, to the author as an amendment); the
+   category-level MACHIAVELLI read (its category set registered before computing); the MoReBench
+   2x2 (staged: A0s at k 4 and P-ctx-n at k 2 first; P-ctx-n's adapter is kept).
+4. **Section 3 observations of the scope note** (config 2's citing by cue, the MoReBench swap, the
+   consequence-criteria fingerprint): to re-derive before any ledger entry.
 
 ## Next pod
 
-**S0b-1** (`S0B_BUILD.md` §4, §7): A0n pilot gate, A0n plain and operator at k 4, A0n dose-0,
-gpt-oss: A0n bulk scoring and the CST-A15 cut stage (two cuts, splices, retests). About 4-6.5 A100-h.
+None built beyond the two running. Next to price: the MoReBench 2x2's first stage and the
+single-decision teacher check. MACHIAVELLI full reads run capped (Amendment 45 item 1: cap 38 for
+one candidate and the base) under a standing price exception at the capped forecast.
 
 ## Spend ledger (Amendment 29; the author, 2026-11-11)
 
@@ -157,4 +167,4 @@ A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per
 - 2026-11-12: the bars pod's second launch passed its gate tests and the smoke pass, then stopped at parity (0.28 h): the stage loaded the 27B on HF for the candidate's letters and started vLLM in the same process (26 of 79 GiB free); the loop pod runs these as two stages. Split into `parity_hf` and `parity` (two processes, as the loop pod), and the runner's bail now says when parity was never measured. Every other stage holds one engine per process (checked).
 - 2026-11-13: the bars pod read (config 2; `finalist_read.py` on its rows; 3.02 h, the judge on one A100 at 2,360 tokens/s finished all 22,900 calls). Refusal retention (plain, 60 items): compliance 0.692 against 0.750, Δ −0.058 [−0.117, −0.004], passes (no rise detected; MDE 0.079). MoReBench at matched length (all 500 judged): Δ_adj −0.929 [−1.491, −0.365], **passes the registered bar** (the CI does not lie entirely below −0.87; MDE 1.29), and a cost remains at matched length (R_quality; raw Δ −0.606 [−1.142, −0.074]; the candidate's answers 0.47k characters longer, β +0.69 per 1k). The session check: this session's base against MRB's saved rows on the same seeds, n_tokens +19.5 [−49.1, +87.6], response characters −18.8 [−283, +235] (no session effect detectable on length; no response identical). Capability at n 800: +0.003 [−0.009, +0.015], passes; ST's point rule passes. MoralBench (no bar): this session's base R2 rows equal MRB's saved rows (max |Δp_A| 0.0); the candidate moves MFQ_30's L +0.043 [+0.028, +0.058] and K +0.048 [+0.025, +0.070], and both compare sets' L by about +0.07.
 - 2026-11-13: `MACH_THROUGHPUT_NOTE.md` (zero GPU, nothing built or registered): from the MACHIAVELLI pod's rate curve (KV-bound at about 60-70 running; peak 2,145 decisions/h at about 50 active), a concurrency cap with the longest game first is the lever: one candidate and the base at cap 38, 10.8 h and 11.3 A100-h (13.9 as run); two candidates at cap 52, 15.2 A100-h; priority adds nothing under a cap; the 17 shortest games read in 3.8 h at 1.29x the full read's violations MDE (1.17x on reward).
-- 2026-11-13: Amendment 45 items 3, 5, 6 in `MACH_THROUGHPUT_NOTE.md` (`mach_screen_check.py`): with MCH's estimator of record, the 17-game screen reads 58% of the Qwen cell's ethics-prompt effect (-6.2 [-8.9, -3.5] against -10.7; not detected by game) and the short-long gap on violations is detected on the Qwen cell with games fixed (+10.4 [+7.0, +13.7]), not by game and on no GPT-OSS cell; the interim order gives the 17 at 4.8 h of an 11.05 h capped read; the in-context constitution on MACHIAVELLI is forecast at about 15-22 h of read (its own pod or a third arm), the longest game's serial chain binding, assuming the constitution prefix is cached; the earlier 3-7 A100-h estimate is withdrawn.
+- 2026-11-13: Amendment 45 items 3, 5, 6 in `MACH_THROUGHPUT_NOTE.md` (`mach_screen_check.py`): with MCH's estimator of record, the 17-game screen reads 58% of the ethics-prompt effect on Qwen3-30B-A3B-Instruct-2507 (MCH's new-model row, not the CST subject) (-6.2 [-8.9, -3.5] against -10.7; not detected by game) and the short-long gap on violations is detected on that cell with games fixed (+10.4 [+7.0, +13.7]), not by game and on no GPT-OSS cell; the interim order gives the 17 at 4.8 h of an 11.05 h capped read; the in-context constitution on MACHIAVELLI is forecast at about 15-22 h of read (its own pod or a third arm), the longest game's serial chain binding, assuming the constitution prefix is cached; the earlier 3-7 A100-h estimate is withdrawn.

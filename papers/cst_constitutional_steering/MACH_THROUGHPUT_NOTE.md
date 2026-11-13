@@ -95,28 +95,31 @@ treated as a sample). The screen is the 17 games above (12 of them in each 20-ga
 
 | cell | games | All violations: full | screen | long games | screen minus long (games fixed) | by game |
 |---|---|---|---|---|---|---|
-| Qwen3-30B instruct, `cell_qwen3_30b_instruct` | 30 | −10.7 [−12.5, −9.0] | **−6.2 [−8.9, −3.5]** (by game [−17.1, +5.4]) | −16.6 [−18.6, −14.7] | **+10.4 [+7.0, +13.7]** | [−3.3, +25.0] |
+| Qwen3-30B-A3B-Instruct-2507 (MCH's new-model row, not the CST subject), `cell_qwen3_30b_instruct` | 30 | −10.7 [−12.5, −9.0] | **−6.2 [−8.9, −3.5]** (by game [−17.1, +5.4]) | −16.6 [−18.6, −14.7] | **+10.4 [+7.0, +13.7]** | [−3.3, +25.0] |
 | GPT-OSS-20B thinking, `thinking/cell_gpt_oss_20b` | 20 | −15.3 [−20.3, −10.3] | −15.4 [−22.6, −8.0] | −15.2 [−20.8, −9.8] | −0.2 [−9.4, +9.2] | [−14.2, +14.1] |
 | the same, pilot and cell joined | 30 | −16.2 [−20.0, −12.6] | −15.4 [−21.2, −9.5] | −17.4 [−21.3, −13.5] | +2.1 [−5.0, +9.1] | [−8.4, +12.4] |
 | GPT-OSS-20B at 1,024, `newmodel/cell_gpt_oss_20b` | 20 | −19.1 [−22.0, −16.3] | −20.7 [−23.6, −17.7] | −16.8 [−22.0, −11.6] | −3.9 [−10.1, +2.3] | [−15.6, +8.2] |
 | the same, pilot and cell joined | 30 | −17.4 [−19.5, −15.3] | −17.4 [−19.5, −15.3] | −17.4 [−21.2, −13.6] | +0.0 [−4.5, +4.4] | [−9.6, +9.5] |
 
-Reward, screen minus long (games fixed; by game beside): Qwen +6.1 [+3.8, +8.4] ([−0.9, +13.7]);
+The ethics prompt has not been read on the CST subject (Qwen3.8-27B); every row here is another
+model's. Reward, screen minus long (games fixed; by game beside): Qwen3-30B-A3B-Instruct-2507 +6.1 [+3.8, +8.4] ([−0.9, +13.7]);
 GPT-OSS thinking cell +5.4 [+1.9, +8.9] ([+0.1, +11.1]), joined +3.9 [+1.1, +6.6]; GPT-OSS at 1,024
 cell +2.0 [−1.3, +5.2], joined +1.8 [−0.9, +4.4]. The sign is the same in every cell (two of the
 three models are GPT-OSS-20B). The joined GPT-OSS-1,024 row's three equal points are a near-tie, not
 an error: −17.39, −17.41 and −17.40 at four places.
 
-**Reading.** A quiet short-game screen does not clear a candidate. On the Qwen cell the screen reads
+**Reading.** A quiet short-game screen does not clear a candidate. On the Qwen3-30B-A3B-Instruct-2507
+cell the screen reads
 58% of the full effect (−6.2 against −10.7): detected with games fixed, not detected by game. **The
-short-long gap on violations is established on the Qwen cell with games fixed (+10.4 [+7.0,
+short-long gap on violations is established on the Qwen3-30B-A3B-Instruct-2507 cell with games
+fixed (+10.4 [+7.0,
 +13.7]) and not by game, and on no GPT-OSS cell under either.** Which inference applies depends on
 the question: for a screen that always uses these 17 games, the games-fixed CI says these games
-under-read the Qwen effect; whether short games under-read effects in general is a question over
+under-read that model's effect; whether short games under-read effects in general is a question over
 games, which the by-game CI answers and does not establish.
 
 **Against the author's scratch numbers** (a plain per-game mean): the points agree on every row the
-scratch gave (Qwen full −10.7, screen −6.2, long −16.6, gap +10.4; GPT-OSS thinking −15.3 and −15.4;
+scratch gave (Qwen3-30B-A3B-Instruct-2507 full −10.7, screen −6.2, long −16.6, gap +10.4; GPT-OSS thinking −15.3 and −15.4;
 GPT-OSS at 1,024 −19.1 and −20.7). Two differ, and these are of record: the thinking cell's reward
 gap is +5.4 [+0.1, +11.1] by game (the scratch: +5.8 [+0.3, +11.8]); the 1,024 cell's reward gap is
 +2.0 on the 20-game cell (the scratch's +1.8 matches the 30-game join). The scratch's CIs match the

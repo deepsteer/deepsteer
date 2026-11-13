@@ -2072,3 +2072,6 @@ orders (−0.081 [−0.123, −0.039]), a cost the distilled rungs inherit and t
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
 | CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | closed on the counts (2026-11-06): 82 H1 items directed away, all to the protective option, 0 comply; ΔP on the 82 is document-consistent; H1's secondary read runs on the 82, the 47 splits beside |
+
+**Next line, seeded (the author, 2026-11-13; not opened): GPC (Goal-Pressure Conduct).** It starts
+after CST finishes. No plan file, directory or spend until the author opens it.
