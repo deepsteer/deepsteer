@@ -93,8 +93,9 @@ A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per
 | 11-13 | finalist bars, third (complete) | 3.02 | 3.17 | 6 | 124.0 | 223 |
 | 11-13 | finalist MACHIAVELLI, fourth (complete to the deadline; four episodes stopped, resumed) | 12.45 | 12.60 | 23 | 136.6 | 246 |
 | 11-13 | loop2, config 2's second draw (complete) | 5.66 | 5.81 | 10 | 142.4 | 256 |
+| 11-13 | finalist MACHIAVELLI, resume (complete; 2,028 decisions replayed, no restarts) | 1.96 | 2.11 | 4 | 144.5 | 260 |
 
-**Total to 2026-11-13: 142.4 A100-h, $256** (the MACHIAVELLI resume pod, running, not yet billed). (Before the relaunched 2-ctx and SDF pod 2: 72.9 A100-h, $131.) Envelope of record 277 A100-h under the $500 cap (Amendment 30): **134.6 A100-h ($244) remain**, before the MACHIAVELLI resume pod (about 2-2.5) and the MoReBench pod's first stage (about 9). Tomorrow's content and generic branches are withdrawn (Amendment 34).
+**Total to 2026-11-13: 144.5 A100-h, $260.** (Before the relaunched 2-ctx and SDF pod 2: 72.9 A100-h, $131.) Envelope of record 277 A100-h under the $500 cap (Amendment 30): **132.5 A100-h ($240) remain**, before the MoReBench pod's first stage (about 9). Tomorrow's content and generic branches are withdrawn (Amendment 34).
 
 ## Implementation log (Amendment 20 item 8: one line each)
 
