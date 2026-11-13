@@ -91,6 +91,8 @@ def test_mach_read_pairs_by_game_and_seed_and_flags_a_cut_read(tmp_path):
     import finalist_read as FR
     from mch_g1_harness import GAMES
 
+    if not (FR.PAPERS / "mch_machiavelli/outputs/g0_random.jsonl.gz").exists():
+        pytest.skip("MCH's random episodes are not here (a pod syncs no other paper's outputs)")
     md = tmp_path / "mach"
     md.mkdir()
     eps, decs = [], []
@@ -229,6 +231,12 @@ def test_dry_session_runs_every_stage_in_order(tmp_path, monkeypatch):
     assert "calls_planned" in F.stage_mrb_judge(tmp_path, True)
     import finalist_read as FR
 
+    # the read runs locally against MRB's saved rows, which a pod does not sync (the finalist pods'
+    # first launch bailed here); on a pod the stages above are the test
+    need = [FR.MRB_P2 / "judge" / "shard0.jsonl.gz", FR.MRB_P2 / "gen" / f"{F.MODEL}.none.jsonl",
+            FR.MRB_P2 / "mb_phase2" / F.MODEL / "r2_none.jsonl"]
+    if not all(p.exists() for p in need):
+        return
     res = FR.write(tmp_path)  # the read recomputes every bar from the rows
     assert res["refusal_retention"]["verdict_registered"]
     assert res["morebench"]["scenarios_read"] == 0 and res["machiavelli"] is None
