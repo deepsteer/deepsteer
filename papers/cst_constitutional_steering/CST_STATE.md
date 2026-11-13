@@ -30,12 +30,9 @@ Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-c
 ## Pending
 
 1. **The MACHIAVELLI read of config 2 is in** (no difference detectable at MDE 6.3 on violations); next, the category read (Amendment 46 item A, its own commit) and Amendment 45 item 4 (the note's own check).
-   the deadline stopped, replayed from their saved decisions; then the registered MACHIAVELLI read
-   of config 2 (`finalist_read.py` with both pods' directories; `finalist_read.json` has no
-   MACHIAVELLI read yet), then Amendment 45 item 4 (the note's own check, a ledger entry).
-2. **The second-draw pod** (`outputs/loop2_v1`, running): the registered content-cell read is in
-   (does not replicate); the rest of its frozen read, then the loop report, CST-A40's update and
-   the spend ledger.
+2. **The second draw of config 2 is in** (`outputs/loop2_v1`): its content-cell gain, cell A′ pass
+   and comply-item drop do not replicate (CST-A40 resolved toward R_noise). To the author: which
+   adapter the recipe names.
 3. **Ruled in, zero GPU first (the scope note, 2026-11-13):** the single-decision teacher check
    (priced, with a power table and its three branches, to the author as an amendment); the
    category-level MACHIAVELLI read (its category set registered before computing); the MoReBench
