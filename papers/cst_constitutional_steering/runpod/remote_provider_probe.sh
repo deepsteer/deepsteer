@@ -31,6 +31,7 @@ cat "$OUT/logs/facts.log"
 PYBIN="${PROBE_PYTHON:-python3}"
 PYV=$($PYBIN -c 'import sys; print("%d.%d" % sys.version_info[:2])')
 [ "$PYV" = 3.11 ] || [ "${PROBE_ALLOW_PY:-0}" = 1 ] || { echo "STOP (A1): Python $PYV, not 3.11; the author decides (PROBE_ALLOW_PY=1 to go on)"; exit 1; }
+[ -f "/usr/include/python$PYV/Python.h" ] || { echo "STOP (A1): no Python.h for $PYV (Triton compiles against it; install python$PYV-dev)"; exit 1; }
 
 # ---- A1-A2: the runner's venv exactly as pinned, touching nothing in the system CUDA (python3-venv
 # from the distribution if the image lacks it; no CUDA package is touched) ----

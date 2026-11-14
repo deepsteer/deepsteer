@@ -32,7 +32,8 @@ SSH_OPTS=(-o ConnectTimeout=20 -o ServerAliveInterval=30)
 RD=/workspace/deepsteer
 
 case "$MODE" in
-py311)  # Python 3.11 beside the host's python3, from the deadsnakes PPA (no CUDA package touched).
+py311)  # Python 3.11 beside the host's python3, from the deadsnakes PPA (no CUDA package touched),
+  # with its headers: Triton compiles a C helper against Python.h when vLLM starts.
   # add-apt-repository is not used: it runs on the host's python3, which on Thunder is 3.12 without
   # Ubuntu's apt_pkg. The PPA's key comes from Ubuntu's keyserver and is checked by fingerprint.
   ssh "${SSH_OPTS[@]}" "$R" 'set -e; FP=F23C5A6CF475977595C89F51BA6932366A755776
@@ -41,8 +42,9 @@ py311)  # Python 3.11 beside the host's python3, from the deadsnakes PPA (no CUD
     gpg --show-keys --with-colons /etc/apt/keyrings/deadsnakes.gpg | grep -q "fpr:::::::::$FP:" || { echo "STOP: the deadsnakes key fingerprint does not match"; exit 1; }
     echo "deb [signed-by=/etc/apt/keyrings/deadsnakes.gpg] https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy main" | sudo tee /etc/apt/sources.list.d/deadsnakes.list >/dev/null
     sudo apt-get update -q >/dev/null 2>&1 || echo ">> apt-get update returned nonzero (post-update hooks on python3); installing anyway"
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -q python3.11 python3.11-venv >/dev/null
-    python3.11 --version; python3 --version'
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -q python3.11 python3.11-venv python3.11-dev >/dev/null
+    test -f /usr/include/python3.11/Python.h || { echo "STOP: python3.11-dev did not install Python.h"; exit 1; }
+    python3.11 --version; python3 --version; echo "Python.h: /usr/include/python3.11/Python.h"'
   ;;
 facts)
   ssh "${SSH_OPTS[@]}" "$R" 'echo "python: $(python3 --version 2>&1)"; echo "user: $(id)"; echo "sudo: $(sudo -n true 2>/dev/null && echo yes || echo no)"; echo "home: $HOME"; df -h "$HOME" | tail -1; echo "workspace: $(readlink -f /workspace 2>/dev/null || echo none)"; nvidia-smi'
