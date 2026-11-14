@@ -56,8 +56,8 @@ Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-c
    Where P-ctx stands (not a verdict): operator, carries most on both draws (0.86 [0.80, 0.91];
    the second draw −0.286 against −0.275); goal pressure, Amendment 49 item 2d (the second draw on
    the 1,698 is read only if the first meets it); capability passes (−0.003 [−0.014, +0.009]);
-   MoReBench −0.98 [−1.49, −0.46], passing the registered bar conditional on 2a, A0s minus P-ctx
-   −3.02 [−3.67, −2.38].
+   MoReBench −0.98 [−1.49, −0.46], passing the registered bar (Amendment 52 item 1), A0s minus
+   P-ctx −3.02 [−3.67, −2.38].
 5. **Not run:** the constitution plus GOOD_BEHAVIOR on the operator cell (a general conduct clause
    is GPC's design decision; Amendment 50 item 5). Parked as well: CST-A9, CST-A12, CST-A15
    (Amendment 50 item 6).
@@ -76,11 +76,11 @@ Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-c
    consequence-criteria fingerprint): to re-derive before any ledger entry.
 
 5. **The MoReBench pod's first stage is in** (`outputs/mrb2x2_v1`, CST-A43): A0s −4.00 [−4.65, −3.36], P-ctx −0.98 [−1.49, −0.46], P-ctx-n −0.60 [−1.10, −0.11]; **the registered reading: frame**. No cap hits; no top-up. **Wording of record (Amendment 49 item 1):** A0s minus P-ctx, −3.02 [−3.67, −2.38], is same-session and stands; every cost against the saved base is conditional on the judge-session check; no generic-tuning cost is claimed for P-ctx-n.
-6. **Amendment 49's pod is read** (2a no shift detectable at 0.45; 2b both; 2c dilution not ruled out, R_override standing; citing about 1%). **P-ctx's single-decision read (2d) was cut** and moves to the next plain-engine pod (about 3.2 h; Amendment 50 item 4).
+6. **Amendment 49's pod is read. Wording of record (Amendment 52 item 1):** no judge-session shift detectable at 0.45, so the costs against the saved base stand; A0s's cost is about half the 35k-token prefix (A0n −1.99 [−2.57, −1.42]) and half the document's content (A0s minus A0n −2.01 [−2.75, −1.32]); in weights, P-ctx costs −0.98 and a document-specific cost is not detectable at 0.81. CST-A42: the constitution placed before GOOD_BEHAVIOR removes its effect (−0.019 [−0.043, +0.003] against −0.100); length and content are not separated; the citing rate (about 1%) is descriptive. **P-ctx's single-decision read (2d) was cut** and moves to the next plain-engine pod (about 3.2 h; Amendment 50 item 4).
 7. **P-ctx's bars (Amendment 49 item 4; MACHIAVELLI's single-decision read after item 2d):**
    - capability at n 800: −0.003 [−0.014, +0.009] (the verification pod, same-session base): **passes**;
    - refusal retention: Δ +0.011 [−0.071, +0.092] (the teacher pod, same-session base): **passes**;
-   - MoReBench's registered bar: −0.98 [−1.49, −0.46] against the saved base, not entirely below −0.87: **passes, conditional on 2a** (a shift excluding 0 restates it);
+   - MoReBench's registered bar: −0.98 [−1.49, −0.46] against the saved base, not entirely below −0.87: **passes** (no longer conditional: no judge-session shift detectable at 0.45; Amendment 52 item 1);
    - MACHIAVELLI: the single-decision read is item 2d (pending).
 
 ## Next pod

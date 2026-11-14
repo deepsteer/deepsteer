@@ -2099,7 +2099,8 @@ teacher costs on open moral reasoning is the 35k-token prefix, the same half the
 the operator cell (CST-A20). In MACHIAVELLI the constitution placed before GOOD_BEHAVIOR's agent
 prompt removes the ethics prompt's effect (−0.019 [−0.043, +0.003] against GOOD_BEHAVIOR alone's
 −0.100): a long document in context does not carry a short conduct instruction with it, whether by
-dilution or by its content outranking the instruction (R_override; A0n with GOOD_BEHAVIOR separates
-them, not run). The consequence for GPC: a goal-pressure teacher is not the constitution in context
+dilution or by its content outranking the instruction (R_override); length and content are not
+separated, and A0n with GOOD_BEHAVIOR, registered for the next pod, separates them. The consequence for GPC: a goal-pressure teacher is not the constitution in context
 with a clause appended; the conduct has to reach the weights by another route or come from a short
-document. P-ctx's own goal-pressure read moves to the next plain-engine pod.
+document. In weights, P-ctx costs MoReBench −0.98 and a document-specific cost is not detectable at
+0.81; its MoReBench bar is a pass. P-ctx's own goal-pressure read moves to the next pod.
