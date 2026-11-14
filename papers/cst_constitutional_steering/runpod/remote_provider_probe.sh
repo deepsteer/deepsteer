@@ -26,12 +26,15 @@ echo ">> provider probe start $(date -u +%FT%TZ) out=$OUT"
   echo "cpus: $(nproc)"; free -g | head -2; df -h "$REPO_DIR" | tail -1; \
   echo "workspace: $(readlink -f /workspace)"; nvidia-smi; } > "$OUT/logs/facts.log" 2>&1
 cat "$OUT/logs/facts.log"
-PYV=$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])')
+# PROBE_PYTHON: the interpreter the venv is built from (python3.11 from deadsnakes when the host's
+# python3 is another version; the system python3 and CUDA are left alone)
+PYBIN="${PROBE_PYTHON:-python3}"
+PYV=$($PYBIN -c 'import sys; print("%d.%d" % sys.version_info[:2])')
 [ "$PYV" = 3.11 ] || [ "${PROBE_ALLOW_PY:-0}" = 1 ] || { echo "STOP (A1): Python $PYV, not 3.11; the author decides (PROBE_ALLOW_PY=1 to go on)"; exit 1; }
 
 # ---- A1-A2: the runner's venv exactly as pinned, touching nothing in the system CUDA (python3-venv
 # from the distribution if the image lacks it; no CUDA package is touched) ----
-python3 -m venv --help >/dev/null 2>&1 && python3 -c 'import ensurepip' 2>/dev/null \
+$PYBIN -m venv --help >/dev/null 2>&1 && $PYBIN -c 'import ensurepip' 2>/dev/null \
   || { echo ">> installing python3-venv"; sudo apt-get install -y -q "python3.11-venv" >> "$OUT/logs/pip.log" 2>&1 || sudo apt-get install -y -q python3-venv >> "$OUT/logs/pip.log" 2>&1; }
 VENV=/workspace/venv_vllm
 VLLM_WHEEL_URL="https://github.com/vllm-project/vllm/releases/download/v0.31.0/vllm-0.31.0%2Bcu129-cp38-abi3-manylinux_2_28_x86_64.whl"
@@ -40,7 +43,7 @@ CU129_INDEX=https://download.pytorch.org/whl/cu129
 CONSTRAINTS=papers/st_live_reference/runpod/vllm_constraints.txt
 if [ ! -x "$VENV/bin/python" ]; then
   echo ">> creating $VENV"
-  python3 -m venv "$VENV"
+  $PYBIN -m venv "$VENV"
   "$VENV/bin/pip" install -q --upgrade pip >> "$OUT/logs/pip.log" 2>&1
   "$VENV/bin/pip" install -q "torch==2.13.0+cu129" "torchvision==0.28.0+cu129" \
     "torchaudio==2.11.0+cu129" --index-url "$CU129_INDEX" >> "$OUT/logs/pip.log" 2>&1
