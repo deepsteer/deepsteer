@@ -2091,3 +2091,15 @@ draws. On the reads already in, P-ctx meets the
 operator criterion on two draws and the capability bar; its goal-pressure read is Amendment 49 item
 2d, where the constitution in context itself reads −0.005 (CST-A42), so the second criterion is the
 one a constitution-distilled adapter is not yet shown to meet.
+
+**Amendment 49's pod (2026-11-14), positive voice.** The in-context constitution's MoReBench cost
+splits evenly: a neutral document of the same length costs −1.99 [−2.57, −1.42] and `C_anth`'s
+content another −2.01 [−2.75, −1.32] (no judge-session shift detectable at 0.45), so half of what the
+teacher costs on open moral reasoning is the 35k-token prefix, the same half the prefix carries on
+the operator cell (CST-A20). In MACHIAVELLI the constitution placed before GOOD_BEHAVIOR's agent
+prompt removes the ethics prompt's effect (−0.019 [−0.043, +0.003] against GOOD_BEHAVIOR alone's
+−0.100): a long document in context does not carry a short conduct instruction with it, whether by
+dilution or by its content outranking the instruction (R_override; A0n with GOOD_BEHAVIOR separates
+them, not run). The consequence for GPC: a goal-pressure teacher is not the constitution in context
+with a clause appended; the conduct has to reach the weights by another route or come from a short
+document. P-ctx's own goal-pressure read moves to the next plain-engine pod.
