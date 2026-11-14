@@ -79,7 +79,8 @@ run)
   ;;
 pull)
   mkdir -p "$P/outputs/provider_probe_v1"
-  rsync -az -e "ssh ${SSH_OPTS[*]}" --exclude '*.safetensors' "$R:$RD/$P/outputs/provider_probe_v1/" "$P/outputs/provider_probe_v1/"
+  rsync -az -e "ssh ${SSH_OPTS[*]}" --exclude '*.safetensors' "$R:$RD/$P/outputs/provider_probe_v1/" "$P/outputs/provider_probe_v1/" \
+    || echo ">> nothing to pull yet (the runner has not started)"
   ssh "${SSH_OPTS[@]}" "$R" "grep -E '^>>|STOP|BAIL' $RD/probe.log | tail -5; [ -f $RD/.session_done ] && echo SESSION_DONE" || true
   ;;
 *) echo "usage: facts|py311|run|pull TARGET, or verdict PRICE"; exit 1;;
