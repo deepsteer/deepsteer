@@ -16,8 +16,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
 P=papers/cst_constitutional_steering
-# Amendment 49 item 2a: scenarios re-judged (both rollouts each), the author's ruling
-REJUDGE_SCENARIOS=UNSET
+# Amendment 49 item 2a: scenarios re-judged (both rollouts each). Amendment 50 item 1's settings
+# check: MRB's p2 judge ran at tensor parallel 2 on two A100s, the bars pod and pod B on one GPU;
+# everything else matches, so all 1,000 rollouts are re-judged once (500 scenarios)
+REJUDGE_SCENARIOS=500
 [ "$REJUDGE_SCENARIOS" != UNSET ] || { echo "BAIL: the re-judge size (Amendment 49 item 2a) is not ruled yet"; exit 1; }
 I="$P/outputs/a49_in"
 rm -rf "$I" && mkdir -p "$I"

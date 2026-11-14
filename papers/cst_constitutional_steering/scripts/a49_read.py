@@ -75,9 +75,12 @@ def rejudge_read(out: Path, weights: dict) -> dict | None:
     rng = np.random.default_rng(SEED)
     bs = np.array([d[rng.integers(0, len(d), len(d))].mean() for _ in range(B)])
     lo, hi = np.percentile(bs, [2.5, 97.5])
+    mde = 2.80 * float(bs.std())
     return {"rule": "Amendment 49 item 2a", "rollouts": sum(len(v) for v in by.values()),
             "scenarios": len(d), "shift": float(d.mean()), "ci95": [float(lo), float(hi)],
-            "mde": 2.80 * float(bs.std()), "excludes_0": bool(lo > 0 or hi < 0),
+            "mde": mde, "excludes_0": bool(lo > 0 or hi < 0),
+            "wording": (f"no judge-session shift detectable at {mde:.2f}" if lo <= 0 <= hi else
+                        f"a judge-session shift of {float(d.mean()):+.2f} [{lo:+.2f}, {hi:+.2f}]"),
             "rollout_sd": float(np.std(np.concatenate([np.array(v) for v in by.values()]),
                                        ddof=1))}
 
@@ -104,11 +107,13 @@ def a0n_read(out: Path, items, weights) -> dict | None:
                       if r["unit"].startswith(f"{MODEL}/none/")]}
     gens = {"none": {r["job_id"]: r for r in
                      A.read_jsonl(R2.MRB_P2 / "gen" / f"{MODEL}.none.jsonl")}}
-    for arm, d in (("a0n", out), ("a0s", POD_B)):
+    for arm, d in (("a0n", out), ("a0s", POD_B), ("rejudge", out)):
+        g = d / "mrb" / "gen" / f"{MODEL}.{arm}.jsonl"
+        if not g.exists():
+            continue
         rows = A.read_jsonl(d / "mrb" / "judge" / "shard0.jsonl")
         judge[arm] = [r for r in rows if r["unit"].startswith(f"{MODEL}/{arm}/")]
-        gens[arm] = {r["job_id"]: r for r in
-                     A.read_jsonl(d / "mrb" / "gen" / f"{MODEL}.{arm}.jsonl")}
+        gens[arm] = {r["job_id"]: r for r in A.read_jsonl(g)}
     us = {}
     for rows in judge.values():
         us |= A.unit_scores(rows, weights)
@@ -136,6 +141,20 @@ def a0n_read(out: Path, items, weights) -> dict | None:
            "cap_hit_a0n": float(np.mean([gens["a0n"][f"{MODEL}/a0n/{s}/k{k}"]["status"]
                                          != "finished" for s in common for k in (0, 1)])),
            "note": "A0s was generated and judged on pod B: cross-session, conditional on 2a"}
+    if "rejudge" in gens:  # Amendment 50 item 2: the re-judged marks, the same-session reference
+        rj = sorted(set(R2.complete(us, gens, "rejudge", items))
+                    & set(R2.complete(us, gens, "a0n", items)))
+        if len(rj) >= 2:
+            b_rj, b_sv = R2.arrays(us, gens, "rejudge", rj), R2.arrays(us, gens, "none", rj)
+            a_rj = R2.arrays(us, gens, "a0n", rj)
+            rng = np.random.default_rng(LEN.SEED)
+            bt = [rng.integers(0, len(rj), len(rj)) for _ in range(LEN.N_BOOT)]
+            res["beside_a0n_same_session"] = {
+                "scenarios": len(rj),
+                "a0n_minus_rejudged_base": summ(R2.adj(b_rj, a_rj),
+                                                np.array([R2.adj(b_rj, a_rj, b) for b in bt])),
+                "a0n_minus_saved_base_same_scenarios": summ(
+                    R2.adj(b_sv, a_rj), np.array([R2.adj(b_sv, a_rj, b) for b in bt]))}
     n_x, d_x = res["a0n_minus_base"]["excludes_0"], res["a0s_minus_a0n"]["excludes_0"]
     res["reading"] = ("both" if n_x and d_x else "prefix" if n_x else "content" if d_x
                       else "not separable at this design")
@@ -163,6 +182,32 @@ def citing(rows, lab, arm, base_rec) -> dict | None:
                                                              if r["sid"] in base_rec]))
                      if sub else None}
     return out
+
+
+def goal_ratio(adapter: dict, base: dict, gb: dict, gb_base: dict) -> dict:
+    """Amendment 50 item 3: the adapter-to-GOOD_BEHAVIOR ratio on the states all four share, games
+    bootstrapped (2,000 draws). The numerator is the adapter against 2d's base of record; the
+    denominator GOOD_BEHAVIOR against the teacher pod's base (its own session)."""
+    ids = sorted(set(adapter) & set(base) & set(gb) & set(gb_base))
+    if not ids:
+        return {"n": 0}
+    game = defaultdict(list)
+    for s in ids:
+        game[s.split("|")[0]].append((adapter[s] - base[s], gb[s] - gb_base[s]))
+    gs = sorted(game)
+
+    def ratio(sel):
+        x = np.array([v for g in sel for v in game[g]])
+        return float(x[:, 0].mean() / x[:, 1].mean()) if x[:, 1].mean() else float("nan")
+
+    rng = np.random.default_rng(TR.SEED)
+    draws = [ratio(rng.choice(gs, len(gs))) for _ in range(TR.B)]
+    lo, hi = np.nanpercentile(draws, [2.5, 97.5])
+    return {"rule": "Amendment 50 item 3 (goal pressure)", "n": len(ids), "games": len(gs),
+            "ratio": ratio(gs), "ci95": [float(lo), float(hi)],
+            "meets": bool(lo >= 0.5),
+            "next": ("the second draw on the 1,698 is read (Amendment 50 item 4), then one capped "
+                     "trajectory read" if lo >= 0.5 else "misses: no second draw")}
 
 
 def mach_read(out: Path) -> dict:
@@ -222,6 +267,10 @@ def mach_read(out: Path) -> dict:
                      "fallback_share": float(np.mean([r["fallback"] for r in pc_rows
                                                       if r["arm"] == "p_ctx"])),
                      "deviation": "a stated deviation from section 6.4's 30-game read"}
+        gb = TR.rates(rec_rows, lab, "good_behavior")
+        res["2d"]["product_bar_goal_pressure"] = goal_ratio(
+            {s: v for s, v in pc.items() if not use_ss or s in nested}, ss if use_ss else base_rec,
+            gb, base_rec)
         if (TR.LABELS.parent / "mach" / "episodes.jsonl").exists() and v_rec.get("n"):
             res["2d"]["beside_scale_link"] = TR.scale_link(of_record["delta"] / rate_b)
         res["5_citing"] = dict(res.get("5_citing", {}), p_ctx=citing(pc_rows, lab, "p_ctx",

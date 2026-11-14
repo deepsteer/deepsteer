@@ -42,19 +42,25 @@ Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-c
    on the read. The open ledger entries of superseded lines are parked with one line each, zero GPU,
    with no prose pass (the SDF rungs: CST-A10, A25-A27, A30, A31, A35-A38; the labeling entries:
    CST-A3, A5-A7, A19). The one-page recipe for the partner stays a deliverable.
-4. **Proposed, for the author to confirm before GPC opens: the product bar**, on one adapter with no
-   document in context:
-   - operator pressure: carries most of the in-context gain;
-   - goal pressure: lowers the violating-choice rate by about what GOOD_BEHAVIOR does (−0.093) under a
-     plain goal prompt;
-   - cost: no capability loss and a MoReBench cost well under A0s's.
+4. **The product bar, confirmed** (Amendment 50 item 3), on one adapter with no document in
+   context:
+   - operator pressure: carries most of the in-context gain (the gain-ratio CI's lower bound at
+     least 0.5);
+   - goal pressure: on the single-decision read, the adapter-to-GOOD_BEHAVIOR ratio (paired on the
+     same states, games bootstrapped) has a CI lower bound of at least 0.5, the scale link beside; a
+     passing adapter gets one capped trajectory read as confirmation;
+   - cost: capability's registered bar, and MoReBench's registered bar (CI not entirely below
+     −0.87) with adapter minus A0s beside;
+   - two draws for a pass; a first draw that misses needs no second.
 
-   Where P-ctx stands on the reads already in (not a verdict; the bar is not confirmed): operator,
-   carries most (0.86 [0.80, 0.91] of A0s's gain; in-session 0.88; the second draw replicates,
-   −0.286 against −0.275); goal pressure, not yet read (Amendment 49 item 2d; the constitution in
-   context reads −0.005 on the nested 888, CST-A42); capability passes (−0.003 [−0.014, +0.009]);
-   MoReBench −0.98 against A0s's −4.00 (A0s minus P-ctx −3.02 [−3.67, −2.38], same session; the cost
-   against base conditional on Amendment 49 item 2a).
+   Where P-ctx stands (not a verdict): operator, carries most on both draws (0.86 [0.80, 0.91];
+   the second draw −0.286 against −0.275); goal pressure, Amendment 49 item 2d (the second draw on
+   the 1,698 is read only if the first meets it); capability passes (−0.003 [−0.014, +0.009]);
+   MoReBench −0.98 [−1.49, −0.46], passing the registered bar conditional on 2a, A0s minus P-ctx
+   −3.02 [−3.67, −2.38].
+5. **Not run:** the constitution plus GOOD_BEHAVIOR on the operator cell (a general conduct clause
+   is GPC's design decision; Amendment 50 item 5). Parked as well: CST-A9, CST-A12, CST-A15
+   (Amendment 50 item 6).
 
 ## Pending
 
@@ -70,7 +76,7 @@ Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-c
    consequence-criteria fingerprint): to re-derive before any ledger entry.
 
 5. **The MoReBench pod's first stage is in** (`outputs/mrb2x2_v1`, CST-A43): A0s −4.00 [−4.65, −3.36], P-ctx −0.98 [−1.49, −0.46], P-ctx-n −0.60 [−1.10, −0.11]; **the registered reading: frame**. No cap hits; no top-up. **Wording of record (Amendment 49 item 1):** A0s minus P-ctx, −3.02 [−3.67, −2.38], is same-session and stands; every cost against the saved base is conditional on the judge-session check; no generic-tuning cost is claimed for P-ctx-n.
-6. **Amendment 49's pod** (registered; built next): the judge-session check, A0n on MoReBench at k 2, CST-A42's discriminator with the citing flag and a constitution-alone citing cell, P-ctx's single-decision read. **Waiting on the author's ruling on 2a's size** (0.3 points at the judge's retest SD needs about 2,230 re-judged rollouts; 1,000 exist; the 0.6 A100-h ceiling covers about 430, MDE about 0.68).
+6. **Amendment 49's pod** (built; Amendment 50 set 2a's size): all 1,000 saved base rollouts re-judged once (the settings check found the judge's tensor parallelism differs: 2 on MRB's p2 session, 1 on the bars pod and pod B). The re-judged marks are A0n's same-session reference (Amendment 50 item 2). 2d stays last; if the cut rule skips it, it moves to the next plain-engine pod.
 7. **P-ctx's bars (Amendment 49 item 4; MACHIAVELLI's single-decision read after item 2d):**
    - capability at n 800: −0.003 [−0.014, +0.009] (the verification pod, same-session base): **passes**;
    - refusal retention: Δ +0.011 [−0.071, +0.092] (the teacher pod, same-session base): **passes**;
@@ -79,7 +85,7 @@ Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-c
 
 ## Next pod
 
-**Amendment 49's pod** (built; `launch_cst_a49.sh`): about 9.0 h before 2a, plus 2a at the author's size (0.6 h at the ceiling; 1.3 h for all 1,000 rollouts). The card bails until 2a's size is set.
+**Amendment 49's pod** (built; `launch_cst_a49.sh`, Community then Secure): about 10.3 h with all 1,000 re-judged; 2d ends near the 10.25 h cut, and if the cut rule skips it, it moves to the next plain-engine pod (Amendment 50 item 4).
 
 None built beyond the two running. Next to price: the MoReBench 2x2's first stage and the
 single-decision teacher check. MACHIAVELLI full reads run capped (Amendment 45 item 1: cap 38 for
@@ -215,6 +221,7 @@ A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per
 - 2026-11-13: the MoReBench pod's first stage built (Amendment 46 item B; `cst_mrb2x2_pod.py`, `mrb2x2_read.py`, `remote_cst_mrb2x2.sh`, `launch_cst_mrb2x2.sh`): A0s, then P-ctx with the session check, then P-ctx-n (skipped to a later pod if the gate at load on A0s's answer length forecasts past 10.5 h), each judged by MRB's judge on one GPU; about 9 A100-h (A0s 2.7 h of generation at 300 tokens/s and 2,900 tokens, three judges at 1.13 h, two adapter arms at 0.96 h, measured on the bars pod). The A0s engine runs at max_model_len 46,080: the longest A0s prompt is 34,722 tokens and MRB's cap 10,500 exceeds the engine of record's 44,032 (capacity only). The read reproduces config 2's registered -0.929 [-1.491, -0.365] and its MDE 0.80. Gate set 29 passed in the sync emulation.
 - 2026-11-14: Amendment 49 item 3 (zero GPU, from pod B's saved marks and gen rows; CST-A43): A0s's cost is on the positive-weight criteria (within-sign −4.32 [−4.98, −3.63]; negative-weight +1.10 [−0.85, +3.13], 359 scenarios); reasoning over base A0s 1.73, P-ctx 1.25, P-ctx-n 1.02, config 2 1.26; answers 1.02-1.07. Both agree with the lead's scratch (about −4.3 and no difference; 1.7, 1.24, 1.02).
 - 2026-11-14: Amendment 49's pod built: `cst_a49_pod.py` (`rejudge_prep`: MRB's saved base rollouts for the first N scenarios of `data/a49_rejudge_order_v1.json`, seed `20261114|cst_a49_rejudge`, renamed to the arm `rejudge` so the judge draws fresh seeds, each response checked against its saved sha256, all 1,000 pass locally; `a0n`: A0n's render on A0s's engine settings; `judge`; `fits`, the cut rule), `cst_teacher_pod.py`'s `a49_cgood` (the constitution with GOOD_BEHAVIOR on the nested 888 at k 2, the constitution on the seeded first 300 at k 1, seed `20261114|cst_a49_citing`) and `a49_pctx` (P-ctx on the 1,698 and the base on the 888 at k 2, one LoRA engine, after the smoke pass and P-ctx's parity), decisions in chunks of whole states (written per chunk, resumable, paired under a cut), CST-A32's citing flag on every row and the decoded generation in `teacher/_raw`; `a49_read.py` (2a-2d and item 5, descriptive); runner `remote_cst_a49.sh`, card `launch_cst_a49.sh` (Community then Secure, PCIe first; **bails until the author sets 2a's size**). The read reproduces GOOD_BEHAVIOR's −0.100 on the nested 888 from the teacher pod's rows (−0.0997). A dry session of every stage in the runner's order (tiny model, tiny P-ctx adapter) passes; gate set 58 passed in the sync emulation (2 skips: files a pod does not sync).
+- 2026-11-14: Amendment 50 item 1's settings check (zero GPU; MRB's p2 session 2026-11-01, the bars pod 2026-11-13, pod B 2026-11-13, from each session's log and the code each ran): the same judge revision (gpt-oss-120b `b5c939de`), stack (vLLM 0.31.0+cu129, torch 2.13.0, transformers 5.17.0), sampler (temperature 1.0, top-p 0.95, top-k 0), effort high, render (the tokenizer at the same revision and MRB's harmony code, unchanged since 2026-10-30; no template hash is in the logs), token limits (10,500 output, `max_model_len` 24,576), A100 SXM on all three. **Differs:** `tensor_parallel_size` 2 on p2's two GPUs, 1 on the bars pod and pod B (`cst_finalist_pod.configure`, 2026-11-12). Branch: all 1,000 re-judged once; this pod's judge also runs at 1 (and may land on PCIe). The card's size is set (500 scenarios); `a49_read.py` prints the 2a wording with its MDE, A0n against the re-judged marks on the same scenarios, and the goal-pressure ratio.
 - 2026-11-13: config 2's second draw (loop2, 5.66 h; Amendment 44 item 5): the registered content-cell read does not replicate (Δ 0.000 [−0.061, +0.070]; CST-A40 resolved toward R_noise); cell A′'s originals beyond the teacher +0.100 [+0.047, +0.162], so the registered rule-right fix fails its first part on the second draw; the comply items +0.005 [−0.069, +0.086]; the lettered gain −0.279 [−0.316, −0.246]; held-out away −0.078 [−0.134, −0.025], legitimate −0.090 [−0.179, −0.003]; injected −0.097 [−0.155, −0.038]; capability at n 200 −0.010 [−0.040, +0.020]; citing 0.967; the base's rule-keeping 0.971 (the teacher 0.971). P-ctx stays the candidate of record.
 - 2026-11-13: **the registered MACHIAVELLI read of config 2** (Amendments 41-43; `finalist_read.py` with both pods' directories; the fourth launch to the deadline and the resume pod, 1.96 h, 2,028 decisions replayed with 0 replay restarts; 30 games, 60 pairs, the registered read): candidate minus base, All violations +1.12 [−1.93, +4.18] (MDE 6.29), reward +0.07 [−1.50, +1.66] (MDE 3.37), power +1.22 [−1.58, +4.08], disutility +2.24 [−2.20, +6.67]; fallback 0.0001 and 0.0 per decision. No difference detectable at about 6.3 points on violations; the ethics-prompt band (MCH-04, MCH-05: −16 to −17 on GPT-OSS-20B; −10.7 on Qwen3-30B-A3B-Instruct-2507) lies outside config 2's CI.
 - 2026-11-13: **the registered category read** (Amendment 46 item A; `mach_category_read.py candidate`; its own commit): config 2 minus base, MCH's estimator per category, 98.3% for the family of three: deception +0.04 [−7.09, +7.35] (95% [−6.02, +6.05], MDE 10.38, 30 games), fairness +3.07 [−4.75, +10.86] (MDE 12.28, 30 games), promises −14.39 [−43.18, +14.56] (MDE 51.54, 28 games; **an insensitive read**: the positive control detects the prompt's effect on promises in no cell): **none detected**; All violations beside +1.12 [−1.96, +4.13] (MDE 6.29). Matched reward (secondary): the points difference +0.07, so the adjusted estimates equal the raw ones within 0.03 (deception +0.06, fairness +3.05, All +1.09); the slopes' CIs are wide (deception [−1.30, +0.90], fairness [−0.44, +1.86]). Descriptive, no verdict (the other ten at 95%): non-physical harm +8.27 [+2.35, +14.15], manipulation +6.94 [−0.62, +14.62], stealing −9.95 [−23.07, +3.20]; the rest include 0 (one of ten excluding 0 at 95% is about what chance gives).

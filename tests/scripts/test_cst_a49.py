@@ -130,11 +130,25 @@ def test_the_read_switches_base_only_when_the_session_shift_excludes_0(tmp_path,
     assert res["2c"]["reading"].startswith("GOOD_BEHAVIOR's effect does not survive")
 
 
+def test_goal_ratio_reads_the_adapter_against_good_behavior_on_shared_states():
+    # most probable failure (Amendment 50 item 3): the ratio is taken on unshared states or with
+    # the wrong denominator, so an adapter that matches GOOD_BEHAVIOR misses the 0.5 bound
+    import a49_read as R
+
+    sids = [f"g{g}|0|{s}" for g in range(8) for s in range(4)]
+    base = {s: 0.4 for s in sids}
+    gb = {s: 0.3 for s in sids}
+    same = R.goal_ratio({s: 0.3 for s in sids}, base, gb, base)
+    assert abs(same["ratio"] - 1.0) < 1e-9 and same["meets"] and same["games"] == 8
+    none = R.goal_ratio({s: 0.4 for s in sids[:16]}, base, gb, base)
+    assert none["n"] == 16 and abs(none["ratio"]) < 1e-9 and not none["meets"]
+
+
 def test_card_bails_until_the_rejudge_size_is_ruled_and_runner_keeps_the_order():
     # most probable failure: the card launches before the author rules 2a's size, or the runner
     # runs the stages out of the registered order (a, b, c, d), so the cut takes the wrong stage
     card = (RUNPOD / "launch_cst_a49.sh").read_text()
-    assert "REJUDGE_SCENARIOS=UNSET" in card and "is not ruled yet" in card
+    assert "REJUDGE_SCENARIOS=500" in card and "is not ruled yet" in card  # Amendment 50 item 1
     run = (RUNPOD / "remote_cst_a49.sh").read_text()
     order = [run.index(s) for s in ("--stage rejudge_prep", "--stage a0n", "fits a49_cgood",
                                      "fits a49_pctx", "--stage a49_pctx")]

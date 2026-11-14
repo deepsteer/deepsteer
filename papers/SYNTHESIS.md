@@ -2082,10 +2082,12 @@ priced. No paper is planned: the deliverables are the partner recipe, then a pro
 a paper follows only if the work is productized, which needs strong value against both user/operator
 pressure and goal pressure. The two-draw rule applies where a decision rides on a read; the open
 ledger entries of the superseded SDF and labeling lines are parked; the one-page recipe for the
-partner stays a deliverable. **Proposed, for the author to confirm before GPC opens, the product
-bar** on one adapter with no document in context: it carries most of the in-context operator gain;
-it lowers the violating-choice rate under a plain goal prompt by about GOOD_BEHAVIOR's −0.093; it has
-no capability loss and a MoReBench cost well under A0s's. On the reads already in, P-ctx meets the
+partner stays a deliverable. **The product bar, confirmed by the author (Amendment 50
+item 3),** on one adapter with no document in context: it carries most of the in-context operator
+gain (gain-ratio lower bound 0.5); on the single-decision read its ratio to GOOD_BEHAVIOR's effect,
+paired by state and bootstrapped by game, has a lower bound of 0.5, with one capped trajectory read
+to confirm a pass; it passes capability's and MoReBench's registered bars; and a pass needs two
+draws. On the reads already in, P-ctx meets the
 operator criterion on two draws and the capability bar; its goal-pressure read is Amendment 49 item
 2d, where the constitution in context itself reads −0.005 (CST-A42), so the second criterion is the
 one a constitution-distilled adapter is not yet shown to meet.

@@ -2518,7 +2518,9 @@ adapter the recipe names (P-ctx, or config 2 for the A′ fix alone).
   base marks (MRB's v0.9.3 estimator, the slope from the re-judged base's own k1 minus k0 coupling),
   beside A0n against the saved marks on the same scenarios and on all 500.
 - **The goal-pressure ratio (item 3):** per bootstrap draw (games resampled, 2,000 draws), the
-  adapter's mean minus the base's over the mean of GOOD_BEHAVIOR minus the base's, on the states all
-  three share (the 1,698: GOOD_BEHAVIOR and the base from the teacher pod's rows; when 2d's read of
-  record is against this pod's base, on the 888 with that base). The point is the ratio of the full
-  sample's means; the CI is the percentile interval of the draws.
+  adapter's mean minus its base's over the mean of GOOD_BEHAVIOR minus the teacher pod's base, on
+  the states all of them share. The numerator's base is 2d's base of record (the teacher pod's on
+  the 1,698; this pod's on the 888 when the session shift moves the read there); the denominator
+  always pairs GOOD_BEHAVIOR with the base of its own session. The point is the ratio of the full
+  sample's means; the CI is the percentile interval of the draws. (Made exact at the build,
+  2026-11-14, before any data: the first text said "on the 888 with that base".)
