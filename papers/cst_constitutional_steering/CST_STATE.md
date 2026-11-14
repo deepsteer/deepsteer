@@ -2,7 +2,7 @@
 
 Scope: operator pressure, a constitution moved into weights, the partner recipe.
 
-**As of 2026-11-13, plan v0.40 (Amendments 1-45).** Candidate of record: **P-ctx** (Amendment 39;
+**As of 2026-11-14, plan v0.44 (Amendments 1-49).** Candidate of record: **P-ctx** (Amendment 39;
 Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-cell gain did not:
 Δ 0.000 [−0.061, +0.070] on its second draw). The finalist bars were read on config 2's first draw
 (Amendments 41-44).
@@ -31,6 +31,30 @@ Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-c
   host failures, or a measured rate under 80% of the forecast, and the next pod goes back to Secure
   with a note to the author. **Anything carrying the partner's document runs on Secure** unless the
   author names otherwise. HF_TOKEN never rides a command line.
+
+## Decisions of record (the author, 2026-11-14; no recompute)
+
+1. **One model.** Qwen3.8-27B stays the only subject until CST and GPC are read together.
+2. **No paper is planned.** The deliverables, in order: the partner recipe, then a product-value
+   test. A paper follows only if the work is productized, which needs strong value in resisting both
+   user/operator pressure and goal pressure.
+3. **Consequences.** No second-model pass is priced. The two-draw rule applies where a decision rides
+   on the read. The open ledger entries of superseded lines are parked with one line each, zero GPU,
+   with no prose pass (the SDF rungs: CST-A10, A25-A27, A30, A31, A35-A38; the labeling entries:
+   CST-A3, A5-A7, A19). The one-page recipe for the partner stays a deliverable.
+4. **Proposed, for the author to confirm before GPC opens: the product bar**, on one adapter with no
+   document in context:
+   - operator pressure: carries most of the in-context gain;
+   - goal pressure: lowers the violating-choice rate by about what GOOD_BEHAVIOR does (−0.093) under a
+     plain goal prompt;
+   - cost: no capability loss and a MoReBench cost well under A0s's.
+
+   Where P-ctx stands on the reads already in (not a verdict; the bar is not confirmed): operator,
+   carries most (0.86 [0.80, 0.91] of A0s's gain; in-session 0.88; the second draw replicates,
+   −0.286 against −0.275); goal pressure, not yet read (Amendment 49 item 2d; the constitution in
+   context reads −0.005 on the nested 888, CST-A42); capability passes (−0.003 [−0.014, +0.009]);
+   MoReBench −0.98 against A0s's −4.00 (A0s minus P-ctx −3.02 [−3.67, −2.38], same session; the cost
+   against base conditional on Amendment 49 item 2a).
 
 ## Pending
 

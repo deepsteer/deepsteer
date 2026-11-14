@@ -2075,3 +2075,17 @@ orders (−0.081 [−0.123, −0.039]), a cost the distilled rungs inherit and t
 
 **Next line, seeded (the author, 2026-11-13; not opened): GPC (Goal-Pressure Conduct).** It starts
 after CST finishes. No plan file, directory or spend until the author opens it.
+
+**The author's decisions (2026-11-14; `cst_constitutional_steering/CST_STATE.md`).** One subject:
+Qwen3.8-27B stays the only model until CST and GPC are read together, and no second-model pass is
+priced. No paper is planned: the deliverables are the partner recipe, then a product-value test, and
+a paper follows only if the work is productized, which needs strong value against both user/operator
+pressure and goal pressure. The two-draw rule applies where a decision rides on a read; the open
+ledger entries of the superseded SDF and labeling lines are parked; the one-page recipe for the
+partner stays a deliverable. **Proposed, for the author to confirm before GPC opens, the product
+bar** on one adapter with no document in context: it carries most of the in-context operator gain;
+it lowers the violating-choice rate under a plain goal prompt by about GOOD_BEHAVIOR's −0.093; it has
+no capability loss and a MoReBench cost well under A0s's. On the reads already in, P-ctx meets the
+operator criterion on two draws and the capability bar; its goal-pressure read is Amendment 49 item
+2d, where the constitution in context itself reads −0.005 (CST-A42), so the second criterion is the
+one a constitution-distilled adapter is not yet shown to meet.
