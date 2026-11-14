@@ -2454,8 +2454,10 @@ adapter the recipe names (P-ctx, or config 2 for the A′ fix alone).
   rollout and the attempt, not the arm). Read against the base of record on the same states (the
   teacher pod's, against which GOOD_BEHAVIOR's −0.100 was measured), games bootstrapped; the
   same-session base of 2d beside when 2d runs. Otherwise than the registered rule: a CI including 0
-  means GOOD_BEHAVIOR's effect does not survive the prefix (R_dilution stands); a CI excluding both 0
-  and −0.100 is an attenuated effect (dilution not ruled out).
+  means GOOD_BEHAVIOR's effect does not survive the prefix (R_dilution stands); a CI wholly below
+  −0.100 is an effect beyond GOOD_BEHAVIOR's alone; a CI above 0 is a rise; a CI between −0.100 and 0
+  that excludes both is an attenuated effect (dilution not ruled out). (Corrected at the build,
+  2026-11-14: the first text named only two of the four.)
 - **5.2's seeded order:** the nested 888 shuffled by `random.Random("20261114|cst_a49_citing")`, the
   first 300; the constitution arm exactly as the teacher check registered it.
 - **5.1's flag:** `cst_pressure_pod.CITES` (`\bconstitution\b`, case-insensitive) over the decoded
@@ -2476,5 +2478,7 @@ adapter the recipe names (P-ctx, or config 2 for the A′ fix alone).
   judge 864 rollouts an hour; the document engine 1,071 MACHIAVELLI decisions an hour; the engine of
   record 2,514 an hour, the adapter assumed at 80% of that): setup 0.3 h; 2a 0.1 h plus N / 864;
   2b about 3.4 h (generation 2.0, judge 1.15, loads); 2c about 2.0 h (2,076 decisions); 2d about 3.1
-  h (smoke and parity 0.45, 5,172 decisions). About 9.2 h before 2a: 9.7 h at the 0.6 A100-h
-  ceiling, 10.5 h with all 1,000 (2d would then be cut). About $13-22 by cloud.
+  h (smoke and parity 0.45, 5,172 decisions). About 9.0 h before 2a: 9.6 h at the 0.6 A100-h
+  ceiling, 10.2 h with all 1,000 (2d then ends at the 10.25 h cut and is likely cut). About $13-22
+  by cloud. (Arithmetic corrected at the build, 2026-11-14: the first text said 9.2, 9.7 and
+  10.5.)

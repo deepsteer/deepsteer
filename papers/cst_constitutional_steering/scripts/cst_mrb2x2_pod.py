@@ -49,26 +49,47 @@ def start_epoch() -> float:
 
 def a0s_jobs(tok, fmt, dry: bool) -> list[dict]:
     """MRB's gen_jobs with A0s's render: the constitution's system message before the user turn."""
+    return doc_jobs("a0s", tok, fmt, dry)
+
+
+def doc_jobs(arm: str, tok, fmt, dry: bool) -> list[dict]:
+    """MRB's gen_jobs with a document arm's render (A0s: `C_anth`; A0n: Faraday's lectures,
+    Amendment 49 item 2b), the document's system message before the user turn."""
     import cst_pressure as CP
     import mrb_g1_pod as P
     import mrb_p2_pod as M
 
     from deepsteer.datasets.morebench import load_morebench
 
-    body = F.S.doc_body("a0s", dry)
+    body = F.S.doc_body(arm, dry)
     jobs = []
     items = load_morebench(subset="public")[: 2 if dry else None]
     for it in items:
-        msgs = CP.a0s_messages([{"role": "user", "content": M.generation_prompt(it.dilemma)}],
-                               body)
+        msgs = CP.doc_messages(arm, [{"role": "user",
+                                      "content": M.generation_prompt(it.dilemma)}], body)
         ids = ([1, 2, 3] if dry else
                fmt.prompt_ids(tok, fmt.render(tok, msgs, M.EFFORT, M.DATE_PIN[MODEL])))
         for k in range(2):
             jobs.append({"sid": it.scenario_id, "k": k, "prompt_ids": ids,
                          "max_tokens": 8 if dry else P.MAX_TOKENS,
                          "seed": M.seed(MODEL, it.scenario_id, k), "sampler": M.SAMPLER,
-                         "job_id": f"{MODEL}/a0s/{it.scenario_id}/k{k}"})
+                         "job_id": f"{MODEL}/{arm}/{it.scenario_id}/k{k}"})
     return jobs
+
+
+def doc_engine(arm: str, dry: bool):
+    """A document arm's engine: the engine of record at 32 sequences, ``max_model_len`` 46,080."""
+    import mrb_p2_pod as M
+
+    if dry:
+        tok, _ = _tok_fmt(True)
+        return M.StubLLM(MODEL, tok).llm_engine, None
+    from vllm import SamplingParams as SP  # noqa: N814
+
+    kw = F.S.engine_kwargs(arm)
+    kw["max_model_len"] = A0S_MAX_LEN
+    path = F.S.V._model_path(False)  # noqa: SLF001
+    return F.S.V.VLLMEngine(path, None, **kw).llm.llm_engine, SP
 
 
 def _tok_fmt(dry: bool):
@@ -79,19 +100,9 @@ def _tok_fmt(dry: bool):
 
 
 def stage_a0s(out: Path, dry: bool) -> dict:
-    import mrb_p2_pod as M
-
     tok, fmt = _tok_fmt(dry)
     jobs = a0s_jobs(tok, fmt, dry)
-    if dry:
-        engine, SP = M.StubLLM(MODEL, tok).llm_engine, None
-    else:
-        from vllm import SamplingParams as SP  # noqa: N814
-
-        kw = F.S.engine_kwargs("a0s")
-        kw["max_model_len"] = A0S_MAX_LEN
-        path = F.S.V._model_path(False)  # noqa: SLF001
-        engine = F.S.V.VLLMEngine(path, None, **kw).llm.llm_engine
+    engine, SP = doc_engine("a0s", dry)
     name = f"{MODEL}.a0s.jsonl"
     gen, raw = out / "mrb" / "gen" / name, out / "mrb" / "_raw" / "gen" / name
     t0 = time.time()
