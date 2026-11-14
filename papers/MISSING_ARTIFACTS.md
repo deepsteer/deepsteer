@@ -97,3 +97,22 @@ saves are the closure.
 - **Gate after.** P7-02b and fig. 4 unblock under either reading (MRB-A9 R_content: the sentence
   stands; R_token: the sentence and the GPT-OSS 0.025 are rewritten from the new profile) before
   Paper 7 is submitted.
+
+## CST teacher check (2026-11-14): the constitution arm's decision traces were not saved
+
+- **Why.** A beside on the teacher read (no new verdict): the share of the constitution arm's
+  MACHIAVELLI decision traces that cite the document by CST-A32's pattern
+  (`cst_pressure_pod.CITES`, `\bconstitution\b`), and the violating-choice rate split by cited or
+  not.
+- **Gap.** `cst_teacher_pod.py` saves ids, hashes, attempts, token counts, cap flags and the action
+  per decision (`outputs/teacher_v1/teacher/constitution.jsonl`), and no trace text by design ("no
+  game text"); the session log carries none either. The pod is gone, so the 1,776 decisions of
+  record cannot be read for citing.
+- **What.** On the next pod that runs the constitution arm (CST-A42's discriminator, the
+  constitution plus GOOD_BEHAVIOR on the nested 888, is the natural host), save per decision the
+  pattern's hit (a boolean, computed on the pod) and the trace in a gitignored `_raw/`. The split is
+  then read on that run's own decisions, not on the run of record, and is output-conditioned
+  (citing is the subject's own output), so it is reported against the base at the same states.
+- **Where.** Rides the next constitution-arm pod; alone it is about 2.2 A100-h (1.66 h measured
+  for the arm at 1,071 decisions/h, plus about 0.5 h of load).
+- **Gate after.** None; a beside on CST-A42 (R_scope against R_dilution).
