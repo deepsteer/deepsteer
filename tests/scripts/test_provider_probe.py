@@ -55,8 +55,8 @@ def test_the_probe_builds_the_pods_venv_exactly_as_pinned():
 
 
 def test_hyperstack_summary_flags_us_or_canada_stock():
-    # most probable failure (Amendment 51 item B3): an EU-only or out-of-stock A100 counts as the
-    # dedicated-GPU provider's stock for the partner's document
+    # most probable failure (Amendment 51 item B3): an EU-only, spot or out-of-stock A100 counts as
+    # the dedicated-GPU provider's on-demand stock for the partner's document
     fl = {"data": [{"gpu": "A100-80G-PCIe", "region_name": "CANADA-1", "flavors": [
         {"name": "n3-A100x1", "gpu": "A100-80G-PCIe", "gpu_count": 1, "region_name": "CANADA-1",
          "stock_available": False}]},
@@ -64,7 +64,12 @@ def test_hyperstack_summary_flags_us_or_canada_stock():
             {"name": "n3-A100x1", "gpu": "A100-80G-PCIe", "gpu_count": 1,
              "region_name": "NORWAY-1", "stock_available": True}]}]}
     s = HP.summarize({"regions": []}, fl, {"stocks": []}, {"images": []}, [], {"data": {}})
-    assert len(s["single_a100_flavors"]) == 2 and not s["us_or_canada_a100_80gb_in_stock"]
+    assert len(s["single_a100_flavors"]) == 2 and not s["us_or_canada_a100_80gb_on_demand_in_stock"]
+    fl["data"][0]["flavors"].append({"name": "n3-A100x1-spot", "gpu": "A100-80G-PCIe-spot",
+                                     "gpu_count": 1, "region_name": "CANADA-1",
+                                     "stock_available": True})  # spot is not on-demand stock
+    s = HP.summarize({"regions": []}, fl, {"stocks": []}, {"images": []}, [], {"data": {}})
+    assert not s["us_or_canada_a100_80gb_on_demand_in_stock"]
     fl["data"][0]["flavors"][0]["stock_available"] = True
     s = HP.summarize({"regions": []}, fl, {"stocks": []}, {"images": []}, [], {"data": {}})
-    assert s["us_or_canada_a100_80gb_in_stock"]
+    assert s["us_or_canada_a100_80gb_on_demand_in_stock"]

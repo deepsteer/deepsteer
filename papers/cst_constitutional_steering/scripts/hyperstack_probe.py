@@ -25,7 +25,7 @@ from pathlib import Path
 
 BASE = "https://infrahub-api.nexgencloud.com/v1"
 OUT = Path(__file__).resolve().parent.parent / "outputs" / "hyperstack_probe"
-US_CA = ("US-1", "CANADA-1")
+US_CA = ("US-1", "CANADA-1", "CANADA-2")
 
 
 def get(path: str, key: str, **params) -> dict | list:
@@ -61,17 +61,19 @@ def summarize(regions, flavors, stocks, images, pricebook, credit) -> dict:
                              "version": im.get("version")})
     pb = [p for p in (pricebook if isinstance(pricebook, list) else [])
           if "A100" in (p.get("name") or "")]
-    us_ca_stock = [f for f in flav if f["region_name"] in US_CA and f.get("stock_available")]
+    # on-demand only (Amendment 51 item B3): a spot flavor can be preempted mid-pod
+    us_ca_stock = [f for f in flav if f["region_name"] in US_CA and f.get("stock_available")
+                   and "spot" not in f"{f.get('name')}{f.get('gpu')}".lower()]
     return {"regions": [{k: r.get(k) for k in ("name", "country")}
                         for r in (regions.get("regions") or [])],
             "single_a100_flavors": flav, "a100_stock_rows": st,
             "ubuntu_2204_cuda_images": imgs, "pricebook_a100": pb,
             "credit": {k: (credit.get("data") or {}).get(k)
                        for k in ("credit", "threshold", "can_create_instance")},
-            "us_or_canada_a100_80gb_in_stock": bool(us_ca_stock),
+            "us_or_canada_a100_80gb_on_demand_in_stock": bool(us_ca_stock),
             "note": ("no US or Canada region shows on-demand A100 80GB stock on this run (B3: the "
                      "dedicated-GPU fallback is Verda or RunPod Secure)") if not us_ca_stock else
-                    "a US or Canada single-A100 flavor shows stock on this run"}
+                    "a US or Canada on-demand single-A100 flavor shows stock on this run"}
 
 
 def main() -> None:
