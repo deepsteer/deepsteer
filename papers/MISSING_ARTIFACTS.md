@@ -98,7 +98,7 @@ saves are the closure.
   stands; R_token: the sentence and the GPT-OSS 0.025 are rewritten from the new profile) before
   Paper 7 is submitted.
 
-## CST teacher check (2026-11-14): the constitution arm's decision traces were not saved
+## CST teacher check (2026-11-14): the constitution arm's decision traces were not saved (OPEN)
 
 - **Why.** A beside on the teacher read (no new verdict): the share of the constitution arm's
   MACHIAVELLI decision traces that cite the document by CST-A32's pattern
