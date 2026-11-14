@@ -2,7 +2,7 @@
 
 Scope: operator pressure, a constitution moved into weights, the partner recipe.
 
-Status: **v0.45, 2026-11-14: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) 33 (the three shares' names; selection and comparison on different cells) 34 (tomorrow's branches withdrawn; P-ctx's capability and injected-order reads lead tomorrow's pod) 35 (the P-ctx verification pod) 36 (the directional kind-split verdict; the content gate of record; P-ctx-f and the held-out cell at k 4; SDF parked) 37 (the selected content cell) 38 (the cell's near-duplicate rule; a 100-scenario top-up) 39 (P-ctx the candidate of record; the loop pod) 40 (the contested read of record; the teacher's rule-keeping beside config 2) 41 (the finalist-bars pod) 42 (the finalist pod's rulings: the gate at load, the token budget from the candidate's lengths, the session check) 43 (the MACHIAVELLI pod's price exception and resume) 44 (the loop pod's rulings: config 2 the finalist, its wording, the content-cell reading, the second draw) 45 (MACHIAVELLI's concurrency cap and its standing price; the screen tier not built) 46 (the category read, the MoReBench pod's first stage, the single-decision teacher check) 47 (P-ctx the recipe's adapter; the teacher check's size; two standing rules; the headroom read) 48 (RunPod pricing: per-pod rates, Community Cloud on trial, the token off the command line) 49 (MoReBench stage 1's rulings: the wording of record, one pod for the judge-session check, A0n, CST-A42's discriminator and P-ctx's single-decision read, the citing flag) and 50 (2a's size by a settings check, the same-session reference for A0n, the product bar confirmed, 2d's place, three parked entries), §13.** v0.1 was the draft for the
+Status: **v0.46, 2026-11-14: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) 15 (the specificity bar on cell A′ alone) 16 (the length-matched fork, S0b's order, Grad-Nec) 17 (the frontier split, MoReBench's protocol) 18 (Codex the S_tenet reader of record, CST-A18; A0n pinned), 19-23 (S0b-1, the pilot ladder and its rulings, CST-A19, CST-A20) 24 (the corpus gate's length band and cap rule, D11's drop) 25 (CST-A22's parity gate and mini-pod; the CST-A21 rulings; the DPO line on operator-pressure prompts) and 26 (the length bar; the base-model reads as an empirical null; a same-session base read on every read pod; tonight's two pods) 27 (the pressure line's writer, gates and three sessions) 28 (the re-read pod's patch, the decoder path of record, the smoke pass) 29 (the floor-aware parity gate, the held-out free-form cell, 2-ctx's relaunch, the SDF no-recovery reads) 30 (the rate of record, the envelope, the generic branch's reproduction check) 31 (the smoke pass's fixed served check, the structural save check) 32 (CST-A30; the discrimination branches; the kind-split pod and the content gate) 33 (the three shares' names; selection and comparison on different cells) 34 (tomorrow's branches withdrawn; P-ctx's capability and injected-order reads lead tomorrow's pod) 35 (the P-ctx verification pod) 36 (the directional kind-split verdict; the content gate of record; P-ctx-f and the held-out cell at k 4; SDF parked) 37 (the selected content cell) 38 (the cell's near-duplicate rule; a 100-scenario top-up) 39 (P-ctx the candidate of record; the loop pod) 40 (the contested read of record; the teacher's rule-keeping beside config 2) 41 (the finalist-bars pod) 42 (the finalist pod's rulings: the gate at load, the token budget from the candidate's lengths, the session check) 43 (the MACHIAVELLI pod's price exception and resume) 44 (the loop pod's rulings: config 2 the finalist, its wording, the content-cell reading, the second draw) 45 (MACHIAVELLI's concurrency cap and its standing price; the screen tier not built) 46 (the category read, the MoReBench pod's first stage, the single-decision teacher check) 47 (P-ctx the recipe's adapter; the teacher check's size; two standing rules; the headroom read) 48 (RunPod pricing: per-pod rates, Community Cloud on trial, the token off the command line) 49 (MoReBench stage 1's rulings: the wording of record, one pod for the judge-session check, A0n, CST-A42's discriminator and P-ctx's single-decision read, the citing flag) 50 (2a's size by a settings check, the same-session reference for A0n, the product bar confirmed, 2d's place, three parked entries) and 51 (a second GPU provider: the Thunder Compute probe, the Hyperstack availability probe, the decision rule, the port after it), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -2524,3 +2524,70 @@ adapter the recipe names (P-ctx, or config 2 for the A′ fix alone).
   always pairs GOOD_BEHAVIOR with the base of its own session. The point is the ratio of the full
   sample's means; the CI is the percentile interval of the draws. (Made exact at the build,
   2026-11-14, before any data: the first text said "on the 888 with that base".)
+
+### Amendment 51 (2026-11-14; author, on the lead's due diligence: a second GPU provider; no registered read runs off RunPod until a validation run passes there; RunPod's path stays intact as the fallback)
+
+**Why.** RunPod Secure is now $2.09-2.19 an hour for the A100 80GB, and Community had no stock on two
+launches (the teacher pod and Amendment 49's pod). Candidates: Thunder Compute at $1.09 (every
+instance runs on a proprietary GPU virtualization layer) and Hyperstack at $1.35 (plain VMs, SOC 2
+Type 2; US, Canada and EU regions). The API keys for both stay on the laptop. Nothing carrying the
+partner's document goes to Thunder.
+
+**A. The Thunder Compute compatibility probe** (about 1.5 A100-h on Thunder; driven by hand with its
+CLI or REST API; no launcher port yet). Their documentation: North America; CUDA 13.0, driver 580,
+PyTorch 2.9.0+cu128 preinstalled; persistent disk 100-4,000 GB; dynamic IP; per-minute billing; no
+egress fee; documented incompatibilities: managed memory (UVM), CUDA MPS, GPU profilers, GPU FFmpeg;
+their warning: do not reinstall CUDA, and on compatibility issues use a venv and change other
+dependencies' versions.
+1. **Go/no-go first**, before anything is installed or downloaded: on a fresh A100 80GB instance
+   with a 300 GB disk, record the Python version (3.11 needed), the region if shown, what
+   `nvidia-smi` reports, root or sudo access and the reported hourly price. Build the runner's venv
+   exactly as pinned (torch 2.13.0+cu129, vLLM 0.31.0's pinned wheel, transformers 5.17.0, peft
+   0.21.2), touching nothing in the system CUDA, and run the stack check.
+2. **No version of the pinned stack may change.** If the stack check fails, or passes only with
+   another torch or vLLM version: stop, delete the instance, report the error in full. Thunder is
+   then not used for registered reads.
+3. If it passes: the gate tests (`/workspace` a symlink into the persistent home directory).
+4. **Serving:** the engine of record at its usual memory setting and 128 sequences, then the fixed
+   smoke check (Amendment 31) against the saved HF letters, passing as registered.
+5. **HF path:** the parity stage's HF letters for the base and the fixed adapter.
+6. **Throughput at saturation:** 30 minutes on the plain engine and 15 on the document engine with
+   `C_anth` in context; tokens per second as the mean and the worst 5-minute window, against
+   RunPod's measured plateaus (about 500 and about 377).
+7. **Training:** 50 steps of P-ctx's trainer, steps per second against RunPod's log.
+8. Any error that names the virtualization layer, reported in full.
+9. **Verdict line:** relative throughput (item 6 over RunPod's), the worst-window ratio, and the
+   effective price (the reported price over relative throughput), beside Hyperstack's $1.35 and
+   RunPod Secure's $2.09. **Pass:** items 1-5 clean and a worst window at or above 80% of the mean.
+   Then delete the instance and confirm the account lists none.
+
+**B. The Hyperstack availability probe** (free, read-only API calls, alongside A).
+1. With the author's `HYPERSTACK_API_KEY`: the regions, the single-A100-80GB flavors with their
+   stock, and the Ubuntu 22.04 CUDA images with driver versions. Run twice, a day apart.
+2. The minimum prepaid top-up, the on-demand price the API returns for the flavor, and what bills
+   besides the GPU (disk, public IP, snapshots).
+3. If no US or Canada region shows on-demand A100 80GB stock on either run, say so: the fallback
+   for a dedicated-GPU provider is then Verda or RunPod Secure.
+
+**C. The decision**, brought to the author with A's verdict line and B's report.
+- Bulk work on public material goes to the lowest effective price that passed. Thunder beats
+  Hyperstack above 81% of RunPod's throughput, and RunPod Secure above 52%.
+- The partner's document runs only on a dedicated-GPU provider in a US or Canada region (Hyperstack
+  if B shows stock, otherwise RunPod Secure), unless the author rules otherwise after seeing
+  Thunder's answers on isolation.
+
+**D. The port**, for whichever provider C names (not started before C).
+1. Behind a `PROVIDER` switch in `session_lib.sh` and `run_session.sh`: the six RunPod-specific
+   pieces of `SECOND_PROVIDER_NOTE.md`, written so a third provider is another case of the switch.
+2. Provider specifics. Hyperstack: an environment and an imported keypair, the VM with a 300 GB
+   disk, a firewall rule for port 22, a public IP, cloud-init for `/workspace`, rsync and the SSH
+   access the runners assume. Thunder: the instance and SSH key through its API, the `/workspace`
+   symlink, an SSH poll that handles a dynamic IP.
+3. **Teardown guard:** delete the instance on exit, poll until the API no longer lists it, then list
+   every instance, volume and public IP on the account and fail loudly if any remain. The API key
+   never goes to the instance; the HF token goes by the mode-600 file as now.
+4. The per-pod rate log records the provider's reported price; forecast rates are re-measured at
+   the gate at load (host CPU and disk differ).
+5. The validation run as `SECOND_PROVIDER_NOTE.md` registers it: the stack check and gate tests,
+   the fixed smoke check, and a P-ctx reproduction against a same-session base, passing when the
+   contrast's CI contains the RunPod draws' range.
