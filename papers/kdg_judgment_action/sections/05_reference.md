@@ -12,17 +12,17 @@ paraphrase-stable subset halved the rate at 18 scenarios), and the strictness la
 \centering
 \includegraphics[width=\linewidth]{kdg_strictness.pdf}
 \caption{\textbf{Reference strictness.} Paired excess of the gap over the pressure-removed null at
-the three reference levels: L0, the original frame with sampled stability; L1, plus four-frame
-majority on the violating versus non-violating binary; L2, plus all four frames naming the same
-option. (a) Binary readout; (b) continuous readout. The pre-registered verdict level is the
+the three reference levels: L0 is the original frame with sampled stability, L1 adds four-frame
+majority on the violating versus non-violating binary, and L2 adds all four frames naming the same
+option. (a) Binary readout. (b) Continuous readout. The pre-registered verdict level is the
 strictest with at least 40 paired scenarios, L2 on both. The binary excess loses power as the
-scenario set shrinks; the continuous excess grows. Bars are the registered scenario bootstrap; the binary
+scenario set shrinks, while the continuous excess grows. Bars are the registered scenario bootstrap. The binary
 excess's two-way intervals of record, which reach zero at L0 and L1, are in \Cref{tab:twoway}.}
 \label{fig:strictness}
 \end{figure}
 
 \Cref{fig:strictness} gives the answer, and it differs by instrument in an informative way. On
-the binary readout the excess is 0.10 at L0, 0.11 at L1, and 0.05 at L2 with 43 paired scenarios; over
+the binary readout the excess is 0.10 at L0, 0.11 at L1, and 0.05 at L2 with 43 paired scenarios. Over
 scenarios alone the intervals are 0.02 to 0.18, 0.02 to 0.19 and $-0.02$ to 0.19, and under the two-way
 bootstrap of record (scenarios and rollout indices, \Cref{instruments}) they are 0.00 to 0.19, 0.00 to 0.21
 and $-0.03$ to 0.23. On the binary readout the excess is therefore at its edge at L0 and L1 and not resolved
@@ -32,9 +32,9 @@ the excess is 0.054 (0.021 to 0.086), 0.063 (0.030 to 0.096), and 0.079 (0.029 t
 binary shortfall at L2 is the majority rule discarding information at 43 pairs, not the gap
 shrinking under a stricter reference. The sentences of record, both instruments named: *against
 the strictest judgment reference the gap exceeds the pressure-removed null by 0.079 (0.029 to
-0.128) on the log-prob readout; on the majority readout at 43 paired scenarios it is not
+0.128) on the log-prob readout. On the majority readout at 43 paired scenarios it is not
 resolved (0.05, $-0.03$ to 0.23 under the two-way bootstrap).* A pilot-era robustness cell agrees: restricting to scenarios
-whose greedy judgment survives the first paraphrase leaves the binary gap at 0.17 (0.11 to 0.28;
+whose greedy judgment survives the first paraphrase leaves the binary gap at 0.17 (0.11 to 0.28,
 90 scenarios) against 0.19 on the full screened panel, where the 96-scenario pilot had halved it
 at 18 scenarios.
 
@@ -58,7 +58,7 @@ L2 & 67 & 0.41 & 0.18 & 0.26 & 0.11 & 0.23 & 0.15 & 0.079 [0.029, 0.128] \\
 
 \Cref{tab:strictness} shows why the excess grows. Tightening the reference selects scenarios
 the model judges decisively, so the judging mass on the violating option falls from 0.26 to
-0.18; the acting mass barely moves (0.44 to 0.41), so the gap opens. The twins' judging mass
+0.18. The acting mass barely moves (0.44 to 0.41), so the gap opens. The twins' judging mass
 falls too, from 0.16 to 0.11, but by less, so the paired excess rises. The rival that the
 strictest level selects the most tempting scenarios is checked by the acting mass itself, which
 does not rise from L0 to L2. The gap is largest where the model's judgment is least ambiguous,

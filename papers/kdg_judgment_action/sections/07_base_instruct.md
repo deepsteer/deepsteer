@@ -1,7 +1,7 @@
 # 7. Before and after post-training, and a format check that changed a reading {#base}
 
 **In short.** On OLMo-3 the gap shows up before and after post-training. In the base model, which can
-only be read as plain text completion, the part the incentive adds is 0.017 (0.012 to 0.022); we report
+only be read as plain text completion, the part the incentive adds is 0.017 (0.012 to 0.022). We report
 this as a description, because that format misreads chat models. In the aligned model, read in its own
 chat format on all 586 scenarios, the gap is already present after supervised fine-tuning (0.015, 0.007
 to 0.023). The DPO step does not enlarge it, and the RL step adds a small increase on the probability scale
@@ -12,14 +12,14 @@ What post-training does change is the model's default lean when it acts: prefere
 it toward the advantageous option even when nothing is at stake (+0.011, 0.007 to 0.016).
 
 Base-versus-instruct is the question of origin: a gap present in base weights is inherited from
-pretraining; a gap absent in base and present in instruct would point to post-training. A base
+pretraining, and a gap absent in base and present in instruct would point to post-training. A base
 model has no chat template, so the only frame both models share is a raw completion frame
-(scenario, option list, fixed prefix ending before the option token; the readout is the
-option-letter probability mass, eight option orders). Each model's pressure-removed twins give it a
+(scenario, option list, and a fixed prefix ending before the option token), and the readout is the
+option-letter probability mass over eight option orders. Each model's pressure-removed twins give it a
 matched null in the same frame, and the quantity compared is the **pressure-attributable excess**
 $E$: the paired difference between the acting-versus-judging mass gap on a scenario and on its
 twin. The verdict rules were fixed in dated amendments before the numbers below were computed
-(\Cref{app:prereg}; tables in \Cref{app:three-cell}). The instruct model is also read under its own
+(\Cref{app:prereg}, with tables in \Cref{app:three-cell}). The instruct model is also read under its own
 chat template, with a letter-only judgment so that acting and judging differ only in role and frame.
 That second readout changed what this section can claim, and we report the change as a result.
 
@@ -28,14 +28,14 @@ That second readout changed what this section can claim, and we report the chang
 \includegraphics[width=\linewidth]{kdg_stages.pdf}
 \caption{\textbf{OLMo-3 across post-training, each checkpoint read in its own chat template.} (a) The
 pressure-attributable excess $E$ after SFT, after DPO and after RL (the final model), on the 586 scenarios
-screened by no model (filled; the number of record for stage claims) and on the 136 scenarios screened on
-the final model's actions (hollow); the gap is present at every stage; the DPO step does not enlarge it, and
-the RL step adds a small increase on the probability scale (+0.004, 0.0004 to 0.0078; bar 0.005) that does
+screened by no model (filled, the number of record for stage claims) and on the 136 scenarios screened on
+the final model's actions (hollow). The gap is present at every stage. The DPO step does not enlarge it, and
+the RL step adds a small increase on the probability scale (+0.004, 0.0004 to 0.0078, bar 0.005) that does
 not resolve per unit of output scale. The base model, which
 has no chat template, is shown in the raw completion frame (gray diamond) as a description only: that
 frame misreads templated checkpoints, so the base value is not a validated before-and-after comparison.
 (b) On the final checkpoint, the positive control (red: the acting frame's move when the operator orders
-the violating action; it was not run on the SFT and DPO checkpoints) and the excess on one axis, with the
+the violating action, not run on the SFT and DPO checkpoints) and the excess on one axis, with the
 pre-registered validation bar dotted. 95\% bootstrap CIs over scenarios.}
 \label{fig:stages}
 \end{figure}
@@ -43,7 +43,7 @@ pre-registered validation bar dotted. 95\% bootstrap CIs over scenarios.}
 \begin{table}[tbp]
 \centering
 \caption{The three-cell weights contrast in the raw completion frame. Rows two to four are on each
-model's own above-floor scenarios; the shared-scenario rows are paired on the 192 (continuous) or
+model's own above-floor scenarios. The shared-scenario rows are paired on the 192 (continuous) or
 171 (binary) scenarios where both models clear the floor on the primary and on the twin. Bracketed
 values are 95\% bootstrap CIs over scenarios.}
 \label{tab:three-cell}
@@ -81,13 +81,13 @@ comparison with the aligned model.
 
 **Survives post-training, under the model's own template.** Read under its chat template on the 136
 screened scenarios, the instruct model's acting-versus-judging gap is 0.055 (0.034 to 0.076) with
-nothing at stake and 0.084 (0.059 to 0.110) under pressure; the pressure-attributable excess is
+nothing at stake and 0.084 (0.059 to 0.110) under pressure. The pressure-attributable excess is
 0.030 (0.006 to 0.053). The gap has the base model's sign at rest and under pressure, and the part
 of it the incentive adds does not disappear with alignment. The screened set was selected on this
-model's own chat actions, which inflates the raw gap; the twin-differenced excess is less exposed to
+model's own chat actions, which inflates the raw gap. The twin-differenced excess is less exposed to
 that selection, and it is the number we lean on. Framing the same prompts as an internal safety
 evaluation lowers the at-rest gap by about 0.01 (0.010, 0.001 to 0.021 on the 208 raw-engaged
-scenarios; not resolved on the 136) and does not detectably move the excess ($-0.008$, $-0.026$ to
+scenarios, not resolved on the 136) and does not detectably move the excess ($-0.008$, $-0.026$ to
 0.012).
 
 **A format check that changed a reading.** In the raw frame the instruct model's no-pressure gap is
@@ -103,16 +103,16 @@ attribute to post-training.
 
 **What remains of the raw-frame comparison.** On the 192 scenarios both models engage in the raw
 frame, the instruct model's excess is 0.046 against base's 0.018 (paired difference 0.028, 0.007 to
-0.049; MDE 0.030), and the pre-registered rule names that branch *widened*. We report the number under the
+0.049, MDE 0.030), and the pre-registered rule names that branch *widened*. We report the number under the
 rule's word and do not rest a claim on it. The instruct side of that comparison is a raw-frame cell
-carrying the format effect above; on the log-odds scale the difference survives, but divided by
+carrying the format effect above. On the log-odds scale the difference survives, but divided by
 each model's own output scale it does not resolve (0.12, $-0.02$ to 0.26), and the scale factor is
 itself partly a raw-frame property of the instruct model. The comparison that is template-valid on
 every side runs across post-training stages under one template. On the 136 screened scenarios the
 pressure-attributable excess is 0.021 (0.006 to 0.036) after SFT, 0.022 (0.002 to 0.043) after DPO and
-0.030 (0.006 to 0.053) after RLVR; the DPO and RL steps are 0.001 ($-0.012$ to 0.014) and 0.007
+0.030 (0.006 to 0.053) after RLVR. The DPO and RL steps are 0.001 ($-0.012$ to 0.014) and 0.007
 ($-0.001$ to 0.016). On this screened set neither step's interval excludes zero (bars 0.019 for the
-DPO step and 0.012 for the RL step, $n = 136$); the stage contrast of record is the unscreened set
+DPO step and 0.012 for the RL step, $n = 136$). The stage contrast of record is the unscreened set
 below.
 
 **What post-training does change.** Read on a set screened by no model's actions (all 586 union
@@ -121,21 +121,21 @@ at rest grows at the DPO step: 0.021 after SFT, 0.033 after DPO and 0.039 after 
 (0.007 to 0.016), survives division by each checkpoint's output scale (+0.058, 0.027 to 0.090), so it is
 not the sharpening that post-training also brings. The RL step is positive on the probability scale
 (+0.006, 0.003 to 0.009) but not per unit of output scale (+0.018, $-0.001$ to 0.037), and reads as that
-sharpening. The DPO step does not enlarge the pressure-attributable part on either readout; the RL step
+sharpening. The DPO step does not enlarge the pressure-attributable part on either readout, and the RL step
 enlarges it slightly on the probability scale and not per unit of output scale (positive control on the
-final checkpoint: known-gap band 0.497, 0.468 to 0.525; the cell was not run on the SFT and DPO
+final checkpoint: known-gap band 0.497, 0.468 to 0.525, with the cell not run on the SFT and DPO
 checkpoints). On the probability
-scale the DPO step does not move it ($-0.001$, $-0.006$ to 0.005; bar 0.008), and per unit of output
+scale the DPO step does not move it ($-0.001$, $-0.006$ to 0.005, bar 0.008), and per unit of output
 scale it falls ($-0.039$, $-0.069$ to $-0.008$), because DPO sharpens the output without adding pull.
-The RL step reads +0.004 on the probability scale (0.0004 to 0.0078; bar 0.005): the interval excludes zero
+The RL step reads +0.004 on the probability scale (0.0004 to 0.0078, bar 0.005): the interval excludes zero
 and the point sits below its detection bar, with every known bias favoring a positive step and the same sign
-as the screened set; on the primary
-per-unit-of-output-scale readout it is +0.005 ($-0.016$ to 0.026; bar 0.030). Log-odds also excludes
+as the screened set. On the primary
+per-unit-of-output-scale readout it is +0.005 ($-0.016$ to 0.026, bar 0.030). Log-odds also excludes
 zero, so baseline compression is ruled out and the remaining rival is the output sharpening the RL step
 also brings. Preference optimization makes the model, placed as the actor, lean further toward the
-locally advantageous option than it does as a judge; how much the incentive adds grows at most slightly, at
+locally advantageous option than it does as a judge. How much the incentive adds grows at most slightly, at
 the RL step on the probability scale only. That is the opposite direction from the raw frame's
-at-rest reading, and it replicates on a second DPO recipe (\Cref{recipe}); which part of the DPO stage
+at-rest reading, and it replicates on a second DPO recipe (\Cref{recipe}). Which part of the DPO stage
 produces it is left to a recipe ablation on one base.
 
 **Robustness of the base cell.** The selection check passed: base's excess on its 354

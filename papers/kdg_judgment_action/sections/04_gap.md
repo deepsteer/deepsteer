@@ -3,7 +3,7 @@
 **In short.** On OLMo-3, on the scenarios screened on its own actions (an outcome-selected subset), the
 model takes the action it judged wrong on about one in five (0.19, 0.13 to 0.28), far below what an explicit
 operator order produces (0.58). The paired excess over the same scenarios with the pressure removed is 0.10
-on the binary readout (0.02 to 0.18 over scenarios; 0.00 to 0.19 under the two-way bootstrap of record,
+on the binary readout (0.02 to 0.18 over scenarios, and 0.00 to 0.19 under the two-way bootstrap of record in
 \Cref{instruments}, so at its edge) and 0.054 (0.021 to 0.086) on the log-probability readout, read before any
 token is sampled, which carries the excess.
 
@@ -14,10 +14,10 @@ token is sampled, which carries the excess.
 136 screened scenarios). (a) The binary majority readout: matched null on the pressure-removed
 twins, the measurement, and the known-gap band. (b) The continuous readout $g=p_D-p_J$ with its
 floor, the unsigned shift of the judgment mass under paraphrase. On both instruments the
-measurement sits above its null and well below the band; the paired excess over the null is the
+measurement sits above its null and well below the band. The paired excess over the null is the
 number the paper uses. Bars are 95\% bootstrap CIs over scenarios (nested over rollouts on the
-binary readout), as registered; on the binary readout the two-way intervals of record are wider and put the
-paired excess's lower bound at zero (\Cref{tab:twoway}); $n$ is the number of scenarios with a defined statistic.}
+binary readout), as registered. On the binary readout the two-way intervals of record are wider and put the
+paired excess's lower bound at zero (\Cref{tab:twoway}), and $n$ is the number of scenarios with a defined statistic.}
 \label{fig:ladder}
 \end{figure}
 
@@ -26,9 +26,9 @@ paired excess's lower bound at zero (\Cref{tab:twoway}); $n$ is the number of sc
 \includegraphics[width=0.8\linewidth]{kdg_scatter.pdf}
 \caption{\textbf{Every screened scenario.} Violating-option mass when judging ($p_J$, mean over
 four frames) against violating-option mass when acting ($p_D$, mean over 32 rollouts), one point
-per screened scenario, marked by family; the same scenarios' pressure-removed twins in gray.
+per screened scenario, marked by family, with the same scenarios' pressure-removed twins in gray.
 Points above the diagonal act more violating than they judge. The cloud of primaries sits above
-the cloud of twins by the paired excess of 0.054; the twins themselves sit above the diagonal by
+the cloud of twins by the paired excess of 0.054. The twins themselves sit above the diagonal by
 the deliberation asymmetry of \Cref{instruments}. Regenerable from the released per-scenario
 table.}
 \label{fig:scatter}
@@ -36,15 +36,15 @@ table.}
 
 \Cref{fig:ladder} is the paper's calibration figure and \Cref{fig:scatter} its data figure. On
 the screened panel of record (136 scenarios selected on the model's own actions, 126 with a defined
-majority gap) the binary gap is 0.19 (95% CI 0.13 to 0.28 over scenarios; 0.11 to 0.28 under the
-two-way bootstrap over scenarios and rollout indices), the pressure-removed null 0.10 (0.06 to 0.17;
-two-way 0.04 to 0.18), and the known-gap band 0.58 (0.51 to 0.65; two-way 0.50 to 0.65). The paired
+majority gap) the binary gap is 0.19 (95% CI 0.13 to 0.28 over scenarios, and 0.11 to 0.28 under the
+two-way bootstrap over scenarios and rollout indices). The pressure-removed null is 0.10 (0.06 to 0.17,
+two-way 0.04 to 0.18), and the known-gap band is 0.58 (0.51 to 0.65, two-way 0.50 to 0.65). The paired
 excess of the measurement over the null is 0.10 on 100 scenarios: 0.02 to 0.18 over scenarios, and 0.00
 to 0.19 under the two-way bootstrap, the estimator of record for sampled cells, whose lower bound sits at
-zero. The band sits 0.38 (0.24 to 0.48; two-way 0.22 to 0.50) above the measurement, so the observed rate
+zero. The band sits 0.38 (0.24 to 0.48, two-way 0.22 to 0.50) above the measurement, so the observed rate
 is neither frame change alone nor instruction-following saturation. On the
 continuous readout the same rungs read 0.12 (null), 0.18 (measurement), and 0.60 (band), with a
-paired excess of 0.054 (0.021 to 0.086) on 136 scenarios; the floor, the unsigned shift of the
+paired excess of 0.054 (0.021 to 0.086) on 136 scenarios. The floor, the unsigned shift of the
 judgment mass under paraphrase, is 0.14. Mass on the violating option is 0.44 when acting and
 0.26 when judging. On the twins, with the incentive removed, it is 0.28 and 0.16: even with
 nothing at stake the immediate action puts more mass on the violating option than the deliberated
@@ -52,24 +52,24 @@ judgment does, which is the deliberation asymmetry named in \Cref{instruments}, 
 adds 0.05 to that difference.
 
 **Two second derivations.** At the rollout level, on screened scenarios whose stable judgment
-named a non-violating option, the model takes the violating action on 0.38 of rollouts; a
+named a non-violating option, the model takes the violating action on 0.38 of rollouts. A
 majority-rule rate of 0.19 from per-scenario fractions averaging 0.38 is what a mixed panel
 predicts. Across instruments, the binary excess predicted from the continuous values (the net
 fraction of paired scenarios whose acting mass crosses 0.5 between the twin and the primary) is
 0.14 (0.07 to 0.22) on the 88 paired scenarios with a non-violating reference, against the observed
-0.13 (0.06 to 0.21) on the same 88; 13 scenarios cross upward and one crosses downward. The two instruments agree on sign
+0.13 (0.06 to 0.21) on the same 88, with 13 scenarios crossing upward and one crossing downward. The two instruments agree on sign
 and size, and the majority readout is, as expected, the noisier of the two.
 
 **The floor and the null are one quantity in two units.** The binary floor is an agreement rate
 (the greedy judgment reproduces itself on a paraphrased frame on 0.70 of scenarios by option,
-0.80 by the violating versus non-violating binary), not a gap rate; the pressure-removed null is
+0.80 by the violating versus non-violating binary), not a gap rate. The pressure-removed null is
 what that re-elicitation noise and the frame change together produce in gap units, 0.10. On the
 continuous instrument the floor (0.14) is an unsigned noise scale and the excess (0.054) a
-signed paired difference against a twin that shares the judgment noise; the two are on different
+signed paired difference against a twin that shares the judgment noise. The two are on different
 footings and are not compared.
 
 **What the excess is and is not.** The absolute rate (0.19 on a three-option forced choice with
-a neutral option counted as non-violating) is not interpretable alone; the number the paper uses
+a neutral option counted as non-violating) is not interpretable alone. The number the paper uses
 is the paired excess over twins that hold the same options and the same neutral tag with the
 incentive deleted. \Cref{tab:bias} names the known biases and their directions.
 

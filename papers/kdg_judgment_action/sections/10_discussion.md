@@ -12,20 +12,20 @@ a bar attached, and it changes what the next mechanistic cell should test: not "
 position load on the harm direction" but "what does it load on at all", with this gap as the
 behavioral outcome the cell is scored against, the role Cheng et al. [-@cheng2026tool] and Basu
 et al. [-@basu2026interpretability] give the gap in non-moral domains. The exploratory continuous
-read of \Cref{structure} (F1 above F3; a pressure-attributable excess present on the honesty and
+read of \Cref{structure} (F1 above F3, and a pressure-attributable excess present on the honesty and
 fairness families and unresolved on the shortcut and harm families) is the first candidate for
 that structure, and it is cheap to test.
 
 **Where the gap comes from.** On OLMo-3 the base model already acts more violating than it judges in
 the only frame a base model has, and under its own template the aligned model does the same at rest
-and under pressure; later stages change the pressure-attributable part little: the DPO step does not
-enlarge it, and the RL step adds a small increase on the probability scale (+0.004, 0.0004 to 0.0078; 586
+and under pressure. Later stages change the pressure-attributable part little: the DPO step does not
+enlarge it, and the RL step adds a small increase on the probability scale (+0.004, 0.0004 to 0.0078, on 586
 scenarios screened by no model) that does not resolve per unit of output scale (+0.005, $-0.016$ to 0.026),
 consistent with output sharpening. Across
 lineages the picture is not one of a pretraining property that survives every alignment. Two of five
-instruct models carry the gap; Tulu 3 shows none on either read, GPT-OSS-20B without reasoning shows
+instruct models carry the gap. Tulu 3 shows none on either read, GPT-OSS-20B without reasoning shows
 none on either read, and Qwen2.5 shows none on the whole
-panel and is unresolved on its own screened scenarios (0.083, $-0.028$ to 0.195; $n = 47$, bar about 0.16); the instrument is validated on each; and on the same
+panel and is unresolved on its own screened scenarios (0.083, $-0.028$ to 0.195, $n = 47$, bar about 0.16). The instrument is validated on each, and on the same
 Llama-3.1 base Meta's recipe carries it while Ai2's Tulu 3 does not (\Cref{recipe}). The defensible
 account is that post-training recipes differ in whether the aligned model acts on the incentive against
 its own judgment, and that within a recipe that carries the gap, later stages change its size little.
@@ -46,11 +46,11 @@ everywhere. A chat model read in a raw completion frame acquires agent-frame eff
 frame on both Ai2 recipes we read, at every checkpoint, and not on Meta's instruct model from the same
 base. Any base-versus-instruct contrast run in such a frame, including log-probability sycophancy
 measurements that score instruct checkpoints without their template, inherits whichever effect its
-recipe has. The twin design caught the problem only because the frame itself was put under test; the
+recipe has. The twin design caught the problem only because the frame itself was put under test. The
 lesson for evaluations is to read every templated model in its template, and to treat a raw-frame
 instruct number as a format cell.
 
-**Goal-following is the parsimonious mechanism; deliberation brakes the action, with or without the incentive.** The simplest account of
+**Goal-following is the parsimonious mechanism. Deliberation brakes the action, with or without the incentive.** The simplest account of
 the gap is not moral at all: post-training teaches a model to pursue the goal it is handed in context,
 the incentive sentence hands the actor a goal, and the judge, who reads the same sentence, does not hold
 it. That is consistent with the Schmied et al. [-@schmied2025greedy] observation that fine-tuned agents
@@ -60,13 +60,13 @@ toward the model's own judgment against matched non-moral controls (\Cref{delibe
 norm alone does about a third of that on OLMo-3 (0.18 to 0.64). Run on the pressure-removed twins, the same
 reasoning lowers the violating choice there too (\Cref{deliberation}). By the pre-registered rule it reduces
 the pressure-attributable part on Llama-3.1 (branch (a)) and closes the at-rest asymmetry on OLMo-3 (branch
-(b)); the post-hoc ratio reading (P1-A14) is consistent with one proportional cut on both models and does
+(b)). The post-hoc ratio reading (P1-A14) is consistent with one proportional cut on both models and does
 not separate a pressure-specific part smaller than about a third (OLMo-3) or two-fifths (Llama-3.1) of the
 brake. This differs from Rakshit et al.'s [-@rakshit2026pseudo] finding
 that reasoning before acting does not by itself align action with stated values, in a different
-construct (value profiles, free-text actions) and without a filler control; the filler control is what
+construct (value profiles, free-text actions) and without a filler control. The filler control is what
 lets us attribute the change to the content of the reasoning rather than to its length. Persona steering
-[@chen2025persona] remains the second lever the design anticipates; with the raw frame's at-rest caution
+[@chen2025persona] remains the second lever the design anticipates. With the raw frame's at-rest caution
 shown to be a format effect, its target is the pressure-attributable excess itself.
 
 **What deliberation tracks is the rule, not the harm.** On the panel, moving the action toward the
@@ -80,7 +80,7 @@ the approver, which keeps the rule without preventing the loss, while its mass o
 falls slightly. On OLMo-3 and GPT-OSS-20B the effect does not detectably depend on whether the rule is the
 protective choice, and on Llama-3.1 the brake falls to about a seventh of its panel size, consistent with a
 deliberation that weighs the third party's loss alongside the rule. The two scenario
-sets differ in more than that relation, so the size comparison is between sets; a rule-protective twin of
+sets differ in more than that relation, so the size comparison is between sets. A rule-protective twin of
 the same scenarios on Llama-3.1 would separate them.
 
 **Two instruments, one gap.** The majority-vote gap and the log-prob gap agree on sign and rough
@@ -108,7 +108,7 @@ next panel's scenarios to be decisive by construction.
 **Generators are a covariate, not a nuisance.** Writing half the panel with each of two models
 and cross-labeling caught three scenarios with inverted labels, produced one family whose rate
 depended on its author, and, on the pooled panel, a generator difference of about 0.05 to 0.08
-in the same direction on both instruments. The blind read found no construction asymmetry; a
+in the same direction on both instruments. The blind read found no construction asymmetry. A
 difference in register, the same pressure written in one model's idiom engaging the acting model somewhat
 more, would produce it, but register was not manipulated and the cause is untested. Any single-generator panel of this kind carries that effect invisibly, and
 so does any panel whose generator is also the model evaluated.

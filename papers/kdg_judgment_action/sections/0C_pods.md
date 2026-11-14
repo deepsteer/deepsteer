@@ -2,7 +2,7 @@
 
 **Sample flow (v2).** \Cref{tab:flow} gives every scenario set the paper reads and how it is formed. Each row
 carries its own pressure-removed twin as a second pair of frames, so pressure-removed twins are not counted
-as rows; "harm twins" are separate rows that vary the level of harm.
+as rows. "Harm twins" are separate rows that vary the level of harm.
 
 | set | scenarios | formed as | read in |
 |------------|------|-------------------|-------------|
@@ -16,8 +16,8 @@ as rows; "harm twins" are separate rows that vary the level of harm.
 | letter-only union | 586 | 632 rows less 40 swaps and 6 flagged: 360 primaries + 226 harm twins | \Cref{base}, \Cref{recipe}, GPT-OSS-20B |
 | rule-harms set (separate) | 264 | 270 generated (135 per generator), kept by both raters | \Cref{rule-harm} |
 
-Table: Sample flow from the generated rows to each analysis set. Screened subsets (136, 130, 110 on OLMo-3;
-each model's own screen in \Cref{tab:recipe}) are drawn from these sets and named where used. {#tab:flow}
+Table: Sample flow from the generated rows to each analysis set. Screened subsets (136, 130, 110 on OLMo-3,
+plus each model's own screen in \Cref{tab:recipe}) are drawn from these sets and named where used. {#tab:flow}
 
 | quantity | pilot (96) | full panel (320) | union (440) |
 |---|---|---|---|
@@ -34,10 +34,10 @@ each model's own screen in \Cref{tab:recipe}) are drawn from these sets and name
 | raw-frame argmax gap, base vs instruct (shared) | 0.10 vs 0.08 (50) | 0.136 vs 0.089 (169) | 0.145 vs 0.094 (235) |
 
 Table: Numbers of record by pod. Bracketed values are 95% bootstrap CIs over scenarios, as printed in v1 (two-way
-intervals for the union column are in \Cref{tab:twoway}); parenthesized values
+intervals for the union column are in \Cref{tab:twoway}). Parenthesized values are
 the number of scenarios with a defined statistic. The pilot's paraphrase-stable robustness cell
 (0.11 at 18 scenarios) did not replicate (0.17 at 90). The raw-frame row is the argmax reading
-without a null; the calibrated version is in Appendix D. {#tab:pods}
+without a null. The calibrated version is in Appendix D. {#tab:pods}
 
 | family | primaries | screened | mixed | no pressure | judged violating | judgment unstable |
 |---|---|---|---|---|---|---|
@@ -49,7 +49,7 @@ without a null; the calibrated version is in Appendix D. {#tab:pods}
 
 Table: Screen outcomes on the panel of record, gate-family primaries by family. "Judged
 violating" scenarios are violated by the model and judged violating by it, so they carry no
-contradiction; "judgment unstable" scenarios have no stable reference. {#tab:screen}
+contradiction. "Judgment unstable" scenarios have no stable reference. {#tab:screen}
 
 | origin | paraphraser | original gap (screened) | swapped gap (screened) | swapped − original, paired |
 |---|---|---|---|---|
@@ -57,13 +57,13 @@ contradiction; "judgment unstable" scenarios have no stable reference. {#tab:scr
 | GPT-written (20) | Claude | 0.33 [0.00, 0.80] (6) | 0.11 [0.00, 0.33] (9) | −0.09 [−0.27, 0.00] (11) |
 
 Table: The F4 paraphrase-swap cell on the binary readout. With four to eleven defined scenarios
-per cell the swap is inconclusive; on the continuous readout the acting mass moves toward the
+per cell the swap is inconclusive. On the continuous readout the acting mass moves toward the
 paraphraser by −0.03 [−0.10, 0.03] and −0.07 [−0.17, 0.02]. {#tab:swap}
 
 Pod wall time on one A100-80GB: 58 minutes for the pilot's instruct cells (judgment cells run
 one scenario at a time), 3 hours 20 minutes for the full panel with judgment prompts batched
 across scenarios (about 16 minutes per judgment cell at 320 scenarios), 1 hour 10 minutes for
 round 2. Every cell saved per-rollout text, parsed option, harness label, option order, and the
-full next-token log-probability vector at the decision position; the three pods total 15 GB of
+full next-token log-probability vector at the decision position. The three pods total 15 GB of
 arrays with a verified manifest each. The raw-frame cells on both models take about 30 seconds
 per 96 scenarios.

@@ -4,8 +4,8 @@ Stage 1 (before any pod): 200 synthetic reply formats instantiated on the panel'
 scenarios with per-item option permutations (clean letters, answer lines, verbose explanations,
 tool calls, hedges, refusals, two-option mentions, trailing reconsiderations). Against the
 construction labels the harness scored 200/200 after three parser rules were settled from an
-independent judge pass: the last `Answer:` anchor anywhere in a reply is the commitment; a
-leading letter counts only with punctuation after it; a two-option mention with a contrast
+independent judge pass: the last `Answer:` anchor anywhere in a reply is the commitment, a
+leading letter counts only with punctuation after it, and a two-option mention with a contrast
 marker ("rather than Y", "though Y is tempting") commits to the option other than Y. Against the
 independent judge: 0.985 (kappa 0.98).
 
@@ -34,7 +34,7 @@ perfectly valid readout would produce, the exact-readout ceiling $\kappa^*$, ran
 the five models on the 64-scenario check sample under each model's effective sampler (temperature 0.7 plus
 its default nucleus): OLMo-3 0.62, GPT-OSS-20B 0.74, Llama-3.1 0.78, Tulu 3 0.80, Qwen2.5 0.82. The 0.80 bar
 sat at or above the ceiling on four of the five models. GPT-OSS's registered checks (0.688 and, dose-matched,
-0.766) fail 0.80 and clear the model-relative bar $0.9\,\kappa^* = 0.668$; the dose-0 rollouts also write
+0.766) fail 0.80 and clear the model-relative bar $0.9\,\kappa^* = 0.668$. The dose-0 rollouts also write
 the forced prefill's own header token for token. Construct checks are now set at $0.9\,\kappa^*$ per model. That bar
 was set after GPT-OSS's registered checks had failed the fixed one, so it is a post-hoc calibration
 correction, and both outcomes stand in the record: fail at the registered 0.80, pass at $0.9\,\kappa^*$
@@ -50,7 +50,7 @@ independently, one index set shared by every cell in a draw (10,000 draws, seed 
 record in v2. Every scenario-only interval below reproduces the one printed in v1. Point estimates do not
 change. The audit covers the judgment-based statistics of \Cref{gap} and \Cref{reference}, every row of
 \Cref{tab:deliberation} with the norm-salience share and the log-ratio intervals, and the panel-side arm
-of the panel-versus-rule-harms brake difference; the forced letter readouts (\Cref{base}, \Cref{recipe})
+of the panel-versus-rule-harms brake difference. The forced letter readouts (\Cref{base}, \Cref{recipe})
 sample nothing and are unaffected. A verdict moves in three places, marked.
 
 | statistic (OLMo-3 unless named) | point | scenario-only (v1) | two-way (of record) |

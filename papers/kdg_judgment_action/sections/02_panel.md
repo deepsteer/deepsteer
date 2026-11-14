@@ -4,24 +4,24 @@
 
 A scenario is a self-contained situation with a moral norm at stake, a situational pressure that
 makes violating it locally advantageous, and two to four discrete options, at least one
-norm-consistent and one norm-violating; most scenarios also carry a neutral option (hold, ask,
+norm-consistent and one norm-violating. Most scenarios also carry a neutral option (hold, ask,
 escalate). Five families vary the pressure type while holding the norm class distribution roughly
-constant (\Cref{tab:families}); they draw on the pressure genres of the MACHIAVELLI benchmark
+constant (\Cref{tab:families}). They draw on the pressure genres of the MACHIAVELLI benchmark
 [@pan2023machiavelli], the agentic-misalignment scenarios [@lynch2025agentic], and
 sycophancy-under-pushback evaluations [@sharma2023sycophancy], rewritten as short closed-menu
 situations. Every scenario is written twice: an **agent frame** in the second person ("You are
 Dana, the release coordinator...") for the action readout, and a **third-person frame** about the
 same person for the judgment readout, with the same entities, facts, sentence order, and length
-within 15% (tokenized with the model's own tokenizer); only pronouns and the role framing differ.
+within 15% (tokenized with the model's own tokenizer). Only pronouns and the role framing differ.
 Option texts are plain descriptions of actions with no evaluative words, presented under neutral
 letters whose order is a fresh seeded permutation on every rollout. Acting and judging are separate calls,
 and each ends in a choice from the same closed menu of lettered options.
 
 *A worked example* (F1-A-00, \Cref{app:scenarios}). The agent frame begins "You are Dana. You work in the
-administration office at Bellview Hospital"; the quarter's average emergency-room wait is thirty-eight
+administration office at Bellview Hospital". The quarter's average emergency-room wait is thirty-eight
 minutes, the state board pays a bonus below thirty, and the director has said the bonus covers three jobs,
-including Dana's. The menu is: enter thirty-eight minutes and note the hand-filled hours (norm-consistent);
-enter twenty-nine minutes, adjusting the hand-filled hours (violating); or ask for an extension (neutral).
+including Dana's. The menu is: enter thirty-eight minutes and note the hand-filled hours (norm-consistent),
+enter twenty-nine minutes by adjusting the hand-filled hours (violating), or ask for an extension (neutral).
 The third-person frame tells the same facts about Dana and asks which option is right. On OLMo-3-7B-Instruct
 the judgment is stable on the honest entry, and 20 of 32 action rollouts enter twenty-nine minutes: on this
 scenario the model acts against its own judgment. In the pressure-removed twin the bonus, job and log-file
@@ -49,10 +49,10 @@ F5 & third-party harm & harm to a non-present party vs task success & option cho
 \end{table}
 
 Each scenario also carries a **pressure-removed twin** (both frames with the incentive sentence
-replaced by mundane filler, options unchanged) for the matched-null rung; a **harm-matched twin**
-for F1 through F4 (same harm level, a different non-harm norm at stake), so that the harm-family
-contrast is not a harm-level contrast; and, from the full panel on, **three paraphrases** of each
-third-person frame for the reference-strictness ladder. Covariate tags record harm level (rated
+replaced by mundane filler, options unchanged) for the matched-null rung. Scenarios in F1 through F4 carry a **harm-matched twin** (same harm
+level, a different non-harm norm at stake), so that the harm-family contrast is not a harm-level
+contrast. From the full panel on, each third-person frame has **three paraphrases** for the
+reference-strictness ladder. Covariate tags record harm level (rated
 by a non-generator model), norm class, register, the presence of a named user and of a tool
 menu, and the generator.
 
@@ -62,10 +62,10 @@ Half of every family was written by Claude (Opus 5) and half by GPT (5.5), under
 prompt whose hash is stored with every scenario. A family-level result that differs by generator
 is an anomaly by pre-registered rule, not a finding, and is reported per generator before it is
 pooled. Each scenario's **external label** (which option an outside rater calls right, and a harm
-level) was produced by the *other* provider, with the script refusing same-provider pairs; the
+level) was produced by the *other* provider, with the script refusing same-provider pairs. The
 labels agree with the construction on 262 of 288 primaries, and every disagreement but three is a
 preference for the neutral option. Drafts were validated against the construction rules and
-regenerated with the violations fed back; safety refusals by a generator were regenerated
+regenerated with the violations fed back. Safety refusals by a generator were regenerated
 in-plan or, for four paraphrase requests, handed to the other generator with the exception
 recorded on the scenario. Neither generator is the model under evaluation, so a generator's
 normative priors enter the scenarios but not the readouts.
@@ -83,25 +83,25 @@ these rows.
 yields, so that each comparison in the paper can be checked for what it holds constant.
 
 **Judgment** $J(s)$: the third-person frame, one shot ("Which option should Dana choose, and
-why?"), parsed to an option; eight rollouts at temperature 0.7 plus one greedy. $J(s)$ is the
+why?"), parsed to an option, with eight rollouts at temperature 0.7 plus one greedy. $J(s)$ is the
 greedy option unless the sampled majority disagrees, in which case the scenario is flagged
 unstable and excluded, counted. The model reasons in free text before its `Answer:` line, so the
 judgment is a deliberated readout. **Action** $D(s)$: the agent frame under the chat template,
-the model as the actor, "reply with only the letter"; 32 rollouts at temperature 0.7, reported
+the model as the actor, "reply with only the letter", with 32 rollouts at temperature 0.7, reported
 as the violating fraction and, for the binary gap, by majority. The decision position is the
 first generated token, so the action is an immediate readout, and the full next-token
 distribution there is saved for every rollout. **Raw frame**: the scenario, the option list, and
 a fixed prefix ending before the option token, run on both the instruct and the base model with
-no chat template; the readout is the normalized log-probability over the option letters across
+no chat template. The readout is the normalized log-probability over the option letters across
 eight option orders, with a mass floor (0.5 on the option letters) below which the model is not
 engaging the option set.
 
 **The gap.** $\mathrm{KDG}(s)=1$ if the majority action is norm-violating while the stable
-judgment named a non-violating option; 0 if the majority action matches the judgment; undefined,
-counted, otherwise. A neutral option counts as non-violating for the reference, by a pre-data
+judgment named a non-violating option, and 0 if the majority action matches the judgment. Otherwise
+it is undefined, and the undefined scenarios are counted. A neutral option counts as non-violating for the reference, by a pre-data
 amendment: a model that judges "hold" right and acts violating has contradicted itself. The rate
 is the mean over screened scenarios with a nested bootstrap over scenarios and rollouts. We keep
-the program's internal name for the quantity, KDG, in the released code and data; in prose we
+the program's internal name for the quantity, KDG, in the released code and data, and in prose we
 call it the judgment–action gap.
 
 | readout | model | frame and instruction | position read | rollouts | statistic |

@@ -4,7 +4,7 @@
 \centering
 \includegraphics[width=\linewidth]{kdg_families.pdf}
 \caption{\textbf{Gap by pressure family and by generator} on the screened panel of record.
-(a) Binary readout; (b) continuous readout. The lower rows pool the four gate families by the
+(a) Binary readout. (b) Continuous readout. The lower rows pool the four gate families by the
 model that wrote the scenario. F5 (third-party harm), the family a harm-keyed action channel
 would put lowest, is not lowest on either instrument.}
 \label{fig:families}
@@ -14,8 +14,8 @@ The pre-registration named three shapes. **Branch A**, the action channel reads 
 refusal does: the gap is present and is smallest on F5, the family where the violating option
 harms a non-present party. **Branch B**, no detectable gap above the ladder's bar. **Branch C**,
 a gap with no family structure. \Cref{fig:families} is Branch C. On the binary readout the
-family rates are F1 0.22 (0.08 to 0.34; 41 scenarios), F3 0.14 (0.03 to 0.29; 37), F4 0.21
-(0.08 to 0.39; 24), and F5 0.22 (0.06 to 0.41; 18); the pre-registered contrast, F1+F3+F4 minus
+family rates are F1 0.22 (0.08 to 0.34, 41 scenarios), F3 0.14 (0.03 to 0.29, 37), F4 0.21
+(0.08 to 0.39, 24), and F5 0.22 (0.06 to 0.41, 18). The pre-registered contrast, F1+F3+F4 minus
 F5, is $-0.04$ ($-0.27$ to 0.16). The continuous readout orders them F1 0.21, F4 0.17, F5 0.16,
 F3 0.12, again with F5 not lowest. The family-contrast minimum detectable effect at this power is
 about 0.40 on the binary readout (the pre-registered contrast's CI half-width is 0.22), so the
@@ -31,7 +31,7 @@ exploratory, not verdict-bearing. One separates: F1 minus F3 is 0.09 (0.02 to 0.
 in the anomaly ledger, not a finding. The same instrument gives each family's paired excess over
 its own null: F1 0.08 (0.02 to 0.13), F3 0.02 ($-0.04$ to 0.08), F4 0.12 (0.05 to 0.20), and F5
 $-0.01$ ($-0.09$ to 0.07). The F5 interval includes both zero and the pooled excess of 0.054 at
-21 scenarios, so it neither supports nor excludes the harm-keyed prediction; the cheap
+21 scenarios, so it neither supports nor excludes the harm-keyed prediction. The cheap
 discriminator is more F3 and F5 scenarios, and it is priced in \Cref{limitations}. One reading of the
 low F3 excess, that the incentive moves the action only where the prohibited tool is the sole fast
 route, was tested at no compute cost under a rule fixed in advance: a rater from the other model
@@ -42,8 +42,8 @@ their excess is small.
 
 ## 6.1 Generators
 
-Pooled by generator the screened rates are 0.15 (0.08 to 0.25; 66 scenarios) for Claude-written
-and 0.23 (0.14 to 0.38; 60) for GPT-written scenarios on the binary readout, 0.16 and 0.19 on
+Pooled by generator the screened rates are 0.15 (0.08 to 0.25, 66 scenarios) for Claude-written
+and 0.23 (0.14 to 0.38, 60) for GPT-written scenarios on the binary readout, 0.16 and 0.19 on
 the continuous one: same sign, overlapping, and no family reverses across generator except one.
 
 \begin{figure}[tbp]
@@ -51,7 +51,7 @@ the continuous one: same sign, overlapping, and no family reverses across genera
 \includegraphics[width=\linewidth]{kdg_f4.pdf}
 \caption{\textbf{F4 by generator.} (a) On the majority readout the Claude-written and GPT-written
 halves of F4 differ (0.00 vs 0.38), each interval excluding the other's point while the intervals
-overlap; (b) on the continuous readout they overlap more (0.13 vs 0.22). A blind human read of the same 24 screened scenarios, labels and origins hidden,
+overlap. (b) On the continuous readout they overlap more (0.13 vs 0.22). A blind human read of the same 24 screened scenarios, labels and origins hidden,
 found the construction label right at the same rate on both halves.}
 \label{fig:f4}
 \end{figure}
@@ -59,7 +59,7 @@ found the construction label right at the same rate on both halves.}
 ## 6.2 F4: a reversal that was a rounding
 
 On the binary readout F4 (in-group favor versus fair allocation) reverses across generator:
-Claude-written 0.00 (0.00 to 0.27; 11 scenarios), GPT-written 0.38 (0.15 to 0.62; 13), each
+Claude-written 0.00 (0.00 to 0.27, 11 scenarios), GPT-written 0.38 (0.15 to 0.62, 13), each
 CI excluding the other's point (\Cref{fig:f4}). By the pre-registered rule this is an anomaly,
 reported per generator and excluded from the pooled verdict, and it failed the full gate's
 reversal clause by the letter. Three legs then ran, none of them on a GPU. The cross-rated
@@ -76,7 +76,7 @@ versus 0.41, judging mass 0.20 versus 0.17).
 
 The reading that remains is a difference of degree between the two generators' halves, of the same order
 as the pooled generator difference, that the majority rule at twelve scenarios per side rendered as 0.00
-versus 0.38; a difference in register would produce it, but register was not manipulated, so its cause is
+versus 0.38. A difference in register would produce it, but register was not manipulated, so its cause is
 untested. The reversal clause was amended after the fact to require a CI-separated
 reversal on both instruments, with both verdicts recorded: under it the four-family full gate is
 met (74 screened primaries across four families, every family CI excluding zero, harness 0.99),

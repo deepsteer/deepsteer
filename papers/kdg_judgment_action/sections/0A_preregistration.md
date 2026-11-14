@@ -2,11 +2,11 @@
 
 The panel specification (`papers/KDG_PANEL_SPEC.md`) was committed as the pre-registration of
 record before any scenario was generated. Every construction or analysis decision taken after
-that is a dated amendment in the same file; a change made after data were seen is a fork and
+that is a dated amendment in the same file. A change made after data were seen is a fork and
 carries verdicts under both choices. \Cref{tab:amendments} lists the seventeen amendments in one
 line each, split by whether any model data existed when they were committed. Verdict rules and branch
-names are quoted as registered ("installed", "widened", "inherited, not installed"); where the body
-describes a model on its own terms it says the model "carries" the gap, which claims presence and not
+names are quoted as registered ("installed", "widened", "inherited, not installed"). Where the body
+describes a model on its own terms, it says the model "carries" the gap, which claims presence and not
 the step that produced it.
 
 | id | date (2026) | committed | content |
@@ -35,8 +35,8 @@ committed before the analysis it licenses was run on data already on disk. {#tab
 The multi-model work of \Cref{base}, \Cref{recipe} and \Cref{deliberation} ran under a second specification
 (`papers/KDG_PHASE1_SPEC.md`), pre-registered and pushed before its first computation, with seventeen dated
 amendments of its own (\Cref{tab:phase1}). Four of them are forks made after data were seen (P1-A1, P1-A5,
-P1-A14, P1-A15), each reported beside the choice it forks; P1-A13 was added after P1-A11's result and is labelled post-hoc
-where it is used; the others were committed before the data they govern existed or
+P1-A14, P1-A15), each reported beside the choice it forks. P1-A13 was added after P1-A11's result and is labelled post-hoc
+where it is used. The others were committed before the data they govern existed or
 before those data were read.
 
 | id | date (2026) | committed | content |
@@ -92,11 +92,11 @@ C0-dm 0.766 (0.649 to 0.853, a near-miss). After those verdicts, G-A12's fork fo
 a valid readout under temperature-0.7 sampling produces, and G-A13 replaced the fixed bar with
 $0.9\,\kappa^*$, where $\kappa^*$ is the agreement an exact readout would reach under the check's own
 sampling (\Cref{app:calibration}). Under that bar, which is a post-hoc calibration correction, GPT-OSS
-passes (0.668). Both outcomes stand: fail at the registered 0.80, pass at the model-relative bar; the dose-0
+passes (0.668). Both outcomes stand: fail at the registered 0.80, pass at the model-relative bar. The dose-0
 row is cited with both.
 
 Every result document carries a referee pass (three damaging objections, answered or conceded)
-and updates the program's synthesis file in the same commit; anomalies live in a ledger with a
+and updates the program's synthesis file in the same commit. Anomalies live in a ledger with a
 priced discriminator each. Six anomalies were opened by this panel: reference instability
 (resolved on the continuous instrument), the instruct model's raw-frame mass floor (resolved by
 calibration: end-of-turn mass), the pilot's family structure (resolved as noise), the F4 generator

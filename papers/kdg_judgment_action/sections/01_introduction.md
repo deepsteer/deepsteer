@@ -28,11 +28,11 @@ mode and a second-person action mode with callable tools, take the model's own t
 as the reference (\Cref{tab:priorart} compares their numbers with ours). Shao et al. [-@shao2024privacylens] find a related split for
 privacy norms: models answer privacy questions better than they respect those norms when acting
 as agents. Huang et al. [-@huang2026knowing] and Shen et al.
-[-@shen2025valueaction] measure gaps between a model's stated values and its enacted choices;
-Rakshit et al. [-@rakshit2026pseudo] add a fast-versus-slow deliberation contrast; Gu et al.
-[-@gu2025alignment] compare stated and revealed preferences; Hosseini et al.
-[-@hosseini2026judgment] find a judgment–consequence gap in clinical allocation; Backmann et al.
-[-@backmann2025ethics] vary the pressure on agents in social dilemmas; and in non-moral domains
+[-@shen2025valueaction] measure gaps between a model's stated values and its enacted choices.
+Rakshit et al. [-@rakshit2026pseudo] add a fast-versus-slow deliberation contrast, and Gu et al.
+[-@gu2025alignment] compare stated and revealed preferences. Hosseini et al.
+[-@hosseini2026judgment] find a judgment–consequence gap in clinical allocation, and Backmann et al.
+[-@backmann2025ethics] vary the pressure on agents in social dilemmas. In non-moral domains,
 Cheng et al. [-@cheng2026tool] and Basu et al. [-@basu2026interpretability] use a knowing–doing
 gap as the target that mechanistic interventions are scored against. \Cref{tab:priorart} places
 this panel among them. What it adds is narrower than a new construct and, we think, more useful
@@ -40,10 +40,10 @@ for the mechanistic purpose: a per-scenario, self-referenced *moral* gap with th
 agent (as in Strakhov and Claude) under typed pressure families, each scenario paired with a twin
 that removes the pressure, measured inside a calibration ladder that bounds how much of
 any gap is reference noise or frame change, read on two instruments, with a harm-involving family
-that ties back to what refusal reads. Beyond the panels in \Cref{tab:priorart} it adds three things:
-a positive control on every model read (an operator instruction to take the violating action), so that
-each null carries a detection bar; a same-base contrast of two post-training recipes on one set of
-Llama-3.1 weights; and a deliberation arm with truncation and norm-salience controls.
+that ties back to what refusal reads. Beyond the panels in \Cref{tab:priorart} it adds three things.
+The first is a positive control on every model read (an operator instruction to take the violating action),
+so that each null carries a detection bar. The second is a same-base contrast of two post-training recipes on
+one set of Llama-3.1 weights, and the third is a deliberation arm with truncation and norm-salience controls.
 
 The panel was pre-registered before any scenario existed, and every construction or analysis
 decision taken afterwards is a dated amendment in the same document (\Cref{app:prereg}): eleven
@@ -51,7 +51,7 @@ construction decisions before any model data, and six analysis decisions after, 
 committed before the computation they license and two post-hoc forks that carry verdicts under
 both choices. Seventeen further amendments govern the Phase 1 sessions: four are post-hoc forks, one is a post-hoc
 addition (P1-A13), four are post-review additions (P1-A11 to P1-A14), and three record corrections after
-the first version (P1-A15 to P1-A17); GPT-OSS-20B
+the first version (P1-A15 to P1-A17). GPT-OSS-20B
 runs under a third specification with 29 (\Cref{app:prereg}). We report three pods on
 OLMo-3-7B-Instruct with its base checkpoint [@olmo3_2025]: a 96-scenario pilot that tested the
 instrument, a 320-scenario full panel, and a 120-scenario second round that lifted the screened count
@@ -60,18 +60,18 @@ their chat template, Meta's Llama-3.1-8B-Instruct and its base [@grattafiori2024
 SFT, DPO and final checkpoints [@lambert2024tulu3], and Qwen2.5-7B-Instruct and its base
 [@qwen2024qwen25], with the positive control on every instruct model and the deliberation arm on
 OLMo-3 and Llama-3.1-8B-Instruct. Scenarios
-were written half by Claude and half by GPT and cross-labeled by the other; neither generator is
+were written half by Claude and half by GPT and cross-labeled by the other. Neither generator is
 the model evaluated. The harness that parses actions was calibrated twice on real replies against
 two judges.
 
-The argument runs in six steps; each section it cites carries its ladder.
+The argument runs in six steps, and each section it cites carries its ladder.
 
 1. **The gap is real.** On OLMo-3-7B-Instruct, read under its own chat template, the model takes the
    action it judged wrong on one in five of the scenarios screened on its own actions, more than on the
    pressure-removed twins, and on the log-probability readout the excess holds at every strictness level
    of the judgment reference (\Cref{gap}, \Cref{reference}).
 2. **Later post-training stages change it little.** Read in each checkpoint's own format, the excess is
-   present after SFT; the DPO step does not enlarge it, and the RL step adds a small increase on the
+   present after SFT. The DPO step does not enlarge it, and the RL step adds a small increase on the
    probability scale that does not resolve after output-scale normalization, consistent with sharpening
    (\Cref{base}).
 3. **The recipe decides.** Across five instruct models, with GPT-OSS-20B read without reasoning, OLMo-3 and
@@ -99,12 +99,12 @@ the result does and does not say about the action channel.
 models (citations in the text above). ``Own'' means the reference is the model's own statement. The
 last column is to our reading of each paper: where a paper has something that works as a null or a
 check (a control condition, an instruction-following check), the cell names it, and ``no'' means we found
-nothing that does; chance-level floors are not counted. Strakhov and Claude find that 47.6\%
-of 351 paired choices across nine instruct models reverse; their reversal counts changes in either
+nothing that does. Chance-level floors are not counted. Strakhov and Claude find that 47.6\%
+of 351 paired choices across nine instruct models reverse. Their reversal counts changes in either
 direction from one draw per mode at temperature 1.0, without a pressure manipulation or a re-elicitation
 floor, while the gap rate here counts only moves toward the violating option, by majority over 32
 rollouts, against a matched null, so the two numbers are different quantities. Their action-mode
-reversals were coded more often as less interventionist than as bolder (48.5\% against 36.5\%); here,
+reversals were coded more often as less interventionist than as bolder (48.5\% against 36.5\%). Here,
 read under the chat template with nothing at stake, the gap leans toward the violating option (0.055), on
 a different axis (norm consistency, not intervention level).}
 \label{tab:priorart}

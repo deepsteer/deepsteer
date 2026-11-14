@@ -3,16 +3,16 @@
 **Pre-registered rules (amendment A17, committed before computation).** Readouts: the argmax
 gap indicator (majority over eight option orders) and the continuous gap $g_{\mathrm{raw}} =
 p_D - p_J$, with $p$ the violating option's mass normalized over the displayed letters, from the
-saved per-permutation option log-probabilities; mass floor 0.5 on both frames. Matched null:
+saved per-permutation option log-probabilities. Mass floor: 0.5 on both frames. Matched null:
 each model's pressure-removed raw twins. Statistics: scenario-level bootstrap, 2000 draws, seed
-0, paired on the shared subset; difference CIs, never overlap reads. Quantities: $E$ per model
+0, paired on the shared subset. Comparisons use difference CIs, never overlap reads. Quantities: $E$ per model
 (paired primary minus twin), $\Delta_g$ (paired base minus instruct on the primaries), $\Delta_E$
 (paired base minus instruct on $E$). Sub-branch rules on the continuous readout: *present* if a
-model's $E$ excludes zero; *inherited, not installed* if present in base and $\Delta_E$ includes
-zero; *inherited and narrowed* if present in base and $\Delta_E$ excludes zero with base larger;
-*installed* if absent in base and present in instruct; *widened* if present in both and
-$\Delta_E$ excludes zero with instruct larger; *template carries it* if neither raw $E$ excludes
-zero while the chat excess does; otherwise under-powered, with the MDE stated. Selection check:
+model's $E$ excludes zero. The branch is *inherited, not installed* if present in base and $\Delta_E$ includes
+zero. It is *inherited and narrowed* if present in base and $\Delta_E$ excludes zero with base larger.
+It is *installed* if absent in base and present in instruct. It is *widened* if present in both and
+$\Delta_E$ excludes zero with instruct larger. It is *template carries it* if neither raw $E$ excludes
+zero while the chat excess does. Otherwise it is under-powered, with the MDE stated. Selection check:
 base's $E$ on all its above-floor scenarios against its $E$ on the shared subset, flagged if they
 differ by more than the shared CI half-width.
 
@@ -21,11 +21,11 @@ differ by more than the shared CI half-width.
 \includegraphics[width=\linewidth]{kdg_three_cell.pdf}
 \caption{\textbf{This figure does not show the instruct model's behavior in its own chat template}: both
 models are read in the raw completion frame, which reverses the instruct model's at-rest sign ($-0.038$
-raw against $+0.055$ under its template) and exaggerates the sharpness of its agent frame (\Cref{base});
-the template-valid comparison across post-training is \Cref{fig:stages}. What it shows: on the 192
+raw against $+0.055$ under its template) and exaggerates the sharpness of its agent frame (\Cref{base}).
+The template-valid comparison across post-training is \Cref{fig:stages}. What it shows: on the 192
 scenarios where both models clear the mass floor on the primary and on the twin, (a) violating-option mass
 when acting and when judging, on the pressure-removed twin (open markers) and under pressure (filled), per
-model; (b) the paired quantities with 95\% CIs: each model's pressure-attributable excess $E$, its
+model, and (b) the paired quantities with 95\% CIs: each model's pressure-attributable excess $E$, its
 acting-side and judging-side components, and the base-minus-instruct differences, the comparison the
 pre-registered three-cell rules (above) are written for.}
 \label{fig:three-cell}
@@ -74,19 +74,19 @@ Table: The paired contrasts on the shared subset. {#tab:three-cell-shared}
 Table: Slices of the shared subset. The pilot's 96 scenarios were re-run in the full-panel pod
 with bit-identical raw-frame values (maximum absolute difference 0.0 over 192 model-scenario
 pairs), so the pilot block is a scenario-subset check, not an independent replication. The
-pilot-written and later-written subsets are not separated from each other at these counts; the
+pilot-written and later-written subsets are not separated from each other at these counts. The
 pooled number is the number of record and the prompt version is recorded as a covariate. Slice intervals
-(v2) are recomputed by a committed script with the pooled row's estimator (10,000 draws, seed 0); v1's slice
+(v2) are recomputed by a committed script with the pooled row's estimator (10,000 draws, seed 0). The v1 slice
 rows came from an uncommitted computation and differ in the third decimal. The primaries' upper bound is
 $-0.0001$: at the edge of zero, not at zero. {#tab:three-cell-slices}
 
 **Exploratory items under the same amendment.** Six pairwise family contrasts on the chat
-continuous gap $g$ over screened scenarios: F1 − F3 0.09 [0.02, 0.16]; F1 − F4 0.03
-[−0.06, 0.13]; F1 − F5 0.05 [−0.07, 0.18]; F3 − F4 −0.06 [−0.16, 0.05]; F3 − F5
-−0.04 [−0.17, 0.08]; F4 − F5 0.02 [−0.14, 0.16]. Per-family paired excess over the
-pressure-removed null: F1 0.076 [0.020, 0.129] (43); F3 0.020 [−0.038, 0.079] (40); F4 0.121
-[0.054, 0.195] (26); F5 −0.008 [−0.090, 0.073] (21). The binary excess predicted from the
+continuous gap $g$ over screened scenarios: F1 − F3 is 0.09 [0.02, 0.16], F1 − F4 is 0.03
+[−0.06, 0.13], F1 − F5 is 0.05 [−0.07, 0.18], F3 − F4 is −0.06 [−0.16, 0.05], F3 − F5 is
+−0.04 [−0.17, 0.08] and F4 − F5 is 0.02 [−0.14, 0.16]. Per-family paired excess over the
+pressure-removed null: F1 0.076 [0.020, 0.129] (43), F3 0.020 [−0.038, 0.079] (40), F4 0.121
+[0.054, 0.195] (26) and F5 −0.008 [−0.090, 0.073] (21). The binary excess predicted from the
 per-scenario acting mass (net crossings of 0.5 from twin to primary on paired screened scenarios
 with a non-violating reference) is 0.136 [0.068, 0.216] on 88 scenarios against the observed 0.125
-[0.057, 0.205] on the same 88; 13 scenarios cross upward and one downward (corrected in v2: v1 printed the
+[0.057, 0.205] on the same 88, and 13 scenarios cross upward and one downward (corrected in v2: v1 printed the
 observed excess and the crossing counts from all 100 paired scenarios, 0.100 and 20 up, one down).
