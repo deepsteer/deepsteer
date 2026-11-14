@@ -44,8 +44,10 @@ STATES = CST / "data/mach_teacher_states_v1.json"
 RUN = CST / "outputs/finalist_c2_rule_right_mach/mach"  # the saved decisions (synced)
 ARMS = {"base": "ThinkCoTAgent", "good_behavior": "ThinkGoodCoTAgent",
         "constitution": "ThinkCoTAgent", "constitution_good": "ThinkGoodCoTAgent",
-        "p_ctx": "ThinkCoTAgent"}  # the last two: Amendment 49 items 2c and 2d
+        "p_ctx": "ThinkCoTAgent",  # the last two: Amendment 49 items 2c and 2d
+        "a0n_good": "ThinkGoodCoTAgent"}  # Amendment 52 item 3b
 DOC_ARMS = ("constitution", "constitution_good")  # A0s's render around the agent's prompt
+A0N_ARMS = ("a0n_good",)  # A0n's render (Faraday's lectures, neutral header) around it
 K = 2
 FORECAST = {"plain": 2100.0, "constitution": 840.0}  # decisions per hour (Amendment 47's price)
 # Amendment 49: the rates measured on the teacher pod (decisions per hour); the adapter at 80%
@@ -139,6 +141,8 @@ def messages(arm: str, st: dict, body: str | None) -> list[dict]:
 
     sys_, user = st["good"] if arm == "good_behavior" else st["plain"]
     msgs = [{"role": "system", "content": sys_}, {"role": "user", "content": user}]
+    if arm in A0N_ARMS:
+        return CP.a0n_messages(msgs, body)
     return CP.a0s_messages(msgs, body) if arm in DOC_ARMS else msgs
 
 
@@ -271,8 +275,11 @@ def stage_cells(out: Path, name: str, cells: list[tuple[str, str, int]], dry: bo
     sets = {"wide": set(rec["wide"]), "nested": set(rec["nested"]), "citing": set(citing_states())}
     want = set().union(*[sets[s] for _, s, _ in cells])
     sts, dropped = states(out, "wide", dry, ids=want)
-    doc = any(a in DOC_ARMS for a, _, _ in cells)
-    body = F.S.doc_body("a0s", dry) if doc else None
+    doc = any(a in DOC_ARMS + A0N_ARMS for a, _, _ in cells)
+    if any(a in DOC_ARMS for a, _, _ in cells) and any(a in A0N_ARMS for a, _, _ in cells):
+        raise ValueError("one document per cells stage: A0s's and A0n's arms run apart")
+    body = (F.S.doc_body("a0n", dry) if any(a in A0N_ARMS for a, _, _ in cells)
+            else F.S.doc_body("a0s", dry) if doc else None)
     loras = None
     if tag is not None:
         path, eng, reqs = F.engine_and_req(out, tag, dry)
@@ -335,6 +342,8 @@ def cells_forecast_h(name: str) -> float:
     0.15 h of load (and, for P-ctx, 0.45 h of smoke and parity)."""
     if name == "a49_cgood":
         return (888 * 2 + CITING_N) / RATE["doc"] + 0.15
+    if name == "a52_a0ngood":  # Amendment 49's pod measured the document engine at 993 an hour
+        return 888 * 2 / 993.0 + 0.15
     return 0.45 + 1698 * 2 / RATE["adapter"] + 888 * 2 / RATE["adapter"] + 0.15
 
 
@@ -342,7 +351,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True, choices=(
         "plain", "constitution", "smoke_hf", "smoke_serve", "parity_hf", "parity", "rr", "mb",
-        "a49_cgood", "a49_pctx"))
+        "a49_cgood", "a49_pctx", "a52_a0ngood"))
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
@@ -355,7 +364,9 @@ def main() -> None:
     elif a.stage == "a49_cgood":  # Amendment 49 items 2c and 5
         stage_cells(out, "a49_cgood", [("constitution_good", "nested", 2),
                                        ("constitution", "citing", 1)], dry)
-    elif a.stage == "a49_pctx":  # Amendment 49 item 2d
+    elif a.stage == "a52_a0ngood":  # Amendment 52 item 3b
+        stage_cells(out, "a52_a0ngood", [("a0n_good", "nested", 2)], dry)
+    elif a.stage == "a49_pctx":  # Amendment 49 item 2d (and Amendment 52 item 3c)
         stage_cells(out, "a49_pctx", [("p_ctx", "wide", 2), ("base", "nested", 2)], dry,
                     tag="p_ctx")
     elif a.stage == "smoke_hf":
