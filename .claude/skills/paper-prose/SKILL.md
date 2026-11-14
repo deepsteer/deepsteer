@@ -6,9 +6,10 @@ description: >-
   draft is about to leave the repo. In this repo it replaces the general deslop skill. Runs after
   program-thesis: that skill owns verdict wording, hedges and detection-bar language; this one
   changes surface wording only and never strengthens or weakens a claim. Fires on: "prose pass",
-  "polish", "em dash", "AI tells", "deslop", "camera-ready", "arXiv text", "abstract". Pairs with
-  scripts/prose_lint.py (counts em dashes, "not X but Y" frames, trailing participle clauses, and
-  tell vocabulary per file and per 1k words; flags any section over 2 em dashes).
+  "polish", "em dash", "semicolon", "AI tells", "deslop", "camera-ready", "arXiv text", "abstract".
+  Pairs with scripts/prose_lint.py (counts em dashes, semicolons, "not X but Y" frames, trailing
+  participle clauses, and tell vocabulary per file and per 1k words; flags any section over 2 em
+  dashes or over 2 semicolons).
 ---
 
 # Paper Prose
@@ -20,9 +21,11 @@ slightly, is a program-thesis change made without the referee pass. Surface edit
 
 1. `program-thesis` has run on the text (anchored adjectives, verdict wording, detection bars,
    SYNTHESIS current). Do not start a prose pass on text whose claims are still moving.
-2. `python scripts/prose_lint.py papers/<paper>/sections/*.md` for the before numbers.
+2. `python scripts/prose_lint.py papers/<paper>/sections/*.md` for the before numbers (em dashes
+   and semicolons per section, with the other tells).
 3. Edit per the rules below, with `references/ai-writing-tells.md` as the catalog.
-4. Re-run the lint for the after numbers. Every section at 2 or fewer em dashes.
+4. Re-run the lint for the after numbers. Every section at 2 or fewer em dashes and 2 or fewer
+   semicolons.
 5. `scripts/package_arxiv.py` prints the same lint as a warning at packaging time.
 
 ## Scope
@@ -47,8 +50,11 @@ paper section. Do not run a prose pass on these, and do not "fix" them while pas
 
 ## Rules (moved from CLAUDE.md "Prose Style", 2026-10-19)
 
-- Minimize em dashes. Use commas, semicolons, colons, parentheses, or separate sentences instead.
+- Minimize em dashes. Use commas, colons, parentheses, or separate sentences. Never a semicolon.
   Bar: 2 per section (one `sections/*.md` file); the lint flags anything above it.
+- Keep semicolons minimal in release prose (the author, 2026-11-13). Prefer a period, a comma with
+  a conjunction ("and", "so", "but"), or a rewrite. Never strengthen or weaken a claim while doing
+  it. Bar: 2 per section, the same as em dashes; the lint flags anything above it.
 - Avoid entirely: "underscores", "landscape", "paradigm", "nuanced", "multifaceted", "tapestry",
   "holistic", "cutting-edge", "at the forefront", "a testament to".
 - Prefer "shows" or "finds" over "reveals"; "use" over "leverage" or "utilize"; "important" over

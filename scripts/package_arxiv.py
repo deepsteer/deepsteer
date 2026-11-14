@@ -176,7 +176,7 @@ def prose_lint_warning(paper_dir: Path) -> str | None:
     sys.modules[name] = lint  # dataclasses look the module up while the class is built
     spec.loader.exec_module(lint)
     reports = lint.lint_paths(section_files)
-    if not any(r.flagged for r in reports):
+    if not any(r.flagged or r.flagged_semicolons for r in reports):
         return None
     return "WARNING (prose lint, paper-prose skill):\n" + lint.format_report(reports)
 

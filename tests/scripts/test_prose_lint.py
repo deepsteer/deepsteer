@@ -88,3 +88,37 @@ def test_package_arxiv_warns_but_never_blocks(tmp_path):
     warning = package_arxiv.prose_lint_warning(paper)
     assert warning is not None and "02_results: 3" in warning
     assert package_arxiv.prose_lint_warning(tmp_path / "no_sections") is None
+
+
+def test_html_entities_math_spacing_code_and_urls_are_not_semicolons():
+    # Most probable failure: assert &mdash; is not counted as a semicolon (an entity's closing ";"
+    # would flag every section that writes its dashes as entities); math, LaTeX's \; thin space,
+    # code and URLs carry semicolons that are not prose either.
+    text = (
+        "A &mdash; B &amp; C &#8212; D &#x2014; E &nbsp; F.\n"
+        "Inline $a;b$, \\[x;y\\], \\(u;v\\) and $$p;q$$.\n"
+        "\\begin{equation}r;s\\end{equation} \\begin{align*}t;u\\end{align*}\n"
+        "Spacing x\\;y here. Code `c;d` and a link <https://a.b/c;d> and [l](https://x.y/z;w).\n"
+        "```\nfenced; code; block;\n```\n"
+    )
+    assert lint.count(lint.strip_nonprose(text)).semicolons == 0
+
+
+def test_prose_semicolons_counted_and_flagged_per_section(tmp_path):
+    text = "It holds; it moved; it stayed; it fell.\n"
+    assert lint.count(lint.strip_nonprose(text)).semicolons == 3
+    clean = _section(tmp_path, "01_intro.md", "One; two; fine.\n")
+    over = _section(tmp_path, "02_results.md", text)
+    assert lint.lint_file(clean).flagged_semicolons == []
+    assert lint.lint_file(over).flagged_semicolons == [("02_results", 3)]
+    assert lint.lint_file(over).flagged == []  # the em-dash flags are a separate list
+    assert "over 2 semicolons" in lint.format_report([lint.lint_file(over)])
+
+
+def test_strict_fails_on_semicolons_only_when_asked(tmp_path):
+    # Most probable failure: --strict starts failing on the semicolon bar, which would turn the
+    # prose CI job red on every committed section before the author's cleanup decision.
+    over = _section(tmp_path, "02_results.md", "It holds; it moved; it stayed; it fell.\n")
+    assert lint.main([str(over), "--strict"]) == 0
+    assert lint.main([str(over), "--strict", "--strict-semicolons"]) == 1
+    assert package_arxiv.prose_lint_warning(tmp_path / "paper") is not None

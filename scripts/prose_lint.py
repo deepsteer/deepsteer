@@ -4,18 +4,23 @@ Scans papers/*/sections/*.md and README.md by default, with math, code, LaTeX re
 table rules stripped, and reports per file and per 1k words:
 
 - em dashes ("—", "&mdash;", and pandoc's "---" outside table rules and horizontal rules);
+- semicolons in prose (not HTML entities such as "&mdash;" or "&#8212;", LaTeX's
+  backslash-semicolon thin space, URLs, math or code);
 - negative-parallelism frames ("not X but Y", "not just", "not only");
 - trailing participle clauses (", highlighting ...", ", underscoring ...", ...);
 - the vocabulary of .claude/skills/paper-prose/references/ai-writing-tells.md, minus the
   skill's domain-term allowlist.
 
 A section (one sections/*.md file; one heading block in a README) with more than
-EM_DASH_BAR em dashes is flagged. Exit 0 by default; with --strict, exit 1 when anything is
-flagged. Stdlib only, so the CI job needs no install.
+EM_DASH_BAR em dashes or more than SEMICOLON_BAR semicolons is flagged. Exit 0 by default; with
+--strict, exit 1 when a section is over the em-dash bar; with --strict-semicolons, also when one is
+over the semicolon bar (kept out of --strict until the committed sections are cleaned up, since the
+CI job runs --strict). Stdlib only, so the CI job needs no install.
 
     python scripts/prose_lint.py                          # default scan
     python scripts/prose_lint.py papers/kdg_judgment_action/sections/*.md --strict
     python scripts/prose_lint.py --json > lint.json
+    python scripts/prose_lint.py --strict --strict-semicolons   # both bars fail the run
 """
 from __future__ import annotations
 
@@ -30,6 +35,9 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_GLOBS = ("papers/*/sections/*.md", "README.md")
 # CLAUDE.md's bar, now in the paper-prose skill: one or two per section is fine.
 EM_DASH_BAR = 2
+# The author, 2026-11-13: semicolons minimal in people-facing prose, the em-dash rule's standing,
+# and never a semicolon in place of an em dash.
+SEMICOLON_BAR = 2
 
 # The guide's section 3 list plus the words CLAUDE.md banned before the skill took them over,
 # minus the allowlist (harness, robust, align/alignment, steering, loss landscape). Keep in step
@@ -106,6 +114,13 @@ TRAILING_ING_RE = re.compile(
     re.I,
 )
 EM_DASH_RE = re.compile(r"—|&mdash;|\\textemdash\b|(?<!-)---(?!-)")
+# Semicolons that are not prose, removed before counting (strip_nonprose keeps &mdash; for the
+# em-dash count): HTML entities, LaTeX's \; thin space, URLs.
+_SEMI_NONPROSE = [
+    re.compile(r"&(?:[A-Za-z][A-Za-z0-9]{1,31}|#[0-9]{1,7}|#[xX][0-9A-Fa-f]{1,6});"),
+    re.compile(r"\\;"),
+    re.compile(r"<?https?://[^\s)>\]]+>?"),
+]
 
 # Stripped before counting. Order matters: fenced code before inline code, display math
 # before inline math.
@@ -113,6 +128,8 @@ _STRIP = [
     re.compile(r"^```.*?^```", re.S | re.M),
     re.compile(r"<!--.*?-->", re.S),
     re.compile(r"\$\$.*?\$\$", re.S),
+    re.compile(r"\\begin\{(equation|align|gather|multline|eqnarray|math|displaymath)(\*?)\}.*?"
+               r"\\end\{\1\2\}", re.S),
     re.compile(r"\\\[.*?\\\]", re.S),
     re.compile(r"\\\(.*?\\\)", re.S),
     re.compile(r"(?<![\\$])\$[^$]{1,400}?\$"),
@@ -158,6 +175,7 @@ class Counts:
 
     words: int = 0
     em_dashes: int = 0
+    semicolons: int = 0
     neg_parallel: int = 0
     trailing_ing: int = 0
     vocab: dict[str, int] = field(default_factory=dict)
@@ -170,6 +188,13 @@ class Counts:
     def per_1k(self, n: int) -> float:
         """Rate per 1,000 words."""
         return 1000.0 * n / self.words if self.words else 0.0
+
+
+def semicolons(prose: str) -> int:
+    """Count prose semicolons in already-stripped prose (entities, \\; and URLs removed)."""
+    for pat in _SEMI_NONPROSE:
+        prose = pat.sub(" ", prose)
+    return prose.count(";")
 
 
 def count(prose: str) -> Counts:
@@ -185,6 +210,7 @@ def count(prose: str) -> Counts:
     return Counts(
         words=len(_WORD.findall(prose)),
         em_dashes=len(EM_DASH_RE.findall(prose)),
+        semicolons=semicolons(prose),
         neg_parallel=len(NEG_PARALLEL_RE.findall(prose)),
         trailing_ing=len(TRAILING_ING_RE.findall(prose)),
         vocab={k: v for k, v in vocab.items() if v},
@@ -213,26 +239,30 @@ def sections(path: Path, prose: str) -> list[tuple[str, str]]:
 
 @dataclass
 class FileReport:
-    """Counts for one file plus the sections over the em-dash bar."""
+    """Counts for one file plus the sections over the em-dash and semicolon bars."""
 
     path: str
     counts: Counts
     flagged: list[tuple[str, int]]
+    flagged_semicolons: list[tuple[str, int]] = field(default_factory=list)
 
 
 def lint_file(path: Path) -> FileReport:
     """Lint one markdown file."""
     prose = strip_nonprose(path.read_text(encoding="utf-8"))
-    flagged = []
+    flagged, flagged_semi = [], []
     for title, body in sections(path, prose):
         n = len(EM_DASH_RE.findall(body))
         if n > EM_DASH_BAR:
             flagged.append((title, n))
+        n = semicolons(body)
+        if n > SEMICOLON_BAR:
+            flagged_semi.append((title, n))
     try:
         shown = str(path.resolve().relative_to(REPO_ROOT))
     except ValueError:
         shown = str(path)
-    return FileReport(shown, count(prose), flagged)
+    return FileReport(shown, count(prose), flagged, flagged_semi)
 
 
 def default_paths(root: Path = REPO_ROOT) -> list[Path]:
@@ -255,39 +285,49 @@ def _group(path: str) -> str:
 
 def format_report(reports: list[FileReport]) -> str:
     """Render the per-file table, per-group totals and flags as text."""
-    head = f"{'file':<58}{'words':>7}{'em':>5}{'em/1k':>7}{'notXbutY':>9}{'ing,':>6}{'vocab':>6}"
+    head = (f"{'file':<58}{'words':>7}{'em':>5}{'em/1k':>7}{'semi':>6}{'semi/1k':>8}"
+            f"{'notXbutY':>9}{'ing,':>6}{'vocab':>6}")
     lines = [head, "-" * len(head)]
     groups: dict[str, Counts] = {}
     for r in reports:
         c = r.counts
         lines.append(
             f"{r.path[-58:]:<58}{c.words:>7}{c.em_dashes:>5}{c.per_1k(c.em_dashes):>7.2f}"
+            f"{c.semicolons:>6}{c.per_1k(c.semicolons):>8.2f}"
             f"{c.neg_parallel:>9}{c.trailing_ing:>6}{c.vocab_total:>6}"
         )
         g = groups.setdefault(_group(r.path), Counts())
         g.words += c.words
         g.em_dashes += c.em_dashes
+        g.semicolons += c.semicolons
         g.neg_parallel += c.neg_parallel
         g.trailing_ing += c.trailing_ing
         for k, v in c.vocab.items():
             g.vocab[k] = g.vocab.get(k, 0) + v
-    lines += ["", "totals (per 1k words: em / notXbutY / ing, / vocab)"]
+    lines += ["", "totals (per 1k words: em / semi / notXbutY / ing, / vocab)"]
     for name, g in groups.items():
         top = ", ".join(f"{k} {v}" for k, v in sorted(g.vocab.items(), key=lambda kv: -kv[1])[:6])
         lines.append(
             f"  {name:<34}{g.words:>7}w  em {g.em_dashes} ({g.per_1k(g.em_dashes):.2f})"
+            f"  semi {g.semicolons} ({g.per_1k(g.semicolons):.2f})"
             f"  nXbY {g.neg_parallel} ({g.per_1k(g.neg_parallel):.2f})"
             f"  ing {g.trailing_ing} ({g.per_1k(g.trailing_ing):.2f})"
             f"  vocab {g.vocab_total} ({g.per_1k(g.vocab_total):.2f})"
             + (f"  [{top}]" if top else "")
         )
     flagged = [(r.path, t, n) for r in reports for t, n in r.flagged]
+    flagged_semi = [(r.path, t, n) for r in reports for t, n in r.flagged_semicolons]
     lines.append("")
     if flagged:
         lines.append(f"FLAGGED: {len(flagged)} section(s) over {EM_DASH_BAR} em dashes")
         lines += [f"  {p} :: {t}: {n}" for p, t, n in flagged]
     else:
         lines.append(f"no section over {EM_DASH_BAR} em dashes")
+    if flagged_semi:
+        lines.append(f"FLAGGED: {len(flagged_semi)} section(s) over {SEMICOLON_BAR} semicolons")
+        lines += [f"  {p} :: {t}: {n}" for p, t, n in flagged_semi]
+    else:
+        lines.append(f"no section over {SEMICOLON_BAR} semicolons")
     return "\n".join(lines)
 
 
@@ -295,7 +335,10 @@ def main(argv: list[str] | None = None) -> int:
     """CLI entry point; returns the exit code."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("paths", nargs="*", type=Path, help="Files to scan (default: see top)")
-    parser.add_argument("--strict", action="store_true", help="Exit 1 when anything is flagged")
+    parser.add_argument("--strict", action="store_true",
+                        help="Exit 1 when a section is over the em-dash bar")
+    parser.add_argument("--strict-semicolons", action="store_true",
+                        help="With --strict, also exit 1 when a section is over the semicolon bar")
     parser.add_argument("--json", action="store_true", help="Print JSON instead of the table")
     args = parser.parse_args(argv)
 
@@ -303,13 +346,17 @@ def main(argv: list[str] | None = None) -> int:
     reports = lint_paths(paths)
     if args.json:
         rows = [
-            {**asdict(r), "vocab_total": r.counts.vocab_total, "em_dash_bar": EM_DASH_BAR}
+            {**asdict(r), "vocab_total": r.counts.vocab_total, "em_dash_bar": EM_DASH_BAR,
+             "semicolon_bar": SEMICOLON_BAR}
             for r in reports
         ]
         print(json.dumps(rows, indent=2))
     else:
         print(format_report(reports))
-    return 1 if args.strict and any(r.flagged for r in reports) else 0
+    over = any(r.flagged for r in reports)
+    if args.strict_semicolons:
+        over = over or any(r.flagged_semicolons for r in reports)
+    return 1 if args.strict and over else 0
 
 
 if __name__ == "__main__":

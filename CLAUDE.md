@@ -72,6 +72,7 @@ rather than proceeding without the check.
 
 ### Prose Style (papers and documentation)
 - The prose rules live in the `paper-prose` skill (`.claude/skills/paper-prose/SKILL.md`; lint: `scripts/prose_lint.py`).
+- Release prose keeps semicolons minimal and never uses one in place of an em dash.
 - **Standard acknowledgments block (identical across every paper — do not vary per paper).** Use exactly this text, in the LaTeX `\begin{ack}...\end{ack}` environment (`neurips_2025.sty` renders the "Acknowledgments and Disclosure of Funding" heading) or under a `### Acknowledgments and Disclosure of Funding` heading in non-LaTeX: *"This work made extensive use of Anthropic's Claude (the Claude Code agent on Opus 4.6, 4.7, 4.8 and 5.5, and Fable 5 and 5.1) for code scaffolding, experimental scripts, and prose drafting. The author retains responsibility for experimental design, all scientific claims, and final wording."* When the model list changes, update it here and propagate to every paper (a one-line `re.sub` over `papers/*/build/main.tex`); never let acks drift per paper.
 
 ### Design Principles
@@ -178,7 +179,7 @@ context. This recreates it mechanically, every time.
   update in the same commit).
 - After `program-thesis`, before committing paper sections, READMEs, abstracts, or arXiv/OpenReview
   text → `paper-prose` (surface wording only; `scripts/prose_lint.py` before/after numbers, every
-  section at 2 or fewer em dashes).
+  section at 2 or fewer em dashes and 2 or fewer semicolons).
 
 ## Standing inference moves (apply continuously — these are the job, not flourishes)
 
