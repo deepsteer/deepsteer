@@ -73,3 +73,17 @@ def test_hyperstack_summary_flags_us_or_canada_stock():
     fl["data"][0]["flavors"][0]["stock_available"] = True
     s = HP.summarize({"regions": []}, fl, {"stocks": []}, {"images": []}, [], {"data": {}})
     assert s["us_or_canada_a100_80gb_on_demand_in_stock"]
+
+
+def test_the_probe_runner_names_no_variable_it_never_sets():
+    # most probable failure (the second Thunder instance, 2026-11-14): a block copied from a pod
+    # runner names a variable the probe never sets (SESSION), and set -u aborts the run mid-setup
+    text = (RUNPOD / "remote_provider_probe.sh").read_text()
+    # quoted heredocs hold Python, not bash; the opening line itself stays (ST=$? sits on it)
+    body = re.sub(r"(<<'EOF'[^\n]*\n).*?\nEOF\n", r"\1", text, flags=re.S)
+    used = set(re.findall(r"\$\{?([A-Za-z_][A-Za-z0-9_]*)", body))
+    set_here = set(re.findall(r"(?:^|[\s;(])(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=", body, re.M))
+    set_here |= set(re.findall(r"\bfor\s+([A-Za-z_][A-Za-z0-9_]*)\s+in\b", body))
+    env = {"HOME", "PATH", "REPO_DIR", "OMP_NUM_THREADS", "PROBE_PYTHON", "PROBE_ALLOW_PY"}
+    unset = {v for v in used - set_here - env if not v.isdigit()}
+    assert not unset, unset

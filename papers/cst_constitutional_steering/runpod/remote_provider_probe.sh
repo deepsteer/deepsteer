@@ -88,7 +88,7 @@ for f in decisions.jsonl episodes.jsonl; do
   [ -f "$C/finalist_c2_rule_right_mach/mach/$f" ] || { echo "BAIL: the finalist run's $f did not sync"; exit 1; }
 done
 [ -f "$C/pressure/scenarios.json" ] || { echo "BAIL: P-ctx's training scenarios did not sync"; exit 1; }
-PART=mach $PY - <<'EOF' > "$OUT/logs/models_probe${SESSION}.json" || { echo "BAIL: model access or download"; exit 1; }
+PART=mach $PY - <<'EOF' > "$OUT/logs/models_probe.json" || { echo "BAIL: model access or download"; exit 1; }
 import json, os
 from huggingface_hub import snapshot_download
 pins = {"qwen38_27b": ("Qwen/Qwen3.8-27B", "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0")}
@@ -103,7 +103,6 @@ if os.environ["PART"] == "mach":  # the gate tests' dry judge reads gpt-oss's to
                         "generation_config.json", "chat_template*"])
 print(json.dumps(got))
 EOF
-echo ">> models: $(cat "$OUT/logs/models_probe${SESSION}.json")"
 echo ">> models: $(cat "$OUT/logs/models_probe.json")"
 $PY -c "from pathlib import Path; from deepsteer.datasets.machiavelli import fetch_machiavelli; print('>> engine:', fetch_machiavelli(zip_path=Path('/workspace/mch_bundle/game_data.zip')))" \
   || { echo "BAIL: the synced bundle failed its hash check"; exit 1; }
