@@ -129,7 +129,7 @@ rp_provision_pod() {
   PUBKEY="$(cat "${SSH_KEY}.pub")"
   IFS=',' read -ra _CLOUDS <<< "$CLOUD_TYPES"
   IFS=',' read -ra _GPUS <<< "$GPU_TYPES"
-  GPU_TYPE=""; CLOUD_TYPE=""; LAST_ERR=""
+  GPU_TYPE=""; CLOUD_TYPE=""; LAST_ERR=""; RP_ATTEMPTS=()
   rp_datacenter_field
   echo ">> Searching for capacity across ${#_GPUS[@]} GPU type(s) x ${#_CLOUDS[@]} cloud(s)${DATA_CENTERS:+ in data centers $DATA_CENTERS}..."
   for cloud in "${_CLOUDS[@]}"; do
@@ -153,12 +153,14 @@ rp_provision_pod() {
       RESP="$(gql "$CREATE_MUT")"
       POD_ID="$(echo "$RESP" | jq -r '.data.podFindAndDeployOnDemand.id // empty')"
       if [ -n "$POD_ID" ]; then
+        RP_ATTEMPTS+=("$cloud|$gpu|created")
         GPU_TYPE="$gpu"; CLOUD_TYPE="$cloud"
         echo ">> Pod $POD_ID created ($gpu, $cloud)"
         break 2
       fi
       LAST_ERR="$(echo "$RESP" | jq -r '.errors[0].message // empty')"
       [ -n "$LAST_ERR" ] && echo "      -> $LAST_ERR"
+      RP_ATTEMPTS+=("$cloud|$gpu|${LAST_ERR:-no pod returned}")
     done
   done
   if [ -z "$POD_ID" ]; then
@@ -169,7 +171,8 @@ rp_provision_pod() {
 }
 
 # rp_log_rate: print and log the pod's cloud, GPU type and hourly cost as RunPod reports it (CST
-# Amendment 48 item 2), to stdout and to <results>/logs/pod_rate.jsonl on this machine.
+# Amendment 48 item 2), to stdout and to <results>/logs/pod_rate.jsonl on this machine, with every
+# cloud and GPU type tried before it and RunPod's answer (the Community trial's record).
 rp_log_rate() {
   local R cost f
   R="$(gql "query { pod(input:{podId:\"$POD_ID\"}) { id costPerHr gpuCount } }")"
@@ -177,9 +180,11 @@ rp_log_rate() {
   echo ">> Pod rate: ${cost:-not reported} USD/h (cloud ${CLOUD_TYPE:-?}, GPU ${GPU_TYPE:-?}, pod $POD_ID)"
   f="$REPO_ROOT/$SELF_PAPER/${RESULTS_SUBPATH:-outputs}/logs/pod_rate.jsonl"
   mkdir -p "$(dirname "$f")"
+  local att
+  att="$(printf '%s\n' "${RP_ATTEMPTS[@]+"${RP_ATTEMPTS[@]}"}" | jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split("|") | {cloud: .[0], gpu: .[1], result: (.[2:] | join("|"))})')"
   jq -cn --arg pod "$POD_ID" --arg cloud "${CLOUD_TYPE:-}" --arg gpu "${GPU_TYPE:-}" \
-    --arg cost "${cost:-}" --arg t "$(date -u +%FT%TZ)" \
-    '{pod:$pod, cloud:$cloud, gpu:$gpu, cost_per_hr:($cost|tonumber? // null), at:$t}' >> "$f"
+    --arg cost "${cost:-}" --arg t "$(date -u +%FT%TZ)" --argjson att "${att:-[]}" \
+    '{pod:$pod, cloud:$cloud, gpu:$gpu, cost_per_hr:($cost|tonumber? // null), at:$t, attempts:$att}' >> "$f"
 }
 
 # rp_push_token: write HF_TOKEN to a mode-600 file on the pod over the SSH channel (stdin), never

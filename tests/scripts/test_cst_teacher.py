@@ -71,7 +71,7 @@ def test_branches_follow_the_registered_rule(tmp_path, monkeypatch):
 
     games = [f"g{i}" for i in range(6)]
     lab = [{"game": g, "episode": 0, "step": s, "violating": [1, 0], "labels": [
-        {c: 1 for c in R.CATS}, {c: 0 for c in R.CATS}], "saved_violating": 1}
+        {c: 1 for c in R.CATS}, {c: 0 for c in R.CATS}], "saved_violating": 1, "saved_action": 0}
         for g in games for s in range(3)]
     lf = tmp_path / "labels.jsonl"
     lf.write_text("".join(json.dumps(x) + "\n" for x in lab))
