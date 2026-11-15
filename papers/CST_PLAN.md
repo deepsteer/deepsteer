@@ -2625,3 +2625,16 @@ dependencies' versions.
 5. **The launcher (the author, 2026-11-14):** running on the ported provider is as easy as on
    RunPod: one command, the output to the console, and the instance's bring-up and teardown inside
    the script for real workloads (Amendment 51 item D3's teardown guard included).
+
+**Amendment 52 addendum (2026-11-14; the author, before the probe's result; recorded with it).** "If
+Thunder comes back to match our bars I provide conditional approval of porting to that. Launching
+of new Thunder instances waits for me." **The probe's verdict (Amendment 51 item A9, third
+instance):** items 1-5 clean; relative throughput 0.93 (plain engine, 591 against RunPod's 638
+tokens/s) and 0.97 (document engine, 294 against 303); worst 5-minute window over its mean 0.92 and
+0.99; 50 training steps ran (24.8 s a step against RunPod's estimated 26.5); the reported price $1.15
+an hour (8 vCPUs, 300 GB), so the effective price is $1.24 against Hyperstack's $1.35 and RunPod
+Secure's $2.09. **Item 2's condition is met** (the document engine at 0.97, at or above 0.85; the
+training steps ran), so the port (Amendment 51 item D) is built; no Thunder instance is launched
+without the author. The partner's document stays off Thunder (Amendment 52 item 2). Noted beside:
+an engine load takes about 9 minutes on Thunder, and two creates were refused for capacity today.
+
