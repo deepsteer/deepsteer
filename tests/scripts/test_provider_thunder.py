@@ -22,7 +22,7 @@ case "$1" in
     n=$(cat "$TNR_STATE.fails" 2>/dev/null || echo 0)
     if [ "$n" -gt 0 ]; then echo $((n - 1)) > "$TNR_STATE.fails"
       echo "Usage: tnr create [flags]" >&2
-      echo '{"error": "failed to create instance: We are currently out of GPU capacity"}'; exit 1; fi
+      echo '{"error": "failed to create instance: out of GPU capacity"}'; exit 1; fi
     id=$(jq 'length' "$S"); u="uuid$id$RANDOM"
     jq --arg u "$u" --argjson id "$id" '. + [{id: ($id|tostring), uuid: $u, status: "RUNNING",
       ip: "10.0.0.1", port: 40000}]' "$S" > "$S.t" && mv "$S.t" "$S"
@@ -102,6 +102,25 @@ def test_all_creates_refused_exits_with_the_message_and_deletes_nothing(tmp_path
     r = _bash("trap cleanup EXIT; rp_provision_pod", env)
     assert r.returncode == 1 and "no Thunder instance after 2 attempts" in r.stdout
     assert "out of GPU capacity" in r.stdout and "Deleting" not in r.stdout
+
+
+@needs_jq
+def test_refused_creates_fall_back_to_runpod_secure_and_log_it(tmp_path):
+    # most probable failure (CST Amendment 53 item 3): after the last refused try the launch ends
+    # instead of falling back, or the fallback keeps Thunder's login, token path or teardown
+    env = _env(tmp_path)
+    (tmp_path / "s.json.fails").write_text("9")
+    env.update(TNR_CREATE_TRIES="2", TNR_FALLBACK="runpod_secure", RUNPOD_API_KEY="k")
+    r = _bash('rc=0; rp_provision_pod || rc=$?; echo rc=$rc; th_fallback_runpod; '
+              'echo "user=$SSH_USER cloud=$CLOUD_TYPES provider=$PROVIDER tok=$REMOTE_TOKEN_FILE"; '
+              'declare -f rp_provision_pod | grep -c podFindAndDeployOnDemand; '
+              'declare -f cleanup | grep -c podTerminate', env)
+    assert "rc=3" in r.stdout, r.stdout + r.stderr
+    assert "user=root cloud=SECURE provider=runpod tok=/root/.hf_token" in r.stdout
+    # RunPod's create and teardown are back (each names its RunPod call)
+    assert all(int(n) > 0 for n in r.stdout.strip().splitlines()[-2:])
+    rec = json.loads((tmp_path / "p/o/logs/pod_rate.jsonl").read_text().splitlines()[-1])
+    assert rec["fallback"] == "runpod_secure" and len(rec["attempts"]) == 2
 
 
 def test_run_session_selects_the_provider_and_keeps_runpod_the_default():

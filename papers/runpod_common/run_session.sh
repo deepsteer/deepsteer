@@ -84,7 +84,13 @@ rp_require_bins
 trap cleanup EXIT            # arm teardown before any pod exists
 rp_require_disk "$REPO_ROOT/$SELF_PAPER/${RESULTS_SUBPATH:-outputs}"   # before any pod exists
 rp_check_sync_outputs || exit 1                                         # before any pod exists
-rp_provision_pod
+PROV_RC=0; rp_provision_pod || PROV_RC=$?
+if [ "$PROV_RC" = 3 ] && declare -F th_fallback_runpod >/dev/null; then
+  th_fallback_runpod   # Thunder refused every try: RunPod Secure (CST Amendment 53 item 3)
+  rp_provision_pod
+elif [ "$PROV_RC" != 0 ]; then
+  exit "$PROV_RC"
+fi
 rp_wait_for_ssh
 rp_log_rate
 rp_push_token

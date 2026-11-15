@@ -2660,3 +2660,9 @@ an engine load takes about 9 minutes on Thunder, and two creates were refused fo
    (content not shown, goal pressure not carried), the strength knob, and the finding that a
    35k-token document in context dilutes shorter instructions. It runs through program-thesis and
    paper-prose before commit.
+
+**Budget of record (the author, 2026-11-15; Amendment 53 addendum).** The $500 cap covers CST on
+public material and GPC together, with $173 remaining. Work on the partner's document is expected to
+be funded by the partner: it is ledgered in its own section with its own running total and is not
+counted against the $500 cap. A pod that would mix the two is split, or billed by stage.
+

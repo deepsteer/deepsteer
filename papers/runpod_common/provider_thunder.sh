@@ -11,11 +11,14 @@
 #   TNR_GPU (a100xl)  TNR_VCPUS (8)  DISK_GB (300)  TNR_TEMPLATE (base)
 #   TNR_CREATE_TRIES (6) and TNR_CREATE_WAIT_S (300): retries when Thunder reports no capacity
 #   TNR_PRICE (1.15): the hourly price logged when the CLI does not print its estimate
+#   TNR_FALLBACK (unset, or runpod_secure): after the last refused try, fall back to RunPod Secure
+#   (CST Amendment 53 item 3; needs RUNPOD_API_KEY; RUNPOD_GPU_TYPES overrides the A100 list)
 #
 # Teardown guard (Amendment 51 item D3): delete only the instance this session created (its UUID is
 # checked first), poll until the account no longer lists it, then list every instance and fail
 # loudly if one this session did not find at start remains.
 
+TH_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # session_lib.sh sits beside this file
 SSH_USER=ubuntu
 REMOTE_TOKEN_FILE=/home/ubuntu/.hf_token
 TNR_GPU="${TNR_GPU:-a100xl}"
@@ -78,7 +81,30 @@ rp_provision_pod() {
   done
   POD_ID=""
   echo "ERROR: no Thunder instance after $TNR_CREATE_TRIES attempts. Last message: ${LAST_ERR:-none}."
+  # CST Amendment 53 item 3: with TNR_FALLBACK=runpod_secure the caller falls back to RunPod Secure
+  [ "${TNR_FALLBACK:-}" = runpod_secure ] && return 3
   exit 1
+}
+
+# th_fallback_runpod: Thunder refused every try (Amendment 53 item 3). Log it, restore RunPod's
+# functions and settings (session_lib.sh sourced again; root login, its token path and image
+# Python), and leave Secure Cloud as the only cloud. The caller then provisions on RunPod.
+th_fallback_runpod() {
+  [ -n "${RUNPOD_API_KEY:-}" ] || { echo "ERROR: the RunPod fallback needs RUNPOD_API_KEY"; exit 1; }
+  local f att
+  f="$REPO_ROOT/$SELF_PAPER/${RESULTS_SUBPATH:-outputs}/logs/pod_rate.jsonl"
+  mkdir -p "$(dirname "$f")"
+  att="$(printf '%s\n' "${RP_ATTEMPTS[@]+"${RP_ATTEMPTS[@]}"}" | jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split("|") | {cloud: .[0], gpu: .[1], result: (.[2:] | join("|"))})' || echo '[]')"
+  jq -cn --arg t "$(date -u +%FT%TZ)" --argjson att "${att:-[]}" \
+    '{provider:"thunder", fallback:"runpod_secure", at:$t, attempts:$att}' >> "$f" || true
+  echo "!! Thunder had no capacity after $TNR_CREATE_TRIES tries: falling back to RunPod Secure (logged)"
+  unset -f th_endpoint rp_refresh_endpoint th_bringup th_list
+  SSH_USER=root; REMOTE_TOKEN_FILE=/root/.hf_token; export CST_PYTHON=""
+  PROVIDER=runpod; CLOUD_TYPES=SECURE
+  GPU_TYPES="${RUNPOD_GPU_TYPES:-NVIDIA A100 80GB PCIe,NVIDIA A100-SXM4-80GB}"
+  API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
+  # shellcheck source=/dev/null
+  source "$TH_LIB_DIR/session_lib.sh"
 }
 
 # th_endpoint: the instance's current address, port and key from `tnr connect --json` (which also
