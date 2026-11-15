@@ -32,7 +32,10 @@
 set -euo pipefail
 
 # ---------------------------- config (override via env) ----------------------
-: "${RUNPOD_API_KEY:?export RUNPOD_API_KEY first}"
+# PROVIDER (CST Amendment 51 item D1): runpod (the default and the fallback) or thunder; a provider
+# other than RunPod replaces the RunPod-specific pieces from papers/runpod_common/provider_<name>.sh
+PROVIDER="${PROVIDER:-runpod}"
+[ "$PROVIDER" = runpod ] && : "${RUNPOD_API_KEY:?export RUNPOD_API_KEY first}"
 GPU_TYPE="${GPU_TYPE:-}"
 # 48 GB-class first (one 7B at a time fits in ~20 GB); 80 GB as fallback.
 GPU_TYPES="${GPU_TYPES:-NVIDIA RTX A6000,NVIDIA A40,NVIDIA L40S,NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe,NVIDIA H100 80GB HBM3}"
@@ -62,7 +65,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 # test hook (tests/scripts/test_run_session_launcher.py): print the resolved root and stop, before
 # anything touches the network
 [ "${RP_PRINT_REPO_ROOT:-0}" = 1 ] && { echo "$REPO_ROOT"; exit 0; }
-API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
+API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY:-}"
 
 # SELF_PAPER + RESULTS_SUBPATH are env-overridable so this launcher also drives sibling papers
 # (e.g. Direction-2 session 1: SELF_PAPER=papers/d2_decision_coupling RESULTS_SUBPATH=outputs).
@@ -72,6 +75,11 @@ RESULTS_SUBPATH="${RESULTS_SUBPATH:-outputs/phase2}"
 RSYNC_EXCLUDE="$REPO_ROOT/papers/runpod_common/rsync_exclude.txt"
 
 source "$REPO_ROOT/papers/runpod_common/session_lib.sh"
+case "$PROVIDER" in
+  runpod) ;;
+  thunder) source "$REPO_ROOT/papers/runpod_common/provider_thunder.sh" ;;
+  *) echo "ERROR: unknown PROVIDER '$PROVIDER' (runpod or thunder)"; exit 1 ;;
+esac
 rp_require_bins
 trap cleanup EXIT            # arm teardown before any pod exists
 rp_require_disk "$REPO_ROOT/$SELF_PAPER/${RESULTS_SUBPATH:-outputs}"   # before any pod exists
@@ -92,7 +100,7 @@ if [ -n "${SYNC_EXTRA:-}" ]; then
     # $REMOTE_DIR. macOS rsync ignores GNU's "/./" relative-root marker (it copied the full
     # absolute path instead), so anchor via cwd rather than the dot marker.
     ( cd "$REPO_ROOT" && rsync -az -R --exclude-from="$RSYNC_EXCLUDE" -e "ssh ${SSH_OPTS[*]}" \
-        "$p" "root@$SSH_HOST:$REMOTE_DIR/" )
+        "$p" "$SSH_USER@$SSH_HOST:$REMOTE_DIR/" )
   done
 fi
 
@@ -100,9 +108,9 @@ fi
 REMOTE_LOG="$REMOTE_DIR/session.log"
 REMOTE_DONE="$REMOTE_DIR/.session_done"
 echo ">> Monitor from another terminal:"
-echo "     ssh -p $SSH_PORT -i $SSH_KEY -o StrictHostKeyChecking=no root@$SSH_HOST 'tail -f $REMOTE_LOG'"
+echo "     ssh ${SSH_OPTS[*]} $SSH_USER@$SSH_HOST 'tail -f $REMOTE_LOG'"
 echo ">> Launching Phase 2 [VALIDATE=$VALIDATE] detached on pod (log: $REMOTE_LOG)"
-ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+ssh "${SSH_OPTS[@]}" "$SSH_USER@$SSH_HOST" \
   "cd $REMOTE_DIR && rm -f '$REMOTE_DONE' '$REMOTE_LOG' && \
    ( PYTHONUNBUFFERED=1 REPO_DIR=$REMOTE_DIR \
      VALIDATE=$VALIDATE BASE_MODEL='$BASE_MODEL' INSTRUCT_MODEL='$INSTRUCT_MODEL' \
@@ -113,22 +121,31 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
      SWEEP='${SWEEP:-}' STANDARDIZE='${STANDARDIZE:-}' ROBUSTIFY='${ROBUSTIFY:-}' BOUNDARY='${BOUNDARY:-}' PATCH_LAYERS='${PATCH_LAYERS:-}' LAYER_OVERRIDE='${LAYER_OVERRIDE:-}' \
      W4_MODELS='${W4_MODELS:-}' W4_UNITS='${W4_UNITS:-}' W4_TIER='${W4_TIER:-}' W4_OUT_SUBDIR='${W4_OUT_SUBDIR:-}' \
      KDG_MODELS='${KDG_MODELS:-}' KDG_UNITS='${KDG_UNITS:-}' KDG_PROFILE='${KDG_PROFILE:-}' KDG_OUT_SUBDIR='${KDG_OUT_SUBDIR:-}' KDG_SCENARIOS='${KDG_SCENARIOS:-}' \
-     CST_SESSION='${CST_SESSION:-}' \
+     CST_SESSION='${CST_SESSION:-}' CST_PYTHON='${CST_PYTHON:-}' \
      HF_TOKEN=\"\$(cat $REMOTE_TOKEN_FILE 2>/dev/null)\" HUGGING_FACE_HUB_TOKEN=\"\$(cat $REMOTE_TOKEN_FILE 2>/dev/null)\" \
      setsid bash $REMOTE_SCRIPT > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 
 echo ">> Launched. Streaming log below (run survives SSH drops; Ctrl-C terminates pod)."
 echo "----------------------------------------------------------------------"
-SEEN=0
+SEEN=0; FAILS=0
 while true; do
-  CHUNK="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"
+  # a provider with dynamic addresses (Thunder) re-resolves the endpoint after a minute of failures
+  if ! ssh "${SSH_OPTS[@]}" "$SSH_USER@$SSH_HOST" true 2>/dev/null; then
+    FAILS=$((FAILS + 1))
+    if [ "$FAILS" -ge 20 ] && declare -F rp_refresh_endpoint >/dev/null; then
+      rp_refresh_endpoint; FAILS=0
+    fi
+    sleep 3; continue
+  fi
+  FAILS=0
+  CHUNK="$(ssh "${SSH_OPTS[@]}" "$SSH_USER@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"
   if [ -n "$CHUNK" ]; then
     printf '%s\n' "$CHUNK"
     SEEN=$((SEEN + $(printf '%s\n' "$CHUNK" | wc -l)))
     rp_on_demand_sync "$CHUNK"   # opt-in: ON_DEMAND_SYNC (session_lib.sh)
   fi
-  if ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "test -f '$REMOTE_DONE'" 2>/dev/null; then
-    FINAL="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"
+  if ssh "${SSH_OPTS[@]}" "$SSH_USER@$SSH_HOST" "test -f '$REMOTE_DONE'" 2>/dev/null; then
+    FINAL="$(ssh "${SSH_OPTS[@]}" "$SSH_USER@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"
     [ -n "$FINAL" ] && printf '%s\n' "$FINAL"
     break
   fi

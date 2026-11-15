@@ -37,3 +37,18 @@ plain CUDA base image needs an install step for sshd and the key, and a symlink 
 
 **Cost of the port:** about half a day of code (the six RunPod rows above behind a provider switch),
 one validation pod, and the sync emulation unchanged.
+
+## The port (2026-11-14; CST Amendment 51 item D, the author's conditional approval met)
+
+Thunder Compute is the second provider: `PROVIDER=thunder` in `run_session.sh` sources
+`provider_thunder.sh`, which replaces the six RunPod rows above through the author's `tnr` CLI
+(create with retries on no capacity, `tnr connect --json` for the address, port and key, the
+dynamic address re-resolved by the stream loop, the rate from the CLI's estimate or `TNR_PRICE`,
+the teardown guard). `session_lib.sh` logs in as `SSH_USER` (root on RunPod, ubuntu on Thunder).
+The bring-up supplies what RunPod's image does: a writable `/workspace`, rsync, and Python 3.11 with
+its headers from deadsnakes (Thunder's image has 3.12; Triton compiles against `Python.h`). One
+command per card (`launch_cst_a52_thunder.sh`); RunPod's cards are unchanged and stay the fallback.
+The probe's verdict: throughput 0.93 and 0.97 of RunPod's, the effective price $1.24 an hour. The
+validation run is the first stage of the first Thunder pod (Amendment 52 item 3a). Nothing carrying
+the partner's document runs on Thunder.
+

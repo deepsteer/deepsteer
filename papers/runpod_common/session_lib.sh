@@ -27,6 +27,10 @@
 #   rp_sync_up
 #   ... paper-specific execute + download ...
 
+# The login on the instance (RunPod's image: root). A provider file sourced after this one
+# (provider_<name>.sh, CST Amendment 51 item D1) may set its own.
+SSH_USER="${SSH_USER:-root}"
+
 rp_require_bins() {
   for bin in curl jq ssh rsync; do
     command -v "$bin" >/dev/null || { echo "ERROR: '$bin' not found in PATH"; exit 1; }
@@ -76,9 +80,9 @@ rp_download() {
   # a missing remote results directory is a mismatch between the remote script and the launch,
   # not an empty run: keep the pod so the results can be fetched by hand (2026-10-19: rsync
   # reported an empty file list, returned success, and the pod was terminated with its results)
-  if ! ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "test -d '$src'"; then
+  if ! ssh "${SSH_OPTS[@]}" "${SSH_USER:-root}@$SSH_HOST" "test -d '$src'"; then
     echo "ERROR: remote results directory $src does not exist; KEEPING the pod."
-    ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "ls -d '$(dirname "$src")'/*/ 2>/dev/null" \
+    ssh "${SSH_OPTS[@]}" "${SSH_USER:-root}@$SSH_HOST" "ls -d '$(dirname "$src")'/*/ 2>/dev/null" \
       | sed 's/^/   remote has: /'
     KEEP_POD=1
     return 1
@@ -93,7 +97,7 @@ rp_download() {
     # back; every other weight file stays on the pod
     rsync -az --partial --include '**/adapters/**' \
       --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
-      -e "ssh ${SSH_OPTS[*]}" "root@$SSH_HOST:$src" "$dst"
+      -e "ssh ${SSH_OPTS[*]}" "${SSH_USER:-root}@$SSH_HOST:$src" "$dst"
     rc=$?
     [ $rc -eq 0 ] && { echo ">> download complete (attempt $k)"; return 0; }
     echo "WARN: download attempt $k/$tries failed (rsync exit $rc); retrying in 20s"
@@ -189,10 +193,10 @@ rp_log_rate() {
 
 # rp_push_token: write HF_TOKEN to a mode-600 file on the pod over the SSH channel (stdin), never
 # on a command line (CST Amendment 48 item 3); the remote command reads it from that file.
-REMOTE_TOKEN_FILE=/root/.hf_token
+REMOTE_TOKEN_FILE="${REMOTE_TOKEN_FILE:-/root/.hf_token}"
 rp_push_token() {
   [ -n "${HF_TOKEN:-}" ] || return 0
-  printf '%s' "$HF_TOKEN" | ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+  printf '%s' "$HF_TOKEN" | ssh "${SSH_OPTS[@]}" "${SSH_USER:-root}@$SSH_HOST" \
     "umask 077 && cat > $REMOTE_TOKEN_FILE && chmod 600 $REMOTE_TOKEN_FILE" \
     || { echo "ERROR: could not write the token file on the pod"; exit 1; }
 }
@@ -211,9 +215,9 @@ rp_wait_for_ssh() {
     sleep 10
   done
   [ -n "$SSH_HOST" ] || { echo "ERROR: pod never exposed an SSH endpoint"; exit 1; }
-  echo ">> SSH endpoint: root@$SSH_HOST:$SSH_PORT"
+  echo ">> SSH endpoint: ${SSH_USER:-root}@$SSH_HOST:$SSH_PORT"
   echo ">> Log in from another terminal:"
-  echo "     ssh -p $SSH_PORT -i $SSH_KEY -o StrictHostKeyChecking=no root@$SSH_HOST"
+  echo "     ssh -p $SSH_PORT -i $SSH_KEY -o StrictHostKeyChecking=no ${SSH_USER:-root}@$SSH_HOST"
 
   # ServerAlive* so a HUNG established connection self-aborts (~60s) instead of
   # freezing the stream loop forever -- a stalled `ssh tail` must not block the
@@ -222,7 +226,7 @@ rp_wait_for_ssh() {
     -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=4)
   echo ">> Waiting for sshd..."
   for _ in $(seq 1 30); do
-    ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" 'echo ok' 2>/dev/null | grep -q ok && break
+    ssh "${SSH_OPTS[@]}" "${SSH_USER:-root}@$SSH_HOST" 'echo ok' 2>/dev/null | grep -q ok && break
     sleep 5
   done
 }
@@ -230,7 +234,7 @@ rp_wait_for_ssh() {
 # ---------------------------------- sync up ----------------------------------
 rp_sync_up() {
   echo ">> Preparing pod (mkdir + ensure rsync)..."
-  ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+  ssh "${SSH_OPTS[@]}" "${SSH_USER:-root}@$SSH_HOST" \
     "mkdir -p $REMOTE_DIR && (command -v rsync >/dev/null 2>&1 || \
      { apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq rsync; } || \
      { command -v apk >/dev/null 2>&1 && apk add --no-cache rsync; })"
@@ -247,7 +251,7 @@ rp_sync_up() {
     --exclude-from "$RSYNC_EXCLUDE" \
     "${RP_OUT_FILTERS[@]}" \
     -e "ssh ${SSH_OPTS[*]}" \
-    "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
+    "$REPO_ROOT/" "${SSH_USER:-root}@$SSH_HOST:$REMOTE_DIR/"
 }
 
 # rp_on_demand_sync <log chunk>: opt-in (ON_DEMAND_SYNC unset -> nothing). For each line
@@ -275,8 +279,8 @@ rp_on_demand_sync() {
       echo "ERROR: $l has sha256 ${got:-<missing>}, expected $h; not pushed"; continue
     fi
     echo ">> on-demand sync: $name ($l -> pod:$r)"
-    { ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "mkdir -p '$(dirname "$r")'" &&
-      rsync -a -e "ssh ${SSH_OPTS[*]}" "$l" "root@$SSH_HOST:$r"; } ||
+    { ssh "${SSH_OPTS[@]}" "${SSH_USER:-root}@$SSH_HOST" "mkdir -p '$(dirname "$r")'" &&
+      rsync -a -e "ssh ${SSH_OPTS[*]}" "$l" "${SSH_USER:-root}@$SSH_HOST:$r"; } ||
       echo "ERROR: on-demand sync of $name failed"
   done
 }
