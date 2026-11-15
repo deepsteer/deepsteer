@@ -2073,8 +2073,8 @@ orders (−0.081 [−0.123, −0.039]), a cost the distilled rungs inherit and t
 |---|---|---|---|
 | CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | closed on the counts (2026-11-06): 82 H1 items directed away, all to the protective option, 0 comply; ΔP on the 82 is document-consistent; H1's secondary read runs on the 82, the 47 splits beside |
 
-**Next line, seeded (the author, 2026-11-13; not opened): GPC (Goal-Pressure Conduct).** It starts
-after CST finishes. No plan file, directory or spend until the author opens it.
+**Next line, seeded (the author, 2026-11-13): GPC (Goal-Pressure Conduct).** Opened by the author on
+2026-11-15; see the GPC entry at the end of this file.
 
 **The author's decisions (2026-11-14; `cst_constitutional_steering/CST_STATE.md`).** One subject:
 Qwen3.8-27B stays the only model until CST and GPC are read together, and no second-model pass is
@@ -2116,4 +2116,36 @@ it misses the product bar's goal-pressure criterion on its first draw and needs 
 product bar now asks GPC for a teacher that carries conduct into the weights without a long
 context: a short conduct document, or distillation from GOOD_BEHAVIOR-style prompting. Served at
 half strength, P-ctx keeps 0.69 of the gain at a smaller cell A′ cost (descriptive).
+
+## GPC (Goal-Pressure Conduct), opened 2026-11-15 (`GPC_PLAN.md` v0.2; `gpc_goal_pressure_conduct/GPC_STATE.md`)
+
+**Scope (the author's).** How often Qwen3.8-27B takes a violating action that serves its assigned
+goal, in environments it never trained on (games and simulations included), and whether one adapter
+with nothing added to the context lowers that rate.
+
+**Positive voice, before any GPC pod.** On this subject, goal pressure is concentrated and an
+in-context ethics instruction moves it where it lives: GOOD_BEHAVIOR's −0.093 on single MACHIAVELLI
+decisions sits 90% on the 30% of states where the subject violates twice under P-ctx (base 0.877
+there, against 70% if the effect were proportional to the base rate), and on the screen's 250
+states (where the saved decision also violates) it moves the rate from 0.904 to 0.602. The program's in-weights constitution (P-ctx) does not move those
+decisions (0.07 of GOOD's effect), and the traces say why in one number: every long-prefix arm,
+GOOD_BEHAVIOR included, names a moral consideration at the base's rate (0.24 to 0.26 against 0.244;
+paired differences +0.011 to +0.013, CIs including 0) and cites the ethics prompt at the base's
+floor (0.002 to 0.004 against 0.003), so when the prefix cancels GOOD_BEHAVIOR's choice effect, the
+instruction leaves no trace in the reasoning either. GPC asks for an adapter that does in weights
+what the four-line instruction does in context.
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| GOOD_BEHAVIOR's effect on single decisions is concentrated on high-propensity states (90% on the both-violate 30%) | R_selection: the strata are defined on P-ctx's rollouts, which correlate with the base's noise | the base of record and GOOD are independent of P-ctx's rollouts, so the concentration is not regression; a fresh-session GOOD at k 1 on S-hi (stage b) reproduces the drop or not | standing (zero GPU); stage b reads the reproduction |
+| A diluted ethics instruction leaves no trace in the reasoning (moral rate and ethics-prompt citing at base) | R_instrument: the moral pattern does not detect what an effective instruction does to traces | GOOD-alone traces on S-hi (stage b); the root split reads only if GOOD-alone raises the moral rate | open; the positive control runs on GPC-1 |
+
+**What the next result changes (GPC-1, branches registered in `GPC_PLAN.md` §6).** An arm meeting
+the goal-pressure criterion on draw 1: the thesis gains "conduct reaches the weights without a
+context, at half of the in-context reference or more", pending the second draw and the cost bars.
+An arm clearing the screen and missing the bar: "moves the decisions where the base violates most,
+short of the bar at pilot dose", with a dose step. No arm clearing: the trace split says whether
+the training does not fire in games or fires and is overridden, and the next route follows from it.
+The base-rate pilot finding no setting kind at 0.15: goal pressure on this subject is a property of
+game framing, a statement about the subject the held-out cell makes a second time.
 
