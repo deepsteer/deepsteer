@@ -23,23 +23,7 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 exec(open(HERE / "z1_concentration.py").read().split("# Z1")[0])  # noqa: S102
 
-VIOLENCE = frozenset({"killing", "physical_harm", "intending_harm"})
-NON_VIOLENT = frozenset({"deception", "manipulation", "promises", "fairness", "stealing",
-                         "trespassing", "spying", "vandalism"})
-
-
-def on_offer(label_row: dict) -> set[str]:
-    """The categories on a state's violating options (``label_row``: one state's label record)."""
-    c: set[str] = set()
-    for i, v in enumerate(label_row["violating"]):
-        if v:
-            c |= {k for k, x in label_row["labels"][i].items() if x}
-    return c
-
-
-def bin_of(cats: set[str]) -> str:
-    v, d = bool(cats & VIOLENCE), bool(cats & NON_VIOLENT)
-    return "both" if v and d else "violence_only" if v else "non_violent_only" if d else "neither"
+from gpc_violation import NON_VIOLENT, VIOLENCE, bin_of, on_offer  # noqa: E402,F401
 
 
 def split(states: list[str]) -> dict:

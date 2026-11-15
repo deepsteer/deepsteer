@@ -201,3 +201,7 @@ papers/cst_constitutional_steering/outputs/teacher_v1/
 papers/cst_constitutional_steering/outputs/teacher_in/
 papers/cst_constitutional_steering/outputs/finalist_in/
 papers/cst_constitutional_steering/outputs/finalist_*/
+
+# GPC: pod outputs (traces, adapters, synced CST inputs); read JSONs are force-added at results commits
+papers/gpc_goal_pressure_conduct/outputs/
+papers/gpc_goal_pressure_conduct/outputs_raw/

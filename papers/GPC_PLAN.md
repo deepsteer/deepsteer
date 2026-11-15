@@ -1,7 +1,7 @@
 # GPC plan: Goal-Pressure Conduct
 
-Status: **v0.2, 2026-11-15: the author's rulings on v0.1 (items 1-13 below). Zero GPU until the
-author launches.** State page: `gpc_goal_pressure_conduct/GPC_STATE.md`. Opened by the author on
+Status: **v0.2, 2026-11-15: the author's rulings on v0.1 (items 1-13 below); Z6-Z9 built (§3.3).
+Zero GPU until the author launches.** State page: `gpc_goal_pressure_conduct/GPC_STATE.md`. Opened by the author on
 2026-11-15 (`SYNTHESIS.md` seeded the line on 2026-11-13). v0.1 was the draft for the author's
 review (the plan documents accepted as written). Every number from the lead's scratch is
 re-derived before it enters this plan and reported beside it, marked agree or disagree.
@@ -261,6 +261,48 @@ alone. Run only when item 11 selects W-self.
 the sync list), the gate tests, and one real call through each parse path. Each local test names
 its most probable failure mode.
 
+### 3.3 Z6-Z9, built (2026-11-15)
+
+- **Z6:** `data/c_conduct_v1.json` (commit `3fee5422`), four lines, every check passing (§3.2's
+  rule). Kept commitments were dropped: no claim in `C_anth` v2 states it.
+- **Z7:** `scripts/gpc_conduct.py`, `data/conduct_grid_v1.json` (the pilot's 90 and a pool of 435
+  pressure and 175 clean per setting), `CONDUCT_BRIEFS.md` (the pilot briefs).
+- **Z8:** `scripts/gpc_advice.py`. W-ref's loader: `scripts/gpc_wref.py`.
+- **Z9:** the pod (`scripts/gpc1_pod.py`, `scripts/gpc1_read.py`, `runpod/remote_gpc1.sh`, the
+  two launch cards and `runpod/gpc1_inputs.sh`) and `tests/scripts/test_gpc1.py`: 17 fast tests
+  plus the slow dry session, which chains every stage on the tiny model (both third-arm branches
+  run by hand). **The sync emulation:** a repo copy holding only the launcher's sync (its own
+  filters, 879 MB against the 3 GB cap) with the runner's put-back of the CST inputs; the pod's
+  gate tests pass there (49 passed; 1 skipped, MCH's committed-runs test, as on CST's pods).
+  **The real parse path:** the subject cannot run here, so the letter parse was checked on the
+  subject's saved answers on CST's lettered panel (a52's same-session base): it agrees with CST's
+  parser on 620 of 620 A or B answers. The writer and dilemma replies use 2-roll's `extract_json`
+  path, which parsed the subject's output on the pod. **Two defects caught by the dry session:**
+  the screen read imported the zero-GPU derivation, which reads files the pod does not have (it
+  would have failed `read_screen`, and with it the registered read); a ratio on states GOOD does
+  not move divided by 0.
+
+**Build notes (not covered by the rulings; built this way and flagged to the author):**
+
+1. `good_lines` inserts GOOD_BEHAVIOR's four lines before ThinkCoT's goal line with no "TARGET
+   BEHAVIOR" header (the literal reading of "nothing else changed").
+2. The teachers' text goes first in the conduct grid's system message, then a blank line, with no
+   header (`C_conduct` for C1, GOOD reworded for C1g).
+3. If the conduct grid banks and item 11 selects C1g, W-self runs: C1g cannot be built without the
+   grid, and the pod keeps a third route. If neither W-self nor C1 is trained, W-ref matches Z5's
+   977,883 assistant tokens.
+4. The pilot is pressure slots only; clean slots are allocated in proportion to each setting's
+   final pressure count; the held-out cell is drawn from every kept slot, pilot slots included.
+5. An arm clears when its S-hi point is at least 0.35 and its S-lo guard holds; the registered
+   read takes the clearing arm with the highest S-hi point, never W-ref.
+6. W-self's rewrite has the tenet's claim as the system message ("Principle: ..."), the dilemma,
+   the first advice (its answer only) as the assistant turn, then the rewrite request.
+7. The CST inputs (the base and GOOD of record, the labels, the replay files, the eval index, the
+   fixed smoke adapter and its letters) sync by name under GPC's outputs and are put back at their
+   CST paths on the pod (other papers' outputs never sync).
+8. The screens serve the arms one after another on one LoRA engine (two LoRA slots).
+9. The cut rule runs before c2 (through f), before f and before f+.
+
 ## 4. Instruments
 
 ### 4.1 The screen (S-hi and S-lo, frozen with v0.2)
@@ -360,7 +402,7 @@ ratio: 0.5 or more selects W-self, under 0.5 selects C1g.
 ## 5. Pod GPC-1
 
 ```
-SESSION GPC-1 (about 6.1 A100-h through the screens, 8.8 h with the registered read and its riders;
+SESSION GPC-1 (about 6.3 A100-h through the screens, 9.2 h with the registered read and its riders;
                model group: Qwen3.8-27B served, then trained, then served with adapters)
   keystone:    the screens of W-ref, C1 and the third arm (W-self or C1g) on S-hi and S-lo, then
                the registered read of the best arm that clears (never W-ref)
@@ -386,7 +428,7 @@ a second plain), W-self's lengths, the kept counts.
 
 | stage | what | A100-h |
 |---|---|---|
-| a | bring-up, the fixed smoke check | 0.55 |
+| a | bring-up, the training smoke (one step on two W-ref examples, the structural check, the session's HF base letters; the one-step adapter deleted), the fixed smoke check | 0.70 |
 | b | in context on S-hi at k 1, traces saved: GOOD_BEHAVIOR, `C_conduct` in its slot, `good_lines` (750 decisions); item 11's switch | 0.54 |
 | b+ | item 2: the same-session base on S-hi and S-lo at k 1, traces saved (350) | 0.18 |
 | c1 | conduct: the writer's gate, the pilot's 90 and the base at k 2, the allocation, the rest written, checks, the held-out cell drawn; C1's teacher (`C_conduct` in the system message) at k 1 on the trainable slots, the base at k 1 on a seeded 200, the held-out cell's base and `C_conduct` at k 1; keep and gate | 1.00 *est.* |
@@ -394,14 +436,15 @@ a second plain), W-self's lengths, the kept counts.
 | d | train with P-ctx's LoRA and trainer (r 16, alpha 32, one epoch, accumulation 4, so steps scale with tokens): C1, the third arm, then W-ref thinking-off at the matched arm's assistant tokens (item 3) | 2.25 *est.* |
 | e | screens: three arms on S-hi and S-lo at k 1 (1,050 decisions) and on the held-out cell at k 1 (300), served parity for each, mediator rates; W-ref's adapter deleted | 0.95 |
 | f | the best arm that clears, never W-ref: the registered read on the 1,698 at k 2 (draw 1) | 1.90 |
-| f+ | if time remains: the operator cell and cell A′ for that arm | 0.80 |
+| f+ | if time remains: the operator cell and cell A′ for that arm, with a same-session base | 1.00 (a52's validation stage, two arms) |
 
-**Price (re-priced with items 9-13).** Through e: about 6.1 h (6.3 billed with the ledger's 0.15
-h), **$7.20 on Thunder** at $1.15, $13.70 on Secure at $2.19. With f: 8.0 h (8.2 billed), $9.40 on
-Thunder. With f and f+: 8.8 h (9.0 billed), **$10.30 on Thunder**, **$19.60 on Secure** at $2.19
-and $18.70 at $2.09. Items 9-13 add about 0.33 h against v0.1 (b +0.13, c1 +0.05, e +0.15); the
-lead's scratch said +0.35 h (agree). The pod fits under the 10.25 h cut with about 1.4 h of margin.
-It is re-priced at the pod's gate from its own measured rates.
+**Price (re-priced with items 9-13, then at the build).** Items 9-13 add about 0.33 h against
+v0.1 (b +0.13, c1 +0.05, e +0.15); the lead's scratch said +0.35 h (agree). The build adds 0.15 h
+(stage a's training smoke) and prices f+ at a52's measured 1.0 h (0.8 before). Through e: about
+6.3 h (6.4 billed with the ledger's 0.15 h), **$7.40 on Thunder** at $1.15, $14.10 on Secure at
+$2.19. With f: 8.2 h (8.3 billed), $9.60 on Thunder. With f and f+: 9.2 h (9.3 billed), **$10.70 on
+Thunder**, **$20.40 on Secure** at $2.19 and $19.40 at $2.09. The pod fits under the 10.25 h cut
+with about 1.1 h of margin. The runner's cut rule re-forecasts from this pod's measured rates.
 
 **The cut rule.** Before c2, the runner forecasts c2 through f from this pod's measured rates. If
 f would end past 10.25 h, the third arm is dropped (its generation, training and screen; about
@@ -506,5 +549,5 @@ deployment the partner cares about. That is the author's question, and the held-
 ## 8. Budget
 
 The $500 cap covers CST on public material and GPC together; **$173 remain** (CST_STATE, 2026-11-15)
-and are a hard stop. GPC-1 at its full order costs about $10.30 on Thunder or $19.60 on Secure.
+and are a hard stop. GPC-1 at its full order costs about $10.70 on Thunder or $20.40 on Secure.
 Nothing in GPC carries the partner's document.

@@ -4,7 +4,8 @@ Scope: goal pressure, conduct moved into weights with nothing in context, one su
 
 **As of 2026-11-15, plan v0.2 (the author's rulings on v0.1, items 1-13). Zero GPU until the author
 launches.** Z1-Z5 and item 9's numbers are re-derived beside the lead's scratch (`GPC_PLAN.md`
-§3.1, §3.1b). Z6-Z9 are being built; the next stop is the launch card after Z9 passes.
+§3.1, §3.1b). Z6-Z9 are built and Z9 passes (`GPC_PLAN.md` §3.3); **GPC-1's card is with the
+author.**
 
 ## Rules of record (carried from CST, unchanged)
 
@@ -40,13 +41,15 @@ launches.** Z1-Z5 and item 9's numbers are re-derived beside the lead's scratch 
 
 ## Pending
 
-1. Z6 `C_conduct` (rule committed with v0.2), Z7 the conduct grid and pilot briefs, Z8 the advice
-   grid, Z9 the dry session, sync emulation and gate tests; then the launch card to the author.
+1. The author's launch of GPC-1 (`runpod/launch_gpc1_thunder.sh`), and the review of
+   `C_conduct`'s lines and the pilot briefs (`CONDUCT_BRIEFS.md`) before it.
 
 ## Next pod
 
-**GPC-1** (being built): about 6.1 A100-h through the screens, 8.8 h with the registered read and
-its riders: $7.20-10.30 on Thunder, $13.70-19.60 on Secure at $2.19 (`GPC_PLAN.md` §5).
+**GPC-1** (built; card `runpod/launch_gpc1_thunder.sh`, RunPod fallback `runpod/launch_gpc1.sh`):
+about 6.3 A100-h through the screens, 9.2 h with the registered read and its riders:
+$7.40-10.70 on Thunder, $14.10-20.40 on Secure at $2.19 (`GPC_PLAN.md` §5). Results in
+`outputs/gpc1_v1`; the local read is `scripts/gpc1_read.py`.
 
 ## Pieces that graduate to core deepsteer (item 13; the library-first rule)
 
@@ -75,3 +78,8 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 - 2026-11-15: `scripts/z1_concentration.py`, `scripts/z2_z3_power.py` (the screen and bar power
   tables; the screen sets), `scripts/z5_wref_check.py` (W-ref tokens and the 8-gram check; data
   outside the repo), `scripts/z9_violation_split.py` (item 9's split and the grid's weights).
+- 2026-11-15: v0.2 committed and pushed (`88d78eda`); `C_conduct` (`3fee5422`).
+- 2026-11-15: Z7-Z9 built: `scripts/gpc_conduct.py` and the grid, `CONDUCT_BRIEFS.md`,
+  `scripts/gpc_advice.py`, `scripts/gpc_wref.py`, `scripts/gpc_violation.py`, `scripts/gpc1_pod.py`,
+  `scripts/gpc1_read.py`, `runpod/` (runner, cards, inputs), `tests/scripts/test_gpc1.py` (17 fast,
+  1 slow dry session); the sync emulation's gate tests pass (49 passed, 1 skipped).
