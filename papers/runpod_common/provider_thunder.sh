@@ -67,7 +67,11 @@ rp_provision_pod() {
       echo ">> Instance $POD_ID created (UUID $POD_UUID)"
       rm -f "$err"; return 0
     fi
-    LAST_ERR="$( { tr '\n' ' ' < "$err"; printf '%s' "$out" | tr '\n' ' '; } || true)"; rm -f "$err"
+    # Thunder's answer is the JSON "error" field when it gives one (the CLI also prints its usage)
+    LAST_ERR="$(printf '%s' "$out" | jq -r '.error // empty' 2>/dev/null || true)"
+    [ -n "$LAST_ERR" ] || LAST_ERR="$(grep -ihE 'error|capacity' "$err" 2>/dev/null | head -2 | tr '\n' ' ' || true)"
+    [ -n "$LAST_ERR" ] || LAST_ERR="$( { tr '\n' ' ' < "$err"; printf '%s' "$out" | tr '\n' ' '; } || true)"
+    rm -f "$err"
     echo "      -> ${LAST_ERR:-no instance returned}"
     RP_ATTEMPTS+=("thunder|$TNR_GPU|${LAST_ERR:-no instance returned}")
     [ "$k" -lt "$TNR_CREATE_TRIES" ] && { echo "      retrying in ${TNR_CREATE_WAIT_S}s"; sleep "$TNR_CREATE_WAIT_S"; }

@@ -21,7 +21,8 @@ case "$1" in
   create)
     n=$(cat "$TNR_STATE.fails" 2>/dev/null || echo 0)
     if [ "$n" -gt 0 ]; then echo $((n - 1)) > "$TNR_STATE.fails"
-      echo "Error: failed to create instance: We're currently out of GPU capacity" >&2; exit 1; fi
+      echo "Usage: tnr create [flags]" >&2
+      echo '{"error": "failed to create instance: We are currently out of GPU capacity"}'; exit 1; fi
     id=$(jq 'length' "$S"); u="uuid$id$RANDOM"
     jq --arg u "$u" --argjson id "$id" '. + [{id: ($id|tostring), uuid: $u, status: "RUNNING",
       ip: "10.0.0.1", port: 40000}]' "$S" > "$S.t" && mv "$S.t" "$S"
@@ -66,6 +67,7 @@ def test_create_retries_on_no_capacity_and_reads_the_uuid(tmp_path):
     assert r.returncode == 0, r.stdout + r.stderr
     assert "attempt 3/6" in r.stdout and "ID=0 UUID=uuid0" in r.stdout
     assert "out of GPU capacity" in r.stdout  # Thunder's own message is printed per attempt
+    assert "Usage:" not in r.stdout  # the error field alone, not the CLI's usage text
     rec = json.loads((tmp_path / "p/o/logs/pod_rate.jsonl").read_text())
     assert rec["provider"] == "thunder" and len(rec["attempts"]) == 3
 
