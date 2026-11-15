@@ -2104,3 +2104,16 @@ separated, and A0n with GOOD_BEHAVIOR, registered for the next pod, separates th
 with a clause appended; the conduct has to reach the weights by another route or come from a short
 document. In weights, P-ctx costs MoReBench −0.98 and a document-specific cost is not detectable at
 0.81; its MoReBench bar is a pass. P-ctx's own goal-pressure read moves to the next pod.
+
+**Amendment 52's pod (2026-11-15), positive voice.** A long document in context cancels a short
+conduct instruction by its length: Faraday's lectures in the constitution's slot remove
+GOOD_BEHAVIOR's MACHIAVELLI effect (−0.014 [−0.032, +0.005] against −0.100) as the constitution
+does, so the in-context teacher cannot carry conduct guidance to a goal-pressure decision whatever
+its content. P-ctx, the constitution distilled into weights, keeps its operator-pressure gain (a
+fresh session and provider reproduce −0.283 [−0.318, −0.248]) and does not move single MACHIAVELLI
+decisions (−0.006 [−0.020, +0.007], MDE 0.019; its ratio to GOOD_BEHAVIOR 0.07 [−0.08, +0.21]), so
+it misses the product bar's goal-pressure criterion on its first draw and needs no second. The
+product bar now asks GPC for a teacher that carries conduct into the weights without a long
+context: a short conduct document, or distillation from GOOD_BEHAVIOR-style prompting. Served at
+half strength, P-ctx keeps 0.69 of the gain at a smaller cell A′ cost (descriptive).
+
