@@ -12,9 +12,9 @@ Everything here comes from one open model (Qwen3.8-27B, with its reasoning turne
 
 ## The method
 
-We give the model the constitution in its system prompt and collect its answers to a set of scenarios. Then we train a small add-on to the model's weights (a LoRA adapter: rank 16, alpha 32, learning rate 1e-4, 200 steps over 797 of those answers, about 1.9M tokens) to give those answers without the document. At use time the adapter is switched on and the document is left out. This is known as context distillation.
+We collect the model's answers to a set of scenarios with the constitution in its system prompt, then train a small add-on to its weights (a LoRA adapter, rank 16, 200 steps over 797 of those answers) to give the same answers without the document. At use time the adapter is switched on and the document is left out, a technique known as context distillation.
 
-## The first test: business instructions that conflict with the constitution
+## The first test: operator pressure
 
 We started with a direct test of a constitution: an operator (the business deploying the model, writing its system prompt) orders something the constitution says not to do. We built 458 such scenarios. Each offers a few choices, one of which is to follow the order.
 
@@ -24,7 +24,7 @@ To check that the gain comes from the constitution, we ran the same recipe with 
 
 ## What it costs
 
-| measure | adapter, no document | constitution in the prompt |
+| Measure | Adapter, no document | Constitution in the prompt |
 |---|---|---|
 | Moral reasoning on open dilemmas (MoReBench, 500 dilemmas, score out of 100) | −0.98 [−1.49, −0.46] | −4.00 [−4.65, −3.36] |
 | General capability (accuracy on 800 math and knowledge questions) | −0.3 points [−1.4, +0.9] | |
@@ -42,16 +42,7 @@ Nor does it yet carry the document's content beyond resisting conflicting orders
 
 ## A strength dial
 
-The adapter can be applied at part strength. Weaker settings keep less of the improvement and over-correct less.
-
-| strength | share of the improvement kept | extra rule-breaking where the rule is right, beyond the document's own |
-|---|---|---|
-| 25% | 44% [35%, 52%] | −8 points |
-| 50% | 69% [61%, 76%] | −3 points |
-| 75% | 82% [76%, 89%] | +2 points |
-| 100% | 90% [84%, 95%] | +9 points |
-
-These numbers describe this one adapter. For each new adapter we will pick a strength by a fixed rule (keep at least half the improvement, with little extra rule-breaking) and confirm the choice on a fresh run.
+The adapter can be applied at part strength, and weaker settings keep less of the improvement and over-correct less. At 25%, 50%, 75% and 100% strength it keeps 44% [35%, 52%], 69% [61%, 76%], 82% [76%, 89%] and 90% [84%, 95%] of the improvement, with −8, −3, +2 and +9 points of extra rule-breaking where the rule is right, beyond the document's own. These numbers describe this one adapter. For each new adapter we will pick a strength by a fixed rule (keep at least half the improvement, with little extra rule-breaking) and confirm the choice on a fresh run.
 
 ## What we learned about long prompts
 
