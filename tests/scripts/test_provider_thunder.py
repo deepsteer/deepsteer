@@ -47,7 +47,9 @@ def _env(tmp_path: Path) -> dict:
 
 
 def _bash(script: str, env: dict) -> subprocess.CompletedProcess:
-    pre = f'source "{LIB}/session_lib.sh"; source "{LIB}/provider_thunder.sh"; '
+    # the launcher's own shell settings (the first real launch, 2026-11-14: a refused create ended
+    # the script silently under set -e before the retry loop ran)
+    pre = f'set -euo pipefail; source "{LIB}/session_lib.sh"; source "{LIB}/provider_thunder.sh"; '
     return subprocess.run(["bash", "-c", pre + script], env=env, capture_output=True, text=True)
 
 
@@ -63,6 +65,7 @@ def test_create_retries_on_no_capacity_and_reads_the_uuid(tmp_path):
     r = _bash('rp_provision_pod; echo "ID=$POD_ID UUID=$POD_UUID"; rp_log_rate', env)
     assert r.returncode == 0, r.stdout + r.stderr
     assert "attempt 3/6" in r.stdout and "ID=0 UUID=uuid0" in r.stdout
+    assert "out of GPU capacity" in r.stdout  # Thunder's own message is printed per attempt
     rec = json.loads((tmp_path / "p/o/logs/pod_rate.jsonl").read_text())
     assert rec["provider"] == "thunder" and len(rec["attempts"]) == 3
 
@@ -74,17 +77,29 @@ def test_teardown_deletes_only_its_own_uuid_and_verifies_the_account(tmp_path):
     env = _env(tmp_path)
     st = tmp_path / "s.json"
     st.write_text(json.dumps([{"id": "0", "uuid": "theirs", "status": "RUNNING"}]))
-    r = _bash("rp_provision_pod; cleanup; echo rc=$?; jq -c . \"$TNR_STATE\"", env)
+    r = _bash("rp_provision_pod; rc=0; cleanup || rc=$?; echo rc=$rc; jq -c . \"$TNR_STATE\"", env)
     assert "rc=0" in r.stdout and "Teardown verified" in r.stdout, r.stdout + r.stderr
     assert json.loads(r.stdout.strip().splitlines()[-1]) == [
         {"id": "0", "uuid": "theirs", "status": "RUNNING"}]  # the author's own instance stays
     st.write_text("[]")
-    r = _bash('rp_provision_pod; POD_UUID=someone_else; cleanup; echo rc=$?', env)
+    r = _bash('rp_provision_pod; POD_UUID=someone_else; rc=0; cleanup || rc=$?; echo rc=$rc', env)
     assert "NOT deleting" in r.stdout and "rc=1" in r.stdout  # the id now names another UUID
     st.write_text("[]")
     env["TNR_DELETE_NOOP"] = "1"
-    r = _bash('rp_provision_pod; sleep(){ :; }; cleanup; echo rc=$?', env)
+    r = _bash('rp_provision_pod; sleep(){ :; }; rc=0; cleanup || rc=$?; echo rc=$rc', env)
     assert "TEARDOWN NOT VERIFIED" in r.stdout and "rc=1" in r.stdout
+
+
+@needs_jq
+def test_all_creates_refused_exits_with_the_message_and_deletes_nothing(tmp_path):
+    # most probable failure: every create refused ends the launch with no message, or teardown
+    # then tries to delete an instance this session never created
+    env = _env(tmp_path)
+    (tmp_path / "s.json.fails").write_text("9")
+    env["TNR_CREATE_TRIES"] = "2"
+    r = _bash("trap cleanup EXIT; rp_provision_pod", env)
+    assert r.returncode == 1 and "no Thunder instance after 2 attempts" in r.stdout
+    assert "out of GPU capacity" in r.stdout and "Deleting" not in r.stdout
 
 
 def test_run_session_selects_the_provider_and_keeps_runpod_the_default():

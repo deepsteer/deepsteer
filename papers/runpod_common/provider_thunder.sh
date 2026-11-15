@@ -37,16 +37,19 @@ rp_require_bins() {
   tnr status --no-wait --json >/dev/null 2>&1 || { echo "ERROR: 'tnr status' failed; run 'tnr login' first"; exit 1; }
 }
 
-th_list() { tnr status --no-wait --json 2>/dev/null; }
+# run_session.sh runs under set -euo pipefail: every tnr or jq call whose failure is an expected
+# answer (no capacity, an empty account, a missing field) is guarded so it cannot end the script
+# silently, and cleanup turns errexit off so a failed check never skips the delete.
+th_list() { tnr status --no-wait --json 2>/dev/null || echo '[]'; }
 
 rp_datacenter_field() { DC_FIELD=""; }  # Thunder places instances itself (North America)
 
 rp_provision_pod() {
   POD_ID="${REUSE_POD_ID:-}"
-  TNR_PRE_UUIDS="$(th_list | jq -r '.[].uuid' 2>/dev/null | sort | tr '\n' ' ')"
+  TNR_PRE_UUIDS="$(th_list | jq -r '.[].uuid' 2>/dev/null | sort | tr '\n' ' ' || true)"
   [ -n "$TNR_PRE_UUIDS" ] && echo ">> The account already lists instance(s): $TNR_PRE_UUIDS(left alone)"
   if [ -n "$POD_ID" ]; then
-    POD_UUID="$(th_list | jq -r --arg id "$POD_ID" '.[] | select((.id|tostring)==$id) | .uuid')"
+    POD_UUID="$(th_list | jq -r --arg id "$POD_ID" '.[] | select((.id|tostring)==$id) | .uuid' || true)"
     return 0
   fi
   GPU_TYPE="$TNR_GPU x1"; CLOUD_TYPE="thunder"; RP_ATTEMPTS=()
@@ -55,16 +58,16 @@ rp_provision_pod() {
     echo ">> tnr create (attempt $k/$TNR_CREATE_TRIES): $TNR_GPU x1, $TNR_VCPUS vCPUs, $DISK_GB GB, template $TNR_TEMPLATE"
     err="$(mktemp)"
     out="$(tnr create --gpu "$TNR_GPU" --num-gpus 1 --vcpus "$TNR_VCPUS" --template "$TNR_TEMPLATE" \
-      --disk "$DISK_GB" --json 2>"$err")"
-    TNR_EST="$(cat "$err" <(printf '%s' "$out") | grep -oE 'Estimated cost: \$[0-9.]+' | grep -oE '[0-9.]+$' | head -1)"
-    POD_ID="$(printf '%s' "$out" | jq -r '.identifier // empty' 2>/dev/null)"
-    POD_UUID="$(printf '%s' "$out" | jq -r '.uuid // empty' 2>/dev/null)"
+      --disk "$DISK_GB" --json 2>"$err")" || true
+    TNR_EST="$(cat "$err" <(printf '%s' "$out") | grep -oE 'Estimated cost: \$[0-9.]+' | grep -oE '[0-9.]+$' | head -1 || true)"
+    POD_ID="$(printf '%s' "$out" | jq -r '.identifier // empty' 2>/dev/null || true)"
+    POD_UUID="$(printf '%s' "$out" | jq -r '.uuid // empty' 2>/dev/null || true)"
     if [ -n "$POD_ID" ] && [ -n "$POD_UUID" ]; then
       RP_ATTEMPTS+=("thunder|$TNR_GPU|created")
       echo ">> Instance $POD_ID created (UUID $POD_UUID)"
       rm -f "$err"; return 0
     fi
-    LAST_ERR="$(tr '\n' ' ' < "$err")"; rm -f "$err"
+    LAST_ERR="$( { tr '\n' ' ' < "$err"; printf '%s' "$out" | tr '\n' ' '; } || true)"; rm -f "$err"
     echo "      -> ${LAST_ERR:-no instance returned}"
     RP_ATTEMPTS+=("thunder|$TNR_GPU|${LAST_ERR:-no instance returned}")
     [ "$k" -lt "$TNR_CREATE_TRIES" ] && { echo "      retrying in ${TNR_CREATE_WAIT_S}s"; sleep "$TNR_CREATE_WAIT_S"; }
@@ -79,9 +82,10 @@ rp_provision_pod() {
 th_endpoint() {
   local j
   j="$(tnr connect "$POD_ID" --json 2>/dev/null)" || return 1
-  SSH_HOST="$(printf '%s' "$j" | jq -r '.ip // empty')"
-  SSH_PORT="$(printf '%s' "$j" | jq -r '.port // empty')"
-  TNR_KEY="$(printf '%s' "$j" | jq -r '.key_file // empty')"
+  SSH_HOST=""; SSH_PORT=""; TNR_KEY=""
+  SSH_HOST="$(printf '%s' "$j" | jq -r '.ip // empty' 2>/dev/null || true)"
+  SSH_PORT="$(printf '%s' "$j" | jq -r '.port // empty' 2>/dev/null || true)"
+  TNR_KEY="$(printf '%s' "$j" | jq -r '.key_file // empty' 2>/dev/null || true)"
   [ -n "$SSH_HOST" ] && [ -n "$SSH_PORT" ] && [ -n "$TNR_KEY" ] || return 1
   SSH_OPTS=(-p "$SSH_PORT" -i "$TNR_KEY" -o IdentitiesOnly=yes -o IdentityAgent=none \
     -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
@@ -89,15 +93,20 @@ th_endpoint() {
 }
 
 rp_refresh_endpoint() {  # Thunder's address is dynamic: re-resolve it (the stream loop calls this)
-  local old="$SSH_HOST:$SSH_PORT"
-  th_endpoint && [ "$SSH_HOST:$SSH_PORT" != "$old" ] && echo ">> the instance's endpoint moved: $old -> $SSH_HOST:$SSH_PORT"
+  local old="$SSH_HOST:$SSH_PORT" oh="$SSH_HOST" op="$SSH_PORT" ok=("${SSH_OPTS[@]}")
+  if th_endpoint; then
+    [ "$SSH_HOST:$SSH_PORT" != "$old" ] && echo ">> the instance's endpoint moved: $old -> $SSH_HOST:$SSH_PORT"
+  else
+    SSH_HOST="$oh"; SSH_PORT="$op"; SSH_OPTS=("${ok[@]}")  # keep the last good endpoint
+  fi
+  return 0
 }
 
 rp_wait_for_ssh() {
   echo ">> Waiting for instance $POD_ID to be RUNNING..."
   local s
   for _ in $(seq 1 90); do
-    s="$(th_list | jq -r --arg u "$POD_UUID" '.[] | select(.uuid==$u) | .status' 2>/dev/null)"
+    s="$(th_list | jq -r --arg u "$POD_UUID" '.[] | select(.uuid==$u) | .status' 2>/dev/null || true)"
     [ "$s" = "RUNNING" ] && break
     sleep 10
   done
@@ -151,6 +160,7 @@ rp_log_rate() {
 }
 
 cleanup() {
+  set +e  # a failed check must never skip the delete or the account check
   [ -n "${POD_ID:-}" ] || return 0
   [ -n "${REUSE_POD_ID:-}" ] && { echo "Attached to existing instance $POD_ID; not deleting."; return 0; }
   if [ "${KEEP_POD:-0}" = 1 ]; then
