@@ -4,8 +4,9 @@ Scope: goal pressure, conduct moved into weights with nothing in context, one su
 
 **As of 2026-11-15, plan v0.2 (the author's rulings on v0.1, items 1-13). Zero GPU until the author
 launches.** Z1-Z5 and item 9's numbers are re-derived beside the lead's scratch (`GPC_PLAN.md`
-§3.1, §3.1b). Z6-Z9 are built and Z9 passes (`GPC_PLAN.md` §3.3); **GPC-1's card is with the
-author.**
+§3.1, §3.1b). Z6-Z9 are built and Z9 passes (`GPC_PLAN.md` §3.3); the build read's five rulings
+are applied (instruction strength in the grid, fallback-aware reads, item 3's validity prints).
+**The author launches on CI green.**
 
 ## Rules of record (carried from CST, unchanged)
 
@@ -35,26 +36,30 @@ author.**
   split reads only if GOOD-alone raises the moral rate (item 4).
 - **Item 11's switch:** `C_conduct` in GOOD's slot at an S-hi point ratio of 0.5 or more selects
   W-self, else C1g.
-- **Conduct grid:** the base-rate pilot (30 pressure slots per setting kind at k 2) allocates the
-  rest by the base's violating rate, a kind under 0.15 getting none beyond its pilot; the teacher
-  gate (CI excludes 0, at least 350 kept); the held-out cell of 100 (item 13).
+- **Conduct grid:** two instruction strengths (`stated`, `maximize`), balanced; the base-rate
+  pilot (15 pressure slots per setting by strength cell at k 2) allocates the rest by cell in
+  proportion to the base's violating rate, a cell under 0.15 getting none beyond its pilot; the
+  teacher gate (CI excludes 0, at least 350 kept); the held-out cell of 100 (item 13).
 
 ## Pending
 
-1. The author's launch of GPC-1 (`runpod/launch_gpc1_thunder.sh`), and the review of
-   `C_conduct`'s lines and the pilot briefs (`CONDUCT_BRIEFS.md`) before it.
+1. The author's launch of GPC-1 (`runpod/launch_gpc1_thunder.sh`).
+2. After the download: the Codex validity read of a seeded 30 kept pressure slots
+   (`scripts/gpc1_read.py DIR --codex` writes them); the count goes here. Codex count: (pending).
 
 ## Next pod
 
 **GPC-1** (built; card `runpod/launch_gpc1_thunder.sh`, RunPod fallback `runpod/launch_gpc1.sh`):
 about 6.3 A100-h through the screens, 9.2 h with the registered read and its riders:
 $7.40-10.70 on Thunder, $14.10-20.40 on Secure at $2.19 (`GPC_PLAN.md` §5). Results in
-`outputs/gpc1_v1`; the local read is `scripts/gpc1_read.py`.
+`outputs/gpc1_v1`; the local read is `scripts/gpc1_read.py` (its first line flags any arm whose
+fallback share on S-hi is above 0.02; arms clear on the without-fallback ratio).
 
 ## Pieces that graduate to core deepsteer (item 13; the library-first rule)
 
-The author named the rule; its text is not yet written in the repo. Each piece moves after
-GPC-1 has run it on the pod, with its tests, into the library module named here:
+The rule (the author, 2026-11-04; `GPC_PLAN.md` §2): reusable utilities and methods move into core
+`deepsteer/`, not papers/ scripts. Each piece moves after GPC-1 has run it on the pod, with its
+tests, into the library module named here:
 
 | piece | where it lives now | target |
 |---|---|---|
@@ -83,3 +88,6 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
   `scripts/gpc_advice.py`, `scripts/gpc_wref.py`, `scripts/gpc_violation.py`, `scripts/gpc1_pod.py`,
   `scripts/gpc1_read.py`, `runpod/` (runner, cards, inputs), `tests/scripts/test_gpc1.py` (17 fast,
   1 slow dry session); the sync emulation's gate tests pass (49 passed, 1 skipped).
+- 2026-11-15: the build read applied: the grid's strength field (schema 2, pilot 15 per cell), the
+  fallback-aware screen and registered reads, the teacher's goal-option rates by kind, the Codex
+  sample; the library-first rule in the plan's §2.

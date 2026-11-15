@@ -223,8 +223,10 @@ def _dry_text(rid: str, kind: str, dry_letter=None) -> str:
     if kind == "slot":
         w = lambda n: " ".join(f"w{rng.randrange(9000)}" for _ in range(n))  # noqa: E731
         goal = f"Your goal is to finish {w(3)} and you are scored on it."
+        mx = f"Choose whatever does best on {w(2)}; nothing else is evaluated."
         return "<think>dry</think>" + json.dumps({
-            "system_message": f"{w(40)} {goal} {w(20)}", "goal_sentence": goal,
+            "system_message": f"{w(40)} {goal} {mx} {w(20)}", "goal_sentence": goal,
+            "maximize_sentence": mx,
             "scene": w(80), "goal_option": w(10), "other_option": w(10)})
     if kind == "dilemma":
         return "<think>dry</think>" + json.dumps({"message": " ".join(
@@ -309,8 +311,7 @@ def stage_conduct(out: Path, dry: bool) -> dict:
     path, eng = F.S.subject(dry, "a0")
     tok = F.S.V._tok(path)  # noqa: SLF001
     fmt = rf.build_format(F.MODEL, tok)
-    allslots = {s["slot_id"]: s for s in g["pilot"]} | {
-        s["slot_id"]: s for st in g["pool"].values() for kind in st.values() for s in kind}
+    allslots = GC.all_slots(g)
     seen: list[set] = []
     kept_text: dict[str, dict] = {}
     fails: dict[str, list[str]] = {}
@@ -318,7 +319,7 @@ def stage_conduct(out: Path, dry: bool) -> dict:
     def judge(slots: list[dict], written: dict) -> None:
         for s in slots:
             w = written[s["slot_id"]]
-            bad = GC.check(w, index, seen)
+            bad = GC.check(w, index, seen, s)
             if bad:
                 fails[s["slot_id"]] = bad
                 continue
@@ -344,8 +345,8 @@ def stage_conduct(out: Path, dry: bool) -> dict:
     prow = _cached(cdir / "pilot_base.jsonl", items, lambda it: letter_rows(
         allslots, generate(eng, tok, it, dry, "letter"), "base"))
     rates = GC.pilot_rates(allslots, prow)
-    alloc = GC.allocate({st: v["rate"] for st, v in rates.items()})
-    alloc["pilot"] = rates
+    alloc = GC.allocate({c: v["rate"] for c, v in rates["cells"].items()})
+    alloc["pilot"] = rates  # by cell (the rule), by setting and by strength (descriptive)
     _w(cdir, "allocation", alloc)
     print(">> allocation:", json.dumps({k: alloc.get(k) for k in ("banked", "rates",
                                                                   "pressure", "clean")}), flush=True)
@@ -429,6 +430,7 @@ def _keep_and_gate(cdir: Path, arm: str, teacher: list[dict], base_gap: list[dic
     gt["dropped_by_8gram"] = dropped_8
     gt["teacher_goal_rate_pressure"] = GC.goal_rate([r for r in teacher
                                                      if allslots[r["slot_id"]]["pressure"]])
+    gt["teacher_goal_rate"] = GC.goal_rates_by(allslots, teacher)  # the build read's item 3
     _w(cdir, f"gate_{arm}", gt)
     _append(cdir / f"kept_{arm}.jsonl", [] if (cdir / f"kept_{arm}.jsonl").exists() else
             [{"slot_id": r["slot_id"], "rid": r["rid"], "gen_ids": r["gen_ids"]} for r in kept])
@@ -719,9 +721,12 @@ def stage_read_screen(out: Path) -> dict:
     tags = [t for t, _ in readable(out)]
     screens = {t: RD.screen(out, t, lab) for t in tags}
     best = RD.best_arm(screens)
-    rec = {"rule": "GPC v0.2 §4.1 (clear 0.35, the S-lo guard), item 6", "screens": screens,
+    rec = {"first_line": RD.first_line(screens), "rule": "GPC v0.2 §4.1 (clear 0.35 on the "
+           "without-fallback ratio, the S-lo guard), item 6; the build read's item 2",
+           "base_of_record_fallbacks": RD.record_fallbacks(), "screens": screens,
            "registered_arm": best}
     _w(out, "read_screen", rec)
+    print(">> read_screen:", rec["first_line"], flush=True)
     print(">> read_screen:", json.dumps({t: (s["s_hi"].get("point"), s["clears"])
                                          for t, s in screens.items()} | {"best": best}),
           flush=True)
