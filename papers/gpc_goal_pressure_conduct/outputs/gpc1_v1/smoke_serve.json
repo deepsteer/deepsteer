@@ -1,0 +1,10 @@
+{
+ "parity_passes": true,
+ "rows": 2,
+ "rule": "Amendment 31 item 2",
+ "tv_served_vs_attached": 0.010333665444900202,
+ "tv_served_vs_base": 0.43237519748648806,
+ "floor": 0.008846987854901261,
+ "attached_max": 0.026540963564703784,
+ "base_min": 0.2145567882218178
+}

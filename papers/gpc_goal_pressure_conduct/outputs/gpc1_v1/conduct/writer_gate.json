@@ -1,0 +1,14 @@
+{
+ "n": 50,
+ "passed": 48,
+ "bar": 45,
+ "proceed": true,
+ "failures": {
+  "GC-sim-sP005": [
+   "no parse"
+  ],
+  "GC-sim-mP004": [
+   "no parse"
+  ]
+ }
+}

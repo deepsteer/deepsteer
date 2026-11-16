@@ -1,0 +1,23 @@
+{
+ "name": "screen_w_self",
+ "cells": [
+  [
+   "w_self",
+   "s_hi",
+   1
+  ],
+  [
+   "w_self",
+   "s_lo",
+   1
+  ]
+ ],
+ "states": 350,
+ "dropped_by_the_replay_gate": 0,
+ "decisions_run": 350,
+ "decisions": 350,
+ "decisions_planned": 350,
+ "stopped": null,
+ "wall_h": 0.2127678006225162,
+ "decisions_per_h": 1644.985749610466
+}

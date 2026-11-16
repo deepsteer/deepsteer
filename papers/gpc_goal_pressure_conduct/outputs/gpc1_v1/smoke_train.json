@@ -1,0 +1,35 @@
+{
+ "steps": 1,
+ "structural": [
+  {
+   "adapter": "/workspace/deepsteer/papers/gpc_goal_pressure_conduct/outputs/gpc1_v1/wref_tmp/smoke/3404",
+   "rule": "Amendment 31 item 3",
+   "keys_checked": 992,
+   "module_kinds": [
+    "down_proj",
+    "gate_proj",
+    "in_proj_a",
+    "in_proj_b",
+    "in_proj_qkv",
+    "in_proj_z",
+    "k_proj",
+    "o_proj",
+    "out_proj",
+    "q_proj",
+    "up_proj",
+    "v_proj"
+   ],
+   "problems": [],
+   "n_problems": 0,
+   "passes": true
+  }
+ ],
+ "fixed": {
+  "adapter": "/home/ubuntu/workspace/deepsteer/papers/cst_constitutional_steering/outputs/pilot_sdf/adapters/d_doc/1e+06",
+  "hf": "/home/ubuntu/workspace/deepsteer/papers/cst_constitutional_steering/outputs/pilot_sdf/parity/hf_d_doc_1M.json",
+  "hf_base": "/home/ubuntu/workspace/deepsteer/papers/cst_constitutional_steering/outputs/pilot_sdf/parity/hf_base.json"
+ },
+ "session_hf_base_vs_saved_hf_base": 0.0,
+ "passes": true,
+ "adapter_deleted": true
+}

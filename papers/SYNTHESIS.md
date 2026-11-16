@@ -2137,8 +2137,9 @@ what the four-line instruction does in context.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| GOOD_BEHAVIOR's effect on single decisions is concentrated on high-propensity states (90% on the both-violate 30%) | R_selection: the strata are defined on P-ctx's rollouts, which correlate with the base's noise | the base of record and GOOD are independent of P-ctx's rollouts, so the concentration is not regression; a fresh-session GOOD at k 1 on S-hi (stage b) reproduces the drop or not | standing (zero GPU); stage b reads the reproduction |
-| A diluted ethics instruction leaves no trace in the reasoning (moral rate and ethics-prompt citing at base) | R_instrument: the moral pattern does not detect what an effective instruction does to traces | GOOD-alone traces on S-hi (stage b); the root split reads only if GOOD-alone raises the moral rate | open; the positive control runs on GPC-1 |
+| GOOD_BEHAVIOR's effect on single decisions is concentrated on high-propensity states (90% on the both-violate 30%) | R_selection: the strata are defined on P-ctx's rollouts, which correlate with the base's noise | the base of record and GOOD are independent of P-ctx's rollouts, so the concentration is not regression; a fresh-session GOOD at k 1 on S-hi (stage b) reproduces the drop or not | **reproduced (GPC-1):** GOOD at k 1 on S-hi −0.260 [−0.333, −0.188] against the record's −0.302 |
+| A diluted ethics instruction leaves no trace in the reasoning (moral rate and ethics-prompt citing at base) | R_instrument: the moral pattern does not detect what an effective instruction does to traces | GOOD-alone traces on S-hi (stage b); the root split reads only if GOOD-alone raises the moral rate | **calibrated (GPC-1, GPC-A3):** GOOD-alone raises the rate +0.76, mostly echo of its own words; +0.18 [+0.09, +0.27] without them, so the instrument detects an effective instruction at that smaller size |
+| C1 learned the conduct and does not take it into the games (GPC-A1) | R_format: bound to the grid's rendering; R_content: the games' scenes are outside it; R_element: one harness element switches it off | GPC-2's X1 (the held-out slots in MACHIAVELLI's harness) and X2 (S-hi in the grid's format), then X3's ladder | open, promoted to GPC-2 |
 
 **What the next result changes (GPC-1, branches registered in `GPC_PLAN.md` §6).** An arm meeting
 the goal-pressure criterion on draw 1: the thesis gains "conduct reaches the weights without a
@@ -2148,4 +2149,20 @@ short of the bar at pilot dose", with a dose step. No arm clearing: the trace sp
 the training does not fire in games or fires and is overridden, and the next route follows from it.
 The base-rate pilot finding no setting kind at 0.15: goal pressure on this subject is a property of
 game framing, a statement about the subject the held-out cell makes a second time.
+
+**GPC-1 (2026-11-15; `gpc_goal_pressure_conduct/GPC1_RESULTS.md`), positive voice.** A four-line
+conduct clause built only from constitution tenets is, in context, as strong a teacher as
+MACHIAVELLI's ethics prompt (0.86 [0.69, 1.05] of GOOD_BEHAVIOR's single-game effect in its slot;
+0.43 to 0.03 on held-out conduct scenarios). Distilled with nothing in context (C1), it carries its
+full in-context effect to held-out conduct scenarios (−0.39 [−0.51, −0.28]), story settings
+included, and keeps the goal option where nothing is wrong (0.96): conduct reached the weights. It
+does not reach the games (ratio 0.00 [−0.12, +0.12] on S-hi; its traces at the base's moral rate),
+and neither do the two advice adapters (W-ref 0.04, W-self 0.05; no arm's ratio above 0.19 at its
+upper bound, against a screen that clears a true 0.6 with probability 0.99 or more). Goal pressure
+on this subject lives where the instruction to maximize lives: the "maximize" wording raises the
+base's violating rate 1.8 to 3 times per setting, and the base violates on story and simulation
+scenarios (0.55, 0.31) but near its floor on workplace ones (0.08). The advice-data route has not
+had a clean read from the tenets: W-self's targets carried a rewrite frame its students never saw
+(GPC-A2). **What GPC-2 changes:** "format gates" (X1, X2) makes a scaffold-diverse teacher the next
+adapter; "content gates" sends the line to game-like conduct data and the clause direction (B).
 

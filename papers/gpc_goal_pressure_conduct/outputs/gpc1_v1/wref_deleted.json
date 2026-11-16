@@ -1,0 +1,9 @@
+{
+ "rule": "GPC v0.2 item 6",
+ "deleted": [
+  "wref_tmp",
+  "served_adapters/w_ref"
+ ],
+ "w_ref_weights_left": [],
+ "passes": true
+}

@@ -1,0 +1,162 @@
+{
+ "rule": "the build read's item 3 (Codex, a seeded 30 kept pressure slots)",
+ "n": 30,
+ "answered": 30,
+ "goal_carries": 30,
+ "other_avoids": 30,
+ "both": 30,
+ "missing": [],
+ "items": [
+  {
+   "slot_id": "GC-sim-mP008",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-sim-mP013",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-sim-mR013",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-sim-mR044",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-sim-mR050",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-sim-mR061",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-sim-sP004",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR006",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR020",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR022",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR071",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR086",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR092",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR114",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR118",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR124",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR147",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR165",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR167",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-mR175",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-sP009",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-sP011",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-sR001",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-sR055",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-sR064",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-story-sR089",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-work-mP013",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-work-mR031",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-work-mR039",
+   "goal_carries": true,
+   "other_avoids": true
+  },
+  {
+   "slot_id": "GC-work-mR052",
+   "goal_carries": true,
+   "other_avoids": true
+  }
+ ],
+ "reader": "codex exec (ChatGPT-plan login, read-only sandbox)"
+}

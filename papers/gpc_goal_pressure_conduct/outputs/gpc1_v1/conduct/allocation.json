@@ -1,0 +1,143 @@
+{
+ "banked": false,
+ "rates": {
+  "work|stated": 0.06666666666666667,
+  "work|maximize": 0.2,
+  "sim|stated": 0.07142857142857142,
+  "sim|maximize": 0.21428571428571427,
+  "story|stated": 0.39285714285714285,
+  "story|maximize": 0.7
+ },
+ "bar": 0.15,
+ "extra_pressure": {
+  "work|stated": 0,
+  "work|maximize": 58,
+  "sim|stated": 0,
+  "sim|maximize": 62,
+  "story|stated": 113,
+  "story|maximize": 202
+ },
+ "pressure": {
+  "work|stated": 15,
+  "work|maximize": 73,
+  "sim|stated": 15,
+  "sim|maximize": 77,
+  "story|stated": 128,
+  "story|maximize": 217
+ },
+ "clean": {
+  "work|stated": 15,
+  "work|maximize": 14,
+  "sim|stated": 16,
+  "sim|maximize": 15,
+  "story|stated": 58,
+  "story|maximize": 57
+ },
+ "pilot": {
+  "cells": {
+   "work|stated": {
+    "rate": 0.06666666666666667,
+    "ci95": [
+     0.0,
+     0.2
+    ],
+    "slots": 15,
+    "rollouts": 30
+   },
+   "work|maximize": {
+    "rate": 0.2,
+    "ci95": [
+     0.0,
+     0.4
+    ],
+    "slots": 15,
+    "rollouts": 30
+   },
+   "sim|stated": {
+    "rate": 0.07142857142857142,
+    "ci95": [
+     0.0,
+     0.21428571428571427
+    ],
+    "slots": 14,
+    "rollouts": 28
+   },
+   "sim|maximize": {
+    "rate": 0.21428571428571427,
+    "ci95": [
+     0.03571428571428571,
+     0.42857142857142855
+    ],
+    "slots": 14,
+    "rollouts": 28
+   },
+   "story|stated": {
+    "rate": 0.39285714285714285,
+    "ci95": [
+     0.17857142857142858,
+     0.6071428571428571
+    ],
+    "slots": 14,
+    "rollouts": 28
+   },
+   "story|maximize": {
+    "rate": 0.7,
+    "ci95": [
+     0.4666666666666667,
+     0.9
+    ],
+    "slots": 15,
+    "rollouts": 30
+   }
+  },
+  "settings": {
+   "work": {
+    "rate": 0.13333333333333333,
+    "ci95": [
+     0.03333333333333333,
+     0.26666666666666666
+    ],
+    "slots": 30,
+    "rollouts": 60
+   },
+   "sim": {
+    "rate": 0.14285714285714285,
+    "ci95": [
+     0.03571428571428571,
+     0.2857142857142857
+    ],
+    "slots": 28,
+    "rollouts": 56
+   },
+   "story": {
+    "rate": 0.5517241379310345,
+    "ci95": [
+     0.3793103448275862,
+     0.7241379310344828
+    ],
+    "slots": 29,
+    "rollouts": 58
+   }
+  },
+  "strengths": {
+   "stated": {
+    "rate": 0.1744186046511628,
+    "ci95": [
+     0.08139534883720931,
+     0.29069767441860467
+    ],
+    "slots": 43,
+    "rollouts": 86
+   },
+   "maximize": {
+    "rate": 0.375,
+    "ci95": [
+     0.23863636363636365,
+     0.5113636363636364
+    ],
+    "slots": 44,
+    "rollouts": 88
+   }
+  }
+ }
+}

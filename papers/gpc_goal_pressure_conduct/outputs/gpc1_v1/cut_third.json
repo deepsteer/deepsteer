@@ -1,0 +1,9 @@
+{
+ "rule": "GPC v0.2 \u00a75 (the cut rule)",
+ "stage": "third",
+ "elapsed_h": 4.1109826516442824,
+ "forecast_through_f_h": 5.923550879581353,
+ "ends_h": 10.034533531225636,
+ "cut_h": 10.25,
+ "runs": true
+}

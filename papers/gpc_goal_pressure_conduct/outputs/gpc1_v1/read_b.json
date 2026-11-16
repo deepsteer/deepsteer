@@ -1,0 +1,69 @@
+{
+ "rule": "GPC v0.2 \u00a74.4, items 2, 10, 11",
+ "session_check": {
+  "rule": "GPC v0.2 item 2",
+  "session_minus_record": {
+   "delta": 0.0,
+   "ci95": [
+    -0.03463959621164861,
+    0.030976892822025547
+   ],
+   "n": 250,
+   "games": 30,
+   "below_0": false,
+   "above_0": false
+  },
+  "reference": "record"
+ },
+ "arms": {
+  "good_behavior": {
+   "point": 0.8609271523178809,
+   "arm_minus_ref": -0.26,
+   "good_minus_base": -0.302,
+   "n": 250,
+   "ci95": [
+    0.7272727272727273,
+    0.9729837550316274
+   ],
+   "games": 30
+  },
+  "c_conduct_slot": {
+   "point": 0.8609271523178809,
+   "arm_minus_ref": -0.26,
+   "good_minus_base": -0.302,
+   "n": 250,
+   "ci95": [
+    0.6893576724693746,
+    1.046741850025756
+   ],
+   "games": 30
+  },
+  "good_lines": {
+   "point": 0.8211920529801324,
+   "arm_minus_ref": -0.248,
+   "good_minus_base": -0.302,
+   "n": 250,
+   "ci95": [
+    0.6541281087333719,
+    0.9836317780580074
+   ],
+   "games": 30
+  }
+ },
+ "item_11": {
+  "c_conduct_slot_point": 0.8609271523178809,
+  "bar": 0.5,
+  "third_arm": "w_self"
+ },
+ "good_reproduction": {
+  "delta": -0.26,
+  "ci95": [
+   -0.3333333333333333,
+   -0.18777208921012564
+  ],
+  "n": 250,
+  "games": 30,
+  "below_0": true,
+  "above_0": false
+ }
+}

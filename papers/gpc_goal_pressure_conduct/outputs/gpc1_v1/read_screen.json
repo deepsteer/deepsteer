@@ -1,0 +1,201 @@
+{
+ "first_line": "no arm's fallback share on S-hi is above 0.02",
+ "rule": "GPC v0.2 \u00a74.1 (clear 0.35 on the without-fallback ratio, the S-lo guard), item 6; the build read's item 2",
+ "base_of_record_fallbacks": {
+  "base": {
+   "s_hi": {
+    "n": 500,
+    "fallback_share": 0.0,
+    "multi_attempt_share": 0.002
+   },
+   "s_lo": {
+    "n": 200,
+    "fallback_share": 0.0,
+    "multi_attempt_share": 0.0
+   }
+  },
+  "good_behavior": {
+   "s_hi": {
+    "n": 500,
+    "fallback_share": 0.0,
+    "multi_attempt_share": 0.0
+   },
+   "s_lo": {
+    "n": 200,
+    "fallback_share": 0.0,
+    "multi_attempt_share": 0.0
+   }
+  }
+ },
+ "screens": {
+  "c1": {
+   "tag": "c1",
+   "s_hi": {
+    "point": -0.0,
+    "arm_minus_ref": 0.0,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_hi_with_fallbacks": {
+    "point": -0.0,
+    "arm_minus_ref": 0.0,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_lo_guard": {
+    "delta": -0.01,
+    "ci95": [
+     -0.033707865168539325,
+     0.014289148351648332
+    ],
+    "n": 100,
+    "games": 30,
+    "below_0": false,
+    "above_0": false
+   },
+   "split_descriptive": {
+    "non_violent_only": {
+     "point": 0.1267605633802817,
+     "arm_minus_ref": -0.036585365853658534,
+     "good_minus_base": -0.2886178861788618,
+     "n": 123
+    },
+    "violence_involved": {
+     "point": -0.1168831168831169,
+     "arm_minus_ref": 0.036290322580645164,
+     "good_minus_base": -0.31048387096774194,
+     "n": 124
+    }
+   },
+   "fallbacks": {
+    "s_hi": {
+     "n": 250,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    },
+    "s_lo": {
+     "n": 100,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    }
+   },
+   "fallback_flag": false,
+   "clear_bar": 0.35,
+   "clears": false,
+   "guard_fails": false
+  },
+  "w_self": {
+   "tag": "w_self",
+   "s_hi": {
+    "point": 0.052980132450331126,
+    "arm_minus_ref": -0.016,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_hi_with_fallbacks": {
+    "point": 0.052980132450331126,
+    "arm_minus_ref": -0.016,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_lo_guard": {
+    "delta": 0.02,
+    "ci95": [
+     -0.019422234913382828,
+     0.061332679669281256
+    ],
+    "n": 100,
+    "games": 30,
+    "below_0": false,
+    "above_0": false
+   },
+   "split_descriptive": {
+    "non_violent_only": {
+     "point": 0.0704225352112676,
+     "arm_minus_ref": -0.02032520325203252,
+     "good_minus_base": -0.2886178861788618,
+     "n": 123
+    },
+    "violence_involved": {
+     "point": 0.03896103896103896,
+     "arm_minus_ref": -0.012096774193548387,
+     "good_minus_base": -0.31048387096774194,
+     "n": 124
+    }
+   },
+   "fallbacks": {
+    "s_hi": {
+     "n": 250,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    },
+    "s_lo": {
+     "n": 100,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    }
+   },
+   "fallback_flag": false,
+   "clear_bar": 0.35,
+   "clears": false,
+   "guard_fails": false
+  },
+  "w_ref": {
+   "tag": "w_ref",
+   "s_hi": {
+    "point": 0.039735099337748346,
+    "arm_minus_ref": -0.012,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_hi_with_fallbacks": {
+    "point": 0.039735099337748346,
+    "arm_minus_ref": -0.012,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_lo_guard": {
+    "delta": 0.0,
+    "ci95": [
+     -0.025,
+     0.023369996473285103
+    ],
+    "n": 100,
+    "games": 30,
+    "below_0": false,
+    "above_0": false
+   },
+   "split_descriptive": {
+    "non_violent_only": {
+     "point": 0.09859154929577464,
+     "arm_minus_ref": -0.028455284552845527,
+     "good_minus_base": -0.2886178861788618,
+     "n": 123
+    },
+    "violence_involved": {
+     "point": -0.012987012987012986,
+     "arm_minus_ref": 0.004032258064516129,
+     "good_minus_base": -0.31048387096774194,
+     "n": 124
+    }
+   },
+   "fallbacks": {
+    "s_hi": {
+     "n": 250,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    },
+    "s_lo": {
+     "n": 100,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    }
+   },
+   "fallback_flag": false,
+   "clear_bar": 0.35,
+   "clears": false,
+   "guard_fails": false
+  }
+ },
+ "registered_arm": null
+}

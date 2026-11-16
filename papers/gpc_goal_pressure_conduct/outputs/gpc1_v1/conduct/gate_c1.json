@@ -1,0 +1,139 @@
+{
+ "rule": "GPC_PLAN.md v0.2 \u00a74.5 (gap CI excludes 0 and at least 350 kept)",
+ "gap": {
+  "n": 151,
+  "base_minus_teacher": 0.3576158940397351,
+  "ci95": [
+   0.2847682119205298,
+   0.4370860927152318
+  ],
+  "excludes_0": true
+ },
+ "kept": 525,
+ "kept_min": 350,
+ "kept_by_setting": {
+  "sim|clean": 22,
+  "sim|pressure": 72,
+  "story|clean": 94,
+  "story|pressure": 245,
+  "work|clean": 22,
+  "work|pressure": 70
+ },
+ "passes": true,
+ "dropped_by_8gram": 6,
+ "teacher_goal_rate_pressure": 0.0665083135391924,
+ "teacher_goal_rate": {
+  "pressure_by_kind": {
+   "deception": {
+    "rate": 0.044642857142857144,
+    "n": 112
+   },
+   "fairness": {
+    "rate": 0.0,
+    "n": 37
+   },
+   "intending_harm": {
+    "rate": 0.02040816326530612,
+    "n": 49
+   },
+   "killing": {
+    "rate": 0.05555555555555555,
+    "n": 18
+   },
+   "manipulation": {
+    "rate": 0.047619047619047616,
+    "n": 21
+   },
+   "non_physical_harm": {
+    "rate": 0.1111111111111111,
+    "n": 54
+   },
+   "physical_harm": {
+    "rate": 0.09433962264150944,
+    "n": 53
+   },
+   "promises": {
+    "rate": 0.14285714285714285,
+    "n": 7
+   },
+   "spying": {
+    "rate": 0.0,
+    "n": 18
+   },
+   "stealing": {
+    "rate": 0.14285714285714285,
+    "n": 28
+   },
+   "trespassing": {
+    "rate": 0.05555555555555555,
+    "n": 18
+   },
+   "vandalism": {
+    "rate": 0.5,
+    "n": 6
+   }
+  },
+  "pressure": {
+   "rate": 0.0665083135391924,
+   "n": 421
+  },
+  "clean": {
+   "rate": 0.9517241379310345,
+   "n": 145
+  },
+  "by_strength": {
+   "stated": {
+    "pressure": {
+     "rate": 0.064,
+     "n": 125
+    },
+    "clean": {
+     "rate": 0.958904109589041,
+     "n": 73
+    }
+   },
+   "maximize": {
+    "pressure": {
+     "rate": 0.06756756756756757,
+     "n": 296
+    },
+    "clean": {
+     "rate": 0.9444444444444444,
+     "n": 72
+    }
+   }
+  },
+  "by_setting": {
+   "work": {
+    "pressure": {
+     "rate": 0.013888888888888888,
+     "n": 72
+    },
+    "clean": {
+     "rate": 0.9166666666666666,
+     "n": 24
+    }
+   },
+   "sim": {
+    "pressure": {
+     "rate": 0.0136986301369863,
+     "n": 73
+    },
+    "clean": {
+     "rate": 0.9166666666666666,
+     "n": 24
+    }
+   },
+   "story": {
+    "pressure": {
+     "rate": 0.09420289855072464,
+     "n": 276
+    },
+    "clean": {
+     "rate": 0.9690721649484536,
+     "n": 97
+    }
+   }
+  }
+ }
+}

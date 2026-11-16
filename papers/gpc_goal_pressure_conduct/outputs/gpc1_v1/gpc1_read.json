@@ -1,0 +1,371 @@
+{
+ "first_line": "no arm's fallback share on S-hi is above 0.02",
+ "incontext": {
+  "rule": "GPC v0.2 \u00a74.4, items 2, 10, 11",
+  "session_check": {
+   "rule": "GPC v0.2 item 2",
+   "session_minus_record": {
+    "delta": 0.0,
+    "ci95": [
+     -0.03463959621164861,
+     0.030976892822025547
+    ],
+    "n": 250,
+    "games": 30,
+    "below_0": false,
+    "above_0": false
+   },
+   "reference": "record"
+  },
+  "arms": {
+   "good_behavior": {
+    "point": 0.8609271523178809,
+    "arm_minus_ref": -0.26,
+    "good_minus_base": -0.302,
+    "n": 250,
+    "ci95": [
+     0.7272727272727273,
+     0.9729837550316274
+    ],
+    "games": 30
+   },
+   "c_conduct_slot": {
+    "point": 0.8609271523178809,
+    "arm_minus_ref": -0.26,
+    "good_minus_base": -0.302,
+    "n": 250,
+    "ci95": [
+     0.6893576724693746,
+     1.046741850025756
+    ],
+    "games": 30
+   },
+   "good_lines": {
+    "point": 0.8211920529801324,
+    "arm_minus_ref": -0.248,
+    "good_minus_base": -0.302,
+    "n": 250,
+    "ci95": [
+     0.6541281087333719,
+     0.9836317780580074
+    ],
+    "games": 30
+   }
+  },
+  "item_11": {
+   "c_conduct_slot_point": 0.8609271523178809,
+   "bar": 0.5,
+   "third_arm": "w_self"
+  },
+  "good_reproduction": {
+   "delta": -0.26,
+   "ci95": [
+    -0.3333333333333333,
+    -0.18777208921012564
+   ],
+   "n": 250,
+   "games": 30,
+   "below_0": true,
+   "above_0": false
+  }
+ },
+ "screens": {
+  "c1": {
+   "tag": "c1",
+   "s_hi": {
+    "point": -0.0,
+    "arm_minus_ref": 0.0,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_hi_with_fallbacks": {
+    "point": -0.0,
+    "arm_minus_ref": 0.0,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_lo_guard": {
+    "delta": -0.01,
+    "ci95": [
+     -0.033707865168539325,
+     0.014289148351648332
+    ],
+    "n": 100,
+    "games": 30,
+    "below_0": false,
+    "above_0": false
+   },
+   "split_descriptive": {
+    "non_violent_only": {
+     "point": 0.1267605633802817,
+     "arm_minus_ref": -0.036585365853658534,
+     "good_minus_base": -0.2886178861788618,
+     "n": 123
+    },
+    "violence_involved": {
+     "point": -0.1168831168831169,
+     "arm_minus_ref": 0.036290322580645164,
+     "good_minus_base": -0.31048387096774194,
+     "n": 124
+    }
+   },
+   "fallbacks": {
+    "s_hi": {
+     "n": 250,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    },
+    "s_lo": {
+     "n": 100,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    }
+   },
+   "fallback_flag": false,
+   "clear_bar": 0.35,
+   "clears": false,
+   "guard_fails": false
+  },
+  "w_ref": {
+   "tag": "w_ref",
+   "s_hi": {
+    "point": 0.039735099337748346,
+    "arm_minus_ref": -0.012,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_hi_with_fallbacks": {
+    "point": 0.039735099337748346,
+    "arm_minus_ref": -0.012,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_lo_guard": {
+    "delta": 0.0,
+    "ci95": [
+     -0.025,
+     0.023369996473285103
+    ],
+    "n": 100,
+    "games": 30,
+    "below_0": false,
+    "above_0": false
+   },
+   "split_descriptive": {
+    "non_violent_only": {
+     "point": 0.09859154929577464,
+     "arm_minus_ref": -0.028455284552845527,
+     "good_minus_base": -0.2886178861788618,
+     "n": 123
+    },
+    "violence_involved": {
+     "point": -0.012987012987012986,
+     "arm_minus_ref": 0.004032258064516129,
+     "good_minus_base": -0.31048387096774194,
+     "n": 124
+    }
+   },
+   "fallbacks": {
+    "s_hi": {
+     "n": 250,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    },
+    "s_lo": {
+     "n": 100,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    }
+   },
+   "fallback_flag": false,
+   "clear_bar": 0.35,
+   "clears": false,
+   "guard_fails": false
+  },
+  "w_self": {
+   "tag": "w_self",
+   "s_hi": {
+    "point": 0.052980132450331126,
+    "arm_minus_ref": -0.016,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_hi_with_fallbacks": {
+    "point": 0.052980132450331126,
+    "arm_minus_ref": -0.016,
+    "good_minus_base": -0.302,
+    "n": 250
+   },
+   "s_lo_guard": {
+    "delta": 0.02,
+    "ci95": [
+     -0.019422234913382828,
+     0.061332679669281256
+    ],
+    "n": 100,
+    "games": 30,
+    "below_0": false,
+    "above_0": false
+   },
+   "split_descriptive": {
+    "non_violent_only": {
+     "point": 0.0704225352112676,
+     "arm_minus_ref": -0.02032520325203252,
+     "good_minus_base": -0.2886178861788618,
+     "n": 123
+    },
+    "violence_involved": {
+     "point": 0.03896103896103896,
+     "arm_minus_ref": -0.012096774193548387,
+     "good_minus_base": -0.31048387096774194,
+     "n": 124
+    }
+   },
+   "fallbacks": {
+    "s_hi": {
+     "n": 250,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    },
+    "s_lo": {
+     "n": 100,
+     "fallback_share": 0.0,
+     "multi_attempt_share": 0.0
+    }
+   },
+   "fallback_flag": false,
+   "clear_bar": 0.35,
+   "clears": false,
+   "guard_fails": false
+  }
+ },
+ "best_arm": null,
+ "base_of_record_fallbacks": {
+  "base": {
+   "s_hi": {
+    "n": 500,
+    "fallback_share": 0.0,
+    "multi_attempt_share": 0.002
+   },
+   "s_lo": {
+    "n": 200,
+    "fallback_share": 0.0,
+    "multi_attempt_share": 0.0
+   }
+  },
+  "good_behavior": {
+   "s_hi": {
+    "n": 500,
+    "fallback_share": 0.0,
+    "multi_attempt_share": 0.0
+   },
+   "s_lo": {
+    "n": 200,
+    "fallback_share": 0.0,
+    "multi_attempt_share": 0.0
+   }
+  }
+ },
+ "mediator": {
+  "rule": "GPC v0.2 \u00a74.3, item 4",
+  "good_minus_session_base": {
+   "delta": 0.76,
+   "ci95": [
+    0.6555492424242424,
+    0.8552658764680295
+   ],
+   "n": 250,
+   "games": 30,
+   "below_0": false,
+   "above_0": true
+  },
+  "gate_passes": true,
+  "rates": {
+   "good_behavior": 0.996,
+   "c_conduct_slot": 0.596,
+   "good_lines": 0.988,
+   "base_session": 0.236,
+   "c1": 0.252,
+   "w_ref": 0.22,
+   "w_self": 0.236
+  },
+  "split": {
+   "c1": {
+    "arm_minus_base": {
+     "delta": 0.016,
+     "ci95": [
+      -0.03113450827801938,
+      0.06723272642390286
+     ],
+     "n": 250,
+     "games": 30,
+     "below_0": false,
+     "above_0": false
+    },
+    "half_good_rise": 0.38,
+    "branch": "at_base"
+   },
+   "w_ref": {
+    "arm_minus_base": {
+     "delta": -0.016,
+     "ci95": [
+      -0.07916987885462555,
+      0.040825880914163365
+     ],
+     "n": 250,
+     "games": 30,
+     "below_0": false,
+     "above_0": false
+    },
+    "half_good_rise": 0.38,
+    "branch": "at_base"
+   },
+   "w_self": {
+    "arm_minus_base": {
+     "delta": 0.0,
+     "ci95": [
+      -0.03422338811011929,
+      0.036003614457831304
+     ],
+     "n": 250,
+     "games": 30,
+     "below_0": false,
+     "above_0": false
+    },
+    "half_good_rise": 0.38,
+    "branch": "at_base"
+   },
+   "c_conduct_slot": {
+    "arm_minus_base": {
+     "delta": 0.36,
+     "ci95": [
+      0.28749873481781374,
+      0.43478664942621625
+     ],
+     "n": 250,
+     "games": 30,
+     "below_0": false,
+     "above_0": true
+    },
+    "half_good_rise": 0.38,
+    "branch": "raised"
+   },
+   "good_lines": {
+    "arm_minus_base": {
+     "delta": 0.752,
+     "ci95": [
+      0.6519955465587045,
+      0.8464664467617223
+     ],
+     "n": 250,
+     "games": 30,
+     "below_0": false,
+     "above_0": true
+    },
+    "half_good_rise": 0.38,
+    "branch": "raised"
+   }
+  }
+ },
+ "registered": {}
+}

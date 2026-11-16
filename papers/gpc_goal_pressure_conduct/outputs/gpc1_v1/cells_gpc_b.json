@@ -1,0 +1,38 @@
+{
+ "name": "gpc_b",
+ "cells": [
+  [
+   "good_behavior",
+   "s_hi",
+   1
+  ],
+  [
+   "c_conduct_slot",
+   "s_hi",
+   1
+  ],
+  [
+   "good_lines",
+   "s_hi",
+   1
+  ],
+  [
+   "base_session",
+   "s_hi",
+   1
+  ],
+  [
+   "base_session",
+   "s_lo",
+   1
+  ]
+ ],
+ "states": 350,
+ "dropped_by_the_replay_gate": 0,
+ "decisions_run": 1100,
+ "decisions": 1100,
+ "decisions_planned": 1100,
+ "stopped": null,
+ "wall_h": 0.5549472897582584,
+ "decisions_per_h": 1982.1702354455558
+}
