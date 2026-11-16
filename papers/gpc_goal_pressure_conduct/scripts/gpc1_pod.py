@@ -409,7 +409,6 @@ def _bank(cdir: Path, reason: str) -> dict:
 def _keep_and_gate(cdir: Path, arm: str, teacher: list[dict], base_gap: list[dict],
                    allslots: dict, kept_text: dict, index, tok) -> dict:
     """The keep rule, D11's 8-gram drop on the training text, the teacher gap and the gate."""
-    import numpy as np
 
     kept, dropped_8 = [], 0
     for r in teacher:
@@ -420,7 +419,7 @@ def _keep_and_gate(cdir: Path, arm: str, teacher: list[dict], base_gap: list[dic
             import overlap_hashes as OH
 
             text = GC.slot_text(kept_text[r["slot_id"]]) + "\n" + r["text"]
-            if np.isin(OH.hashes(text), index).any():
+            if OH.shared(text, index):  # binary search, not np.isin
                 dropped_8 += 1
                 continue
         kept.append(r)
@@ -504,10 +503,9 @@ def _wself(out: Path, eng, tok, fmt, dry: bool) -> dict:
             continue
         i = r["rid"].split("|")[1]
         if index is not None:
-            import numpy as np
             import overlap_hashes as OH
 
-            if np.isin(OH.hashes(kept[i][1] + "\n" + r["text"]), index).any():
+            if OH.shared(kept[i][1] + "\n" + r["text"], index):
                 continue
         train.append({"tenet_id": i, "message": kept[i][1], "gen_ids": r["gen_ids"]})
     _append(wdir / "train_items.jsonl", [] if (wdir / "train_items.jsonl").exists() else train)

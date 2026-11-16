@@ -234,7 +234,6 @@ def slot_text(w: dict) -> str:
 def check(w: dict | None, index, seen: list[set], slot: dict | None = None) -> list[str]:
     """One written slot's failures (empty when it passes); a ``maximize`` slot also needs its
     maximize sentence, copied from the system message."""
-    import numpy as np
 
     if w is None:
         return ["no parse"]
@@ -268,7 +267,7 @@ def check(w: dict | None, index, seen: list[set], slot: dict | None = None) -> l
     if index is not None:
         import overlap_hashes as OH
 
-        if np.isin(OH.hashes(text), index).any():
+        if OH.shared(text, index):  # binary search, not np.isin (4 s a call on the pod)
             bad.append("eval 8-gram")
     g5 = grams(text, 5)
     if any(len(g5 & o) / max(len(g5 | o), 1) >= 0.35 for o in seen):

@@ -47,7 +47,6 @@ def dilemma_prompt(t: dict) -> list[dict]:
 
 
 def check(msg: str | None, index, seen: list[set]) -> list[str]:
-    import numpy as np
 
     import gpc_conduct as GC
 
@@ -61,7 +60,7 @@ def check(msg: str | None, index, seen: list[set]) -> list[str]:
     if index is not None:
         import overlap_hashes as OH
 
-        if np.isin(OH.hashes(msg), index).any():
+        if OH.shared(msg, index):  # binary search, not np.isin (4 s a call on the pod)
             bad.append("eval 8-gram")
     g5 = GC.grams(msg, 5)
     if any(len(g5 & o) / max(len(g5 | o), 1) >= 0.35 for o in seen):

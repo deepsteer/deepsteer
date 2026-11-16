@@ -47,7 +47,6 @@ def fetch(dry: bool, dry_rows: int = 24) -> list[dict]:
 
 def seeded(rows: list[dict], index) -> tuple[list[dict], int]:
     """The seeded 1,000 in order, without rows sharing an eval 8-gram; the dropped count."""
-    import numpy as np
 
     idx = random.Random(SEED).sample(range(len(rows)), min(N, len(rows)))
     if index is None:
@@ -57,7 +56,7 @@ def seeded(rows: list[dict], index) -> tuple[list[dict], int]:
     out, dropped = [], 0
     for i in idx:
         text = "\n".join(m["content"] for m in rows[i]["messages"])
-        if np.isin(OH.hashes(text), index).any():
+        if OH.shared(text, index):  # binary search, not np.isin (4 s a call on the pod)
             dropped += 1
             continue
         out.append(rows[i])
