@@ -787,3 +787,45 @@ Open (with costs): B4 at the ceiling moves to GPC-3 if both conditions hold (4.5
 Question behind the question: if format gates, the product question becomes which scaffolds a
 deployed agent sees; C2-div is the first read of whether conduct can be trained scaffold-free.
 ```
+
+### 9.4 Built (2026-11-15)
+
+Code: `scripts/gpc2_pod.py` (stages), `scripts/gpc2_render.py` (X1, X2, X3), `scripts/gpc_scaffolds.py`
+(C2-div's three scaffolds), `scripts/gpc2_direction.py` (B0 to B4 on the library and ST's
+steering runtime), `scripts/gpc2_read.py`, `scripts/z_neutral_lines.py` and
+`data/neutral_lines_v1.json` (105 words against `C_conduct`'s 97; every check passing),
+`runpod/remote_gpc2.sh` (opts into the editable limits), the two launch cards and
+`runpod/gpc2_inputs.sh`; `tests/scripts/test_gpc2.py` (17 fast tests and a slow dry chain from
+GPC-1's dry session into every GPC-2 stage, with format gates and B3 forced so every branch runs).
+
+**Build notes (not covered by the rulings; built this way and flagged to the author):**
+
+1. "The JSON answer" is read as the harness of record's answer: MCH's think variant replaced the
+   paper's JSON paragraph with integer-answer sentences, and S-hi was read that way. X1, X3's
+   answer element and C2-mach use the integer answer.
+2. X1's header takes the slot's frame as the game title, its system message as the summary and
+   "You" as the character; its achievements list is the one goal sentence at 100 points.
+3. X2 keeps the game's own option order, lettered from A, with "Choose one option. Answer with its
+   letter." A state whose observation does not end in exactly its option count of numbered lines
+   is dropped and counted (both states checked parse).
+4. X1, X2, X3, B1 and C2's teacher rollouts take one attempt each, with unparsed answers counted
+   (no MCH fallback); F, A's and C2's screens and the registered read use MCH's attempt rule, as
+   GPC-1's screens did.
+5. B1's judge frame is KDG's J_stated wording, the game passage introduced as "addressed to a
+   person, called 'you' in the text", no system message, thinking on, "Answer: <letter>" parsed.
+6. B0's probe is the library's GeneralLinearProbe method (a linear layer, BCE with logits, Adam
+   0.01, 50 epochs) with its weights kept and standardization from the training rows; 20% of the
+   slots are held out, seeded.
+7. B2's features are each rollout's mean residual over its `clause_end` positions at block 32,
+   teacher-forced under the prompt it was generated with, paired by GPC-1's gap 200 slots: C1's
+   teacher rollouts (the clause), GPC-1's base rollouts (none) and GPC-2's neutral-lines rollouts.
+   B4's neutral-lines direction is neutral minus none.
+8. B3 reads this session's base traces on S-hi (F's same-session base), since the base of record
+   saved none; P per state is the base of record's k 2 mean.
+9. B4 chooses its dose on the ladder's 5 states, outcome-blind, and every read rollout has its own
+   seed, so the read is on fresh rollouts as the ruling asks. Its held-out clean slots are GPC-1's
+   25, in the grid's format.
+10. A's and C2's held-out reads compare against GPC-1's held-out base (cross-session, said so).
+11. The cut rule checks each item against its own forecast plus every higher-priority item not yet
+    done (format-gated items count only under format gates); the registered read and B4 are
+    checked against their own forecasts.

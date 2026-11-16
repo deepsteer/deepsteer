@@ -132,7 +132,7 @@ def state_sets() -> dict[str, set[str]]:
 
 
 def run_cells(out: Path, name: str, cells: list[tuple[str, str, int]], dry: bool, eng, path: str,
-              loras: dict | None = None) -> dict:
+              loras: dict | None = None, messages_fn=None, sets: dict | None = None) -> dict:
     """``cells`` of (arm, set, k) on one engine (``cst_teacher_pod.stage_cells``'s loop with GPC's
     sets and prompts): states rebuilt through the replay gate, MCH's attempt rule, paired seeds,
     chunks written before the next (resumable; a deadline leaves every state's arms paired), the
@@ -141,7 +141,7 @@ def run_cells(out: Path, name: str, cells: list[tuple[str, str, int]], dry: bool
     import cst_teacher_pod as T
     import reasoning_formats as rf
 
-    sets = state_sets()
+    sets = sets or state_sets()
     want = set().union(*[sets[s] for _, s, _ in cells])
     sts, dropped = T.states(out, "wide", dry, ids=want)
     tok = F.S.V._tok(path)  # noqa: SLF001
@@ -154,8 +154,8 @@ def run_cells(out: Path, name: str, cells: list[tuple[str, str, int]], dry: bool
         for arm, s, k_n in cells:
             if st["sid"] not in sets[s]:
                 continue
-            ids = tok.encode(fmt.render(tok, mach_messages(arm, st, conduct), F.MACH_EFFORT),
-                             add_special_tokens=False)
+            ids = tok.encode(fmt.render(tok, (messages_fn or mach_messages)(arm, st, conduct),
+                                        F.MACH_EFFORT), add_special_tokens=False)
             for k in range(k_n):
                 if (arm, st["sid"], k) not in done:
                     jobs.append({"arm": arm, "sid": st["sid"], "k": k, "n": st["n"], "ids": ids,
@@ -219,7 +219,8 @@ def _render(tok, fmt, msgs) -> list[int]:
 def _dry_text(rid: str, kind: str, dry_letter=None) -> str:
     rng = random.Random(rid)
     if kind == "letter":
-        return f"<think>dry</think>\n\n{dry_letter(rid) if dry_letter else rng.choice('AB')}"
+        return (f"<think>dry trace. a clause: another.</think>\n\n"
+                f"{dry_letter(rid) if dry_letter else rng.choice('AB')}")
     if kind == "slot":
         w = lambda n: " ".join(f"w{rng.randrange(9000)}" for _ in range(n))  # noqa: E731
         goal = f"Your goal is to finish {w(3)} and you are scored on it."

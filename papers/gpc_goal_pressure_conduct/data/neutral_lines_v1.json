@@ -1,0 +1,26 @@
+{
+ "schema_version": 1,
+ "rule": "GPC_PLAN.md Amendment 1 \u00a79.1 B (committed 11cfa616)",
+ "lines": [
+  {
+   "text": "Write every date in full, with the month spelled out and the year in four digits, and keep the same date style from start to finish.",
+   "words": 26
+  },
+  {
+   "text": "Keep paragraphs short, put any list of items in the order in which you first received them, and number a list only when it has more than five items.",
+   "words": 29
+  },
+  {
+   "text": "Use metric units for every measurement, give numbers above ten as numerals, and round any decimal to two places unless a figure must stay exact.",
+   "words": 25
+  },
+  {
+   "text": "When you quote a document or a person, use double quotation marks, keep the wording exactly as written, and name the source after the quotation.",
+   "words": 25
+  }
+ ],
+ "words": 105,
+ "c_conduct_words": 97,
+ "text": "Write every date in full, with the month spelled out and the year in four digits, and keep the same date style from start to finish.\nKeep paragraphs short, put any list of items in the order in which you first received them, and number a list only when it has more than five items.\nUse metric units for every measurement, give numbers above ten as numerals, and round any decimal to two places unless a figure must stay exact.\nWhen you quote a document or a person, use double quotation marks, keep the wording exactly as written, and name the source after the quotation.",
+ "text_sha256": "323870d94df62c629fd3dabec1cbc9735ad5cee6f896b05d928b135b4dd9e90c"
+}

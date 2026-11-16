@@ -48,8 +48,8 @@ Done-when: two of three routes read at pilot dose, none at 0.5. **Next:** GPC-2,
 
 ## Pending
 
-1. GPC-2 (Amendment 1): build, Z9's checks (dry session, sync emulation, gate tests), then the
-   launch card to the author.
+1. GPC-2 (Amendment 1): built (`GPC_PLAN.md` §9.4); the author's launch with
+   `runpod/launch_gpc2_thunder.sh` (RunPod fallback `runpod/launch_gpc2.sh`).
 2. The author's ruling on a rebuilt W-self (targets written as fresh answers; GPC-A2), about 0.9
    A100-h with training, and whether it counts toward done-when.
 3. Done (GPC-1): after the download: the Codex validity read of a seeded 30 kept pressure slots
@@ -66,6 +66,13 @@ Thunder, $21.50 on Secure). The scaffold templates: `CONDUCT_SCAFFOLDS.md`. The 
 (the fifth line, items A and B with their riders) is carried into the amendment.
 
 ## Next pod
+
+**GPC-2** (built 2026-11-15): floor about 3.25 A100-h ($3.90 on Thunder) when format does not gate
+and B3 does not pass; ceiling inside one pod about 9.65 ($11.30 on Thunder, $21.50 on Secure). The
+runner opts into the editable limits. Results in `outputs/gpc2_v1`; the local read is
+`scripts/gpc2_read.py`.
+
+**GPC-1 (done):**
 
 **GPC-1** (built; card `runpod/launch_gpc1_thunder.sh`, RunPod fallback `runpod/launch_gpc1.sh`):
 about 6.3 A100-h through the screens, 9.2 h with the registered read and its riders:
@@ -143,3 +150,9 @@ After GPC-1: **$163.74 remain** under the shared cap ($173.00 − $9.26).
 - 2026-11-15: the build read applied: the grid's strength field (schema 2, pilot 15 per cell), the
   fallback-aware screen and registered reads, the teacher's goal-option rates by kind, the Codex
   sample; the library-first rule in the plan's §2.
+- 2026-11-15: GPC-1 read and accepted (`3486636f`); Amendment 1, GPC-2 (`11cfa616`).
+- 2026-11-15: GPC-2 built: `gpc2_pod.py`, `gpc2_render.py`, `gpc_scaffolds.py`, `gpc2_direction.py`,
+  `gpc2_read.py`, the neutral four lines, `runpod/remote_gpc2.sh` and its cards,
+  `tests/scripts/test_gpc2.py` (17 fast, 1 slow chain); GPC-1's dry stand-in traces now carry
+  punctuation (so `clause_end` positions exist in a dry run); `gpc1_pod.run_cells` takes a messages
+  function and a set map.
