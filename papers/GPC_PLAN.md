@@ -143,7 +143,12 @@ pod on any branch.
   (`cst_constitutional_steering/outputs/_sync/eval_8gram_hashes_v1.npy`, sha256 `97f27642…`,
   6,303,190 hashes) gates every corpus by D11's drop rule.
 - **Pods:** cut at 10.25 h, watchdog 11.0 h; the author launches; Thunder with the RunPod Secure
-  fallback (CST Amendment 53 item 3); HF_TOKEN never on a command line.
+  fallback (CST Amendment 53 item 3); HF_TOKEN never on a command line. **Editable limits (the
+  author, 2026-11-15; from GPC-1's successor on):** the defaults stay 10.25 h and 11.0 h, and both
+  can be moved during the run with `papers/runpod_common/set_limits.sh` (the cut rule, every
+  decision loop's deadline and the watchdog re-read the session's limits file); the watchdog has a
+  hard ceiling of 14.0 h and stays at least 0.5 h past the cut; every change is logged with its
+  reason and recorded as a deviation.
 - **Library first (the author, 2026-11-04):** reusable utilities and methods move into core
   `deepsteer/`, not papers/ scripts (`GPC_STATE.md` lists GPC's pieces that graduate).
 - **Two draws for a pass.** **The partner is never named.** No Claude call reads a subject trace

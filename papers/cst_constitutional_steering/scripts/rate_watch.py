@@ -65,6 +65,17 @@ def sample(log: Path, stage_file: Path, forecast: dict, prev: dict | None, every
     return rec, cur
 
 
+def line(rec: dict) -> str:
+    """The log line for one sample; a stage the forecast map does not name prints its rate with no
+    ratio (GPC-1, 2026-11-15: a training stage's window crashed the formatter on a None ratio)."""
+    if rec["window_tps"] is None:
+        return f">> rate window ({rec['stage'] or 'no stage'}): no window"
+    tag = "RATE FLAG" if rec["flag"] else "rate window"
+    ratio = f"{rec['ratio']:.2f}" if rec["ratio"] is not None else "no forecast"
+    return (f">> {tag} ({rec['stage']}): {rec['window_tps']:.0f} tokens/s against "
+            f"{rec['forecast_tps']} forecast ({ratio})")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--log", type=Path, required=True)
@@ -80,12 +91,7 @@ def main() -> None:
         rec, prev = sample(a.log, a.stage_file, forecast, prev, a.every)
         with open(a.out, "a") as f:
             f.write(json.dumps(rec) + "\n")
-        if rec["window_tps"] is None:
-            print(f">> rate window ({rec['stage'] or 'no stage'}): no window", flush=True)
-        else:
-            tag = "RATE FLAG" if rec["flag"] else "rate window"
-            print(f">> {tag} ({rec['stage']}): {rec['window_tps']:.0f} tokens/s against "
-                  f"{rec['forecast_tps']} forecast ({rec['ratio']:.2f})", flush=True)
+        print(line(rec), flush=True)
 
 
 if __name__ == "__main__":

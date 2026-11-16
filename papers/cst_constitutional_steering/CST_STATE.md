@@ -26,6 +26,10 @@ Amendment 44 item 1 keeps it until config 2 replicates, and config 2's content-c
   length; no judge); full read finalists only (Amendment 20).
 - **Pilot ladder and its move rule:** Amendment 20 items 2-4, Amendment 21 (pods by line, gpt-oss pair filter, P-long, the advice prompts, the identical recovery step, two move-rule additions).
 - **Pods:** the author launches; at most 12 h, self-contained, two in parallel; one launch card each.
+  **Editable limits (the author, 2026-11-15, global):** a runner that opts in
+  (`papers/runpod_common/session_limits.sh`) lets the cut, the decision loops' deadline and the
+  watchdog move during the run with `set_limits.sh`; default cut 10.25 h, watchdog hard ceiling
+  14.0 h, every change logged. CST's existing runners keep their fixed limits until rebuilt.
 - **Clouds (Amendment 48):** each pod logs its cloud, GPU type and reported rate. **Community Cloud on
   trial:** record the setup time, the measured rate against the forecast and any host failure; two
   host failures, or a measured rate under 80% of the forecast, and the next pod goes back to Secure

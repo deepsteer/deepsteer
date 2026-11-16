@@ -15,7 +15,8 @@ OUT="$G/outputs/gpc1_v1"
 mkdir -p "$OUT/logs"
 START=$(date +%s)
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
-trap 'kill $RW 2>/dev/null; cp "$REPO_DIR/session.log" "$OUT/logs/session_gpc1${SESSION}_${STAMP}.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
+source "$REPO_DIR/papers/runpod_common/session_limits.sh"
+trap 'kill $RW 2>/dev/null; limits_save "$OUT/logs"; cp "$REPO_DIR/session.log" "$OUT/logs/session_gpc1${SESSION}_${STAMP}.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
 case "$SESSION" in 1) MAX_H=$WATCH_H;;
   *) echo "BAIL: CST_SESSION must be 1"; exit 1;; esac
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}" TOKENIZERS_PARALLELISM=false
@@ -26,6 +27,10 @@ export HF_TOKEN="${HF_TOKEN:-$(cat "$HOME/.hf_token" 2>/dev/null)}"
 PYBIN="${CST_PYTHON:-python3}"
 export CST_PRICE_H=$PRICE_H CST_START_EPOCH=$START
 export CST_DEADLINE_EPOCH=$(python3 -c "print(int($START + ($PRICE_H - 0.25) * 3600))")
+# editable limits (papers/runpod_common/session_limits.py): stages stop at 10.25 h, the watchdog at
+# 11.0 h, both movable during the run with set_limits.sh (watchdog at most 14.0 h); each change logged
+limits_init "$REPO_DIR/.session_limits.json" "$START" "$(python3 -c "print($PRICE_H - 0.25)")" "$WATCH_H" \
+  || { echo "BAIL: the limits file"; exit 1; }
 GP=papers/gpc_goal_pressure_conduct/scripts/gpc1_pod.py
 TPOD=papers/cst_constitutional_steering/scripts/cst_teacher_pod.py
 hours() { python3 -c "import time; print(round((time.time() - $START) / 3600, 4))"; }
@@ -34,10 +39,7 @@ echo ">> GPC-1 session $SESSION start $(date -u +%FT%TZ) out=$OUT (stages stop a
 $PYBIN -c "import os, sysconfig; raise SystemExit(0 if os.path.exists(os.path.join(sysconfig.get_paths()['include'], 'Python.h')) else 1)" \
   || { echo "BAIL: no Python.h for $PYBIN (Triton compiles against it)"; exit 1; }
 
-( trap 'kill $S 2>/dev/null; exit 0' TERM
-  sleep "$(python3 -c "print(int($MAX_H * 3600))")" & S=$!; wait $S
-  echo ">> WATCHDOG: ${MAX_H} h reached"; pkill -f 'gpc1_pod.py|cst_teacher_pod.py' ) &
-WATCHDOG=$!
+limits_watchdog 'gpc1_pod.py|cst_teacher_pod.py'  # sets WATCHDOG; re-reads the limits file
 
 # ---- the vLLM venv (CST's pins, unchanged) plus the MACHIAVELLI extra ----
 VENV=/workspace/venv_vllm

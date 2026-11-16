@@ -214,6 +214,13 @@ def stage_mb(out: Path, tag: str, dry: bool) -> dict:
 
 # ---- MoReBench ---------------------------------------------------------------------------------
 def deadline() -> float | None:
+    """When stages stop: the session's limits file when its runner opted in (editable during the
+    run, ``papers/runpod_common/session_limits.py``), else ``CST_DEADLINE_EPOCH`` as before."""
+    if os.environ.get("CST_LIMITS_FILE"):
+        sys.path.insert(0, str(PAPERS / "runpod_common"))
+        import session_limits as SL
+
+        return SL.deadline_epoch()
     s = os.environ.get("CST_DEADLINE_EPOCH")
     return float(s) if s else None
 

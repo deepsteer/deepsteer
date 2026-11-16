@@ -17,7 +17,9 @@ are applied (instruction strength in the grid, fallback-aware reads, item 3's va
   GOOD_BEHAVIOR of record is the same pod's (−0.093 [−0.118, −0.068]).
 - **Corpora:** no MACHIAVELLI text in any training set; the eval 8-gram index gates each by D11.
 - **Pods:** the author launches; cut at 10.25 h, watchdog 11.0 h; Thunder with the RunPod Secure
-  fallback; HF_TOKEN never on a command line. No Claude call reads a subject trace.
+  fallback; HF_TOKEN never on a command line. No Claude call reads a subject trace. From the next
+  pod, the limits are editable during the run (`papers/runpod_common/set_limits.sh`; default
+  10.25 h, hard ceiling 14.0 h; each change logged as a deviation). GPC-1 runs on fixed limits.
 - **W-ref** is diagnostic only: its adapter is deleted on the pod and never downloaded, it is never
   the registered read's arm, and only its rows and train record come back (item 6).
 - **C1g**, when item 11 selects it, is labeled "teacher not from the constitution" everywhere.
@@ -47,6 +49,14 @@ are applied (instruction strength in the grid, fallback-aware reads, item 3's va
 2. After the download: the Codex validity read of a seeded 30 kept pressure slots
    (`scripts/gpc1_read.py DIR --codex` writes them); the count goes here. Codex count: (pending).
 
+## Next pod queue (GPC-2; nothing priced until GPC-1's screen read is in)
+
+1. **If an arm clears GPC-1's screen and GPC-1's cut takes f:** that arm's registered read, draw 1
+   (about 2.3 A100-h with load and smoke), then f+ if time remains.
+2. **The lead's additional elements:** to be listed here when the lead sends them.
+3. **Infrastructure in place for it:** editable limits (`session_limits.py`, `set_limits.sh`),
+   the fixed `rate_watch.py`, and the binary-search 8-gram check (`ec672abc`).
+
 ## Next pod
 
 **GPC-1** (built; card `runpod/launch_gpc1_thunder.sh`, RunPod fallback `runpod/launch_gpc1.sh`):
@@ -54,6 +64,36 @@ about 6.3 A100-h through the screens, 9.2 h with the registered read and its rid
 $7.40-10.70 on Thunder, $14.10-20.40 on Secure at $2.19 (`GPC_PLAN.md` §5). Results in
 `outputs/gpc1_v1`; the local read is `scripts/gpc1_read.py` (its first line flags any arm whose
 fallback share on S-hi is above 0.02; arms clear on the without-fallback ratio).
+
+## GPC-1 in flight (launched 2026-11-15 12:16 PST on Thunder, card at `e66c9284`)
+
+**The mid-session swap (the author's go, one attempt, 2026-11-16T00:24:02Z = 2026-11-15 16:24:02
+PST).** The eval 8-gram membership check (`np.isin` against the 6.3M-hash index, about 4.5 s a
+call on Thunder's CPUs) replaced by `overlap_hashes.shared` (binary search, the same answer) in
+`ec672abc`. The four files went to `.new` names in one call, each `.new` matched the local hash
+and compiled under the pod's Python 3.11, and one command line moved all four over the originals.
+`remote_gpc1.sh`, the launcher and every process were left alone.
+
+| file | at launch (`e66c9284`) | after the swap (`ec672abc`) |
+|---|---|---|
+| `scripts/gpc1_pod.py` | `1c841e39…19437` | `ee943de2…d3b53` |
+| `scripts/gpc_advice.py` | `eed1efdf…d316` | `0a6c238a…5f51` |
+| `scripts/gpc_conduct.py` | `70021026…4a63` | `048a277a…0709` |
+| `scripts/gpc_wref.py` | `f2c7a2af…7560` | `45022262…9b` |
+
+**Stages by commit.** On `e66c9284`: setup, the gate tests, `smoke_train`, `smoke_serve`,
+`incontext`, `read_b`, `conduct` (its process started 21:35:43Z, before the swap, and ran to its
+end on the code it loaded). On `ec672abc`: every stage from `third` on (each a fresh process).
+Verification after the swap: the next check stage (W-self's 401 dilemmas, 8-gram and
+near-duplicate) took about 3 s (the dilemmas were written at 00:40:00Z and the advice generation
+began about 00:40:03Z); W-ref's drop count against Z5's 6: (pending, its train stage).
+
+**Observed in flight (no action, the author's rules for the session).** `rate_watch.py` (CST's
+5-minute rate side process) crashed at 5.13 h when the session entered training (a window with no
+generation bar printed `None`), so no rate windows are logged after it; the stages and the cut rule
+do not read them. Fix after the session. W-self's generation ran at 0.64 of its forecast tokens a
+second (the last RATE FLAG), so the third stage ended at 5.13 h against about 4.9 h forecast; the
+runner's check before f decides whether the registered read still fits.
 
 ## Pieces that graduate to core deepsteer (item 13; the library-first rule)
 

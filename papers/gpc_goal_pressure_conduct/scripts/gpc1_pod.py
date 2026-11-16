@@ -777,12 +777,21 @@ def remaining_h(out: Path, nxt: str) -> float:
     return sum(h[k] for k in order[order.index(nxt):])
 
 
+def cut_h() -> float:
+    """The cut in force: the session's limits file (editable during the run) or 10.25 h."""
+    sys.path.insert(0, str(ROOT / "papers/runpod_common"))
+    import session_limits as SL
+
+    return SL.cut_h() if os.environ.get("CST_LIMITS_FILE") else CUT_H
+
+
 def fits(out: Path, nxt: str) -> bool:
     start = float(os.environ.get("CST_START_EPOCH", time.time()))
     el = (time.time() - start) / 3600
     fc = remaining_h(out, nxt)
+    cut = cut_h()
     rec = {"rule": "GPC v0.2 §5 (the cut rule)", "stage": nxt, "elapsed_h": el,
-           "forecast_through_f_h": fc, "ends_h": el + fc, "cut_h": CUT_H, "runs": el + fc <= CUT_H}
+           "forecast_through_f_h": fc, "ends_h": el + fc, "cut_h": cut, "runs": el + fc <= cut}
     _w(out, f"cut_{nxt}", rec)
     print(">> cut rule:", json.dumps(rec), flush=True)
     return rec["runs"]
