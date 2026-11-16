@@ -1,0 +1,9 @@
+{
+ "rung": "c1_s200",
+ "trained": true,
+ "scaled_from": "/workspace/deepsteer/papers/gpc_goal_pressure_conduct/outputs/gpc1_v1/adapters/c1/612732",
+ "strength": 2.0,
+ "adapters": {
+  "1": "/workspace/deepsteer/papers/gpc_goal_pressure_conduct/outputs/gpc2_v1/adapters/c1_s200/1"
+ }
+}

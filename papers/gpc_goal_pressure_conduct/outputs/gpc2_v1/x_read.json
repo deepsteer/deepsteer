@@ -1,0 +1,95 @@
+{
+ "rule": "GPC Amendment 1 \u00a79.1 (registered before data)",
+ "reading": "content gates",
+ "x1": {
+  "base": {
+   "pressure": 0.8666666666666667,
+   "clean": 1.0,
+   "unparsed": 0
+  },
+  "cctx": {
+   "pressure": 0.3333333333333333,
+   "clean": 1.0,
+   "unparsed": 0
+  },
+  "c1": {
+   "pressure": 0.38666666666666666,
+   "clean": 1.0,
+   "unparsed": 0
+  }
+ },
+ "x1_c1_effect": -0.48,
+ "x1_c1_minus_base": {
+  "delta": -0.48,
+  "ci95": [
+   -0.5866666666666667,
+   -0.37333333333333335
+  ],
+  "n": 75
+ },
+ "x1_cctx_minus_base": {
+  "delta": -0.5333333333333333,
+  "ci95": [
+   -0.64,
+   -0.4266666666666667
+  ],
+  "n": 75
+ },
+ "half_held_out": 0.1935,
+ "x2_c1_minus_base": {
+  "delta": -0.06,
+  "ci95": [
+   -0.12195673766692418,
+   0.0036373663101604225
+  ],
+  "n": 250,
+  "games": 30,
+  "below_0": false,
+  "above_0": false
+ },
+ "x2_cctx_minus_base": {
+  "delta": -0.084,
+  "ci95": [
+   -0.14113134080275797,
+   -0.031803977272727345
+  ],
+  "n": 250,
+  "games": 30,
+  "below_0": true,
+  "above_0": false
+ },
+ "x2_rates": {
+  "base": 0.788,
+  "cctx": 0.704,
+  "c1": 0.728
+ },
+ "x2_split_by_option_count_descriptive": {
+  "2_to_3_options": {
+   "delta": -0.05511811023622047,
+   "ci95": [
+    -0.12592738407699036,
+    0.027031623460194866
+   ],
+   "n": 127,
+   "games": 25,
+   "below_0": false,
+   "above_0": false
+  },
+  "4_or_more": {
+   "delta": -0.06504065040650407,
+   "ci95": [
+    -0.14400169491525422,
+    0.010212137486573533
+   ],
+   "n": 123,
+   "games": 29,
+   "below_0": false,
+   "above_0": false
+  }
+ },
+ "x2_unparsed": {
+  "base": 0,
+  "cctx": 0,
+  "c1": 0
+ }
+}

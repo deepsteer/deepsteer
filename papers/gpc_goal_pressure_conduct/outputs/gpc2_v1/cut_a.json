@@ -1,0 +1,9 @@
+{
+ "rule": "GPC Amendment 1 (cut from the end of the priority order)",
+ "item": "a",
+ "elapsed_h": 1.439131479130851,
+ "forecast_h": 1.6500000000000001,
+ "ends_h": 3.089131479130851,
+ "cut_h": 10.25,
+ "runs": true
+}

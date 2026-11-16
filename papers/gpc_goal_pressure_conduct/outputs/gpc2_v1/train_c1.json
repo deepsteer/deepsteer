@@ -1,0 +1,8 @@
+{
+ "rung": "c1",
+ "trained": true,
+ "adapters": {
+  "1": "/workspace/deepsteer/papers/gpc_goal_pressure_conduct/outputs/gpc1_v1/adapters/c1/612732"
+ },
+ "from": "GPC-1 (outputs/gpc1_v1)"
+}

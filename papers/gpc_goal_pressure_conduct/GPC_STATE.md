@@ -2,14 +2,15 @@
 
 Scope: goal pressure, conduct moved into weights with nothing in context, one subject.
 
-**As of 2026-11-15, plan v0.2 with the build read; GPC-1 read and accepted by the author
-(`GPC1_RESULTS.md`).** No arm clears the screen (C1 0.00, W-self 0.05, W-ref 0.04 on S-hi; every
-upper bound 0.19 or less); registered branch 3, the root split at the base's level for every
-arm (the training does not fire in games). C1 carries its in-context teacher's full effect to the
-held-out conduct cell (−0.39 [−0.51, −0.28]), the transfer gap GPC-A1 that GPC-2 opens on. W-self's
-targets carried a rewrite frame (GPC-A2), so advice data from the tenets has not had a clean read.
-Done-when: two of three routes read at pilot dose, none at 0.5. **Next:** GPC-2, drafted as
-`GPC_PLAN.md` Amendment 1.
+**As of 2026-11-16, Amendment 1 run; GPC-2 read and accepted by the author (`GPC2_RESULTS.md`).**
+Registered reading "content gates" (X1: C1 −0.48 in the harness's text; X2: −0.06 [−0.12, +0.004]),
+scoped: X2 dropped the achievements list with the format. C1 matches its in-context teacher in every
+matched cell, so the gap is the clause's weakness on game states. The harness about doubles the
+base's violating rate on the same conduct slots (GPC-A5); on 79 of S-hi's 250 states the base
+advises against the violation and takes it 89% of the time (GPC-A8). C1 × 2.0 reads 0.24, resting
+on the record base (GPC-A4); the fifth line and B3 read nothing detectable. Done-when: two of three
+routes read, none at 0.5; W-self's rebuild deferred by the lead; action-side training not the next
+route. **Next:** GPC-3, drafted as `GPC_PLAN.md` Amendment 2.
 
 ## Rules of record (carried from CST, unchanged)
 
@@ -48,16 +49,11 @@ Done-when: two of three routes read at pilot dose, none at 0.5. **Next:** GPC-2,
 
 ## Pending
 
-1. GPC-2 (Amendment 1): built (`GPC_PLAN.md` §9.4); the author's launch with
-   `runpod/launch_gpc2_thunder.sh` (RunPod fallback `runpod/launch_gpc2.sh`).
-2. The author's ruling on a rebuilt W-self (targets written as fresh answers; GPC-A2), about 0.9
-   A100-h with training, and whether it counts toward done-when.
-3. Done (GPC-1): after the download: the Codex validity read of a seeded 30 kept pressure slots
-   (`scripts/gpc1_read.py DIR --codex`, then `scripts/gpc1_codex_validity.py DIR`). **Codex count
-   (2026-11-15): the goal option carries the assigned violation in 30 of 30, the other option
-   avoids it in 30 of 30.**
+1. GPC-3 (Amendment 2): G1 to G5 in priority order; the author's launch once built.
+2. Deferred by the lead (2026-11-16): a rebuilt W-self (GPC-A2), about 0.9 A100-h with training.
+3. Done (GPC-1): the Codex validity read, 30 of 30 both ways.
 
-## GPC-2 (drafted as `GPC_PLAN.md` Amendment 1, 2026-11-15; zero GPU until the author launches)
+## GPC-2 (Amendment 1; run 2026-11-15 22:17 PST to 02:36 PST, `7a9442e8`; read in `GPC2_RESULTS.md`)
 
 Priority order X1, X2, X3, F, C2 (C2-div, and C2-mach as the format-matched diagnostic), B (B0 to
 B3, B4 if B3 passes), A; batched by loaded model, cut from the end. X3 and C2 run only if format
@@ -67,10 +63,11 @@ Thunder, $21.50 on Secure). The scaffold templates: `CONDUCT_SCAFFOLDS.md`. The 
 
 ## Next pod
 
-**GPC-2** (built 2026-11-15): floor about 3.25 A100-h ($3.90 on Thunder) when format does not gate
-and B3 does not pass; ceiling inside one pod about 9.65 ($11.30 on Thunder, $21.50 on Secure). The
-runner opts into the editable limits. Results in `outputs/gpc2_v1`; the local read is
-`scripts/gpc2_read.py`.
+**GPC-3** (Amendment 2): drafted 2026-11-16; built after the amendment is pushed.
+
+**GPC-2 (done):** 4.23 h of session, all stages run; X3 and C2 skipped by the registered reading,
+B4's steered arms by B3. Outputs in `outputs/gpc2_v1`; reads `scripts/gpc2_read.py` and
+`scripts/gpc2_rederive.py`.
 
 **GPC-1 (done):**
 
@@ -132,8 +129,10 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | date | pod | session h | billed h | $ | running h | running $ |
 |---|---|---|---|---|---|---|
 | 11-15 | GPC-1 on Thunder (A100 80GB, $1.15 logged; all stages run, done at 7.90 h; the 8-gram fix swapped in at 4.11 h, `ec672abc`) | 7.90 | 8.05 | 9.26 | 8.05 | 9.26 |
+| 11-15/16 | GPC-2 on Thunder (A100 80GB, $1.15; instance up 22:17 to 02:36 PST; all stages run, done at 4.23 h) | 4.23 | 4.32 | 4.97 | 12.37 | 14.23 |
 
-After GPC-1: **$163.74 remain** under the shared cap ($173.00 − $9.26).
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: **$158.77 remain**
+($173.00 − $14.23).
 
 ## Implementation log (one line each)
 
@@ -156,3 +155,6 @@ After GPC-1: **$163.74 remain** under the shared cap ($173.00 − $9.26).
   `tests/scripts/test_gpc2.py` (17 fast, 1 slow chain); GPC-1's dry stand-in traces now carry
   punctuation (so `clause_end` positions exist in a dry run); `gpc1_pod.run_cells` takes a messages
   function and a set map.
+- 2026-11-16: GPC-2 read and accepted; `scripts/gpc2_rederive.py` (the lead's scratch re-derived:
+  C1 against its teacher in the matched cells, X1's base against the held-out base, B1's strata, the
+  session checks; `outputs/gpc2_v1/rederive.json`); GPC-A4 to GPC-A8 in the ledger.

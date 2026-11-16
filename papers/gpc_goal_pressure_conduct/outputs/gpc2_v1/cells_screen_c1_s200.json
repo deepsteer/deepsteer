@@ -1,0 +1,23 @@
+{
+ "name": "screen_c1_s200",
+ "cells": [
+  [
+   "c1_s200",
+   "s_hi",
+   1
+  ],
+  [
+   "c1_s200",
+   "s_lo",
+   1
+  ]
+ ],
+ "states": 350,
+ "dropped_by_the_replay_gate": 0,
+ "decisions_run": 350,
+ "decisions": 350,
+ "decisions_planned": 350,
+ "stopped": null,
+ "wall_h": 0.21146666599644556,
+ "decisions_per_h": 1655.1071931397594
+}

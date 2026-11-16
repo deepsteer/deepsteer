@@ -2139,7 +2139,9 @@ what the four-line instruction does in context.
 |---|---|---|---|
 | GOOD_BEHAVIOR's effect on single decisions is concentrated on high-propensity states (90% on the both-violate 30%) | R_selection: the strata are defined on P-ctx's rollouts, which correlate with the base's noise | the base of record and GOOD are independent of P-ctx's rollouts, so the concentration is not regression; a fresh-session GOOD at k 1 on S-hi (stage b) reproduces the drop or not | **reproduced (GPC-1):** GOOD at k 1 on S-hi −0.260 [−0.333, −0.188] against the record's −0.302 |
 | A diluted ethics instruction leaves no trace in the reasoning (moral rate and ethics-prompt citing at base) | R_instrument: the moral pattern does not detect what an effective instruction does to traces | GOOD-alone traces on S-hi (stage b); the root split reads only if GOOD-alone raises the moral rate | **calibrated (GPC-1, GPC-A3):** GOOD-alone raises the rate +0.76, mostly echo of its own words; +0.18 [+0.09, +0.27] without them, so the instrument detects an effective instruction at that smaller size |
-| C1 learned the conduct and does not take it into the games (GPC-A1) | R_format: bound to the grid's rendering; R_content: the games' scenes are outside it; R_element: one harness element switches it off | GPC-2's X1 (the held-out slots in MACHIAVELLI's harness) and X2 (S-hi in the grid's format), then X3's ladder | open, promoted to GPC-2 |
+| C1 learned the conduct and does not take it into the games (GPC-A1) | R_format: bound to the grid's rendering; R_content: the games' scenes are outside it; R_element: one harness element switches it off | GPC-2's X1 (the held-out slots in MACHIAVELLI's harness) and X2 (S-hi in the grid's format), then X3's ladder | **narrowed (GPC-2): "content gates"**, R_format against the harness's text excluded (X1 −0.48); C1 matches its teacher in every matched cell, so the gap is the clause's weakness on game states; X2 also dropped the achievements list, so G2 (GPC-3) separates content from the list |
+| The harness raises the base's violating rate on the same scenarios (0.43 to 0.87 on conduct slots; 0.89 to 0.79 on S-hi the other way) (GPC-A5) | R_achievements or R_reasoning: one harness element, the target list or the CoT steps, carries it | G2: the list, then the CoT steps, added back on S-hi in the grid's format | open, promoted to GPC-3 |
+| On 79 of S-hi's 250 states the subject advises against the violation and takes it 89% of the time; GOOD_BEHAVIOR's effect is largest there (GPC-A8) | R_labels / R_frame: S-hi's labels are loose (0.557 of options), or advising a third person is lenient | G3: the judge frame on all 1,698 states, the record arms re-read on the gap states | open, promoted to GPC-3 |
 
 **What the next result changes (GPC-1, branches registered in `GPC_PLAN.md` §6).** An arm meeting
 the goal-pressure criterion on draw 1: the thesis gains "conduct reaches the weights without a
@@ -2165,4 +2167,23 @@ scenarios (0.55, 0.31) but near its floor on workplace ones (0.08). The advice-d
 had a clean read from the tenets: W-self's targets carried a rewrite frame its students never saw
 (GPC-A2). **What GPC-2 changes:** "format gates" (X1, X2) makes a scaffold-diverse teacher the next
 adapter; "content gates" sends the line to game-like conduct data and the clause direction (B).
+
+**GPC-2 (2026-11-16; `gpc_goal_pressure_conduct/GPC2_RESULTS.md`), positive voice.** What C1
+learned is the clause at full strength, wherever its teacher acts. C1 sits within 0.06 of the
+clause in context in every matched cell (held-out 0.04 against 0.03; in MACHIAVELLI's harness text
+0.39 against 0.33; on S-hi in the grid's format 0.73 against 0.70), and the harness's text does not
+switch it off (−0.48 [−0.59, −0.37] on held-out slots in the harness). The games' states are where
+the clause itself is weak (−0.08 in context on S-hi in the grid's format), so the registered
+reading is "content gates", scoped: X2 dropped the achievements list with the format. Two
+properties of the subject carry the rest. The harness about doubles its violating rate on the same
+scenarios (0.43 to 0.87), and on 79 of S-hi's 250 states it advises a person against the violation
+and then takes it 89% of the time, the states where GOOD_BEHAVIOR works best (−0.42) and C1 reaches
+a ratio of about 0.1 (0.3 at twice the update). C1 at 2.0 is the first adapter to move the games
+(ratio 0.24), resting on the record base and with the clean-slot goal rate down to 0.88 (GPC-A4).
+The fifth line alone moves nothing detectable at 0.08, and the clause direction's fixed-trace
+prediction misses (B3; read as not predicted, ST-A32). **What GPC-3 changes:** G1 reads the
+unreworded clause in the native harness; G2 says whether the achievements list or the CoT steps
+carry the harness's push; G3 says whether the adviser-actor gap is a judgment-action gap or label
+looseness; G4 says whether the 2.0 dose's drop is conduct or avoidance; G5 takes the question to
+a second family of agentic scenarios.
 

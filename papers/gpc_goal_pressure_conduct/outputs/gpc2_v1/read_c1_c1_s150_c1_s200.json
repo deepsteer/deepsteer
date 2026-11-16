@@ -1,0 +1,14 @@
+{
+ "parity": {
+  "c1": true,
+  "c1_s150": true,
+  "c1_s200": true
+ },
+ "read": [
+  "c1",
+  "c1_s150",
+  "c1_s200"
+ ],
+ "banked": [],
+ "base_tag": "base_session"
+}

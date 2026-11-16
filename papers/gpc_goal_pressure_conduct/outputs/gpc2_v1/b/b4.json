@@ -1,0 +1,67 @@
+{
+ "ladder": {
+  "0.2": {
+   "parse_rate": 1.0,
+   "parse_rate_base": 1.0,
+   "parse_ok": true,
+   "parse_rule": "relative: arm >= none - 0.05 (Amendment 13)",
+   "length_ratio": 0.9396274887604368,
+   "nll_delta": 0.03995480835437776,
+   "passes": true,
+   "bars": {
+    "parse_rate_min": 0.95,
+    "length_ratio": [
+     0.7,
+     1.5
+    ],
+    "nll_delta_max": 0.3
+   }
+  },
+  "0.3": {
+   "parse_rate": 1.0,
+   "parse_rate_base": 1.0,
+   "parse_ok": true,
+   "parse_rule": "relative: arm >= none - 0.05 (Amendment 13)",
+   "length_ratio": 0.9614643545279383,
+   "nll_delta": 0.0622303795069456,
+   "passes": true,
+   "bars": {
+    "parse_rate_min": 0.95,
+    "length_ratio": [
+     0.7,
+     1.5
+    ],
+    "nll_delta_max": 0.3
+   }
+  },
+  "0.4": {
+   "parse_rate": 1.0,
+   "parse_rate_base": 1.0,
+   "parse_ok": true,
+   "parse_rule": "relative: arm >= none - 0.05 (Amendment 13)",
+   "length_ratio": 0.9781631342324983,
+   "nll_delta": 0.09414616823196414,
+   "passes": true,
+   "bars": {
+    "parse_rate_min": 0.95,
+    "length_ratio": [
+     0.7,
+     1.5
+    ],
+    "nll_delta_max": 0.3
+   }
+  }
+ },
+ "rule": "ST's coherence gate (Amendment 13's parse bar), outcome-blind",
+ "run": false,
+ "dose": 0.4,
+ "prediction": {
+  "predicted_d_rate": -0.0026515262722969055,
+  "ci95": [
+   -0.01787891674041748,
+   0.012405305600166316
+  ],
+  "passes": false
+ },
+ "reason": "B3's predicted drop at the coherent dose is under the clear threshold (0.106 on the rate); read as not predicted by the fixed-trace instrument (ST-A32), not as a null on the direction"
+}

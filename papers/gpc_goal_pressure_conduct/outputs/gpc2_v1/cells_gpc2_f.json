@@ -1,0 +1,23 @@
+{
+ "name": "gpc2_f",
+ "cells": [
+  [
+   "fifth_slot",
+   "s_hi",
+   1
+  ],
+  [
+   "base_session",
+   "s_hi",
+   1
+  ]
+ ],
+ "states": 250,
+ "dropped_by_the_replay_gate": 0,
+ "decisions_run": 500,
+ "decisions": 500,
+ "decisions_planned": 500,
+ "stopped": null,
+ "wall_h": 0.2814930150243971,
+ "decisions_per_h": 1776.2430089310203
+}

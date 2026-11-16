@@ -1,0 +1,90 @@
+{
+ "steps": 1,
+ "structural": [
+  {
+   "adapter": "/workspace/deepsteer/papers/gpc_goal_pressure_conduct/outputs/gpc2_v1/smoke_tmp/3038",
+   "rule": "Amendment 31 item 3",
+   "keys_checked": 992,
+   "module_kinds": [
+    "down_proj",
+    "gate_proj",
+    "in_proj_a",
+    "in_proj_b",
+    "in_proj_qkv",
+    "in_proj_z",
+    "k_proj",
+    "o_proj",
+    "out_proj",
+    "q_proj",
+    "up_proj",
+    "v_proj"
+   ],
+   "problems": [],
+   "n_problems": 0,
+   "passes": true
+  }
+ ],
+ "fixed": {
+  "adapter": "/home/ubuntu/workspace/deepsteer/papers/cst_constitutional_steering/outputs/pilot_sdf/adapters/d_doc/1e+06",
+  "hf": "/home/ubuntu/workspace/deepsteer/papers/cst_constitutional_steering/outputs/pilot_sdf/parity/hf_d_doc_1M.json",
+  "hf_base": "/home/ubuntu/workspace/deepsteer/papers/cst_constitutional_steering/outputs/pilot_sdf/parity/hf_base.json"
+ },
+ "session_hf_base_vs_saved_hf_base": 0.0,
+ "passes": true,
+ "copies": {
+  "c1_s150": {
+   "strength": 1.5,
+   "scaled_tensors": 496,
+   "of": 992,
+   "structural": {
+    "adapter": "/workspace/deepsteer/papers/gpc_goal_pressure_conduct/outputs/gpc2_v1/adapters/c1_s150/1",
+    "rule": "Amendment 31 item 3",
+    "keys_checked": 992,
+    "module_kinds": [
+     "down_proj",
+     "gate_proj",
+     "in_proj_a",
+     "in_proj_b",
+     "in_proj_qkv",
+     "in_proj_z",
+     "k_proj",
+     "o_proj",
+     "out_proj",
+     "q_proj",
+     "up_proj",
+     "v_proj"
+    ],
+    "problems": [],
+    "n_problems": 0,
+    "passes": true
+   }
+  },
+  "c1_s200": {
+   "strength": 2.0,
+   "scaled_tensors": 496,
+   "of": 992,
+   "structural": {
+    "adapter": "/workspace/deepsteer/papers/gpc_goal_pressure_conduct/outputs/gpc2_v1/adapters/c1_s200/1",
+    "rule": "Amendment 31 item 3",
+    "keys_checked": 992,
+    "module_kinds": [
+     "down_proj",
+     "gate_proj",
+     "in_proj_a",
+     "in_proj_b",
+     "in_proj_qkv",
+     "in_proj_z",
+     "k_proj",
+     "o_proj",
+     "out_proj",
+     "q_proj",
+     "up_proj",
+     "v_proj"
+    ],
+    "problems": [],
+    "n_problems": 0,
+    "passes": true
+   }
+  }
+ }
+}

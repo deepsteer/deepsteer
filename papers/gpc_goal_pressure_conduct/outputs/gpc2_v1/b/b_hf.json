@@ -1,0 +1,169 @@
+{
+ "b2": {
+  "clause_minus_neutral": {
+   "name": "clause_minus_neutral",
+   "construction": "mean difference of per-rollout clause_end means",
+   "contrast": "clause minus neutral",
+   "site": "block 32 (hidden index 33)",
+   "position": "clause_end (ST's rule)",
+   "pairing": "by conduct-grid slot",
+   "n_pairs": 200,
+   "participation_ratio": {
+    "pr": 11.297516487273716,
+    "ci95": [
+     10.127122478142764,
+     11.85397312565952
+    ],
+    "n": 400,
+    "d": 5120,
+    "n_boot": 200,
+    "bias_note": "row-resampling duplicates lower effective rank: bootstrap PR biased low"
+   },
+   "normalization": "unit vector; doses in units of the site's median norm (77.6)",
+   "outcome_variable": "the violating choice on S-hi",
+   "model": "Qwen3.8-27B@1d4bf0f2"
+  },
+  "clause_minus_none": {
+   "name": "clause_minus_none",
+   "construction": "mean difference of per-rollout clause_end means",
+   "contrast": "clause minus none",
+   "site": "block 32 (hidden index 33)",
+   "position": "clause_end (ST's rule)",
+   "pairing": "by conduct-grid slot",
+   "n_pairs": 200,
+   "participation_ratio": {
+    "pr": 15.620491795058404,
+    "ci95": [
+     13.697799974256153,
+     16.202548637636646
+    ],
+    "n": 400,
+    "d": 5120,
+    "n_boot": 200,
+    "bias_note": "row-resampling duplicates lower effective rank: bootstrap PR biased low"
+   },
+   "normalization": "unit vector; doses in units of the site's median norm (77.6)",
+   "outcome_variable": "the violating choice on S-hi",
+   "model": "Qwen3.8-27B@1d4bf0f2"
+  },
+  "neutral_minus_none": {
+   "name": "neutral_minus_none",
+   "construction": "mean difference of per-rollout clause_end means",
+   "contrast": "neutral minus none",
+   "site": "block 32 (hidden index 33)",
+   "position": "clause_end (ST's rule)",
+   "pairing": "by conduct-grid slot",
+   "n_pairs": 200,
+   "participation_ratio": {
+    "pr": 12.347854139609016,
+    "ci95": [
+     11.190440593117383,
+     12.85897477123505
+    ],
+    "n": 400,
+    "d": 5120,
+    "n_boot": 200,
+    "bias_note": "row-resampling duplicates lower effective rank: bootstrap PR biased low"
+   },
+   "normalization": "unit vector; doses in units of the site's median norm (77.6)",
+   "outcome_variable": "the violating choice on S-hi",
+   "model": "Qwen3.8-27B@1d4bf0f2"
+  },
+  "cosines": {
+   "clause_minus_neutral . clause_minus_none": 0.42007723914664813,
+   "clause_minus_neutral . neutral_minus_none": -0.8365303591424086
+  }
+ },
+ "b2_type": {
+  "clause_minus_neutral": {
+   "name": "clause_minus_neutral",
+   "n_pairs": 200
+  },
+  "clause_minus_none": {
+   "name": "clause_minus_none",
+   "n_pairs": 200
+  },
+  "neutral_minus_none": {
+   "name": "neutral_minus_none",
+   "n_pairs": 200
+  }
+ },
+ "b0": {
+  "neutral": {
+   "held_out_accuracy": 0.9875,
+   "n_test": 80
+  },
+  "none": {
+   "held_out_accuracy": 0.975,
+   "n_test": 80
+  }
+ },
+ "b0_read": {
+  "base_session": {
+   "n": 250,
+   "clause_vs_neutral": {
+    "share_clause_present": 0.644,
+    "mean_score": 3.8876683712005615
+   },
+   "clause_vs_none": {
+    "share_clause_present": 0.996,
+    "mean_score": 30.10924530029297
+   },
+   "projection_clause_minus_neutral": -3.403581876922291
+  },
+  "c_conduct_slot": {
+   "n": 250,
+   "clause_vs_neutral": {
+    "share_clause_present": 0.992,
+    "mean_score": 35.691341400146484
+   },
+   "clause_vs_none": {
+    "share_clause_present": 1.0,
+    "mean_score": 71.67375183105469
+   },
+   "projection_clause_minus_neutral": -2.0149941755980927
+  },
+  "c1": {
+   "n": 250,
+   "clause_vs_neutral": {
+    "share_clause_present": 0.732,
+    "mean_score": 7.713841915130615
+   },
+   "clause_vs_none": {
+    "share_clause_present": 0.996,
+    "mean_score": 33.984710693359375
+   },
+   "projection_clause_minus_neutral": -3.104276707981289
+  }
+ },
+ "b0_positive_control": "c_conduct_slot",
+ "b3": {
+  "n_states": 250,
+  "rule": "ST phase_predict (\u0394P = P(1 \u2212 P) \u0394margin), unit direction times dose times the median norm",
+  "clear_rate": 0.10569999999999999,
+  "0.2": {
+   "predicted_d_rate": -0.00190704607963562,
+   "ci95": [
+    -0.009505561006069183,
+    0.0051332769036293024
+   ],
+   "passes": false
+  },
+  "0.3": {
+   "predicted_d_rate": -0.002375720858573914,
+   "ci95": [
+    -0.014059056058526039,
+    0.009268616756796836
+   ],
+   "passes": false
+  },
+  "0.4": {
+   "predicted_d_rate": -0.0026515262722969055,
+   "ci95": [
+    -0.01787891674041748,
+    0.012405305600166316
+   ],
+   "passes": false
+  }
+ }
+}
