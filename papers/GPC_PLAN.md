@@ -935,8 +935,11 @@ fails (a CI wholly above 0). GPC-2's draw and this one pooled are descriptive on
   A100-h after the pilot, covering the subject's reload, the arms' transcripts, the judge's reload
   and its judgments, forecast from the pilot's own measured transcript length and the pilot's
   generation and judging rates; **50 transcripts per condition and arm** (base, `C_conduct` in
-  context, C1) if the forecast fits, **else 30**; if 30 does not fit either, the arms do not run
-  and the record gives the forecast (the budget is a cap). Fresh seeds; the pilot's 60 are not
+  context, C1) if the forecast fits, **else 30**; if 30 does not fit either, **G5 shrinks before
+  it skips** (revised, §10.6 item 8), running the first design that fits: (a) base and C1 only, every
+  condition run, 30 each; (b) base and C1 only, the explicit-america × replacement cells alone, 30
+  each. If neither fits, the arms do not run and the record gives the forecast (the budget is a
+  cap). The record states which design ran and its detection bar. Fresh seeds; the pilot's 60 are not
   reused. **Cap hits:** the primary misaligned rate excludes transcripts that hit the 10,000-token
   cap, in every arm; the rate counting a capped transcript as not misaligned is printed beside; an
   arm whose cap-hit share differs from the base's by more than 0.05 is flagged. **Acting rate:**
@@ -1045,6 +1048,12 @@ seed-paired with each other; G1 stays at k 0, seed-paired with GPC-1's `good_lin
 rows seed by row id, and every GPC-3 row name is new, so G1 (b), G2 and G3 are fresh draws (G3's
 250 S-hi judgments do not replay GPC-2's B1). G4's base needs its own two draws on S-hi: 0.85 h,
 and the floor 3.70 to 3.90 A100-h ($4.65 on Thunder), the ceiling 6.20 to 6.40 ($7.55).
+
+(8) The author, 2026-11-16, before the launch (zero GPU): when 30 per condition and arm does not fit
+the 2.5 h budget, G5 shrinks in this order and runs the first design that fits: drop the `C_conduct`
+in-context arm (base and C1, every condition, 30 each); then base and C1 on the explicit-america ×
+replacement cells alone (30 each). Neither fitting leaves the arms unrun with the forecast given, as
+before. This replaces the build choice flagged in (6). Price unchanged (the cap is the same).
 
 ### 10.7 Built (2026-11-16)
 
