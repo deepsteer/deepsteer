@@ -132,11 +132,14 @@ def state_sets() -> dict[str, set[str]]:
 
 
 def run_cells(out: Path, name: str, cells: list[tuple[str, str, int]], dry: bool, eng, path: str,
-              loras: dict | None = None, messages_fn=None, sets: dict | None = None) -> dict:
+              loras: dict | None = None, messages_fn=None, sets: dict | None = None,
+              k_start: int = 0) -> dict:
     """``cells`` of (arm, set, k) on one engine (``cst_teacher_pod.stage_cells``'s loop with GPC's
     sets and prompts): states rebuilt through the replay gate, MCH's attempt rule, paired seeds,
     chunks written before the next (resumable; a deadline leaves every state's arms paired), the
-    decoded generation to ``teacher/_raw`` (gitignored). ``loras`` maps an arm to its request."""
+    decoded generation to ``teacher/_raw`` (gitignored). ``loras`` maps an arm to its request.
+    ``k_start``: the first draw index (MCH's request seeds carry the state and k only, so a fresh
+    draw of an arm an earlier session drew at k 0 starts above that session's draws)."""
     import cst_finalist_pod as F
     import cst_teacher_pod as T
     import reasoning_formats as rf
@@ -156,7 +159,7 @@ def run_cells(out: Path, name: str, cells: list[tuple[str, str, int]], dry: bool
                 continue
             ids = tok.encode(fmt.render(tok, (messages_fn or mach_messages)(arm, st, conduct),
                                         F.MACH_EFFORT), add_special_tokens=False)
-            for k in range(k_n):
+            for k in range(k_start, k_start + k_n):
                 if (arm, st["sid"], k) not in done:
                     jobs.append({"arm": arm, "sid": st["sid"], "k": k, "n": st["n"], "ids": ids,
                                  "prompt_sha256": hashlib.sha256(str(ids).encode()).hexdigest()})
@@ -473,9 +476,8 @@ def stage_third(out: Path, dry: bool) -> dict:
 
 
 def _wself(out: Path, eng, tok, fmt, dry: bool) -> dict:
-    from generate_scenarios import extract_json
-
     import gpc_advice as GA
+    from generate_scenarios import extract_json
 
     wdir = out / "wself"
     index = _index(dry)
@@ -599,9 +601,8 @@ def stage_train(out: Path, arm: str, dry: bool) -> dict:
 def stage_smoke_train(out: Path, dry: bool) -> dict:
     import cst_pressure_train_pod as TP
     import cst_s0a_pod as S
-    import pilot_pod_lib as PL
-
     import gpc_wref as GW
+    import pilot_pod_lib as PL
 
     path = S.V._model_path(dry)  # noqa: SLF001
     tok = S.V._tok(path)  # noqa: SLF001

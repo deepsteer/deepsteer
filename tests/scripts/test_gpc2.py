@@ -273,6 +273,8 @@ def test_dry_session_chains_gpc1_into_gpc2(tmp_path):
         pytest.skip(f"no local MACHIAVELLI bundle: {e!r}")
     if not RD.LABELS.exists() or not RD.RECORD.exists():
         pytest.skip("the CST label and record files are not here")
+    if not (ROOT / "papers/st_live_reference/outputs/st2q/qwen38_27b/derive.npz").exists():
+        pytest.skip("ST's fill draws (derive.npz, B4) are not here (a later pod's sync)")
     py = sys.executable
     g1p, g2p = str(GPC / "scripts/gpc1_pod.py"), str(GPC / "scripts/gpc2_pod.py")
     tp = str(ROOT / "papers/cst_constitutional_steering/scripts/cst_teacher_pod.py")

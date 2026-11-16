@@ -1045,3 +1045,39 @@ seed-paired with each other; G1 stays at k 0, seed-paired with GPC-1's `good_lin
 rows seed by row id, and every GPC-3 row name is new, so G1 (b), G2 and G3 are fresh draws (G3's
 250 S-hi judgments do not replay GPC-2's B1). G4's base needs its own two draws on S-hi: 0.85 h,
 and the floor 3.70 to 3.90 A100-h ($4.65 on Thunder), the ceiling 6.20 to 6.40 ($7.55).
+
+### 10.7 Built (2026-11-16)
+
+Code: `scripts/gpc3_pod.py` (stages), `scripts/gpc_am.py` (G5: upstream's prompts and classifiers
+through a swapped judge client; the drop rule, the budget, the rates and flags), `scripts/gpc3_read.py`;
+`scripts/gpc1_pod.run_cells` takes `k_start` (G4's seed indices); `scripts/gpc2_render.x2_messages`
+takes a tuple of elements (G2's cumulative rungs); `runpod/remote_gpc3.sh` (opts into the editable
+limits; clones upstream at `ea0630e`; the judge's weights download behind the subject's stages),
+the two launch cards and `runpod/gpc3_inputs.sh`; `tests/scripts/test_gpc3.py` (20 fast tests, the
+upstream glue's test skipped without the clone, and a slow dry chain from GPC-1 through GPC-2 into
+every GPC-3 stage with G5's pilot forced to keep every scenario).
+
+**Build notes (not covered by the rulings; built this way and flagged to the author):**
+
+1. G5's prompts are rendered by upstream's own `generate_prompts.py` functions, imported from the
+   pod's clone at the pinned commit; the user turn is the user prompt, a blank line and the emails,
+   as `run_experiments.py:318` builds it.
+2. The judge is upstream's classifier classes with a client that records each judge prompt, then
+   replays gpt-oss-120b's completion through upstream's own parser and gates. The judge's system and
+   user messages are joined in one user turn (the CST and MRB judges' convention); effort high,
+   temperature 0, an 8,192-token budget (upstream's 2,000 is the answer budget of a non-reasoning API
+   judge; gpt-oss's analysis channel sits outside it); the final channel is what upstream parses. An
+   unparseable reply is counted and leaves the transcript out of the rates.
+3. The response the judge reads is the subject's text after its thinking trace, as an API completion
+   without the reasoning would be; a transcript with no closing tag counts as capped.
+4. G5's seeds are paired across arms by condition and index; the pilot's ids are separate, so its 60
+   are never replayed.
+5. G5's budget is forecast from the pilot's measured tokens per transcript and generation rate (60
+   concurrent sequences, a lower bound on the arms' rate), the judge's measured seconds per call, and
+   both engines' measured loads.
+6. G1 (b), G2 and G3 take one attempt per rollout with unparsed answers counted (as X2 and B1); G1 (a)
+   and G4 use MCH's attempt rule (as the screens).
+7. G3's states are the single-decision set's 1,698 through X2's state split; a state whose
+   observation does not end in its option count of numbered lines is dropped and counted.
+8. C1 x 2.0 is GPC-2's adapter, not re-scaled; its structural check and served parity run on this
+   pod.

@@ -49,7 +49,8 @@ route. **Next:** GPC-3, drafted as `GPC_PLAN.md` Amendment 2.
 
 ## Pending
 
-1. GPC-3 (Amendment 2): G1 to G5 in priority order; the author's launch once built.
+1. GPC-3 (Amendment 2): built (§10.7); the author's launch with `runpod/launch_gpc3_thunder.sh`.
+   After the pod: the Codex agreement read of 30 seeded G5 transcripts (rider 4).
 2. Deferred by the lead (2026-11-16): a rebuilt W-self (GPC-A2), about 0.9 A100-h with training.
 3. Done (GPC-1): the Codex validity read, 30 of 30 both ways.
 
@@ -66,6 +67,8 @@ Thunder, $21.50 on Secure). The scaffold templates: `CONDUCT_SCAFFOLDS.md`. The 
 **GPC-3** (Amendment 2, `GPC_PLAN.md` §10, revised before the build in §10.6): floor 3.70 to
 3.90 A100-h ($4.65 on Thunder) when G5 banks at its pilot; ceiling 6.20 to 6.40 ($7.55 on Thunder,
 $14.35 on Secure), G5's arms capped at 2.5 h. G5's six conditions confirmed by the author.
+Built (`GPC_PLAN.md` §10.7); card `runpod/launch_gpc3_thunder.sh` (RunPod fallback
+`runpod/launch_gpc3.sh`); results in `outputs/gpc3_v1`; the local read is `scripts/gpc3_read.py`.
 
 **GPC-2 (done):** 4.23 h of session, all stages run; X3 and C2 skipped by the registered reading,
 B4's steered arms by B3. Outputs in `outputs/gpc2_v1`; reads `scripts/gpc2_read.py` and
@@ -160,3 +163,7 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
 - 2026-11-16: GPC-2 read and accepted; `scripts/gpc2_rederive.py` (the lead's scratch re-derived:
   C1 against its teacher in the matched cells, X1's base against the held-out base, B1's strata, the
   session checks; `outputs/gpc2_v1/rederive.json`); GPC-A4 to GPC-A8 in the ledger.
+- 2026-11-16: Amendment 2 (`2d07ef65`), revised before the build (`ed85ea50`, `d5ec790b`: G5's pilot
+  per scenario, its budget, cap hits and acting rate; G4 at k 2 at seed indices 2 and 3). GPC-3 built:
+  `gpc3_pod.py`, `gpc_am.py`, `gpc3_read.py`, `remote_gpc3.sh` and its cards, `test_gpc3.py`;
+  `run_cells` takes `k_start`; `x2_messages` takes a tuple of elements.
