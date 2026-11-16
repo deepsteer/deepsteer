@@ -888,8 +888,9 @@ between the strata, so a gap-state difference is a lower bound on the difference
 adviser would show.
 
 **G4. C1 at 2.0, a fresh draw.** S-hi and S-lo, **k 2** (revised, §10.6 item 5), against the
-session base at k 2 on both (G1's native session base is S-hi's first base draw; one more draw on
-S-hi and two on S-lo); split by B1's stratum (GPC-2's rows) and by
+session base at k 2 on both, **at request-seed indices k 2 and 3** for both arms (§10.6 item 7: the
+harness's request seeds depend on the state and k only, so k 0 would replay GPC-2's draw and k 0
+and 1 the record's; no earlier session drew k 2 or 3); split by B1's stratum (GPC-2's rows) and by
 violation kind (`gpc1_read.violence_split`); and GPC-1's 100 held-out slots (the clean slots' goal
 rate). **Registered (GPC-A4):** "reproduces" if C1 × 2.0 minus the session base on S-hi has a CI
 wholly below 0; R_broad flagged if the clean-slot goal rate is 0.90 or less again, or the S-lo guard
@@ -956,7 +957,7 @@ fails (a CI wholly above 0). GPC-2's draw and this one pooled are descriptive on
 | G1 (b), G2 cells, X2's format | 250 | 0.06 (X2's C1 − base) | 0.085 |
 | G2 per stratum (79 / 171) | 79 / 171 | 0.11 / 0.05 (B1 strata, C1 × 2.0 − base) | 0.16 / 0.07 |
 | G3 GOOD or P-ctx − base on gap states | about a third of 1,698 | 0.023 (P-ctx's 1,698 read, 0.0135, scaled by √3) | 0.035 |
-| G4, C1 × 2.0 − session base on S-hi, k 2 both | 250 | 0.047 (GPC-2's k 1 contrast, 0.058, scaled for k 2: within-state variance 0.064 a draw from the record's k 2 base, between-state 0.062) | 0.067; power about 0.85 at GPC-2's −0.072 (0.68 at k 1) |
+| G4, C1 × 2.0 − session base on S-hi, k 2 both (seed indices 2 and 3) | 250 | 0.047 (GPC-2's k 1 contrast, 0.058, scaled for k 2: within-state variance 0.064 a draw from the record's k 2 base, between-state 0.062) | 0.067; power about 0.85 at GPC-2's −0.072 (0.68 at k 1) |
 | G5 pooled / per condition | 50 C or 30 C / 50 or 30 per arm | binomial at 0.3 | 0.10 to 0.16 / 0.26 or 0.33 (by n and C, 10.1) |
 
 ### 10.3 Price (GPC-2's measured rates; re-priced at the pod's gate from its own)
@@ -974,11 +975,11 @@ higher effort and a 24k cap); G5's arms are capped at 2.5 h by the registered bu
 | G1: 500 native decisions, 500 in X2's format | 0.40 | always |
 | G2: 750 decisions with the list, 750 with the list and the CoT steps | 0.60 | always |
 | G3: 1,698 judgments | 0.70 | always |
-| G4 at k 2: 700 decisions for C1 × 2.0, 450 for the session base (one more draw on S-hi, two on S-lo), 100 held-out slots | 0.70 | always |
+| G4 at k 2 (seed indices 2 and 3): 700 decisions for C1 × 2.0, 700 for the session base, 100 held-out slots | 0.85 | always |
 | G5 pilot: 60 transcripts (20 per scenario), the judge's download and load, 60 judgments | 0.45 to 0.65 | always |
-| **floor** | **3.55 to 3.75** (3.9 billed: **$4.50 on Thunder**, $8.55 on Secure at $2.19) | G5 banks |
+| **floor** | **3.70 to 3.90** (4.05 billed: **$4.65 on Thunder**, $8.85 on Secure at $2.19) | G5 banks |
 | G5 arms: the subject's reload, 50 or 30 transcripts per condition and arm, the judge's reload and judgments | at most 2.5 (registered cap) | a scenario's pilot rate is 0.15 or more |
-| **ceiling** | **6.05 to 6.25** (up to 6.4 billed: $7.35 on Thunder, $14.00 on Secure) | |
+| **ceiling** | **6.20 to 6.40** (up to 6.55 billed: $7.55 on Thunder, $14.35 on Secure) | |
 
 **Against the cap:** $158.77 remain; the pod's ceiling is under 5% of it on Thunder. B4's full arms are not in
 GPC-3: at the ladder's measured rate (GPC-A7, about 105 steered rollouts an hour) they would cost
@@ -1035,3 +1036,12 @@ and that misclassification attenuates their contrast. All edits are in place abo
 choices are flagged to the author: G4's k 2 covers the session base too, which prices it at about
 0.4 A100-h more (not 0.15), and G5's arms do not run if even 30 per condition and arm exceed the
 2.5 h budget. Re-priced: floor 3.55 to 3.75 A100-h ($4.50 on Thunder), ceiling 6.05 to 6.25 ($7.35).
+
+(7) Found at the build (2026-11-16, before any GPC-3 data; a correction toward the ruling's "fresh
+draw"): the harness's request seeds (`mch_newmodel_pod.request_seed(model, "teacher", sid, k,
+attempt)`) carry no arm and no session, so a k 0 draw of C1 × 2.0 replays GPC-2's and a k 0 base
+replays the record's k 0. G4's arm and session base run at seed indices k 2 and 3 (never drawn),
+seed-paired with each other; G1 stays at k 0, seed-paired with GPC-1's `good_lines`. Grid-format
+rows seed by row id, and every GPC-3 row name is new, so G1 (b), G2 and G3 are fresh draws (G3's
+250 S-hi judgments do not replay GPC-2's B1). G4's base needs its own two draws on S-hi: 0.85 h,
+and the floor 3.70 to 3.90 A100-h ($4.65 on Thunder), the ceiling 6.20 to 6.40 ($7.55).

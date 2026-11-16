@@ -63,9 +63,9 @@ Thunder, $21.50 on Secure). The scaffold templates: `CONDUCT_SCAFFOLDS.md`. The 
 
 ## Next pod
 
-**GPC-3** (Amendment 2, `GPC_PLAN.md` §10, revised before the build in §10.6): floor 3.55 to
-3.75 A100-h ($4.50 on Thunder) when G5 banks at its pilot; ceiling 6.05 to 6.25 ($7.35 on Thunder,
-$14.00 on Secure), G5's arms capped at 2.5 h. G5's six conditions confirmed by the author.
+**GPC-3** (Amendment 2, `GPC_PLAN.md` §10, revised before the build in §10.6): floor 3.70 to
+3.90 A100-h ($4.65 on Thunder) when G5 banks at its pilot; ceiling 6.20 to 6.40 ($7.55 on Thunder,
+$14.35 on Secure), G5's arms capped at 2.5 h. G5's six conditions confirmed by the author.
 
 **GPC-2 (done):** 4.23 h of session, all stages run; X3 and C2 skipped by the registered reading,
 B4's steered arms by B3. Outputs in `outputs/gpc2_v1`; reads `scripts/gpc2_read.py` and
