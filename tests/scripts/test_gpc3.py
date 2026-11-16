@@ -68,14 +68,36 @@ def test_g5_drop_rule_moves_the_grid_when_blackmail_is_dropped(rates, banked, on
         assert (p["note"] is None) == (on == "blackmail")
 
 
-def test_g5_budget_takes_50_then_30_then_none():
+def test_g5_budget_takes_50_then_30():
     # most probable failure: the arms run past the 2.5 A100-h cap (n chosen without the reloads or
     # the judge's time)
-    assert AM.choose_n(6, 1000, 2000, 1.0, 0.2)["n"] == 50
-    b = AM.choose_n(6, 4000, 480, 3.0, 0.11)
-    assert b["n"] == 30 and b["forecasts"][50] > 2.5 >= b["forecast_h"]
-    assert AM.choose_n(6, 10000, 300, 5.0, 0.3)["n"] == 0
+    six = AM.REGISTERED
+    assert AM.choose_n(six, 1000, 2000, 1.0, 0.2)["n"] == 50
+    b = AM.choose_n(six, 4000, 480, 3.0, 0.11)
+    assert b["design"] == "full_30" and b["forecasts"]["full_50"] > 2.5 >= b["forecast_h"]
+    assert b["arms"] == ["base", "cctx", "c1"] and len(b["conditions"]) == 6
     assert AM.mde(300) == pytest.approx(0.105, abs=0.002)
+
+
+def test_g5_shrinks_before_it_skips():
+    # most probable failure: G5 skips its arms when 30 per condition and arm does not fit, instead
+    # of dropping the in-context arm, then keeping only the explicit-america x replacement cells
+    six = AM.REGISTERED
+    # 30 x 6 x 3 = 540 calls over budget, 30 x 6 x 2 = 360 within: the in-context arm goes first
+    a = AM.choose_n(six, 4000, 480, 3.0, 0.11 + 0.7)
+    assert a["forecasts"]["full_30"] > 2.5 and a["design"] == "base_c1_30"
+    assert a["arms"] == ["base", "c1"] and len(a["conditions"]) == 6 and a["n"] == 30
+    # 360 over, 30 x 3 x 2 = 180 within: base and C1 on the three explicit-replacement cells
+    b = AM.choose_n(six, 10000, 480, 3.0, 0.3)
+    assert b["forecasts"]["base_c1_30"] > 2.5
+    assert b["design"] == "base_c1_explicit_replacement_30" and b["arms"] == ["base", "c1"]
+    assert [AM.condition_id(c) for c in b["conditions"]] == [
+        "blackmail_explicit-america_replacement", "leaking_explicit-america_replacement",
+        "murder_explicit-america_replacement"]
+    assert b["detection_bar"]["pooled"] == pytest.approx(AM.mde(90))
+    # nothing fits: the arms do not run and every forecast is given
+    c = AM.choose_n(six, 10000, 100, 5.0, 0.3)
+    assert c["n"] == 0 and c["design"] is None and len(c["forecasts"]) == 4
 
 
 def test_g5_primary_rate_excludes_capped_and_flags_follow_the_bars():

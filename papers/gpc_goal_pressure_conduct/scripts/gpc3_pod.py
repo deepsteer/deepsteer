@@ -429,15 +429,18 @@ def plan(out: Path) -> dict:
         free = [r for r in rows if not r["hit_cap"]]
         tok_per = (sum(r["n_tokens"] for r in rows) / len(rows)) if rows else AM.CAP
         reload_h = ((gen.get("subject_load_s") or 400) + (jd.get("load_s") or 600)) / 3600
-        p["budget"] = AM.choose_n(len(p["conditions"]), tok_per, gen.get("gen_tokens_per_s") or 1,
+        p["budget"] = AM.choose_n(p["conditions"], tok_per, gen.get("gen_tokens_per_s") or 1,
                                   jd.get("s_per_call") or 5.0, reload_h)
         p["budget"]["inputs"] = {"tokens_per_transcript": tok_per, "uncapped": len(free),
                                  "gen_tokens_per_s": gen.get("gen_tokens_per_s"),
                                  "judge_s_per_call": jd.get("s_per_call"), "reload_h": reload_h}
     _w(out / "g5", "plan", p)
-    print(">> g5 plan:", json.dumps({k: p.get(k) for k in ("banked", "kept", "grid_on", "note",
-                                                           "rates_used", "budget")}, default=str),
-          flush=True)
+    b = p.get("budget") or {}
+    print(">> g5 plan:", json.dumps({**{k: p.get(k) for k in ("banked", "kept", "grid_on", "note",
+                                                              "rates_used")},
+                                     **{k: b.get(k) for k in ("design", "n", "arms", "forecast_h",
+                                                              "forecasts", "detection_bar")}},
+                                    default=str), flush=True)
     return p
 
 
@@ -451,8 +454,9 @@ def stage_g5_arms(out: Path, dry: bool) -> dict:
     path, tok, fmt, per = P2._engine(out, dry, ["c1"])  # noqa: SLF001
     if "c1" not in per:
         raise SystemExit("BAIL: C1's served parity does not read; G5's arms need it")
-    jobs = [(arm, "c1" if arm == "c1" else None, tuple(c), i) for c in p["conditions"]
-            for arm in AM.ARMS for i in range(n)]
+    b = p["budget"]
+    jobs = [(arm, "c1" if arm == "c1" else None, tuple(c), i) for c in b["conditions"]
+            for arm in b["arms"] for i in range(n)]
     return g5_transcripts(out, "arms", jobs, per, tok, fmt, dry)
 
 

@@ -9,8 +9,9 @@ second pass replays each completion through upstream's parser and gates.
 
 Registered (Amendment 2 §10.1, §10.6): the six conditions; the pilot (20 base transcripts per
 scenario at explicit-america x replacement) and its drop rule; the 2.5 A100-h budget after the
-pilot (50 per condition and arm if the forecast fits, else 30, else the arms do not run); the
-primary rate excluding capped transcripts; the cap-hit and acting-rate flags.
+pilot (50 per condition and arm if the forecast fits, else 30, then the shrunken designs, else
+the arms do not run); the primary rate excluding capped transcripts; the cap-hit and acting-rate
+flags.
 """
 
 from __future__ import annotations
@@ -75,21 +76,38 @@ def plan_after_pilot(rates: dict[str, float | None]) -> dict:
             "conditions": [list(c) for c in conds]}
 
 
-def choose_n(n_conditions: int, tokens_per_transcript: float, gen_tokens_per_s: float,
+def designs(conditions: list) -> list[dict]:
+    """The registered order (Amendment 2 §10.6 items 2 and 8): the full design at 50, then at 30;
+    then base and C1 on every condition at 30; then base and C1 on the explicit-america x
+    replacement cells alone at 30."""
+    conds = [list(c) for c in conditions]
+    er = [c for c in conds if tuple(c[1:]) == (*EXPLICIT, "replacement")]
+    return [{"design": "full_50", "arms": list(ARMS), "conditions": conds, "n": N_FULL},
+            {"design": "full_30", "arms": list(ARMS), "conditions": conds, "n": N_SHORT},
+            {"design": "base_c1_30", "arms": ["base", "c1"], "conditions": conds, "n": N_SHORT},
+            {"design": "base_c1_explicit_replacement_30", "arms": ["base", "c1"],
+             "conditions": er, "n": N_SHORT}]
+
+
+def choose_n(conditions: list, tokens_per_transcript: float, gen_tokens_per_s: float,
              judge_s_per_call: float, reload_h: float) -> dict:
-    """50 per condition and arm if the forecast (the subject's reload, the transcripts at the
-    pilot's measured length and rate, the judge's reload and calls at the pilot's rate) fits 2.5 h,
-    else 30, else none."""
-    out = {}
-    for n in (N_FULL, N_SHORT):
-        calls = n * n_conditions * len(ARMS)
+    """The first design whose forecast (the subject's reload, the transcripts at the pilot's
+    measured length and rate, the judge's reload and calls at the pilot's rate) fits 2.5 h; G5
+    shrinks before it skips. None fitting: n 0, the forecasts given."""
+    forecasts = {}
+    for d in designs(conditions):
+        calls = d["n"] * len(d["conditions"]) * len(d["arms"])
         h = (reload_h + calls * tokens_per_transcript / max(gen_tokens_per_s, 1e-9) / 3600
              + calls * judge_s_per_call / 3600)
-        out[n] = h
-        if h <= BUDGET_H:
-            return {"n": n, "forecast_h": h, "forecasts": out, "budget_h": BUDGET_H}
-    return {"n": 0, "forecast_h": None, "forecasts": out, "budget_h": BUDGET_H,
-            "reason": "even 30 per condition and arm exceeds the 2.5 A100-h budget"}
+        forecasts[d["design"]] = h
+        if calls and h <= BUDGET_H:
+            return {**d, "forecast_h": h, "forecasts": forecasts, "budget_h": BUDGET_H,
+                    "detection_bar": {"pooled": mde(d["n"] * len(d["conditions"])),
+                                      "per_condition": mde(d["n"]), "at_base_rate": 0.3}}
+    return {"design": None, "n": 0, "arms": [], "conditions": [], "forecast_h": None,
+            "forecasts": forecasts, "budget_h": BUDGET_H,
+            "reason": "no design fits the 2.5 A100-h budget (full at 50 or 30, base and C1 on "
+                      "every condition, base and C1 on the explicit-america x replacement cells)"}
 
 
 def mde(n_per_arm: int, p: float = 0.3) -> float:

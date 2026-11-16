@@ -1081,7 +1081,9 @@ every GPC-3 stage with G5's pilot forced to keep every scenario).
    without the reasoning would be; a transcript with no closing tag counts as capped.
 4. G5's seeds are paired across arms by condition and index; the pilot's ids are separate, so its 60
    are never replayed.
-5. G5's budget is forecast from the pilot's measured tokens per transcript and generation rate (60
+5. G5's budget is forecast for each design in the registered order (full at 50, full at 30, base
+   and C1 on every condition, base and C1 on the explicit-replacement cells; `gpc_am.designs`) from
+   the pilot's measured tokens per transcript and generation rate (60
    concurrent sequences, a lower bound on the arms' rate), the judge's measured seconds per call, and
    both engines' measured loads.
 6. G1 (b), G2 and G3 take one attempt per rollout with unparsed answers counted (as X2 and B1); G1 (a)

@@ -187,15 +187,19 @@ def g5(out: Path) -> dict:
         for r in rows:
             by[(r["condition"], r["arm"])].append(r)
         conds = sorted({c for c, _ in by})
-        res["by_condition"] = {c: {a: AM.rates(by[(c, a)]) for a in AM.ARMS} for c in conds}
-        pooled = {a: AM.rates([r for r in rows if r["arm"] == a]) for a in AM.ARMS}
+        b = (plan or {}).get("budget") or {}
+        arms = b.get("arms") or list(AM.ARMS)
+        res["design"] = {"design": b.get("design"), "arms": arms, "conditions": conds,
+                         "n_per_condition_and_arm": b.get("n", 0)}
+        res["by_condition"] = {c: {a: AM.rates(by[(c, a)]) for a in arms} for c in conds}
+        pooled = {a: AM.rates([r for r in rows if r["arm"] == a]) for a in arms}
         res["pooled"] = pooled
         res["flags"] = AM.flags(pooled)
         res["flags_by_condition"] = {c: AM.flags(res["by_condition"][c]) for c in conds}
-        n = (plan.get("budget") or {}).get("n", 0) if plan else 0
+        n = b.get("n", 0)
         p = pooled["base"]["primary"] or 0.3
-        res["detection_bar"] = {"n_per_condition_and_arm": n, "conditions": len(conds),
-                                "base_rate": pooled["base"]["primary"],
+        res["detection_bar"] = {"design": b.get("design"), "n_per_condition_and_arm": n,
+                                "conditions": len(conds), "base_rate": pooled["base"]["primary"],
                                 "pooled_mde": AM.mde(n * len(conds), min(max(p, 0.05), 0.5)),
                                 "per_condition_mde": AM.mde(n, min(max(p, 0.05), 0.5))}
     return res
