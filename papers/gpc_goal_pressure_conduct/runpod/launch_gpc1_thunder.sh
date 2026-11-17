@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Launch card: GPC-1 on Thunder Compute (GPC_PLAN.md v0.2 §5), the RunPod Secure fallback inside.
+# Launch card: GPC-1 on Thunder Compute (GPC_PLAN.md v0.2 §5) (no provider fallback unless TNR_FALLBACK=runpod_secure).
 # One command, the session's log on the console, the instance created and deleted inside the
 # script. The author runs:
 #
-#   export HF_TOKEN=... RUNPOD_API_KEY=...   # Thunder's login is the `tnr` CLI (`tnr login`)
+#   export HF_TOKEN=...   # Thunder's login is the `tnr` CLI (`tnr login`); RUNPOD_API_KEY only with a fallback
 #   bash papers/gpc_goal_pressure_conduct/runpod/launch_gpc1_thunder.sh
 #
 # One A100 80GB (8 vCPUs, 300 GB, about $1.15 an hour) against the 10.5 h price (stages stop at
@@ -19,11 +19,15 @@
 # instance and checks the account lists nothing it created (Ctrl-C or any error also deletes it).
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
-[ -n "${RUNPOD_API_KEY:-}" ] || { echo "BAIL: export RUNPOD_API_KEY too (the fallback when Thunder has no capacity)"; exit 1; }
+# no provider fallback by default (the author, 2026-11-17): with no Thunder capacity the launch stops
+# and no pod starts; TNR_FALLBACK=runpod_secure on the command line opts into RunPod Secure
+if [ "${TNR_FALLBACK:-}" = runpod_secure ]; then
+  [ -n "${RUNPOD_API_KEY:-}" ] || { echo "BAIL: TNR_FALLBACK=runpod_secure needs RUNPOD_API_KEY"; exit 1; }
+fi
 source papers/gpc_goal_pressure_conduct/runpod/gpc1_inputs.sh
 export ON_DEMAND_SYNC="$GPC_BUNDLE"
 export SELF_PAPER=$G RESULTS_SUBPATH=outputs/gpc1_v1 CST_SESSION=1 SYNC_OUTPUTS="$SYNC"
 export REMOTE_SCRIPT=$G/runpod/remote_gpc1.sh MAX_SYNC_GB=3 DISK_GB=300
 export PROVIDER=thunder TNR_GPU=a100xl TNR_VCPUS=8 TNR_PRICE=1.15 POD_NAME=deepsteer-gpc1
-export TNR_FALLBACK=runpod_secure RUNPOD_GPU_TYPES="NVIDIA A100 80GB PCIe,NVIDIA A100-SXM4-80GB"
+export TNR_FALLBACK="${TNR_FALLBACK:-}" RUNPOD_GPU_TYPES="NVIDIA A100 80GB PCIe,NVIDIA A100-SXM4-80GB"
 exec bash papers/runpod_common/run_session.sh

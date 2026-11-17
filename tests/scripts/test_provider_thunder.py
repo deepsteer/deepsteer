@@ -130,3 +130,15 @@ def test_run_session_selects_the_provider_and_keeps_runpod_the_default():
     assert 'PROVIDER="${PROVIDER:-runpod}"' in text and "unknown PROVIDER" in text
     assert 'thunder) source "$REPO_ROOT/papers/runpod_common/provider_thunder.sh"' in text
     assert "root@" not in text and "root@" not in (LIB / "session_lib.sh").read_text()
+
+
+def test_thunder_cards_do_not_fall_back_unless_asked():
+    # most probable failure: a Thunder card falls back to RunPod Secure by default (the author,
+    # 2026-11-17: with no capacity the launch should stop, not start elsewhere)
+    root = Path(__file__).resolve().parents[2]
+    cards = sorted(root.glob("papers/*/runpod/launch_*_thunder.sh"))
+    assert cards
+    for c in cards:
+        t = c.read_text()
+        assert "export TNR_FALLBACK=runpod_secure" not in t, c.name
+        assert 'TNR_FALLBACK="${TNR_FALLBACK:-}"' in t, c.name
