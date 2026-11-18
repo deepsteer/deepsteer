@@ -1,0 +1,11 @@
+{
+ "rule": "GPC Amendment 2 \u00a710.6 (G5's budget, then the session's cut)",
+ "item": "g5_arms",
+ "plan_runs": true,
+ "n": 50,
+ "elapsed_h": 3.16021196047465,
+ "forecast_h": 2.2368688263596788,
+ "ends_h": 5.397080786834328,
+ "cut_h": 10.25,
+ "runs": true
+}

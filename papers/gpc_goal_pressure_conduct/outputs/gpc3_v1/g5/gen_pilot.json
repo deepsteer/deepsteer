@@ -1,0 +1,9 @@
+{
+ "name": "pilot",
+ "transcripts": 60,
+ "run": 60,
+ "wall_s": 670.2554013729095,
+ "gen_tokens": 324054,
+ "gen_tokens_per_s": 483.47838650196314,
+ "subject_load_s": 108.22034239768982
+}

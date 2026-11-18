@@ -1,0 +1,8 @@
+{
+ "name": "arms",
+ "transcripts": 600,
+ "run": 600,
+ "wall_s": 3766.6673889160156,
+ "gen_tokens": 2370099,
+ "gen_tokens_per_s": 629.229702355555
+}

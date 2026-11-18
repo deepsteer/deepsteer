@@ -1,0 +1,23 @@
+{
+ "name": "gpc3_g1",
+ "cells": [
+  [
+   "conduct_lines",
+   "s_hi",
+   1
+  ],
+  [
+   "base_session",
+   "s_hi",
+   1
+  ]
+ ],
+ "states": 250,
+ "dropped_by_the_replay_gate": 0,
+ "decisions_run": 500,
+ "decisions": 500,
+ "decisions_planned": 500,
+ "stopped": null,
+ "wall_h": 0.26306018822722965,
+ "decisions_per_h": 1900.7057030161604
+}

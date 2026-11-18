@@ -1,0 +1,9 @@
+{
+ "part": "arms",
+ "judged": 600,
+ "load_s": 62.95447492599487,
+ "wall_s": 452.6032979488373,
+ "s_per_call": 0.7543388299147288,
+ "out_tokens": 456280,
+ "judge": "gpt-oss-120b@b5c939de, effort high, temperature 0; upstream's prompts and gates"
+}

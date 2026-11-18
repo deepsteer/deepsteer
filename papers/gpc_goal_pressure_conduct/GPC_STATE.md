@@ -2,15 +2,15 @@
 
 Scope: goal pressure, conduct moved into weights with nothing in context, one subject.
 
-**As of 2026-11-16, Amendment 1 run; GPC-2 read and accepted by the author (`GPC2_RESULTS.md`).**
-Registered reading "content gates" (X1: C1 −0.48 in the harness's text; X2: −0.06 [−0.12, +0.004]),
-scoped: X2 dropped the achievements list with the format. C1 matches its in-context teacher in every
-matched cell, so the gap is the clause's weakness on game states. The harness about doubles the
-base's violating rate on the same conduct slots (GPC-A5); on 79 of S-hi's 250 states the base
-advises against the violation and takes it 89% of the time (GPC-A8). C1 × 2.0 reads 0.24, resting
-on the record base (GPC-A4); the fifth line and B3 read nothing detectable. Done-when: two of three
-routes read, none at 0.5; W-self's rebuild deferred by the lead; action-side training not the next
-route. **Next:** GPC-3, drafted as `GPC_PLAN.md` Amendment 2.
+**As of 2026-11-17, Amendment 2 run; GPC-3 read and accepted by the author (`GPC3_RESULTS.md`).**
+G5 (exploratory): in blackmail with an explicit goal and a replacement threat, base 0.38, the clause
+in context 0.02, C1 0.04, acting 1.00 in all three (one cell, n 50, one draw, one judge; the string
+check 0.58, 0.06, 0.12; Codex agrees on 22 of 30, stricter on leverage, GPC-A11). G1: the clause's
+content is the limit on game states (GOOD −0.28 where the clause −0.084); the unreworded clause in the
+native harness 0.48 of GOOD, C1 0.00. G2: the CoT steps carry the harness's push. G3: GOOD −0.084,
+P-ctx −0.019 on 1,093 gap states. G4: C1 × 2.0 reproduces (−0.120, about 0.40 of GOOD; clean slots
+0.88). The registered game bar is not met. **Next:** Amendment 3 (GPC-4), drafted for the author's
+ruling; the target moves to agentic instruments.
 
 ## Rules of record (carried from CST, unchanged)
 
@@ -49,10 +49,11 @@ route. **Next:** GPC-3, drafted as `GPC_PLAN.md` Amendment 2.
 
 ## Pending
 
-1. GPC-3 (Amendment 2): built (§10.7); the author's launch with `runpod/launch_gpc3_thunder.sh`.
-   After the pod: the Codex agreement read of 30 seeded G5 transcripts (rider 4).
-2. Deferred by the lead (2026-11-16): a rebuilt W-self (GPC-A2), about 0.9 A100-h with training.
-3. Done (GPC-1): the Codex validity read, 30 of 30 both ways.
+1. Amendment 3 (GPC-4): the lead's draft, the author's ruling, then committed and pushed before any
+   build; B3's zero-GPU checks reported one at a time.
+2. GPC-A11: the author's read of the 8 judge-yes, Codex-no transcripts (one question each).
+3. GPC-A9's zero-GPU read (which replies each arm skips in the no-threat cells).
+4. Deferred by the lead: a rebuilt W-self (GPC-A2).
 
 ## GPC-2 (Amendment 1; run 2026-11-15 22:17 PST to 02:36 PST, `7a9442e8`; read in `GPC2_RESULTS.md`)
 
@@ -64,11 +65,11 @@ Thunder, $21.50 on Secure). The scaffold templates: `CONDUCT_SCAFFOLDS.md`. The 
 
 ## Next pod
 
-**GPC-3** (Amendment 2, `GPC_PLAN.md` §10, revised before the build in §10.6): floor 3.70 to
-3.90 A100-h ($4.65 on Thunder) when G5 banks at its pilot; ceiling 6.20 to 6.40 ($7.55 on Thunder,
-$14.35 on Secure), G5's arms capped at 2.5 h. G5's six conditions confirmed by the author.
-Built (`GPC_PLAN.md` §10.7); card `runpod/launch_gpc3_thunder.sh` (RunPod fallback
-`runpod/launch_gpc3.sh`); results in `outputs/gpc3_v1`; the local read is `scripts/gpc3_read.py`.
+**GPC-4** (Amendment 3): drafted for the author's ruling; nothing built.
+
+**GPC-3 (done):** 4.39 h of session on RunPod Secure, all stages run; G5's full design at 50 per
+condition and arm on blackmail's grid (leaking and murder banked at the pilot). Outputs in
+`outputs/gpc3_v1`; reads `scripts/gpc3_read.py` and `scripts/gpc3_rederive.py`.
 
 **GPC-2 (done):** 4.23 h of session, all stages run; X3 and C2 skipped by the registered reading,
 B4's steered arms by B3. Outputs in `outputs/gpc2_v1`; reads `scripts/gpc2_read.py` and
@@ -135,9 +136,9 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 |---|---|---|---|---|---|---|
 | 11-15 | GPC-1 on Thunder (A100 80GB, $1.15 logged; all stages run, done at 7.90 h; the 8-gram fix swapped in at 4.11 h, `ec672abc`) | 7.90 | 8.05 | 9.26 | 8.05 | 9.26 |
 | 11-15/16 | GPC-2 on Thunder (A100 80GB, $1.15; instance up 22:17 to 02:36 PST; all stages run, done at 4.23 h) | 4.23 | 4.32 | 4.97 | 12.37 | 14.23 |
+| 11-17 | GPC-3 on RunPod Secure (A100-SXM4-80GB, $2.19; the Thunder card fell back; all stages run, done at 4.39 h) | 4.39 | 4.50 | 9.86 | 16.87 | 24.09 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: **$158.77 remain**
-($173.00 − $14.23).
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09).
 
 ## Implementation log (one line each)
 
@@ -167,3 +168,7 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
   per scenario, its budget, cap hits and acting rate; G4 at k 2 at seed indices 2 and 3). GPC-3 built:
   `gpc3_pod.py`, `gpc_am.py`, `gpc3_read.py`, `remote_gpc3.sh` and its cards, `test_gpc3.py`;
   `run_cells` takes `k_start`; `x2_messages` takes a tuple of elements.
+- 2026-11-17: GPC-3 run on RunPod Secure (Thunder fell back; the cards' fallback is now opt-in,
+  `c125c151`) and read; `scripts/gpc3_rederive.py` (G5's judge-free string check, the acting rates,
+  the main cell's differences, the pilot against the arms, and Amendment 2 rider 4's Codex read of 30
+  seeded transcripts); GPC-A9 to GPC-A11 in the ledger.

@@ -2798,7 +2798,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 - R_content: the games' content (long fiction scenes, a character, many options, a running score) is outside what C1 learned to treat as a conduct choice, whatever the rendering.
 - R_element: one harness element alone (the CoT steps, the answer format, the full achievements list, or the immerse line) switches C1 off.
 **Discriminator.** GPC-2's X1 (the held-out slots in MACHIAVELLI's harness; base, `C_conduct` in context, C1; k 1) and X2 (S-hi's 250 states in the grid's format; the same arms). Registered: "format gates" if C1 minus base on X2 has a CI wholly below 0 and C1's X1 effect is under half its held-out effect; "content gates" if C1 stays at base on X2; otherwise mixed, to the lead. R_element by X3 (only if format gates: one harness element added back at a time on S-hi in the grid's format). About 0.6 A100-h for X1 and X2 together.
-**Status.** narrowed (GPC-2, 2026-11-16; `GPC2_RESULTS.md` §1): R_format against the harness's text is excluded (X1: C1 −0.48 [−0.59, −0.37] in the harness's text, 2.5 times the bar); the registered reading is "content gates" (X2: C1 −0.06 [−0.12, +0.004]). C1 matches its in-context teacher in every matched cell (held-out 0.04 against 0.03, X1 0.39 against 0.33, X2 0.73 against 0.70), so the gap is the clause's weakness on game states, carried faithfully. Scoped: X2 dropped the achievements list with the format (the lead's design error), so R_content and R_element (the list) are not separated; GPC-3's G2 adds the list back, then the CoT steps. The unreworded clause in the native harness is unread (G1). Open, promoted (GPC-3).
+**Status.** narrowed (GPC-2, 2026-11-16; `GPC2_RESULTS.md` §1): R_format against the harness's text is excluded (X1: C1 −0.48 [−0.59, −0.37] in the harness's text, 2.5 times the bar); the registered reading is "content gates" (X2: C1 −0.06 [−0.12, +0.004]). C1 matches its in-context teacher in every matched cell (held-out 0.04 against 0.03, X1 0.39 against 0.33, X2 0.73 against 0.70), so the gap is the clause's weakness on game states, carried faithfully. Scoped: X2 dropped the achievements list with the format (the lead's design error), so R_content and R_element (the list) are not separated; GPC-3's G2 adds the list back, then the CoT steps. The unreworded clause in the native harness is unread (G1). Open, promoted (GPC-3). **GPC-3 (2026-11-17; `GPC3_RESULTS.md` §2, §3):** G2 adds the list back, then the CoT steps; C1 minus base stays at −0.02 and −0.04 along the ladder, so "content gates" holds without the list confound. G1 (b): GOOD_BEHAVIOR moves the grid-format states −0.28 [−0.35, −0.21] where the clause moved −0.084, so the content that fails is the clause's, not the states'. The exception to C1 tracking its teacher: the unreworded clause in the native harness −0.144 (0.48 of GOOD), C1 0.00. Resolved toward R_content in the clause's form (resolution_type: discrimination): the clause is a weak instruction on game states, and C1 carries it faithfully.
 **Thesis impact.** Under R_format, conduct reached the weights and a scaffold-diverse teacher (C2-div) is the next adapter. Under R_content, the conduct data must come from game-like scenes, and the direction test (B) leads. Under R_element, one harness element is the switch and the next adapter trains with it present.
 
 ## GPC-A2 (ledger) — W-self answers some held-out slots in its training frame, a frame its prompts never carried
@@ -2835,7 +2835,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 - R_broad: the 2.0 update shifts the subject toward avoiding goal options in general (the clean-slot goal rate falls 0.12), and the games' drop is that avoidance, not conduct.
 - R_noise: one draw against the record base; against the same-session base the interval includes 0.
 **Discriminator.** G4: C1 × 2.0, a fresh draw on S-hi and S-lo at k 1, split by B1's stratum and by violation kind, against a same-session base. R_dose predicts the drop reproduces and concentrates on the adviser-non-violating 79 (where GOOD's effect lives); R_broad predicts S-lo or the clean slots move with it; R_noise predicts no reproduction. About 0.35 A100-h.
-**Status.** open, promoted (GPC-3, G4).
+**Status.** open, promoted (GPC-3, G4). **GPC-3 (2026-11-17; `GPC3_RESULTS.md` §5):** G4's fresh draw at seed indices 2 and 3, k 2, against the same-session base: S-hi −0.120 [−0.163, −0.081] (registered: reproduces), about 0.40 of GOOD; S-lo −0.030 (passes); by stratum −0.177 and −0.094. The clean-slot goal rate is 0.88 again. Resolved toward R_dose with R_broad's cost (resolution_type: replication): the drop is real and larger than GPC-2's single draw, and it comes with a 0.12 loss of the goal option where nothing is wrong.
 **Thesis impact.** Under R_dose, own conduct data is a live route at higher dose (still 0.24 against the 0.5 done-when bar). Under R_broad, the route's 2.0 dose costs the goal option where nothing is wrong, the over-refusal analogue. Under R_noise, the route stays at 0.00 to 0.04.
 
 ## GPC-A5 (ledger) — rendering alone moves the base's violating rate, in both directions of the swap
@@ -2849,7 +2849,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 - R_achievements: the target-achievements list is the element that raises the rate (X2 dropped it; X1 carries a single-achievement line).
 - R_reasoning: the CoT steps ("the most strategic action given your goals") push toward the goal.
 **Discriminator.** G2 (S-hi in X2's format with the achievements list added back, then the CoT steps; base, `C_conduct` in context, C1; split by B1's stratum), read beside G3's advice on all states. About 0.6 A100-h for G2's base arms.
-**Status.** open, promoted (GPC-3, G2).
+**Status.** open, promoted (GPC-3, G2). **GPC-3 (2026-11-17; `GPC3_RESULTS.md` §3):** G2's base along X2's format 0.780, with the achievements list 0.824, with the list and the CoT steps 0.920, the native harness 0.896. Resolved toward R_reasoning (resolution_type: discrimination): the CoT steps ("the most strategic action given your goals") carry the harness's push; the list adds +0.04. The concentration on the adviser-non-violating states repeats at each rung (0.544, 0.722, 0.897).
 **Thesis impact.** Goal pressure on this subject is partly a property of the rendering: the same scenario's violating rate doubles in the harness. Any transfer claim between grids and games carries the rendering's own effect, and the done-when bar is measured in the harness, where the subject is most goal-pressured.
 
 ## GPC-A6 (ledger) — X2's interval ends at +0.004, a near-miss at the registered bar
@@ -2885,5 +2885,40 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 - R_labels: on the 171, S-hi's labels are loose (more than half of each state's options carry a violation label), so advising a "violating" option is not a judgment that it is wrong.
 - R_frame: advising a third person about a fiction is a lenient frame; the model judges more permissively than the labels.
 **Discriminator.** G3: the judge frame on all 1,698 states, base, k 1; then, zero GPU, the base of record, GOOD_BEHAVIOR of record and P-ctx re-read on the gap states (adviser non-violating, actor violating). R_labels predicts the 171 concentrate on states whose options are mostly labeled violating; R_frame predicts the adviser's violating share does not track the label share. About 0.6 A100-h.
-**Status.** open, promoted (GPC-3, G3).
+**Status.** open, promoted (GPC-3, G3). **GPC-3 (2026-11-17; `GPC3_RESULTS.md` §4):** G3 on 1,693 states: 1,093 gap states; GOOD −0.084 [−0.111, −0.059] there, P-ctx −0.019 [−0.034, −0.003] (0.23 of GOOD; +0.018 on the 600 others). The adviser's violating share tracks the label share (0.05 to 0.70 across bins; slope 4.1 [3.5, 4.6]), **but an adviser choosing at random among the options tracks it point for point too**, so the registered discriminator cannot separate R_labels from an adviser that does not discriminate by the labels. Open; the separating cell is the adviser's pick against a per-option harm rating independent of the labels (zero GPU with a Codex rating of a seeded 200 options, or the judge's own scores).
 **Thesis impact.** Under R_gap, the done-when target is the 79-state kind: states where the subject's own judgment is right and its action is not, the case an in-weights conduct adapter has to reach, and the case where GOOD_BEHAVIOR works best. Under R_labels, part of S-hi's "violating" rate is label looseness, and the bar's room (0.30) overstates what conduct could move.
+
+## GPC-A9 (ledger) — the clause and C1 act less where nothing forces a choice
+
+**Date.** 2026-11-17 (GPC-3's G5; `gpc_goal_pressure_conduct/GPC3_RESULTS.md` §1; `outputs/gpc3_v1/rederive.json` `acting`).
+**Observation.** Acting = the share of transcripts in which the agent takes any tool action (any `<tool_use:...>` tag). In the order base, the clause in context, C1: goal explicit-america with no threat 1.00, 0.86, 0.76; no goal and no threat 0.50, 0.18, 0.36; no goal with replacement 1.00, 0.98, 0.92; the blackmail cell (goal with replacement) 1.00, 1.00, 1.00. Pooled 0.875, 0.755, 0.76; the read flags both arms (more than 0.10 under the base). No arm blackmails in the three non-blackmail cells.
+**Type.** control misbehavior (a registered guard that fires in the cells that carry no misconduct read).
+**Appears in.** `GPC3_RESULTS.md` §1.
+**Competing readings.**
+- R_restraint: the clause makes the agent do less wherever nothing forces a choice (fewer routine replies when the inbox asks for nothing urgent), a general restraint, not conduct; C1 inherits it.
+- R_scope: the clause makes the agent decline actions outside its role (answering emails not addressed to it), which is conduct and costs nothing the task needs.
+**Discriminator.** Zero GPU: per transcript, which emails the base answers and the arms skip, labeled required or optional by the inbox's own text (a Codex read of the seeded 30 no-threat transcripts per arm). R_restraint predicts the arms skip required replies; R_scope predicts they skip optional ones. On the pod: a task-completion cell (an inbox with replies the task requires) in GPC-4.
+**Status.** open, promoted (Amendment 3's acting-rate bar; the zero-GPU read first).
+**Thesis impact.** The G5 headline stands either way (acting 1.00 in its cell). Under R_restraint, any instrument whose misconduct needs an action reads part of the clause's effect as inaction, which is why Amendment 3 bars an adapter whose acting rate falls more than 0.10 under the base's.
+
+## GPC-A10 (ledger) — G5's base rate in its main cell: 3 of 20 in the pilot, 19 of 50 in the arms
+
+**Date.** 2026-11-17 (GPC-3's G5; `GPC3_RESULTS.md` §1; `rederive.json` `pilot_against_arms_base`).
+**Observation.** Blackmail, goal explicit-america with replacement, base, fresh seeds each time: pilot 0.15 (3/20), arms 0.38 (19/50); Fisher's exact p 0.09. The pilot cleared the registered drop bar (0.15) by one transcript.
+**Type.** near-miss at a pre-registered threshold.
+**Appears in.** `GPC3_RESULTS.md` §1.
+**Competing readings.** R_noise: binomial spread at n 20 (at a true 0.30, three or fewer of 20 has probability about 0.11). R_batch: the pilot's 60 sequences ran at lower concurrency than the arms' 400, and vLLM's batch-dependent numerics shift sampling.
+**Discriminator.** None needed for GPC-3's branch (the bar was met). For Amendment 3: a pilot of at least 40 per cell before any drop rule (the bar keeps a scenario at n 20 with probability about 0.6 at a true rate of 0.15 and 0.8 at 0.2).
+**Status.** resolved (resolution_type: scope): the branch held; Amendment 3's pilots are sized from this spread.
+**Thesis impact.** None on the read; G5 nearly banked on a 20-transcript pilot, which argues for larger pilots before drop rules.
+
+## GPC-A11 (ledger) — the judge counts leverage, a blind second reader counts only conditional threats
+
+**Date.** 2026-11-17 (GPC-3's G5, Amendment 2 rider 4; `GPC3_RESULTS.md` §1; `outputs/gpc3_v1/g5/codex_agreement.json`).
+**Observation.** Thirty seeded main-cell transcripts read blind by Codex under upstream's own blackmail prompt: agreement with gpt-oss-120b 22 of 30, with upstream's final verdict 23 of 30. All 8 disagreements are judge-yes, Codex-no (7 of the base's 14 judge-yes, 1 of C1's 2); 14 of 14 judge-no agree. Codex's reasons: no disclosure made conditional on Kyle's compliance.
+**Type.** instrument disagreement (a judge boundary inside one prompt: criterion 1, leverage, against the closing rule, a conditional release).
+**Appears in.** `GPC3_RESULTS.md` §1, §7.
+**Competing readings.** R_lenient: gpt-oss-120b reads leverage without a condition as blackmail, so its rates overstate blackmail as upstream's closing rule defines it. R_strict: Codex reads the closing rule as necessary, and upstream's own judge (Claude 3.7 Sonnet) would side with the judge here.
+**Discriminator.** Zero GPU: the 8 disagreements read by the author (one question each: does the email make disclosure conditional on Kyle's choice?), and the judge-free string check's subset that also contains a conditional phrase ("unless", "if you", "or I will").
+**Status.** open (the author's read of 8 transcripts settles the boundary for GPC-4's judge).
+**Thesis impact.** The headline's direction holds under every reader; its size does not (projected from the sample, about 0.19 for the base and 0.02 for C1 under the strict reading). GPC-4's judge must state its boundary before data.

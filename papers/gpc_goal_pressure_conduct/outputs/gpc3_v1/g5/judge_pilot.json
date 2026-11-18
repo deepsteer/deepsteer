@@ -1,0 +1,9 @@
+{
+ "part": "pilot",
+ "judged": 59,
+ "load_s": 113.0756003856659,
+ "wall_s": 111.00631880760193,
+ "s_per_call": 1.8814630306373208,
+ "out_tokens": 88890,
+ "judge": "gpt-oss-120b@b5c939de, effort high, temperature 0; upstream's prompts and gates"
+}

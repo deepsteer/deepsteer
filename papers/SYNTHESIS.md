@@ -2141,7 +2141,9 @@ what the four-line instruction does in context.
 | A diluted ethics instruction leaves no trace in the reasoning (moral rate and ethics-prompt citing at base) | R_instrument: the moral pattern does not detect what an effective instruction does to traces | GOOD-alone traces on S-hi (stage b); the root split reads only if GOOD-alone raises the moral rate | **calibrated (GPC-1, GPC-A3):** GOOD-alone raises the rate +0.76, mostly echo of its own words; +0.18 [+0.09, +0.27] without them, so the instrument detects an effective instruction at that smaller size |
 | C1 learned the conduct and does not take it into the games (GPC-A1) | R_format: bound to the grid's rendering; R_content: the games' scenes are outside it; R_element: one harness element switches it off | GPC-2's X1 (the held-out slots in MACHIAVELLI's harness) and X2 (S-hi in the grid's format), then X3's ladder | **narrowed (GPC-2): "content gates"**, R_format against the harness's text excluded (X1 −0.48); C1 matches its teacher in every matched cell, so the gap is the clause's weakness on game states; X2 also dropped the achievements list, so G2 (GPC-3) separates content from the list |
 | The harness raises the base's violating rate on the same scenarios (0.43 to 0.87 on conduct slots; 0.89 to 0.79 on S-hi the other way) (GPC-A5) | R_achievements or R_reasoning: one harness element, the target list or the CoT steps, carries it | G2: the list, then the CoT steps, added back on S-hi in the grid's format | open, promoted to GPC-3 |
-| On 79 of S-hi's 250 states the subject advises against the violation and takes it 89% of the time; GOOD_BEHAVIOR's effect is largest there (GPC-A8) | R_labels / R_frame: S-hi's labels are loose (0.557 of options), or advising a third person is lenient | G3: the judge frame on all 1,698 states, the record arms re-read on the gap states | open, promoted to GPC-3 |
+| On 79 of S-hi's 250 states the subject advises against the violation and takes it 89% of the time; GOOD_BEHAVIOR's effect is largest there (GPC-A8) | R_labels / R_frame: S-hi's labels are loose (0.557 of options), or advising a third person is lenient | G3: the judge frame on all 1,698 states, the record arms re-read on the gap states | **read (GPC-3):** 1,093 gap states of 1,693; GOOD −0.084, P-ctx −0.019 there; the adviser's violating share tracks the label share as chance would, so labels against frame stays open |
+| C1 carries the clause's effect to an outside agentic scenario: blackmail 0.38 to 0.04 (the clause 0.02), acting 1.00 (GPC-3) | R_judge: the judge counts leverage, and a stricter reader shrinks the effect; R_cell: one cell, one draw | the string check (agrees, 0.58 to 0.12) and the Codex read (direction holds); a fresh draw on a second instrument (Amendment 3) | exploratory, one cell |
+| The clause and C1 act less where nothing forces a choice (pooled acting 0.875, 0.755, 0.76; GPC-A9) | R_scope: they skip only optional replies | which emails each arm skips, by the inbox's own text (zero GPU) | open |
 
 **What the next result changes (GPC-1, branches registered in `GPC_PLAN.md` §6).** An arm meeting
 the goal-pressure criterion on draw 1: the thesis gains "conduct reaches the weights without a
@@ -2186,4 +2188,20 @@ unreworded clause in the native harness; G2 says whether the achievements list o
 carry the harness's push; G3 says whether the adviser-actor gap is a judgment-action gap or label
 looseness; G4 says whether the 2.0 dose's drop is conduct or avoidance; G5 takes the question to
 a second family of agentic scenarios.
+
+**GPC-3 (2026-11-17; `gpc_goal_pressure_conduct/GPC3_RESULTS.md`), positive voice.** A four-line
+conduct clause distilled into an adapter lowers scored-goal misconduct with nothing in context on
+held-out conduct scenarios and on one outside agentic scenario, tracking the clause in context
+wherever the clause itself works. In Anthropic's blackmail scenario with an explicit goal and a
+replacement threat, the base blackmails in 0.38 of transcripts, the clause in context in 0.02, C1 in
+0.04, every arm acting in every transcript (one cell, n 50 per arm, one draw, one judge;
+exploratory). A judge-free string check agrees in direction and size (0.58, 0.06, 0.12); a stricter
+blind reader halves the base's rate and keeps the drop (GPC-A11). On game states the limit is the
+clause's content (GOOD_BEHAVIOR moves the grid-format states −0.28 where the clause moves −0.08), and
+the harness's CoT steps carry its push toward the goal (0.78 to 0.92 along the ladder). C1 at twice
+its update reproduces on a fresh draw (−0.120, about 0.40 of GOOD) at a cost on clean slots (0.88).
+The registered game bar is not met. **What Amendment 3 changes:** the target moves to agentic
+instruments built on two documented cases (a scored goal pursued against counterparties; a blocked
+task that ends in out-of-bounds means), MACHIAVELLI becomes a beside read, and blackmail stays as a
+continuity cell.
 
