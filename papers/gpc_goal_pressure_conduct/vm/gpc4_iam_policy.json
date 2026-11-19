@@ -39,8 +39,7 @@
    "Effect": "Allow",
    "Action": "ec2:RunInstances",
    "Resource": [
-    "arn:aws:ec2:us-east-2:*:instance/*",
-    "arn:aws:ec2:us-east-2:*:volume/*"
+    "arn:aws:ec2:us-east-2:*:instance/*"
    ],
    "Condition": {
     "StringLike": {
@@ -51,6 +50,17 @@
       "c6a.4xlarge",
       "t3.micro"
      ]
+    }
+   }
+  },
+  {
+   "Sid": "RunTaggedVolume",
+   "Effect": "Allow",
+   "Action": "ec2:RunInstances",
+   "Resource": "arn:aws:ec2:us-east-2:*:volume/*",
+   "Condition": {
+    "StringLike": {
+     "aws:RequestTag/gpc4-session": "*"
     }
    }
   },

@@ -205,6 +205,11 @@ def test_iam_policy_matches_the_brief_and_holds_its_limits():
         "t3.micro",
     ]
     assert "arn:aws:ec2:us-east-2::snapshot/*" in by["RunSupporting"]["Resource"]
+    # the second denial: the volume cannot satisfy an instance-type condition
+    assert by["RunTaggedOnly"]["Resource"] == ["arn:aws:ec2:us-east-2:*:instance/*"]
+    assert by["RunTaggedVolume"]["Condition"] == {
+        "StringLike": {"aws:RequestTag/gpc4-session": "*"}
+    }
     # the first rehearsal's denial: CreateSecurityGroup is authorized against the VPC too
     assert by["CreateGroupInAVpc"]["Action"] == "ec2:CreateSecurityGroup"
     assert by["CreateGroupInAVpc"]["Resource"] == "arn:aws:ec2:us-east-2:*:vpc/*"

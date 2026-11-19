@@ -181,9 +181,12 @@ and acting rates.
     {"Sid": "UbuntuImage", "Effect": "Allow", "Action": "ssm:GetParameter",
      "Resource": "arn:aws:ssm:us-east-2::parameter/aws/service/canonical/ubuntu/*"},
     {"Sid": "RunTaggedOnly", "Effect": "Allow", "Action": "ec2:RunInstances",
-     "Resource": ["arn:aws:ec2:us-east-2:*:instance/*", "arn:aws:ec2:us-east-2:*:volume/*"],
+     "Resource": ["arn:aws:ec2:us-east-2:*:instance/*"],
      "Condition": {"StringLike": {"aws:RequestTag/gpc4-session": "*"},
                    "StringEquals": {"ec2:InstanceType": ["c6a.4xlarge", "t3.micro"]}}},
+    {"Sid": "RunTaggedVolume", "Effect": "Allow", "Action": "ec2:RunInstances",
+     "Resource": "arn:aws:ec2:us-east-2:*:volume/*",
+     "Condition": {"StringLike": {"aws:RequestTag/gpc4-session": "*"}}},
     {"Sid": "RunSupporting", "Effect": "Allow", "Action": "ec2:RunInstances",
      "Resource": ["arn:aws:ec2:us-east-2::image/*", "arn:aws:ec2:us-east-2::snapshot/*",
                   "arn:aws:ec2:us-east-2:*:subnet/*", "arn:aws:ec2:us-east-2:*:network-interface/*"]},
@@ -226,4 +229,7 @@ added below) and reports the missing resource; the policy is never widened by gu
 (2026-11-18):** `ec2:CreateSecurityGroup` on `arn:aws:ec2:us-east-2:<account>:vpc/vpc-...`: creating a group
 is authorized against the VPC as well as the new group, and the request-tag condition cannot hold on the
 VPC. Added: `CreateGroupInAVpc`, that one action on a us-east-2 VPC; the group itself still needs the
-`gpc4-session` tag.
+`gpc4-session` tag. **The second denial (2026-11-18):** `ec2:RunInstances` on the volume: the instance and its volume
+shared one statement whose `ec2:InstanceType` condition exists only on the instance, so it could not hold on
+the volume. Split: `RunTaggedOnly` keeps the instance type and the tag on the instance; `RunTaggedVolume`
+requires only the tag on the volume.
