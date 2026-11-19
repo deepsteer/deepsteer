@@ -1,0 +1,22 @@
+{
+ "file": "outputs/_sync/eval_8gram_hashes_v2.npy",
+ "sha256": "14426232b3d443575f9cfd93daa86f8bce59dfbf62ae0d2101e4d389a31cee12",
+ "n_hashes": 6374278,
+ "per_source": {
+  "v1": 6303190,
+  "impossiblebench_lcb": {
+   "texts": 927,
+   "hashes": 51782
+  },
+  "agentic_misalignment": {
+   "texts": 38,
+   "hashes": 19313
+  }
+ },
+ "hash": "blake2b-64 of the space-joined word 8-gram (overlap_hashes)",
+ "clause_8grams_in_v2": {
+  "c_conduct": 0,
+  "c_bounds": 0
+ },
+ "rule": "GPC Amendment 3 B3.5 (draft): v1 plus ImpossibleBench's LiveCodeBench splits and G5's templates"
+}

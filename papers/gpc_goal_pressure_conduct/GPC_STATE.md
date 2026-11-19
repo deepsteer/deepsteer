@@ -49,8 +49,8 @@ ruling; the target moves to agentic instruments.
 
 ## Pending
 
-1. Amendment 3 (GPC-4): the lead's draft, the author's ruling, then committed and pushed before any
-   build; B3's zero-GPU checks reported one at a time.
+1. Amendment 3 (GPC-4): accepted by the author 2026-11-17 and committed (`GPC_PLAN.md` §11, the host
+   page `ODCV_HOST_BRIEF.md`); the build at zero GPU, then the author's rehearsal, then the launch.
 2. GPC-A11: the author's read of the 8 judge-yes, Codex-no transcripts (one question each).
 3. GPC-A9's zero-GPU read (which replies each arm skips in the no-threat cells).
 4. Deferred by the lead: a rebuilt W-self (GPC-A2).
@@ -65,7 +65,8 @@ Thunder, $21.50 on Secure). The scaffold templates: `CONDUCT_SCAFFOLDS.md`. The 
 
 ## Next pod
 
-**GPC-4** (Amendment 3): drafted for the author's ruling; nothing built.
+**GPC-4** (Amendment 3, `GPC_PLAN.md` §11): accepted 2026-11-17. Floor about $7.25 (4.4 A100-h on Thunder
+plus the VM), ceiling about $16.05 (the 9 A100-h cap plus the VM), the rehearsal about $0.65. Not built.
 
 **GPC-3 (done):** 4.39 h of session on RunPod Secure, all stages run; G5's full design at 50 per
 condition and arm on blackmail's grid (leaking and murder banked at the pilot). Outputs in
@@ -172,3 +173,8 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
   `c125c151`) and read; `scripts/gpc3_rederive.py` (G5's judge-free string check, the acting rates,
   the main cell's differences, the pilot against the arms, and Amendment 2 rider 4's Codex read of 30
   seeded transcripts); GPC-A9 to GPC-A11 in the ledger.
+- 2026-11-17: Amendment 3 (GPC-4) accepted and committed: ImpossibleBench and ODCV-Bench on an AWS EC2
+  host (c6a.4xlarge, us-east-2), detached, egress-locked; PropensityBench out, ScopeBench parked; the
+  bounds clause (`z_bounds_clause.py`), the bounds grid and briefs (`gpc_bounds.py`), the v2 8-gram
+  index (`z_index_v2.py`), the summed adapter (`z_summed_adapter.py`), the ratio bar's power
+  (`z_gpc4_power.py`).

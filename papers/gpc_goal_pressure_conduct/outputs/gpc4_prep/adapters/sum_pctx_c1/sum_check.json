@@ -1,0 +1,13 @@
+{
+ "rule": "GPC Amendment 3 B3.6 (draft): P-ctx's update plus C1's, no training",
+ "p_ctx": "papers/cst_constitutional_steering/outputs/pressure/adapters/p_ctx/1.94053e+06",
+ "c1": "papers/gpc_goal_pressure_conduct/outputs/gpc1_v1/adapters/c1/612732",
+ "rank": 32,
+ "alpha": 64,
+ "scale": 2.0,
+ "modules": 496,
+ "max_abs_diff": 5.820766091346741e-10,
+ "max_rel_diff": 3.631597329940695e-07,
+ "exact": true,
+ "note": "the tensors are concatenated copies; the float32 check bounds the product's rounding only. Serving (max_lora_rank 32, served parity) is the pod's check."
+}
