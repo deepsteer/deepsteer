@@ -19,11 +19,13 @@ marker as received. The VM carries no credential beyond the forward's key and th
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import os
 import re
 import shutil
+import signal
 import socket
 import subprocess
 import sys
@@ -278,12 +280,40 @@ def control_doc() -> dict | None:
 # another process (the post-lock gate's probe) holds the lock. PUSH_STATS counts each stage's pushes.
 _PUSH_LOCK = threading.Lock()
 RRSYNC_BUSY = "Another instance of rrsync"
-PUSH_STATS = {"pushes": 0, "failed": 0, "busy_retries": 0}
+PUSH_STATS = {"pushes": 0, "failed": 0, "busy_retries": 0, "timeouts": 0}
+# a push cannot hang (the lead, before rehearsal 7): the results ssh keeps alive as the forward does
+# (a dead link ends within about a minute), rsync ends a transfer stalled for RSYNC_IO_TIMEOUT_S, and
+# each rsync call is killed with its ssh child at PUSH_TIMEOUT_S. A timed-out push counts as failed,
+# releases the lock, and is not retried here: the stage's push at its end sends it again.
+RSYNC_IO_TIMEOUT_S = 120
+PUSH_TIMEOUT_S = 600
+PUSH_TIMEOUT_RC = 124
 
 
-def _rsync(src: str, dest: str, ssh: str, tries: int, wait_s: float) -> subprocess.CompletedProcess:
+def _run_bounded(cmd: list[str], timeout_s: float) -> subprocess.CompletedProcess:
+    """Run ``cmd`` in its own process group and kill the whole group at ``timeout_s`` (rsync's ssh
+    child included; subprocess.run's own timeout kills only the direct child)."""
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                         start_new_session=True)
+    try:
+        out, err = p.communicate(timeout=timeout_s)
+        return subprocess.CompletedProcess(cmd, p.returncode, out, err)
+    except subprocess.TimeoutExpired:
+        with contextlib.suppress(ProcessLookupError):
+            os.killpg(p.pid, signal.SIGKILL)
+        out, err = p.communicate()
+        return subprocess.CompletedProcess(cmd, PUSH_TIMEOUT_RC, out,
+                                           f"push timed out after {timeout_s:g} s; {err or ''}")
+
+
+def _rsync(src: str, dest: str, ssh: str, tries: int, wait_s: float,
+           timeout_s: float) -> subprocess.CompletedProcess:
     for k in range(tries):
-        r = subprocess.run(["rsync", "-a", "-e", ssh, src, dest], capture_output=True, text=True)
+        r = _run_bounded(["rsync", "-a", f"--timeout={RSYNC_IO_TIMEOUT_S}", "-e", ssh, src, dest],
+                         timeout_s)
+        if r.returncode == PUSH_TIMEOUT_RC and "push timed out" in (r.stderr or ""):
+            PUSH_STATS["timeouts"] += 1
+            return r  # not retried while holding the lock: the stage-end push sends it again
         if r.returncode == 0 or RRSYNC_BUSY not in (r.stderr or "") or k == tries - 1:
             return r
         PUSH_STATS["busy_retries"] += 1
@@ -291,23 +321,29 @@ def _rsync(src: str, dest: str, ssh: str, tries: int, wait_s: float) -> subproce
     return r
 
 
-def push(local: Path, dest: str, tries: int = 10, wait_s: float = 3.0) -> bool:
+def push(local: Path, dest: str, tries: int = 10, wait_s: float = 3.0,
+         timeout_s: float = PUSH_TIMEOUT_S) -> bool:
     """rsync ``local`` to the pod's results directory (the results key: `rrsync -wo`, one directory).
     rsync creates only the last level of ``dest``, so each parent is pushed first as an empty
     directory (no other option has to pass rrsync's filter)."""
     env = pod_env()
     ssh = (f"ssh -i /etc/gpc4/results_key -p {env['POD_PORT']} -o IdentitiesOnly=yes "
            "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes "
-           "-o ConnectTimeout=20 -o LogLevel=ERROR")
+           "-o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o LogLevel=ERROR")
     to = f"{env['POD_USER']}@{env['POD_HOST']}:"
     parts = dest.strip("/").split("/")
     with _PUSH_LOCK:
         PUSH_STATS["pushes"] += 1
+        r = None
         if len(parts) > 1:
             with tempfile.TemporaryDirectory() as empty:
                 for i in range(1, len(parts)):
-                    _rsync(f"{empty}/", f"{to}{'/'.join(parts[:i])}/", ssh, tries, wait_s)
-        r = _rsync(f"{local}/", f"{to}{dest}/", ssh, tries, wait_s)
+                    r = _rsync(f"{empty}/", f"{to}{'/'.join(parts[:i])}/", ssh, tries, wait_s,
+                               timeout_s)
+                    if r.returncode == PUSH_TIMEOUT_RC:
+                        break  # one timeout ends the push: the lock is held at most that long
+        if r is None or r.returncode != PUSH_TIMEOUT_RC:
+            r = _rsync(f"{local}/", f"{to}{dest}/", ssh, tries, wait_s, timeout_s)
         if r.returncode:
             PUSH_STATS["failed"] += 1
             log(f"push {local} -> {dest} failed: {r.stderr.strip()[:300]}")
@@ -395,7 +431,7 @@ def driver(poll_s: int = 20) -> None:
         out = STATE / "out" / iid
         out.mkdir(parents=True, exist_ok=True)
         log(f"driver: {ins.get('kind')} {iid}")
-        PUSH_STATS.update(pushes=0, failed=0, busy_retries=0)  # this stage's pushes, not the last's
+        PUSH_STATS.update(pushes=0, failed=0, busy_retries=0, timeouts=0)  # this stage's, not the last's
         with Usage() as usage:
             try:
                 if ins["kind"] == "odcv":

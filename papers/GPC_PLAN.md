@@ -1748,3 +1748,13 @@ a time, and a push retries while another process (the post-lock gate's probe) ho
 records its pushes, failures and lock retries in `resources.json`, and `verify` now fails any stage with a
 failed push. **Rehearsal 6's record (`rehearsal_11c0fec246361c21.json`) is not the launch's record:** the
 fix moves the VM hash, and rehearsal 7, the same plan, is the record.
+
+**A push cannot hang** (the lead, before rehearsal 7; VM side, so it goes in before the rehearsal). The
+results ssh keeps alive as the forward does (`ServerAliveInterval=15`, `ServerAliveCountMax=4`: a dead link
+ends within about a minute); rsync carries `--timeout=120` for a stalled transfer; and each rsync call is
+capped at 600 s, at which its whole process group is killed (rsync's ssh child with it). A timed-out push
+counts as failed, releases the lock at once (it is not retried while holding it, and a timed-out parent
+directory ends the push), and the stage's push at its end, which the driver repeats on every poll until
+the pod confirms it, sends it again. Each stage's `resources.json` records its pushes, failures, lock
+retries and timeouts, and `verify` shows them per stage. Tested with a fake rsync that never returns:
+the push fails within the limit, the lock is free, the child is gone, and the next push goes through.

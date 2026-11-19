@@ -326,7 +326,7 @@ def test_push_creates_each_parent_before_the_run(tmp_path, monkeypatch):
     class R:
         returncode, stderr = 0, ""
 
-    monkeypatch.setattr(V.subprocess, "run", lambda a, **k: calls.append(a[-1]) or R())
+    monkeypatch.setattr(V, "_run_bounded", lambda a, t: calls.append(a[-1]) or R())
     assert V.push(tmp_path, "r1_odcv/r1_odcv_0")
     assert calls == ["u@h:r1_odcv/", "u@h:r1_odcv/r1_odcv_0/"]
     calls.clear()
@@ -350,7 +350,7 @@ def test_parallel_pushes_never_meet_rrsyncs_lock(tmp_path, monkeypatch):
                 "rrsync error: Another instance of rrsync is already accessing" if busy else ""
             )
 
-    def fake(a, **k):
+    def fake(a, t):
         with guard:
             live[0] += 1
             busy = live[0] > 1
@@ -360,8 +360,8 @@ def test_parallel_pushes_never_meet_rrsyncs_lock(tmp_path, monkeypatch):
             live[0] -= 1
         return R(busy)
 
-    monkeypatch.setattr(V.subprocess, "run", fake)
-    V.PUSH_STATS.update(pushes=0, failed=0, busy_retries=0)
+    monkeypatch.setattr(V, "_run_bounded", fake)
+    V.PUSH_STATS.update(pushes=0, failed=0, busy_retries=0, timeouts=0)
     res = []
     ts = [
         threading.Thread(target=lambda n=n: res.append(V.push(tmp_path, f"r1_odcv/run_{n}")))
@@ -372,7 +372,7 @@ def test_parallel_pushes_never_meet_rrsyncs_lock(tmp_path, monkeypatch):
     for t in ts:
         t.join()
     assert res == [True] * 8 and max(seen) == 1
-    assert V.PUSH_STATS == {"pushes": 8, "failed": 0, "busy_retries": 0}
+    assert V.PUSH_STATS == {"pushes": 8, "failed": 0, "busy_retries": 0, "timeouts": 0}
 
 
 def test_a_push_retries_while_another_process_holds_the_lock(tmp_path, monkeypatch):
@@ -388,13 +388,54 @@ def test_a_push_retries_while_another_process_holds_the_lock(tmp_path, monkeypat
                 "Another instance of rrsync is already accessing this directory." if rc else ""
             )
 
-    monkeypatch.setattr(V.subprocess, "run", lambda a, **k: R(next(answers)))
-    V.PUSH_STATS.update(pushes=0, failed=0, busy_retries=0)
+    monkeypatch.setattr(V, "_run_bounded", lambda a, t: R(next(answers)))
+    V.PUSH_STATS.update(pushes=0, failed=0, busy_retries=0, timeouts=0)
     assert V.push(tmp_path, "gate_probe", wait_s=0)
     assert V.PUSH_STATS["busy_retries"] == 2 and V.PUSH_STATS["failed"] == 0
-    monkeypatch.setattr(V.subprocess, "run", lambda a, **k: R(12))
+    monkeypatch.setattr(V, "_run_bounded", lambda a, t: R(12))
     assert not V.push(tmp_path, "gate_probe", tries=3, wait_s=0)
     assert V.PUSH_STATS["failed"] == 1  # a lock held throughout is a failed push, counted
+
+
+def test_a_push_that_never_returns_fails_in_time_and_frees_the_lock(tmp_path, monkeypatch):
+    # most probable failure: a push hangs on a dead link and holds the lock, so no later push (nor
+    # the stage's end) ever goes out (the lead, before rehearsal 7)
+    import os
+    import time
+
+    bin_ = tmp_path / "bin"
+    bin_.mkdir()
+    pidf = tmp_path / "child.pid"
+    # a fake rsync that never returns, with a child standing in for its ssh
+    (bin_ / "rsync").write_text(f"#!/bin/sh\nsleep 1000 &\necho $! > {pidf}\nwait\n")
+    (bin_ / "rsync").chmod(0o755)
+    monkeypatch.setenv("PATH", f"{bin_}:{os.environ['PATH']}")
+    monkeypatch.setattr(V, "pod_env", lambda: {"POD_HOST": "h", "POD_PORT": "22", "POD_USER": "u"})
+    V.PUSH_STATS.update(pushes=0, failed=0, busy_retries=0, timeouts=0)
+    t0 = time.time()
+    assert V.push(tmp_path, "r1_odcv/run_0", timeout_s=1) is False
+    assert time.time() - t0 < 5  # one timeout for the push, not one per parent or per retry
+    assert not V._PUSH_LOCK.locked()  # noqa: SLF001
+    assert V.PUSH_STATS["failed"] == 1 and V.PUSH_STATS["timeouts"] == 1
+    child = int(pidf.read_text())
+    time.sleep(0.2)
+    try:  # the whole group was killed: rsync's ssh child does not outlive the push
+        os.kill(child, 0)
+        alive = True
+    except ProcessLookupError:
+        alive = False
+    assert not alive
+    (bin_ / "rsync").write_text("#!/bin/sh\nexit 0\n")
+    assert V.push(tmp_path, "r1_odcv/run_1", timeout_s=1) is True  # the next push goes through
+
+
+def test_the_results_ssh_and_rsync_carry_their_own_limits():
+    # most probable failure: a dead link leaves ssh waiting with no keepalive and rsync with no
+    # I/O timeout
+    src = (GPC / "scripts/gpc4_vm.py").read_text()
+    assert "-o ServerAliveInterval=15 -o ServerAliveCountMax=4" in src  # as the forward has
+    assert "ServerAliveInterval=15 -o ServerAliveCountMax=4" in VM_INIT
+    assert 'f"--timeout={RSYNC_IO_TIMEOUT_S}"' in src and V.RSYNC_IO_TIMEOUT_S < V.PUSH_TIMEOUT_S
 
 
 def test_a_good_run_without_result_json_is_not_an_error(tmp_path):
