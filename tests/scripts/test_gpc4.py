@@ -289,11 +289,32 @@ def test_cloud_init_carries_no_credential_and_arms_the_hard_limit_first():
     assert "-wo $R" in STANDIN_INIT
 
 
-def test_rehearsal_plan_covers_both_scaffolds_and_one_scenario():
+def test_rehearsal_plan_is_the_gates_own_scale():
+    # most probable failure: the rehearsal runs a toy load, so the gate's 80 runs at 8 at once and
+    # its 30 tasks a scaffold at 10 sandboxes run for the first time on GPU time (the lead's item 2)
     plan = json.loads((GPC / "vm/rehearsal_plan.json").read_text())["instructions"]
-    kinds = [(i["kind"], i.get("scaffold")) for i in plan]
-    assert ("odcv", None) in kinds and ("ib", "minimal") in kinds and ("ib", "tools") in kinds
     assert len({i["id"] for i in plan}) == len(plan)
+    odcv = [i for i in plan if i["kind"] == "odcv"]
+    assert len(odcv) == 1 and len(odcv[0]["runs"]) == 80 and odcv[0]["concurrency"] == 8
+    assert len({r[2] for r in odcv[0]["runs"]}) == 80
+    assert {v for _, v, _ in odcv[0]["runs"]} == {"mandated", "incentivized"}
+    ib = [i for i in plan if i["kind"] == "ib"]
+    assert [i["scaffold"] for i in ib] == [
+        "tools",
+        "tools",
+        "minimal",
+        "minimal",
+    ]  # the gate's order
+    for i in ib:
+        assert len(i["task_ids"]) == 15 and i["concurrency"] == 10
+        # the gate's own settings (ib_instruction), not the old rehearsal's 2 attempts, 10 messages
+        want = P4.ib_instruction(i["scaffold"], i["split"], [], "base", "base", "x")["task_kwargs"]
+        assert i["task_kwargs"] == want
+        assert len(set(i["task_ids"])) == 15 and all(
+            t.startswith("lcbhard_") for t in i["task_ids"]
+        )
+        if list(P4.IB_PARQUET.glob(f"{i['split']}-*.parquet")):  # the pinned data, when present
+            assert i["task_ids"] == P4.ib_sample(i["split"], 15, f"first|{i['scaffold']}", False)
 
 
 def test_push_creates_each_parent_before_the_run(tmp_path, monkeypatch):
@@ -365,20 +386,83 @@ def test_no_reader_opens_a_zstd_eval_log_with_the_standard_zipfile():
     assert "read_eval_log(l.location)" in V.IB_TASK and '"samples.json"' in V.IB_TASK
 
 
-def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments():
+def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_path):
     # most probable failure: verify passes on delivery alone (rehearsal 2 would have, with neither
-    # instrument running), or names the tree it runs in rather than the code the host ran
+    # instrument running), passes a stage short of its plan's scale, or names the tree it runs in
+    # rather than the code the host ran
+    import subprocess
+
     assert 'echo "$VM_HASH" > "$D/vm_hash"' in LAUNCHER
     assert '[ "$r_hash" = "$VM_HASH" ] || die' in LAUNCHER
-    assert '"$r_commit" "$r_hash"' in LAUNCHER
+    assert '"$r_commit" "$r_hash" "$G/vm/rehearsal_plan.json"' in LAUNCHER
     assert "and instruments_ran" in LAUNCHER
-    assert (
-        '(v.get("n_scored") or 0) >= 1' in LAUNCHER
-        and '(r.get("tool_calls") or 0) >= 1' in LAUNCHER
-    )
     # the stand-in's hard limit, armed first and filled by the launcher
     assert STANDIN_INIT.index('shutdown -h +"__HARD_LIMIT_MIN__"') < STANDIN_INIT.index("apt-get")
     assert "s/__HARD_LIMIT_MIN__/$STANDIN_LIMIT_MIN/" in LAUNCHER
+    # the record's own code, on a mock session at the plan's scale
+    code = re.search(
+        r"<<'EOF'\n(import json, sys, datetime, pathlib.*?)\nEOF", LAUNCHER, re.S
+    ).group(1)
+    (tmp_path / "v.py").write_text(code)
+    plan = json.loads((GPC / "vm/rehearsal_plan.json").read_text())["instructions"]
+    D = tmp_path / "D"
+    for f, v in (
+        ("gate_pre.json", {"passes": True}),
+        ("gate_post.json", {"passes": True}),
+        ("setup_done.json", {"setup_s": 1}),
+    ):
+        (D / f).parent.mkdir(parents=True, exist_ok=True)
+        (D / f).write_text(json.dumps(v))
+
+    def session(odcv_errors=0, ib_short=0):
+        for ins in plan:
+            d = D / "rehearsal_results" / ins["id"]
+            d.mkdir(parents=True, exist_ok=True)
+            (d / "resources.json").write_text(json.dumps({"wall_s": 5, "peak_mem_used_gb": 3.0}))
+            if ins["kind"] == "odcv":
+                runs = [
+                    {
+                        "run_id": r[2],
+                        "compose_exit": 0,
+                        "tool_calls": 2,
+                        "container_error": n < odcv_errors,
+                    }
+                    for n, r in enumerate(ins["runs"])
+                ]
+                (d / "stage.json").write_text(json.dumps({"runs": runs}))
+            elif ins["kind"] == "ib":
+                n = len(ins["task_ids"]) - ib_short
+                (d / "stage.json").write_text(
+                    json.dumps(
+                        {"exit": 0, "n_logs": 1, "n_samples": n, "n_scored": n, "n_errored": 0}
+                    )
+                )
+        home = tmp_path / "home"
+        (home / ".gpc4").mkdir(parents=True, exist_ok=True)
+        r = subprocess.run(
+            [
+                sys.executable,
+                str(tmp_path / "v.py"),
+                str(D),
+                "terminated",
+                "true",
+                "2026-11-19T00:00:00+00:00",
+                "c0",
+                "h0",
+                str(GPC / "vm/rehearsal_plan.json"),
+            ],
+            capture_output=True,
+            text=True,
+            env={"HOME": str(home), "PATH": "/usr/bin:/bin"},
+        )
+        assert r.returncode == 0, r.stderr
+        return json.loads((home / ".gpc4" / "rehearsal_h0.json").read_text())
+
+    good = session()
+    assert good["passed"] and good["instruments"]["stages"]["r1_odcv"]["runs"] == 80
+    assert good["instruments"]["stages"]["r1_odcv"]["peak_mem_used_gb"] == 3.0
+    assert not session(odcv_errors=1)["passed"]  # one container error of 80 fails the rehearsal
+    assert not session(ib_short=1)["passed"]  # 14 of 15 tasks scored fails it
 
 
 def test_verify_reads_the_results_where_it_unpacks_them(tmp_path):
@@ -397,6 +481,148 @@ def test_verify_reads_the_results_where_it_unpacks_them(tmp_path):
     subprocess.run(f"tar -C {src.parent} -cf - . | tar -C {dst} -xf -", shell=True, check=True)
     assert (dst / "r1_odcv" / "stage.json").exists()
     assert "no stage results downloaded" in LAUNCHER
+
+
+STUB_AWS = r"""#!/usr/bin/env bash
+echo "aws $*" >> "$STUB_DIR/aws.log"
+a="$*"
+case "$a" in
+  *"sts get-caller-identity"*) echo 000000000000 ;;
+  *"get-service-quota"*) echo 32.0 ;;
+  *"describe-instances"*CpuOptions*) ;;
+  *"describe-instances"*"instance-state-name"*) cat "$STUB_DIR/running" 2>/dev/null || true ;;
+  *"describe-instances"*"--instance-ids"*PublicIpAddress*) echo 192.0.2.10 ;;
+  *"describe-instances"*"--instance-ids"*) echo running ;;
+  *"describe-instances"*) [ -f "$STUB_DIR/running" ] \
+      && echo "$(cat "$STUB_DIR/running") c6a.4xlarge running s" || true ;;
+  *"describe-vpcs"*) echo vpc-0stub ;;
+  *"create-security-group"*) touch "$STUB_DIR/sg"; echo sg-0stub ;;
+  *"authorize-security-group"*|*"ec2 wait"*|*"modify-instance-metadata-options"*) ;;
+  *"create-key-pair"*) touch "$STUB_DIR/key"; echo KEY ;;
+  *"ssm get-parameter"*) echo ami-0stub ;;
+  *"run-instances"*) echo i-0stub > "$STUB_DIR/running"; echo i-0stub ;;
+  *"terminate-instances"*) rm -f "$STUB_DIR/running" ;;
+  *"describe-security-groups"*) [ -f "$STUB_DIR/sg" ] && echo sg-0stub || true ;;
+  *"delete-security-group"*) rm -f "$STUB_DIR/sg" ;;
+  *"describe-key-pairs"*) [ -f "$STUB_DIR/key" ] && echo key-0stub || true ;;
+  *"delete-key-pair"*) rm -f "$STUB_DIR/key" ;;
+  *) echo "unstubbed aws call: $a" >&2; exit 9 ;;
+esac
+"""
+STUB_SSH = r"""#!/usr/bin/env bash
+echo "ssh $*" >> "$STUB_DIR/ssh.log"
+case "$*" in
+  *setup_done.json*) [[ "$*" == *cat* ]] && echo '{"setup_s": 1}' ;;
+  *"gate --phase pre"*) echo '{"passes": true}' ;;
+esac
+exit 0
+"""
+STUB_CURL = r"""#!/usr/bin/env bash
+case "$*" in
+  *thundercompute*) cat "$STUB_DIR/capacity.json" ;;
+  *) echo 192.0.2.1 ;;
+esac
+"""
+STUB_GIT = r"""#!/usr/bin/env bash
+case "$1" in rev-parse) echo 0000000000000000000000000000000000000000 ;; esac
+exit 0
+"""
+BAIL_CARD = """#!/usr/bin/env bash
+echo "ERROR: no Thunder instance after 6 attempts. Last message: no capacity."
+exit 1
+"""
+
+
+def _dry_launch(tmp_path, a100xl: str):
+    """`launch` with every outside call stubbed (aws, ssh, scp, curl, git) and the pod card forced
+    to bail; returns (the completed process, the stub's aws log, seconds taken)."""
+    import hashlib
+    import os
+    import shutil
+    import subprocess
+    import time
+
+    if not shutil.which("jq") or not shutil.which("ssh-keygen"):
+        pytest.skip("the launcher needs jq and ssh-keygen")
+    stub, root = tmp_path / "bin", tmp_path / "gpc4root"
+    stub.mkdir()
+    root.mkdir()
+    for name, body in (
+        ("aws", STUB_AWS),
+        ("ssh", STUB_SSH),
+        ("scp", "#!/usr/bin/env bash\nexit 0\n"),
+        ("curl", STUB_CURL),
+        ("git", STUB_GIT),
+    ):
+        (stub / name).write_text(body)
+        (stub / name).chmod(0o755)
+    (tmp_path / "card.sh").write_text(BAIL_CARD)
+    (tmp_path / "capacity.json").write_text(
+        json.dumps({"gpu_type": {"a100xl": {"1": a100xl}}, "specs": {"a100xl_x1": a100xl}})
+    )
+    vm_files = re.search(r"VM_FILES=\((.*?)\)", LAUNCHER, re.S).group(1)
+    files = [
+        f.strip('"').replace("$G/", "papers/gpc_goal_pressure_conduct/") for f in vm_files.split()
+    ]
+    vm_hash = hashlib.sha256(b"".join((ROOT / f).read_bytes() for f in files)).hexdigest()[:16]
+    (root / f"rehearsal_{vm_hash}.json").write_text(json.dumps({"passed": True}))
+    env = {
+        **os.environ,
+        "PATH": f"{stub}:{os.environ['PATH']}",
+        "STUB_DIR": str(tmp_path),
+        "GPC4_ROOT": str(root),
+        "GPC4_POD_CARD": str(tmp_path / "card.sh"),
+        "GPC4_IN_DIR": str(tmp_path / "gpc4_in"),
+        "GPC4_POD_POLL_S": "1",
+        "AWS_PROFILE": "stub",
+    }
+    env.pop("TNR_FALLBACK", None)
+    t0 = time.time()
+    r = subprocess.run(
+        ["bash", str(GPC / "runpod/launch_gpc4.sh"), "launch"],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    log = (tmp_path / "aws.log").read_text() if (tmp_path / "aws.log").exists() else ""
+    return r, log, time.time() - t0
+
+
+def test_launch_stops_at_once_and_removes_the_host_when_the_pod_card_bails(tmp_path):
+    # most probable failure: with no capacity the card bails, launch waits an hour for an endpoint
+    # that cannot appear, then leaves the host up to its 14 h limit (the lead's review, item 1)
+    r, log, secs = _dry_launch(tmp_path, "available")
+    assert r.returncode != 0, r.stdout
+    assert "the pod launcher exited without an endpoint" in r.stderr, r.stderr[-1500:]
+    assert secs < 60, secs  # not the hour's wait
+    order = [
+        c
+        for c in (
+            "run-instances",
+            "terminate-instances",
+            "delete-security-group",
+            "delete-key-pair",
+        )
+        if c in log
+    ]
+    assert order == [
+        "run-instances",
+        "terminate-instances",
+        "delete-security-group",
+        "delete-key-pair",
+    ], log
+    assert log.index("run-instances") < log.index("terminate-instances")
+    assert not (tmp_path / "running").exists() and not (tmp_path / "sg").exists()
+    assert not (tmp_path / "key").exists()
+
+
+def test_launch_creates_nothing_when_thunder_lists_no_a100(tmp_path):
+    # most probable failure: the host is built (and billed) before Thunder is known to have a GPU
+    r, log, _ = _dry_launch(tmp_path, "unavailable")
+    assert r.returncode != 0 and "Thunder lists no A100 80GB x1" in r.stderr, r.stderr[-1500:]
+    for call in ("create-security-group", "create-key-pair", "run-instances"):
+        assert call not in log, log
 
 
 @pytest.mark.parametrize("cmd", ["rehearse", "verify", "launch", "reattach", "teardown"])
@@ -489,6 +715,94 @@ def test_bounds_grid_swap_restores_the_conduct_grid():
         assert set(GC.SETTINGS) == {"work", "sim"} and GC.GRID.name == "bounds_grid_v1.json"
         assert P4.P1.c_conduct().startswith("Do not take actions the people you work for")
     assert (GC.SETTINGS, GC.GRID, GC.brief, GC.check, P4.P1.c_conduct) == before
+
+
+def test_usage_records_the_hosts_peak_memory_and_load(tmp_path, monkeypatch):
+    # most probable failure: the sampler reads a field wrongly and records 0 for every stage, so the
+    # rehearsal's capacity read (the lead's item 2) is empty
+    import time
+
+    (tmp_path / "meminfo").write_text("MemTotal:       32000000 kB\nMemAvailable:   20000000 kB\n")
+    (tmp_path / "loadavg").write_text("7.50 3.00 1.00 2/300 999\n")
+    monkeypatch.setattr(V.Usage, "MEMINFO", tmp_path / "meminfo")
+    monkeypatch.setattr(V.Usage, "LOADAVG", tmp_path / "loadavg")
+    with V.Usage(every_s=0.02) as u:
+        time.sleep(0.15)
+    rec = u.record()
+    assert rec["samples"] >= 1 and rec["peak_load1"] == 7.5
+    assert rec["peak_mem_used_gb"] == round(12000000 / 2**20, 2)
+    assert rec["mem_total_gb"] == round(32000000 / 2**20, 2)
+
+
+def _odcv_results(out, ins, errors=0, missing=0):
+    for n, (sc, var, rid) in enumerate(ins["runs"]):
+        if n < missing:
+            continue
+        d = out / "vm_results" / ins["id"] / rid
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "run.json").write_text(
+            json.dumps(
+                {
+                    "run_id": rid,
+                    "scenario": sc,
+                    "variant": var,
+                    "arm": ins["arm"],
+                    "tool_timeouts": n % 2,
+                    "container_error": n < missing + errors,
+                }
+            )
+        )
+
+
+def test_odcv_quality_counts_a_missing_run_as_an_error(tmp_path):
+    # most probable failure: a run that never arrived is left out of the share, so a gate that lost
+    # runs reads clean
+    ins = P4.odcv_instruction("base", "base", dry=True)  # 8 runs in a dry session
+    _odcv_results(tmp_path, ins, errors=0, missing=1)
+    q = P4.odcv_quality(tmp_path, ins)
+    assert q["container_errors"] == 1 and q["error_share"] == 1 / 8 and q["void"]
+    assert q["tool_timeout_share"] is not None
+
+
+@pytest.mark.parametrize(
+    "second,fits_rerun,want",
+    [
+        (None, True, "odcv_base"),  # clean first time: counted as run
+        (0, True, "odcv_base_c4"),  # void, rerun clean at concurrency 4: the rerun counts
+        (2, True, None),  # void twice: ODCV-Bench's stages are skipped
+        (None, False, None),  # void and no time for the rerun: skipped
+    ],
+)
+def test_a_bad_odcv_gate_is_void_reruns_once_or_is_skipped(
+    tmp_path, monkeypatch, second, fits_rerun, want
+):
+    # most probable failure: a gate with many container errors is counted or banked (the lead's
+    # item 3: neither), or reruns more than once
+    first = P4.odcv_instruction("base", "base", dry=True)
+    _odcv_results(tmp_path, first, errors=0 if (second is None and fits_rerun) else 2)
+    plans = []
+    monkeypatch.setattr(
+        P4, "plan_set", lambda out, ins, hold=False: plans.append([i["id"] for i in ins])
+    )
+    monkeypatch.setattr(P4, "wait_for", lambda *a, **k: [])
+    monkeypatch.setattr(P4, "fits", lambda out, item: fits_rerun)
+
+    def wait_rerun(out, ids, dry, max_h):
+        if "odcv_base_c4" in ids:
+            _odcv_results(tmp_path, first | {"id": "odcv_base_c4"}, errors=second or 0)
+        return []
+
+    monkeypatch.setattr(P4, "wait_for", wait_rerun)
+    rec = P4.stage_odcv_gate(tmp_path, dry=True)
+    assert rec["instruction"] == want and rec["void"] is (want is None)
+    assert sum("odcv_base_c4" in p for p in plans) <= 1  # one rerun at most
+    if want is None:
+        assert "skipped" in rec["reason"]
+        j = P4.stage_judge(tmp_path, "odcv_base", dry=True)
+        assert j["void"] and not j["counts_rate_bar"] and not j["banked"]
+        assert P4._r(tmp_path, "odcv_gate")["void"]  # noqa: SLF001
+    if want == "odcv_base_c4":
+        assert rec["rerun"]["concurrency"] == 4
 
 
 def test_the_failure_branch_skips_the_vm_stages(tmp_path):

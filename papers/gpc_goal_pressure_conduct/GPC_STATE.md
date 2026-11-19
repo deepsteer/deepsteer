@@ -196,3 +196,8 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
   directory (its download unpacked one level off) and recorded a fail; fixed, rehearsal 5 is the record.
 - 2026-11-19: rehearsal 5 passed (§11.10; `rehearsal_b0116eafffed7b5b.json`, commit `7cd7d644`, $0.20):
   `launch` is unlocked at that VM hash.
+- 2026-11-19: the lead's launch review (§11.11): not launched on rehearsal 5. Built: the no-capacity path
+  (Thunder's availability read first, the wait ends with the pod launcher, a failure before the handoff
+  removes the host, key and group), rehearsal 6 at the gate's scale with per-stage wall, memory and load,
+  the void rule for a bad ODCV-Bench run set (over 10% container errors; one rerun at concurrency 4), and
+  the worst case beside the ceiling (about $20.70). Rehearsal 6 next.

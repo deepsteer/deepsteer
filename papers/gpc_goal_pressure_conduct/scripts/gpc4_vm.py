@@ -302,6 +302,47 @@ def done_marker(d: Path, instr: dict) -> None:
                                             "finished": time.time()}, indent=1))
 
 
+class Usage:
+    """The host's peak memory in use (MemTotal less MemAvailable) and peak 1-minute load, sampled every
+    few seconds through one instruction (the lead's rehearsal 6 record); Linux /proc only."""
+
+    MEMINFO, LOADAVG = Path("/proc/meminfo"), Path("/proc/loadavg")
+
+    def __init__(self, every_s: float = 5.0):
+        self.every_s, self._stop = every_s, threading.Event()
+        self.peak_mem_kb = self.peak_load1 = 0.0
+        self.samples, self.t0 = 0, time.time()
+
+    @staticmethod
+    def read() -> tuple[float, float, float]:
+        mem = dict(line.split(":", 1) for line in Usage.MEMINFO.read_text().splitlines())
+        kb = lambda k: float(mem[k].split()[0])  # noqa: E731
+        return kb("MemTotal") - kb("MemAvailable"), kb("MemTotal"), float(
+            Usage.LOADAVG.read_text().split()[0])
+
+    def _run(self) -> None:
+        while not self._stop.is_set():
+            used, self.total_kb, load = self.read()
+            self.peak_mem_kb, self.peak_load1 = max(self.peak_mem_kb, used), max(self.peak_load1, load)
+            self.samples += 1
+            self._stop.wait(self.every_s)
+
+    def __enter__(self):
+        self.total_kb = 0.0
+        if Usage.MEMINFO.exists():
+            threading.Thread(target=self._run, daemon=True).start()
+        return self
+
+    def __exit__(self, *exc) -> None:
+        self._stop.set()
+
+    def record(self) -> dict:
+        return {"wall_s": round(time.time() - self.t0, 1), "samples": self.samples,
+                "peak_mem_used_gb": round(self.peak_mem_kb / 2**20, 2),
+                "mem_total_gb": round(self.total_kb / 2**20, 2), "peak_load1": self.peak_load1,
+                "cpus": os.cpu_count()}
+
+
 def driver(poll_s: int = 20) -> None:
     STATE.mkdir(parents=True, exist_ok=True)
     done_f = STATE / "instructions_done.json"
@@ -335,18 +376,21 @@ def driver(poll_s: int = 20) -> None:
         out = STATE / "out" / iid
         out.mkdir(parents=True, exist_ok=True)
         log(f"driver: {ins.get('kind')} {iid}")
-        try:
-            if ins["kind"] == "odcv":
-                odcv_stage(ins, out)
-            elif ins["kind"] == "ib":
-                ib_stage(ins, out)
-            elif ins["kind"] == "probe":
-                (out / "probe.txt").write_text(f"probe {time.time()}\n")
-                push(out, iid)
-            else:
-                (out / "error.json").write_text(json.dumps({"unknown kind": ins.get("kind")}))
-        except Exception as e:  # noqa: BLE001  (record the stage's failure; the pod decides)
-            (out / "stage_error.json").write_text(json.dumps({"error": repr(e)}))
+        with Usage() as usage:
+            try:
+                if ins["kind"] == "odcv":
+                    odcv_stage(ins, out)
+                elif ins["kind"] == "ib":
+                    ib_stage(ins, out)
+                elif ins["kind"] == "probe":
+                    (out / "probe.txt").write_text(f"probe {time.time()}\n")
+                    push(out, iid)
+                else:
+                    (out / "error.json").write_text(json.dumps({"unknown kind": ins.get("kind")}))
+            except Exception as e:  # noqa: BLE001  (record the stage's failure; the pod decides)
+                (out / "stage_error.json").write_text(json.dumps({"error": repr(e)}))
+        (out / "resources.json").write_text(json.dumps(usage.record(), indent=1))
+        log(f"driver: {iid} done {json.dumps(usage.record())}")
         done_marker(out, ins)
         push(out, iid)
         done.add(iid)

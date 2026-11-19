@@ -24,7 +24,14 @@ HARD_LIMIT_MIN=${GPC4_HARD_LIMIT_MIN:-840}   # 14 h, the runner's ceiling
 STANDIN_LIMIT_MIN=720   # the rehearsal's stand-in: 12 h, long enough for a `verify` the next morning
 SETUP_WAIT_MIN=${GPC4_SETUP_WAIT_MIN:-90}
 AMI_PARAM=/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id
-ROOT=~/.gpc4
+ROOT=${GPC4_ROOT:-~/.gpc4}
+# the pod card, and how long and how often `launch` waits for its endpoint; a test swaps the card
+# for one that bails (the lead's no-capacity test)
+POD_CARD=${GPC4_POD_CARD:-$G/runpod/launch_gpc4_pod.sh}
+POD_WAIT_MIN=${GPC4_POD_WAIT_MIN:-60}
+POD_POLL_S=${GPC4_POD_POLL_S:-15}
+# Thunder's public availability (no login; GET /v2/status): read before any AWS resource exists
+TNR_STATUS_URL=https://api.thundercompute.com:8443/v2/status
 COMMIT=$(git rev-parse HEAD)
 # the rehearsal vouches for the VM side: the files the host and the stand-in run (a later commit that
 # changes only the pod's files keeps the rehearsal valid)
@@ -215,9 +222,10 @@ cmd_verify() {
   ls "$D"/rehearsal_results/*/stage.json >/dev/null 2>&1 \
     || die "no stage results downloaded from the stand-in; the record is not written (teardown is separate)"
   local launched; launched=$(ip_of "$vm" LaunchTime 2>/dev/null || echo gone)
-  python3 - "$D" "$state" "$reached" "$launched" "$r_commit" "$r_hash" <<'EOF'
+  python3 - "$D" "$state" "$reached" "$launched" "$r_commit" "$r_hash" "$G/vm/rehearsal_plan.json" <<'EOF'
 import json, sys, datetime, pathlib
-d, state, reached, launched, commit, vm_hash = sys.argv[1:]
+d, state, reached, launched, commit, vm_hash, plan_f = sys.argv[1:]
+plan = json.loads(pathlib.Path(plan_f).read_text())["instructions"]
 D = pathlib.Path(d)
 R = D / "rehearsal_results"
 try:
@@ -228,17 +236,36 @@ except ValueError:  # the host has left the listing: bounded by the stand-in's l
 def stage(name):
     f = R / name / "stage.json"
     return json.loads(f.read_text()) if f.exists() else {}
-# the instruments ran, not only the plumbing (rehearsal 2 delivered every result with neither running)
-odcv = stage("r1_odcv").get("runs", [])
-ib = {k: stage(k) for k in ("r2_ib_minimal", "r3_ib_tools")}
-instruments = {
-    "odcv": [{k: r.get(k) for k in ("run_id", "compose_exit", "container_error", "tool_calls")} for r in odcv],
-    "ib": {k: {f: v.get(f) for f in ("exit", "n_logs", "n_samples", "n_scored", "n_errored")} for k, v in ib.items()}}
-instruments_ran = bool(odcv) and all(not r.get("container_error") and (r.get("tool_calls") or 0) >= 1 for r in odcv) \
-    and all(v.get("exit") == 0 and (v.get("n_scored") or 0) >= 1 for v in ib.values())
+def usage(name):
+    f = R / name / "resources.json"
+    return json.loads(f.read_text()) if f.exists() else {}
+# the instruments ran, at the plan's own scale, not only the plumbing (rehearsal 2 delivered every
+# result with neither running); rehearsal 6 (the lead): no container error on any of ODCV-Bench's runs,
+# and every ImpossibleBench task scored with no sample error
+checks, stages, runs = {}, {}, []
+for ins in plan:
+    k, st = ins["id"], stage(ins["id"])
+    stages[k] = {"kind": ins["kind"], **usage(k)}
+    if ins["kind"] == "odcv":
+        rr = st.get("runs", [])
+        runs += [{f: r.get(f) for f in ("run_id", "compose_exit", "container_error", "tool_calls",
+                                         "tool_timeouts", "wall_s")} for r in rr]
+        stages[k] |= {"runs": len(rr), "expected": len(ins["runs"]),
+                      "container_errors": sum(bool(r.get("container_error")) for r in rr),
+                      "tool_timeouts": sum(r.get("tool_timeouts") or 0 for r in rr),
+                      "min_tool_calls": min((r.get("tool_calls") or 0 for r in rr), default=0)}
+        checks[k] = (len(rr) == len(ins["runs"]) and stages[k]["container_errors"] == 0
+                     and stages[k]["min_tool_calls"] >= 1)
+    elif ins["kind"] == "ib":
+        stages[k] |= {f: st.get(f) for f in ("exit", "n_logs", "n_samples", "n_scored", "n_errored")}
+        stages[k]["expected"] = len(ins["task_ids"])
+        checks[k] = (st.get("exit") == 0 and st.get("n_errored") == 0
+                     and st.get("n_samples") == st.get("n_scored") == len(ins["task_ids"]))
+instruments_ran = bool(checks) and all(checks.values())
+instruments = {"stages": stages, "checks": checks}
 rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state,
        "self_terminated": state in ("shutting-down", "terminated", "gone"),
-       "instruments": instruments, "instruments_ran": instruments_ran,
+       "instruments": instruments, "instruments_ran": instruments_ran, "odcv_runs": runs,
        "every_result_on_the_receiving_side": reached == "true",
        "gate_pre": json.loads((D / "gate_pre.json").read_text()),
        "gate_post": json.loads((D / "gate_post.json").read_text()),
@@ -248,7 +275,7 @@ rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state,
 rec["passed"] = bool(rec["self_terminated"] and rec["every_result_on_the_receiving_side"] and instruments_ran
                      and rec["gate_pre"].get("passes") and rec["gate_post"].get("passes"))
 (pathlib.Path.home() / ".gpc4" / f"rehearsal_{vm_hash}.json").write_text(json.dumps(rec, indent=1))
-print(json.dumps({k: v for k, v in rec.items() if k not in ("gate_pre", "gate_post")}, indent=1))
+print(json.dumps({k: v for k, v in rec.items() if k not in ("gate_pre", "gate_post", "odcv_runs")}, indent=1))
 EOF
   say "the rehearsal record: $ROOT/rehearsal_$VM_HASH.json (the VM side's hash; commit $COMMIT)"
   cmd_teardown
@@ -286,30 +313,63 @@ cmd_teardown() {
   say "after teardown:"; list_tagged
 }
 
+thunder_capacity() {  # one A100 80GB (a100xl x1), by both of the endpoint's keys, which can disagree
+  local j; j=$(curl -s -m 20 "$TNR_STATUS_URL") || die "Thunder's availability endpoint did not answer; nothing was created"
+  jq -e '.gpu_type.a100xl."1" == "available" and .specs.a100xl_x1 == "available"' <<<"$j" >/dev/null 2>&1 \
+    || die "Thunder lists no A100 80GB x1 now ($(jq -c '{a100xl: .gpu_type.a100xl."1", a100xl_x1: .specs.a100xl_x1}' <<<"$j" 2>/dev/null || echo unreadable)); nothing was created"
+  say "Thunder lists an A100 80GB x1 as available (read before the host is created)"
+}
+
+abort_before_handoff() {  # any failure before the handoff: the pod launcher, then the host, key and group
+  local rc=$?
+  trap - EXIT
+  [ -n "${TAIL_PID:-}" ] && kill "$TAIL_PID" 2>/dev/null
+  if [ -n "${POD_PID:-}" ] && kill -0 "$POD_PID" 2>/dev/null; then
+    # TERM runs the pod launcher's own cleanup at once (it deletes any instance it created); a
+    # background job ignores INT
+    say "stopping the pod launcher (its cleanup deletes any instance it created; check 'tnr status')"
+    kill -TERM "$POD_PID" 2>/dev/null; wait "$POD_PID" 2>/dev/null || true
+  fi
+  say "the launch failed before the handoff: removing the host, the key and the group"
+  cmd_teardown || say "teardown did not finish: run it again"
+  say "stopped before the handoff; nothing of this session is left running on AWS (listing above)"
+  exit "$(( rc == 0 ? 1 : rc ))"
+}
+
 cmd_launch() {
   [ -f "$ROOT/rehearsal_$VM_HASH.json" ] && jq -e .passed "$ROOT/rehearsal_$VM_HASH.json" >/dev/null \
     || die "no passed rehearsal for this VM side ($VM_HASH; run rehearse, then verify)"
   [ -z "${TNR_FALLBACK:-}" ] || die "GPC-4 runs on Thunder with no fallback"
   preflight "$VCPUS_NEEDED"
   [ -f "$G/runpod/remote_gpc4.sh" ] || die "the pod's runner (remote_gpc4.sh) is not built yet"
-  new_session; make_group_and_key
-  trap 'say "the launcher stopped: the pod and the host run on (reattach, or teardown)"' EXIT
+  thunder_capacity   # before any AWS resource: with no capacity nothing is created
+  new_session
+  trap abort_before_handoff EXIT
+  make_group_and_key
   vm_setup
-  mkdir -p "$G/outputs/gpc4_in/vm_keys"
-  cp "$D/forward_key.pub" "$D/results_key.pub" "$G/outputs/gpc4_in/vm_keys/"
-  echo "$S" > "$G/outputs/gpc4_in/session"
+  local in_dir=${GPC4_IN_DIR:-$G/outputs/gpc4_in}   # the pod's inputs (a test points this elsewhere)
+  mkdir -p "$in_dir/vm_keys"
+  cp "$D/forward_key.pub" "$D/results_key.pub" "$in_dir/vm_keys/"
+  echo "$S" > "$in_dir/session"
   # the pod, through the provider layer (Thunder, no fallback); its endpoint line starts the handoff
-  local plog="$D/pod_launcher.log"
-  ( bash "$G/runpod/launch_gpc4_pod.sh" 2>&1 | tee "$plog" ) &
-  local ep=""
-  for _ in $(seq 1 240); do
-    ep=$(grep -oE 'SSH endpoint: [a-z]+@[0-9.]+:[0-9]+' "$plog" 2>/dev/null | head -1 | sed 's/SSH endpoint: //')
-    [ -n "$ep" ] && break; sleep 15
+  local plog="$D/pod_launcher.log"; : > "$plog"
+  bash "$POD_CARD" > "$plog" 2>&1 & POD_PID=$!
+  tail -n +1 -f "$plog" & TAIL_PID=$!; disown "$TAIL_PID"   # the card's output, shown live
+  local ep="" t0; t0=$(date +%s)
+  while :; do
+    ep=$(grep -oE 'SSH endpoint: [a-z]+@[0-9.]+:[0-9]+' "$plog" 2>/dev/null | head -1 | sed 's/SSH endpoint: //' || true)
+    [ -n "$ep" ] && break
+    # the pod launcher exits without an endpoint on no capacity (or any bail): stop now, not in an hour
+    kill -0 "$POD_PID" 2>/dev/null || die "the pod launcher exited without an endpoint (see $plog)"
+    [ $(( $(date +%s) - t0 )) -lt $(( POD_WAIT_MIN * 60 )) ] || die "no pod endpoint in $POD_WAIT_MIN min (see $plog)"
+    sleep "$POD_POLL_S"
   done
-  [ -n "$ep" ] || die "the pod's endpoint never appeared (see $plog)"
+  # from the handoff on, the pod and the host run detached: a failure here is the pod's failure branch
+  trap 'say "the launcher stopped: the pod and the host run on (reattach, or teardown)"' EXIT
   local user=${ep%@*} rest=${ep#*@}; local host=${rest%:*} port=${rest#*:}
   handoff "$host" "$port" "$user" || say "the host failed its post-lock gate tests: the pod runs its no-VM items and stops"
-  wait
+  wait "$POD_PID" || true
+  kill "$TAIL_PID" 2>/dev/null || true
 }
 
 case "${1:-}" in

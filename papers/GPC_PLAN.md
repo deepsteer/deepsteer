@@ -1500,6 +1500,7 @@ turns) and 10k on an original one.
 |---|---|---|---|
 | **floor** (every instrument banks; no bounds adapter) | **4.4** (4.5 billed: $5.20) | setup 0.75 h plus the VM stages (ODCV-Bench's gate, ImpossibleBench's stage 1) about 2.5 h: about $2.05 | **about $7.25** |
 | **ceiling** | **9.0, the hard cap** ($10.50; cut from the end: stage 5, then part of stage 4; with ODCV-Bench counting, ImpossibleBench's stage 2 holds for the next pod) | setup plus up to about 8 h of VM stages: about $5.55 (terminated once its last stage is done) | **about $16.05** |
+| **worst case, the spend if nothing stops early** (the lead's launch review, item 4) | the pod to its 10.25 h stage stop: 10.25 h at $1.15, **about $11.80** (its watchdog ceiling, 14.0 h, is about $16.10) | the host to its 14 h hard limit: **about $8.90** | **about $20.70** (about $25 at the pod's watchdog) |
 | **the failure branch** (the VM fails or dies) | the pod's no-VM items: setup, the bounds writer, the fallback gate, stage 4: about 2.4 (2.5 billed: $2.90) | whatever ran before the loss | **about $3 to $5** |
 | **the rehearsal** (before the launch) | none | about 1 h | **about $0.65** |
 
@@ -1674,3 +1675,50 @@ exit 0 with one scored sample each and no errors; every result on the receiving 
 runs at 8 at once on the host (one scenario ran), ImpossibleBench at 10 sandboxes and with the subject's
 real replies (one task each, on the stub), `launch`'s pod start and endpoint watcher, and
 `launch_gpc4_pod.sh` itself.
+
+### 11.11 The launch review (the lead, 2026-11-19): not launched on rehearsal 5
+
+The lead held the launch for one more rehearsal, since item 1's fix changes the launcher (a VM-side
+file) and voids rehearsal 5's record in any case. Items 1 to 4 are built here; item 5 is a sequencing
+rule.
+
+1. **The no-capacity path** (`launch_gpc4.sh`). GPC-3 met no capacity on Thunder; before this fix the pod
+   card bailed, `launch` waited up to an hour for an endpoint that could not appear, then died and left
+   the host up to its 14 h limit (about $8.90).
+   - **Before any AWS resource:** `launch` reads Thunder's public availability (`GET /v2/status`, no
+     login) and stops unless one A100 80GB is listed available under both of its keys
+     (`gpu_type.a100xl."1"` and `specs.a100xl_x1`; the two can disagree, as the H100's did when read).
+     An endpoint that does not answer also stops it. Nothing is created. The check is a moment's read,
+     so the next two items still apply.
+   - **The wait ends when the pod launcher does:** `launch` polls the card's process; once it has exited
+     without an endpoint line, `launch` stops at once (and still at 60 min with neither).
+   - **Any failure before the handoff** (setup, the pre-lock gate, the card's bail, the wait): the pod
+     launcher, if still running, gets TERM (which runs its own cleanup at once; a background job ignores
+     INT), then the host is terminated and the session's key and group deleted, then the report. From
+     the handoff on, the session runs detached as before (§11.3c).
+   - **Tested** with every outside call stubbed (`aws`, `ssh`, `scp`, `curl`, `git`) and the pod card
+     forced to bail: `launch` stops in about a second, the host is terminated after it was created, and
+     the group and key are deleted; with Thunder listing no A100, nothing is created at all.
+2. **Rehearsal 6 at the real scale, on the stub** (`vm/rehearsal_plan.json`, built by `gpc4_pod.py`'s
+   own `odcv_instruction`, `ib_instruction` and `ib_sample`): ODCV-Bench's 80 gate runs at concurrency 8,
+   then each ImpossibleBench scaffold's first 30 gate tasks (15 oneoff and 15 conflicting, the gate's
+   draw) at 10 sandboxes with the gate's settings (the tools scaffold at 25 attempts and 100 messages,
+   the minimal at 10 and 50), in the gate's order. `verify` now checks each stage against its plan: it
+   passes only with every ODCV-Bench run arrived, none with a container error and each with a tool call;
+   every ImpossibleBench task scored with no sample error; every result delivered; and the host
+   terminated. The host records each stage's wall time and its peak memory in use and peak 1-minute load
+   (`resources.json`, sampled every 5 s), and the record carries them. The reason (the lead): four of the
+   five rehearsals found a fault in a path running for the first time, and these two had not run.
+3. **A registered rule for a bad run set** (pod side; the rehearsal's record is unaffected). If more than
+   10% of ODCV-Bench's 80 gate runs carry a container error (a run that never arrived counts as one), the
+   gate is **void, neither counted nor banked**. It reruns once, at concurrency 4, if the cut rule allows
+   (forecast 2.0 A100-h); a clean rerun is the counted gate. Otherwise ODCV-Bench's stages are skipped,
+   with the reason recorded (`odcv_gate_runs.json`, and the judge's `odcv_gate.json` carries
+   `void: true`). The same share voids an arm: a void arm is left out of the final judge pass and of
+   every read. Tool-timeout shares are reported per arm and never void.
+4. **The worst case beside the ceiling** (§11.5's table): the pod to its 10.25 h stage stop and the host
+   to its 14 h hard limit, about $20.70.
+5. `gpc4_read.py` (the read: screens, rates, error shares, ImpossibleBench's pass classes) is built during
+   the session, zero GPU, before any result is read. Stage 5 stays unbuilt.
+
+The order: commit, push with CI green, then the author runs `rehearse`, `verify` and `launch`.
