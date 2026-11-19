@@ -334,6 +334,69 @@ def test_push_creates_each_parent_before_the_run(tmp_path, monkeypatch):
     assert calls == ["u@h:gate_probe/"]  # a top-level push needs no parent
 
 
+def test_parallel_pushes_never_meet_rrsyncs_lock(tmp_path, monkeypatch):
+    # most probable failure: 8 runs finishing together push at once and rrsync, which locks the
+    # results directory per connection, refuses all but one (rehearsal 6: every run's own push)
+    import threading
+    import time
+
+    monkeypatch.setattr(V, "pod_env", lambda: {"POD_HOST": "h", "POD_PORT": "22", "POD_USER": "u"})
+    live, seen, guard = [0], [], threading.Lock()
+
+    class R:
+        def __init__(self, busy):
+            self.returncode = 12 if busy else 0
+            self.stderr = (
+                "rrsync error: Another instance of rrsync is already accessing" if busy else ""
+            )
+
+    def fake(a, **k):
+        with guard:
+            live[0] += 1
+            busy = live[0] > 1
+            seen.append(live[0])
+        time.sleep(0.01)
+        with guard:
+            live[0] -= 1
+        return R(busy)
+
+    monkeypatch.setattr(V.subprocess, "run", fake)
+    V.PUSH_STATS.update(pushes=0, failed=0, busy_retries=0)
+    res = []
+    ts = [
+        threading.Thread(target=lambda n=n: res.append(V.push(tmp_path, f"r1_odcv/run_{n}")))
+        for n in range(8)
+    ]
+    for t in ts:
+        t.start()
+    for t in ts:
+        t.join()
+    assert res == [True] * 8 and max(seen) == 1
+    assert V.PUSH_STATS == {"pushes": 8, "failed": 0, "busy_retries": 0}
+
+
+def test_a_push_retries_while_another_process_holds_the_lock(tmp_path, monkeypatch):
+    # most probable failure: the post-lock gate's probe push (its own process) meets the driver's,
+    # and one of them is lost on the first refusal
+    monkeypatch.setattr(V, "pod_env", lambda: {"POD_HOST": "h", "POD_PORT": "22", "POD_USER": "u"})
+    answers = iter([12, 12, 0])
+
+    class R:
+        def __init__(self, rc):
+            self.returncode = rc
+            self.stderr = (
+                "Another instance of rrsync is already accessing this directory." if rc else ""
+            )
+
+    monkeypatch.setattr(V.subprocess, "run", lambda a, **k: R(next(answers)))
+    V.PUSH_STATS.update(pushes=0, failed=0, busy_retries=0)
+    assert V.push(tmp_path, "gate_probe", wait_s=0)
+    assert V.PUSH_STATS["busy_retries"] == 2 and V.PUSH_STATS["failed"] == 0
+    monkeypatch.setattr(V.subprocess, "run", lambda a, **k: R(12))
+    assert not V.push(tmp_path, "gate_probe", tries=3, wait_s=0)
+    assert V.PUSH_STATS["failed"] == 1  # a lock held throughout is a failed push, counted
+
+
 def test_a_good_run_without_result_json_is_not_an_error(tmp_path):
     # most probable failure: the run errs on upstream's result.json, which its executor never writes
     # at the pin (rehearsal 2's good stub run read container_error true)
@@ -414,11 +477,13 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_pa
         (D / f).parent.mkdir(parents=True, exist_ok=True)
         (D / f).write_text(json.dumps(v))
 
-    def session(odcv_errors=0, ib_short=0):
+    def session(odcv_errors=0, ib_short=0, push_failed=0):
         for ins in plan:
             d = D / "rehearsal_results" / ins["id"]
             d.mkdir(parents=True, exist_ok=True)
-            (d / "resources.json").write_text(json.dumps({"wall_s": 5, "peak_mem_used_gb": 3.0}))
+            (d / "resources.json").write_text(
+                json.dumps({"wall_s": 5, "peak_mem_used_gb": 3.0, "push_failed": push_failed})
+            )
             if ins["kind"] == "odcv":
                 runs = [
                     {
@@ -463,6 +528,7 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_pa
     assert good["instruments"]["stages"]["r1_odcv"]["peak_mem_used_gb"] == 3.0
     assert not session(odcv_errors=1)["passed"]  # one container error of 80 fails the rehearsal
     assert not session(ib_short=1)["passed"]  # 14 of 15 tasks scored fails it
+    assert not session(push_failed=1)["passed"]  # a lost push fails it (rehearsal 6's fault)
 
 
 def test_verify_reads_the_results_where_it_unpacks_them(tmp_path):

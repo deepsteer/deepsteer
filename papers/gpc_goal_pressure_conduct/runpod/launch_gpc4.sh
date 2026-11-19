@@ -246,6 +246,9 @@ checks, stages, runs = {}, {}, []
 for ins in plan:
     k, st = ins["id"], stage(ins["id"])
     stages[k] = {"kind": ins["kind"], **usage(k)}
+    # every push during the stage landed (rehearsal 6: 8 parallel runs collided on rrsync's lock and
+    # each run's results waited for the stage's end, against the detached rule)
+    pushes_ok = stages[k].get("push_failed") == 0
     if ins["kind"] == "odcv":
         rr = st.get("runs", [])
         runs += [{f: r.get(f) for f in ("run_id", "compose_exit", "container_error", "tool_calls",
@@ -254,13 +257,15 @@ for ins in plan:
                       "container_errors": sum(bool(r.get("container_error")) for r in rr),
                       "tool_timeouts": sum(r.get("tool_timeouts") or 0 for r in rr),
                       "min_tool_calls": min((r.get("tool_calls") or 0 for r in rr), default=0)}
-        checks[k] = (len(rr) == len(ins["runs"]) and stages[k]["container_errors"] == 0
+        checks[k] = (pushes_ok and len(rr) == len(ins["runs"]) and stages[k]["container_errors"] == 0
                      and stages[k]["min_tool_calls"] >= 1)
     elif ins["kind"] == "ib":
         stages[k] |= {f: st.get(f) for f in ("exit", "n_logs", "n_samples", "n_scored", "n_errored")}
         stages[k]["expected"] = len(ins["task_ids"])
-        checks[k] = (st.get("exit") == 0 and st.get("n_errored") == 0
+        checks[k] = (pushes_ok and st.get("exit") == 0 and st.get("n_errored") == 0
                      and st.get("n_samples") == st.get("n_scored") == len(ins["task_ids"]))
+    else:  # the probe: its push landed
+        checks[k] = pushes_ok
 instruments_ran = bool(checks) and all(checks.values())
 instruments = {"stages": stages, "checks": checks}
 rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state,

@@ -1722,3 +1722,29 @@ rule.
    the session, zero GPU, before any result is read. Stage 5 stays unbuilt.
 
 The order: commit, push with CI green, then the author runs `rehearse`, `verify` and `launch`.
+
+**Rehearsal 6, at the gate's scale on the stub** (session `gpc4-20261119T225332Z`, commit `2738ede9`, VM hash
+`11c0fec246361c21`, 2026-11-19 12:53 to 13:19 HST, $0.29 at most): `verify` passed. Setup took 847 s.
+
+| stage | wall | peak memory in use (of 30.6 GB) | peak 1-min load (16 CPUs) | result |
+|---|---|---|---|---|
+| ODCV-Bench, 80 runs at 8 at once | 195 s | 1.70 GB | 2.70 | 80 of 80 arrived; no container error, no tool timeout; at least 2 tool calls each; slowest run 19.4 s |
+| ImpossibleBench tools, 15 oneoff at 10 sandboxes | 36 s | 1.83 GB | 3.62 | 15 of 15 scored, none errored |
+| ImpossibleBench tools, 15 conflicting | 35 s | 1.80 GB | 5.47 | 15 of 15 |
+| ImpossibleBench minimal, 15 oneoff | 18 s | 1.85 GB | 5.26 | 15 of 15 |
+| ImpossibleBench minimal, 15 conflicting | 18 s | 1.92 GB | 5.56 | 15 of 15 |
+
+The host carries the gate's concurrency with room: under 2 GB of its 30.6 GB in use and a peak load under
+6 on 16 CPUs. With the subject in place of the stub the runs are longer, but the model runs on the pod, so
+the host's load per run should stay about the same (an inference; the real session's `resources.json`
+records it per stage).
+
+**Rehearsal 6 found one more fault, which `verify` did not check:** `rrsync` takes an exclusive lock on the
+results directory for each connection (its default; `-no-lock` turns it off), so when several runs
+finished together their own pushes were refused ("Another instance of rrsync is already accessing this
+directory"). Every result still arrived, by the stage's push at its end, but during the stage a run's
+results sat only on the host, against §11.3c. Fix (VM side; `rrsync`'s lock stays): the host pushes one at
+a time, and a push retries while another process (the post-lock gate's probe) holds the lock. Each stage
+records its pushes, failures and lock retries in `resources.json`, and `verify` now fails any stage with a
+failed push. **Rehearsal 6's record (`rehearsal_11c0fec246361c21.json`) is not the launch's record:** the
+fix moves the VM hash, and rehearsal 7, the same plan, is the record.

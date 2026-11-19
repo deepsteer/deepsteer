@@ -201,3 +201,6 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
   removes the host, key and group), rehearsal 6 at the gate's scale with per-stage wall, memory and load,
   the void rule for a bad ODCV-Bench run set (over 10% container errors; one rerun at concurrency 4), and
   the worst case beside the ceiling (about $20.70). Rehearsal 6 next.
+- 2026-11-19: rehearsal 6 at the gate's scale (§11.11): ODCV-Bench 80 of 80 clean in 195 s, ImpossibleBench
+  60 of 60 scored, host peak under 2 GB and load under 6; but parallel pushes met rrsync's lock. Fixed
+  (pushes one at a time, a retry on the lock, verify fails a lost push); rehearsal 7 is the record.

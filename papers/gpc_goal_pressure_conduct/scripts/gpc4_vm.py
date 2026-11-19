@@ -273,7 +273,25 @@ def control_doc() -> dict | None:
         return None
 
 
-def push(local: Path, dest: str) -> bool:
+# rrsync takes an exclusive lock on the results directory for each connection (its default; rehearsal
+# 6's 8 parallel runs collided on it), so this process pushes one at a time, and a push retries while
+# another process (the post-lock gate's probe) holds the lock. PUSH_STATS counts each stage's pushes.
+_PUSH_LOCK = threading.Lock()
+RRSYNC_BUSY = "Another instance of rrsync"
+PUSH_STATS = {"pushes": 0, "failed": 0, "busy_retries": 0}
+
+
+def _rsync(src: str, dest: str, ssh: str, tries: int, wait_s: float) -> subprocess.CompletedProcess:
+    for k in range(tries):
+        r = subprocess.run(["rsync", "-a", "-e", ssh, src, dest], capture_output=True, text=True)
+        if r.returncode == 0 or RRSYNC_BUSY not in (r.stderr or "") or k == tries - 1:
+            return r
+        PUSH_STATS["busy_retries"] += 1
+        time.sleep(wait_s)
+    return r
+
+
+def push(local: Path, dest: str, tries: int = 10, wait_s: float = 3.0) -> bool:
     """rsync ``local`` to the pod's results directory (the results key: `rrsync -wo`, one directory).
     rsync creates only the last level of ``dest``, so each parent is pushed first as an empty
     directory (no other option has to pass rrsync's filter)."""
@@ -283,15 +301,16 @@ def push(local: Path, dest: str) -> bool:
            "-o ConnectTimeout=20 -o LogLevel=ERROR")
     to = f"{env['POD_USER']}@{env['POD_HOST']}:"
     parts = dest.strip("/").split("/")
-    if len(parts) > 1:
-        with tempfile.TemporaryDirectory() as empty:
-            for i in range(1, len(parts)):
-                subprocess.run(["rsync", "-a", "-e", ssh, f"{empty}/", f"{to}{'/'.join(parts[:i])}/"],
-                               capture_output=True, text=True)
-    r = subprocess.run(["rsync", "-a", "-e", ssh, f"{local}/", f"{to}{dest}/"],
-                       capture_output=True, text=True)
-    if r.returncode:
-        log(f"push {local} -> {dest} failed: {r.stderr.strip()[:300]}")
+    with _PUSH_LOCK:
+        PUSH_STATS["pushes"] += 1
+        if len(parts) > 1:
+            with tempfile.TemporaryDirectory() as empty:
+                for i in range(1, len(parts)):
+                    _rsync(f"{empty}/", f"{to}{'/'.join(parts[:i])}/", ssh, tries, wait_s)
+        r = _rsync(f"{local}/", f"{to}{dest}/", ssh, tries, wait_s)
+        if r.returncode:
+            PUSH_STATS["failed"] += 1
+            log(f"push {local} -> {dest} failed: {r.stderr.strip()[:300]}")
     return r.returncode == 0
 
 
@@ -376,6 +395,7 @@ def driver(poll_s: int = 20) -> None:
         out = STATE / "out" / iid
         out.mkdir(parents=True, exist_ok=True)
         log(f"driver: {ins.get('kind')} {iid}")
+        PUSH_STATS.update(pushes=0, failed=0, busy_retries=0)  # this stage's pushes, not the last's
         with Usage() as usage:
             try:
                 if ins["kind"] == "odcv":
@@ -389,8 +409,9 @@ def driver(poll_s: int = 20) -> None:
                     (out / "error.json").write_text(json.dumps({"unknown kind": ins.get("kind")}))
             except Exception as e:  # noqa: BLE001  (record the stage's failure; the pod decides)
                 (out / "stage_error.json").write_text(json.dumps({"error": repr(e)}))
-        (out / "resources.json").write_text(json.dumps(usage.record(), indent=1))
-        log(f"driver: {iid} done {json.dumps(usage.record())}")
+        res = usage.record() | {"push_" + k: v for k, v in PUSH_STATS.items()}
+        (out / "resources.json").write_text(json.dumps(res, indent=1))
+        log(f"driver: {iid} done {json.dumps(res)}")
         done_marker(out, ins)
         push(out, iid)
         done.add(iid)
