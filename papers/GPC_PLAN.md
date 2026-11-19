@@ -1661,3 +1661,16 @@ level off from where the record reads, and every instrument read null. The downl
 record's own rule, pass (`instruments_ran` true). The gate is not overridden by hand: the fix (read as
 root, unpacked where the record reads, and no record written on an empty download) changes the launcher,
 a VM-side file, so rehearsal 5 is the record `launch` needs.
+
+**Rehearsal 5, the record** (session `gpc4-20261119T220956Z`, commit `7cd7d644`, VM hash
+`b0116eafffed7b5b`, 2026-11-19 12:10 to 12:27 HST): **passed.** Setup in 639 s; both gate passes; the
+ODCV-Bench run clean (compose exit 0, 2 tool calls, its messages record); both ImpossibleBench scaffolds
+exit 0 with one scored sample each and no errors; every result on the receiving side; the host
+`terminated` by its own power-off, 3 minutes after `stop`; $0.20 at most. The record is
+`~/.gpc4/rehearsal_b0116eafffed7b5b.json`, and `launch` accepts any pushed commit whose VM side hashes to
+`b0116eafffed7b5b`; an edit to any VM-side file voids it. Five rehearsals cost under $3 in all.
+
+**What the rehearsal does not test** (the real session's first stages are the check): ODCV-Bench's 80
+runs at 8 at once on the host (one scenario ran), ImpossibleBench at 10 sandboxes and with the subject's
+real replies (one task each, on the stub), `launch`'s pod start and endpoint watcher, and
+`launch_gpc4_pod.sh` itself.

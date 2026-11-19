@@ -194,3 +194,5 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
   `samples.json` and the VM and the pod read that. Rehearsal 4 next.
 - 2026-11-19: rehearsal 4 (§11.10) ran clean on every check, $0.19, but `verify` read an empty
   directory (its download unpacked one level off) and recorded a fail; fixed, rehearsal 5 is the record.
+- 2026-11-19: rehearsal 5 passed (§11.10; `rehearsal_b0116eafffed7b5b.json`, commit `7cd7d644`, $0.20):
+  `launch` is unlocked at that VM hash.
