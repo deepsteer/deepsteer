@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import time
@@ -176,7 +177,9 @@ def subject(dry: bool, arm: str = "a0", lora: bool = False):
         return path, V.HFStandIn(path)
     kw = engine_kwargs(arm)
     if lora:
-        kw.update(enable_lora=True, max_lora_rank=16, max_loras=2)
+        # rank 16 is the program's adapters; GPC-4's summed adapter is rank 32 (CST_MAX_LORA_RANK)
+        kw.update(enable_lora=True, max_lora_rank=int(os.environ.get("CST_MAX_LORA_RANK", "16")),
+                  max_loras=2)
     return path, V.VLLMEngine(path, None, **kw)
 
 

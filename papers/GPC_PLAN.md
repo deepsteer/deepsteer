@@ -1570,6 +1570,37 @@ rehearsal's stub model. `vm/cloud_init_vm.sh` and `vm/cloud_init_standin.sh` (us
 credential; the hard limit armed first), `vm/rehearsal_plan.json`, `vm/gpc4_iam_policy.json` (the brief's
 policy, the file the author attaches), and `runpod/launch_gpc4.sh` (`rehearse`, `verify`, `launch`,
 `reattach`, `teardown`; it refuses an uncommitted or unpushed commit, a short quota and a live
-`gpc4-session` instance). `tests/scripts/test_gpc4.py`: 17 tests. **Not built yet (before the real
-launch, not the rehearsal):** the pod's side (`gpc4_pod.py`, `remote_gpc4.sh`, `launch_gpc4_pod.sh`,
-the inputs list); `launch` refuses to start without them.
+`gpc4-session` instance). `tests/scripts/test_gpc4.py`: 17 tests. The pod's side is §11.9.
+
+### 11.9 Built, part 2: the pod's side (2026-11-18, while rehearsal 2 ran)
+
+None of it is a VM-side file, so the rehearsal's record (keyed to the VM side's hash) still holds.
+`scripts/gpc4_pod.py`, the stages in §11.3's order: `prep` (C1 from GPC-1's training record, the summed
+adapter built and checked for served parity), `serve` (one vLLM server: the base and every adapter as a
+LoRA module at `--max-lora-rank 32`, the qwen3 reasoning parser and the hermes tool-call parser),
+`serve_check` (§11.6 rider 2), `vm_wait` (the failure branch's signal: the post-lock gate's probe must
+arrive through the results channel within half an hour; until then the plan holds), `odcv_gate`,
+`ib_gate` (the tools scaffold first, bank at 0 or 1 of 30), `judge` (upstream's prompt and parser loaded
+from the pinned clone, gpt-oss-120b, misaligned at 3), `bounds` (GPC-1's conduct stage with the conduct
+grid's constants pointed at the bounds grid for the stage's length and restored after), `arms`, `stage3`
+(the gate with the lead's fix 3), `stage4` and `fits` (the cut rule). A lost VM's stages write their
+record with `run: false` and the reason, and the pod goes on to what needs no VM.
+`runpod/remote_gpc4.sh` (from `remote_gpc3.sh`: the clones at their pins, the results key's `rrsync -wo`
+line, the control server, then the stages), `runpod/gpc4_inputs.sh` and `runpod/launch_gpc4_pod.sh`
+(Thunder, no fallback, 400 GB). CST's `cst_s0a_pod.py` reads its LoRA rank cap from
+`CST_MAX_LORA_RANK` (default 16, as before), so stage 4's CST cells can serve the rank-32 summed adapter.
+
+**A fix to a committed grid (zero GPU, before any read):** `data/bounds_grid_v1.json` drew its pilot
+from inside its pool, so a pilot slot could be read again as a pool slot. The pilot is now drawn apart,
+as C1's grid was, and each cell's pool is deep enough for any allocation (340 pressure slots a cell, the
+400 less the pilot's 60; 1,620 slots in the pool). No slot of the grid had been written or read.
+
+**Stage 5 is not built.** Its thinking caps need a per-run cap in the VM's sampling proxy, a VM-side
+change that would void the rehearsal; the cut rule drops it first in any case. It is built, and
+rehearsed again, only if a later pod schedules it.
+
+**Tests:** `tests/scripts/test_gpc4.py`, 24 fast and one slow. The slow test chains GPC-1's dry stages
+into every GPC-4 stage in the runner's order, with the stub as the server and a stand-in VM answering
+each instruction (2 min 40 s locally). **Not exercised before the real launch:** `launch`'s pod start and
+endpoint watcher, and `launch_gpc4_pod.sh` itself; the pod's first minutes are the check, under the
+VM's hard limit.

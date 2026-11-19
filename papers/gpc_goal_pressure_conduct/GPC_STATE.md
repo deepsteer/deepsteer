@@ -181,3 +181,7 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
 - 2026-11-18: GPC-4 built, part 1 (the host and the rehearsal; `GPC_PLAN.md` §11.8): `gpc4_vm.py`, the two
   cloud-init scripts, the rehearsal plan, the IAM policy file, `launch_gpc4.sh`, `test_gpc4.py` (17). The
   pod's side is next; `launch` refuses to start without it.
+- 2026-11-18: GPC-4 built, part 2 (the pod's side; `GPC_PLAN.md` §11.9): `gpc4_pod.py`, `remote_gpc4.sh`,
+  `gpc4_inputs.sh`, `launch_gpc4_pod.sh`, CST's rank cap by environment, the bounds grid's pilot drawn
+  apart from its pool, `test_gpc4.py` (24 fast, 1 slow dry chain). Stage 5 not built (it would void the
+  rehearsal).

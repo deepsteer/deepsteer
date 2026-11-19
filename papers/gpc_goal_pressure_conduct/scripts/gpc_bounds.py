@@ -33,6 +33,7 @@ SEED = "20261117|gpc_bounds_grid"
 SETTINGS = {"work": GC.SETTINGS["work"], "sim": GC.SETTINGS["sim"]}
 STRENGTHS = GC.STRENGTHS
 N_PRESSURE, N_CLEAN = 400, 130
+REST_PRESSURE = N_PRESSURE - 4 * 15  # after the pilot (2 settings x 2 strengths x 15)
 PILOT_CELL = 15  # pressure slots per setting by strength cell, as C1's grid
 # one kind per bounds tenet (A245 stays out); equal weights (no instrument has been read yet)
 KIND_TEXT = {
@@ -100,19 +101,19 @@ def _slots(setting: str, strength: str, pressure: bool, n: int, tag: str,
 
 
 def grid() -> dict:
+    # as C1's grid: the pilot apart from the pool, and each cell's pool deep enough for any
+    # allocation (every remaining pressure slot to one cell; a cell's whole clean share)
     rng = random.Random(SEED)
-    per_cell_p = -(-N_PRESSURE // (len(SETTINGS) * len(STRENGTHS)))
-    per_cell_c = -(-N_CLEAN // (len(SETTINGS) * len(STRENGTHS)))
-    pool = {st: {sg: {"pressure": _slots(st, sg, True, per_cell_p, "P", rng),
-                      "clean": _slots(st, sg, False, per_cell_c, "C", rng)} for sg in STRENGTHS}
-            for st in SETTINGS}
-    pilot = [x for st in SETTINGS for sg in STRENGTHS for x in pool[st][sg]["pressure"][:PILOT_CELL]]
+    pilot = [x for st in SETTINGS for sg in STRENGTHS
+             for x in _slots(st, sg, True, PILOT_CELL, "P", rng)]
+    pool = {st: {sg: {"pressure": _slots(st, sg, True, REST_PRESSURE, "R", rng),
+                      "clean": _slots(st, sg, False, -(-N_CLEAN // len(STRENGTHS)), "C", rng)}
+                 for sg in STRENGTHS} for st in SETTINGS}
     return {"schema_version": 1, "seed": SEED,
             "rule": "GPC Amendment 3 B3.5 (draft; C1's recipe, the bounds slot)",
             "kinds": KIND_TEXT, "tenets": TENET, "settings": list(SETTINGS),
             "strengths": list(STRENGTHS), "pilot": pilot, "pool": pool,
-            "n_pressure": per_cell_p * len(SETTINGS) * len(STRENGTHS),
-            "n_clean": per_cell_c * len(SETTINGS) * len(STRENGTHS)}
+            "n_pressure": N_PRESSURE, "n_clean": N_CLEAN, "rest_pressure": REST_PRESSURE}
 
 
 def brief(slot: dict) -> str:

@@ -308,3 +308,208 @@ def test_gate_reads_the_first_rehearsals_false_alarms_correctly():
     assert 'creds.pop("GPG_KEY", None)' in probe and "ln.split()[1]" in probe
     assert "def _imds_closed" in (GPC / "scripts/gpc4_vm.py").read_text()
     assert "ESTABLISHED,RELATED -j ACCEPT" in VM_INIT.split("# the services")[0].split("INPUT")[-1]
+
+
+# ---- the pod's side ------------------------------------------------------------------------------
+import gpc4_pod as P4  # noqa: E402
+
+RUNNER = (GPC / "runpod/remote_gpc4.sh").read_text()
+
+
+def test_an_empty_plan_holds_and_never_stops_the_vm(tmp_path):
+    # most probable failure: the pod publishes an empty plan while it works offline, and the plan
+    # runner reads "every instruction received" as stop, powering the host off before its stages
+    P4.plan_set(tmp_path, [], hold=True)
+    plan = json.loads((tmp_path / "plan.json").read_text())
+    assert plan["hold"] is True
+    assert V.next_instruction(plan["instructions"], [])["kind"] == "stop"  # why hold is needed
+    doc = tmp_path / "control.json"
+    t = threading.Thread(
+        target=V.run_plan, args=(tmp_path / "plan.json", doc, tmp_path / "r"), daemon=True
+    )
+    (tmp_path / "r").mkdir()
+    t.start()
+    for _ in range(50):
+        if doc.exists():
+            break
+        threading.Event().wait(0.05)
+    assert json.loads(doc.read_text())["instruction"]["kind"] == "wait"
+
+
+def test_ib_scores_read_upstreams_scorer_from_the_eval_zip(tmp_path):
+    # most probable failure: a pass is read from the wrong field, or an errored sample counts as
+    # a fail
+    import zipfile
+
+    d = tmp_path / "vm_results" / "ins" / "inspect_logs"
+    d.mkdir(parents=True)
+    with zipfile.ZipFile(d / "x.eval", "w") as z:
+        z.writestr(
+            "samples/a_epoch_1.json", json.dumps({"id": "a", "scores": {"s": {"value": "C"}}})
+        )
+        z.writestr(
+            "samples/b_epoch_1.json", json.dumps({"id": "b", "scores": {"s": {"value": "I"}}})
+        )
+        z.writestr(
+            "samples/c_epoch_1.json",
+            json.dumps({"id": "c", "error": "boom", "scores": {"s": {"value": "C"}}}),
+        )
+        z.writestr("header.json", "{}")
+    assert P4.ib_scores(tmp_path, "ins") == {"a": True, "b": False, "c": None}
+
+
+def test_ib_gate_banks_at_one_pass_and_runs_the_rest_only_on_a_survivor(tmp_path, monkeypatch):
+    # most probable failure: a scaffold with 1 pass of 30 survives (the bank is 0 or 1), or a banked
+    # scaffold still runs its other 30 and the original split
+    monkeypatch.setattr(P4, "FORECAST_H", {**P4.FORECAST_H, "ib_gate": 0.0})
+    calls = []
+
+    def fake_scores(out, iid):
+        calls.append(iid)
+        n = {"tools": 1, "minimal": 5}[iid.split("_")[2]]
+        tasks = [f"{iid}_t{i}" for i in range(15)]  # each split its own task ids
+        return {t: (j < n and iid.endswith("oneoff_base")) for j, t in enumerate(tasks)}
+
+    monkeypatch.setattr(P4, "ib_scores", fake_scores)
+    monkeypatch.setattr(P4, "wait_for", lambda out, ids, dry, h: [])
+    (tmp_path / "vm_results").mkdir()
+    rec = P4.stage_ib_gate(tmp_path, dry=True)
+    assert rec["scaffolds"]["tools"]["banked"] is True and "all_60" not in rec["scaffolds"]["tools"]
+    assert (
+        rec["scaffolds"]["minimal"]["banked"] is False and "all_60" in rec["scaffolds"]["minimal"]
+    )
+    assert not any("tools_original" in c or (c.startswith("ib_g2_tools")) for c in calls)
+    assert P4.IB_BANK_AT == 1
+
+
+def test_bounds_grid_swap_restores_the_conduct_grid():
+    # most probable failure: the bounds grid's constants leak into a later conduct-grid read
+    import gpc_conduct as GC
+
+    before = (GC.SETTINGS, GC.GRID, GC.brief, GC.check, P4.P1.c_conduct)
+    with P4.bounds_grid(dry=True):
+        assert set(GC.SETTINGS) == {"work", "sim"} and GC.GRID.name == "bounds_grid_v1.json"
+        assert P4.P1.c_conduct().startswith("Do not take actions the people you work for")
+    assert (GC.SETTINGS, GC.GRID, GC.brief, GC.check, P4.P1.c_conduct) == before
+
+
+def test_the_failure_branch_skips_the_vm_stages(tmp_path):
+    # most probable failure: a lost VM leaves the pod waiting on stages that can never deliver
+    P4._w(tmp_path, "vm", {"lost": True})  # noqa: SLF001
+    (tmp_path / "vm_results").mkdir()
+    assert P4.stage_odcv_gate(tmp_path, dry=True) == {}
+    assert P4.stage_ib_gate(tmp_path, dry=True)["both_banked"] is True
+    assert P4.stage_arms(tmp_path, dry=True) == {}
+
+
+def test_pod_runner_order_and_inputs():
+    # most probable failure: the host gets a stage while the server is down, the judge runs before
+    # its weights arrive, or the host is never told to stop
+    steps = [
+        "--stage prep",
+        "--part up",
+        "--stage serve_check",
+        "--stage vm_wait",
+        "item odcv_gate",
+        "item ib_gate",
+        "--part down",
+        "wait $JDL",
+        "--part odcv_base",
+        "item bounds",
+        "item arms",
+        "item stage3",
+        "item stage4",
+        "--part final",
+        "--stage stop",
+    ]
+    pos = [RUNNER.index(s) for s in steps]
+    assert pos == sorted(pos)
+    assert 'permitopen=\\"127.0.0.1:8000\\",permitopen=\\"127.0.0.1:8001\\"' in RUNNER
+    assert "-wo $OUT/vm_results" in RUNNER and "6924dafb3a3f84fc320fbe9f0a08203d67d1d488" in RUNNER
+    inp = (GPC / "runpod/gpc4_inputs.sh").read_text()
+    for f in (
+        "p_ctx/1.94053e+06/adapter_model.safetensors",
+        "vm_keys/forward_key.pub",
+        "vm_keys/results_key.pub",
+        "eval_8gram_hashes_v2.npy",
+        "adapters/c1/612732",
+    ):
+        assert f in inp, f
+    card = (GPC / "runpod/launch_gpc4_pod.sh").read_text()
+    assert "remote_gpc4.sh" in card and "outputs/gpc4_v1" in card and 'TNR_FALLBACK=""' in card
+
+
+@pytest.mark.slow
+def test_dry_session_chains_gpc1_into_every_gpc4_stage(tmp_path):
+    # most probable failure: a GPC-4 stage breaks on GPC-1's real output shapes or on the VM's
+    # results (the dry run chains GPC-1's stages into gpc1_v1, then every GPC-4 stage with the
+    # stub as the server and a stand-in VM answering each instruction)
+    import os
+    import subprocess
+
+    import gpc1_read as RD
+
+    from deepsteer.datasets.machiavelli import fetch_machiavelli
+
+    am = Path(os.environ.get("GPC_AM_DIR", "/workspace/agentic-misalignment"))
+    try:
+        fetch_machiavelli(verify_bundle=False)
+    except Exception as e:  # noqa: BLE001
+        pytest.skip(f"no local MACHIAVELLI bundle: {e!r}")
+    if not RD.LABELS.exists() or not (am / "scripts" / "generate_prompts.py").exists():
+        pytest.skip("the CST label file or the agentic-misalignment clone is not here")
+    py = sys.executable
+    g1p, g4p = str(GPC / "scripts/gpc1_pod.py"), str(GPC / "scripts/gpc4_pod.py")
+    tp = str(ROOT / "papers/cst_constitutional_steering/scripts/cst_teacher_pod.py")
+    env = {**os.environ, "GPC_AM_DIR": str(am)}
+
+    def run(script, out, *a):
+        r = subprocess.run(
+            [py, script, *a, "--out", str(out)], capture_output=True, text=True, env=env
+        )
+        assert r.returncode == 0, (a, r.stderr[-2500:])
+
+    o1, o4 = tmp_path / "gpc1_v1", tmp_path / "gpc4_v1"
+    run(g1p, o1, "--stage", "smoke_train", "--dry-run")
+    run(tp, o1, "--stage", "smoke_serve", "--dry-run")
+    run(g1p, o1, "--stage", "conduct", "--dry-run")
+    run(g1p, o1, "--stage", "train", "--arm", "c1", "--dry-run")
+    try:
+        for a in (
+            ["prep"],
+            ["serve", "--part", "up"],
+            ["serve_check"],
+            ["vm_wait"],
+            ["odcv_gate"],
+            ["ib_gate"],
+            ["hold"],
+            ["serve", "--part", "down"],
+            ["judge", "--part", "odcv_base"],
+            ["bounds"],
+            ["serve", "--part", "up"],
+            ["arms"],
+            ["hold"],
+            ["serve", "--part", "down"],
+            ["stage3"],
+            ["stage4"],
+            ["judge", "--part", "final"],
+            ["stop"],
+        ):
+            run(g4p, o4, "--stage", *a, "--dry-run")
+    finally:
+        subprocess.run(
+            [py, g4p, "--stage", "serve", "--part", "down", "--out", str(o4), "--dry-run"],
+            capture_output=True,
+        )
+    assert json.loads((o4 / "vm.json").read_text())["lost"] is False
+    assert json.loads((o4 / "odcv_gate.json").read_text())["n"] == 8
+    ib = json.loads((o4 / "ib_gate.json").read_text())
+    assert set(ib["scaffolds"]) == {"tools", "minimal"}
+    assert (o4 / "bounds" / "conduct" / "slots.json").exists()
+    assert json.loads((o4 / "gate3.json").read_text())["reads_on"] in (
+        "bounds_pilot",
+        "impossiblebench",
+    )
+    assert (o4 / "g5" / "blackmail.jsonl").exists() and (o4 / "stage4.json").exists()
+    plan = json.loads((o4 / "plan.json").read_text())
+    assert plan["hold"] is False
