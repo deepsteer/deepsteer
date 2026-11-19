@@ -2,9 +2,12 @@
 # The rehearsal's stand-in for the pod (a t3.micro; GPC_PLAN.md §11.3b): a stub model on 127.0.0.1:8000,
 # the plan-driven control document on 127.0.0.1:8001, and the VM's two keys restricted exactly as on the
 # pod (the forward key: two permitopen ports; the results key: rrsync -wo on one directory). The
-# launcher fills __COMMIT__, __FORWARD_PUB__ and __RESULTS_PUB__ (public halves only).
+# launcher fills __COMMIT__, __FORWARD_PUB__, __RESULTS_PUB__ (public halves only) and __HARD_LIMIT_MIN__.
 set -euo pipefail
 exec > >(tee -a /var/log/gpc4_standin.log) 2>&1
+# the hard limit first, as on the host: a forgotten `verify` costs at most this (rehearsal 2's stand-in
+# ran 11 h); instance-initiated shutdown terminates the instance
+shutdown -h +"__HARD_LIMIT_MIN__" "gpc4 stand-in hard limit" || true
 COMMIT=__COMMIT__
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -q && apt-get install -y -q rsync python3 git

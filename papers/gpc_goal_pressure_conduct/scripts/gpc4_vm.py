@@ -27,10 +27,12 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import urllib.error
 import urllib.request
+import zipfile
 import zlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -43,11 +45,15 @@ STATE = Path(os.environ.get("GPC4_STATE", "/var/lib/gpc4"))
 POD_ENV = Path(os.environ.get("GPC4_POD_ENV", "/etc/gpc4/pod.env"))
 ODCV_DIR = Path(os.environ.get("GPC4_ODCV", "/opt/gpc4/odcv"))
 IB_PY = os.environ.get("GPC4_IB_PY", "/opt/gpc4/ib-venv/bin/python")
+# ImpossibleBench's data at the pinned revision, copied out of the Hub cache at setup: upstream's loader
+# is pointed here, since an offline load by the Hub name fails even with the files cached (rehearsal 2)
+IB_DATA = os.environ.get("GPC4_IB_DATA", "/opt/gpc4/ib_data")
 # the sampling of record (GPC_PLAN.md §11.1): KDG sampler v2, effort medium, 4,096 tokens a generation
 SAMPLING = {"temperature": 0.7, "top_p": 1.0, "max_tokens": 4096}
 EFFORT = {"reasoning_effort": "medium"}
 ODCV_RUN_LIMIT_S = 40 * 60
 TIMEOUT_MARK = re.compile(r"timed out|TimeoutExpired|timeout after", re.IGNORECASE)
+TOOL_MARK = re.compile(r"executor-1\s+\|\s+\[Tool\]:")  # one line per tool call (no anchor: ANSI codes)
 
 
 def log(msg: str) -> None:
@@ -269,12 +275,21 @@ def control_doc() -> dict | None:
 
 
 def push(local: Path, dest: str) -> bool:
-    """rsync ``local`` to the pod's results directory (the results key: `rrsync -wo`, one directory)."""
+    """rsync ``local`` to the pod's results directory (the results key: `rrsync -wo`, one directory).
+    rsync creates only the last level of ``dest``, so each parent is pushed first as an empty
+    directory (no other option has to pass rrsync's filter)."""
     env = pod_env()
     ssh = (f"ssh -i /etc/gpc4/results_key -p {env['POD_PORT']} -o IdentitiesOnly=yes "
            "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes "
            "-o ConnectTimeout=20 -o LogLevel=ERROR")
-    r = subprocess.run(["rsync", "-a", "-e", ssh, f"{local}/", f"{env['POD_USER']}@{env['POD_HOST']}:{dest}/"],
+    to = f"{env['POD_USER']}@{env['POD_HOST']}:"
+    parts = dest.strip("/").split("/")
+    if len(parts) > 1:
+        with tempfile.TemporaryDirectory() as empty:
+            for i in range(1, len(parts)):
+                subprocess.run(["rsync", "-a", "-e", ssh, f"{empty}/", f"{to}{'/'.join(parts[:i])}/"],
+                               capture_output=True, text=True)
+    r = subprocess.run(["rsync", "-a", "-e", ssh, f"{local}/", f"{to}{dest}/"],
                        capture_output=True, text=True)
     if r.returncode:
         log(f"push {local} -> {dest} failed: {r.stderr.strip()[:300]}")
@@ -431,13 +446,26 @@ def odcv_run(scenario: str, variant: str, arm: str, model: str, clause: str | No
         (out / "hashes_after_changed.txt").write_text("\n".join(after) + "\n")
     subprocess.run(proj + ["down", "-v"], capture_output=True)
     shutil.rmtree(rd, ignore_errors=True)
-    msgs = (out / "messages_record.txt").read_text(errors="ignore") if (
-        out / "messages_record.txt").exists() else ""
-    rec["tool_timeouts"] = len(TIMEOUT_MARK.findall(msgs))
-    rec["container_error"] = bool(rec.get("run_timeout")) or rec.get("compose_exit") not in (0,) or not (
-        out / "result.json").exists()
+    run_evidence(out, rec)
     rec["wall_s"] = round(time.time() - t0, 1)
     (out / "run.json").write_text(json.dumps(rec, indent=1))
+    return rec
+
+
+def run_evidence(out: Path, rec: dict) -> dict:
+    """A run's evidence, from its own files. Upstream's executor writes no result.json at the pin (its
+    own logs fall back on every run; rehearsal 2 flagged a good run on it), so a run errs on a timeout,
+    a nonzero compose exit (the executor's), or no messages record."""
+    def text(name: str) -> str:
+        f = out / name
+        return f.read_text(errors="ignore") if f.exists() else ""
+
+    msgs = text("messages_record.txt")
+    rec["tool_timeouts"] = len(TIMEOUT_MARK.findall(msgs))
+    rec["tool_calls"] = len(TOOL_MARK.findall(text("docker_output.log")))
+    rec["messages_record"] = bool(msgs.strip())
+    rec["container_error"] = (bool(rec.get("run_timeout")) or rec.get("compose_exit") != 0
+                              or not rec["messages_record"])
     return rec
 
 
@@ -471,6 +499,11 @@ sys.path.insert(0, sys.argv[2])
 from inspect_ai import eval as inspect_eval
 from inspect_ai.solver import chain, system_message
 import livecodebench_tasks as T
+_hf = T.hf_dataset
+def _pinned(path, **kw):  # the pinned revision's files in place of the Hub name; nothing else changes
+    assert path == "fjzzq2002/impossible_livecodebench", path
+    return _hf(path=sys.argv[3], **kw)
+T.hf_dataset = _pinned
 a = json.loads(sys.argv[1])
 fn = getattr(T, a["task_fn"])
 task = fn(split=a["split"], agent_type=a["scaffold"], sandbox="docker", **a.get("task_kwargs", {}))
@@ -496,13 +529,30 @@ def ib_stage(ins: dict, out: Path) -> None:
                 "GPC4_API_KEY": "dummy"})
     t0 = time.time()
     env.update({"HF_HUB_OFFLINE": "1", "HF_DATASETS_OFFLINE": "1"})  # the egress lock: the pinned cache
-    p = subprocess.run([IB_PY, "-c", IB_TASK, json.dumps(arg), IB_SRC], capture_output=True, text=True,
-                       env=env)
+    p = subprocess.run([IB_PY, "-c", IB_TASK, json.dumps(arg), IB_SRC, IB_DATA], capture_output=True,
+                       text=True, env=env)
     (out / "inspect_stdout.txt").write_text(p.stdout[-20000:] + "\n---\n" + p.stderr[-20000:])
     (out / "stage.json").write_text(json.dumps({"exit": p.returncode, "wall_s": round(time.time() - t0, 1),
+                                                **eval_counts(log_dir),
                                                 "args": {k: v for k, v in arg.items()
                                                          if k != "clause_text"},
                                                 "clause": bool(arg["clause_text"])}, indent=1))
+
+
+def eval_counts(log_dir: Path) -> dict:
+    """The stage's own evidence that ImpossibleBench ran: Inspect logs, samples, scored samples (a
+    sample with a score and no error) and errored samples. A .eval file is a zip of JSON."""
+    c = {"n_logs": 0, "n_samples": 0, "n_scored": 0, "n_errored": 0}
+    for f in sorted(log_dir.glob("*.eval")):
+        c["n_logs"] += 1
+        with zipfile.ZipFile(f) as z:
+            for name in z.namelist():
+                if name.startswith("samples/") and name.endswith(".json"):
+                    smp = json.loads(z.read(name))
+                    c["n_samples"] += 1
+                    c["n_errored"] += bool(smp.get("error"))
+                    c["n_scored"] += bool(smp.get("scores")) and not smp.get("error")
+    return c
 
 
 # ---- the gate tests ------------------------------------------------------------------------------

@@ -296,6 +296,79 @@ def test_rehearsal_plan_covers_both_scaffolds_and_one_scenario():
     assert len({i["id"] for i in plan}) == len(plan)
 
 
+def test_push_creates_each_parent_before_the_run(tmp_path, monkeypatch):
+    # most probable failure: rsync makes only the last level of the destination, so a run's push to
+    # <stage>/<run> fails until the stage's own push at its end (rehearsal 2, every ODCV-Bench run)
+    calls = []
+    monkeypatch.setattr(V, "pod_env", lambda: {"POD_HOST": "h", "POD_PORT": "22", "POD_USER": "u"})
+
+    class R:
+        returncode, stderr = 0, ""
+
+    monkeypatch.setattr(V.subprocess, "run", lambda a, **k: calls.append(a[-1]) or R())
+    assert V.push(tmp_path, "r1_odcv/r1_odcv_0")
+    assert calls == ["u@h:r1_odcv/", "u@h:r1_odcv/r1_odcv_0/"]
+    calls.clear()
+    V.push(tmp_path, "gate_probe")
+    assert calls == ["u@h:gate_probe/"]  # a top-level push needs no parent
+
+
+def test_a_good_run_without_result_json_is_not_an_error(tmp_path):
+    # most probable failure: the run errs on upstream's result.json, which its executor never writes
+    # at the pin (rehearsal 2's good stub run read container_error true)
+    (tmp_path / "messages_record.txt").write_text("== Step 1 ==\nrole: system\n")
+    (tmp_path / "docker_output.log").write_text(
+        "executor-1          | [Tool]: bash with {'command': 'ls /app/data'}\n"
+        "executor-1          | [Tool]: task_complete with {'reason': 'stub'}\n"
+        "\x1b[Kexecutor-1 exited with code 0\n\x1b[Korchestrator_api-1 exited with code 137\n"
+    )
+    rec = V.run_evidence(tmp_path, {"compose_exit": 0, "run_timeout": False})
+    assert rec["container_error"] is False and rec["tool_calls"] == 2
+    assert V.run_evidence(tmp_path, {"compose_exit": 1, "run_timeout": False})["container_error"]
+    (tmp_path / "messages_record.txt").unlink()
+    assert V.run_evidence(tmp_path, {"compose_exit": 0, "run_timeout": False})["container_error"]
+
+
+def test_ib_stage_points_upstreams_loader_at_the_pinned_directory():
+    # most probable failure: the loader asks the Hub by name, which fails offline even with the
+    # files cached (rehearsal 2: OfflineModeIsEnabled on both stages)
+    assert "T.hf_dataset = _pinned" in V.IB_TASK and "sys.argv[3]" in V.IB_TASK
+    assert "IB_SRC, IB_DATA]" in (GPC / "scripts/gpc4_vm.py").read_text()
+    assert f"GPC4_IB_DATA={V.IB_DATA}" in VM_INIT
+    assert f'copytree(p, "{V.IB_DATA}"' in VM_INIT
+    assert "refs" not in VM_INIT  # the old offline-by-name workaround is gone
+
+
+def test_eval_counts_reads_scored_and_errored_samples(tmp_path):
+    # most probable failure: an errored sample counts as scored, so verify passes an
+    # ImpossibleBench stage that never ran a task
+    import zipfile
+
+    with zipfile.ZipFile(tmp_path / "x.eval", "w") as z:
+        z.writestr(
+            "samples/a_epoch_1.json", json.dumps({"id": "a", "scores": {"s": {"value": "I"}}})
+        )
+        z.writestr("samples/b_epoch_1.json", json.dumps({"id": "b", "error": "boom", "scores": {}}))
+    assert V.eval_counts(tmp_path) == {"n_logs": 1, "n_samples": 2, "n_scored": 1, "n_errored": 1}
+    assert V.eval_counts(tmp_path / "none")["n_logs"] == 0
+
+
+def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments():
+    # most probable failure: verify passes on delivery alone (rehearsal 2 would have, with neither
+    # instrument running), or names the tree it runs in rather than the code the host ran
+    assert 'echo "$VM_HASH" > "$D/vm_hash"' in LAUNCHER
+    assert '[ "$r_hash" = "$VM_HASH" ] || die' in LAUNCHER
+    assert '"$r_commit" "$r_hash"' in LAUNCHER
+    assert "and instruments_ran" in LAUNCHER
+    assert (
+        '(v.get("n_scored") or 0) >= 1' in LAUNCHER
+        and '(r.get("tool_calls") or 0) >= 1' in LAUNCHER
+    )
+    # the stand-in's hard limit, armed first and filled by the launcher
+    assert STANDIN_INIT.index('shutdown -h +"__HARD_LIMIT_MIN__"') < STANDIN_INIT.index("apt-get")
+    assert "s/__HARD_LIMIT_MIN__/$STANDIN_LIMIT_MIN/" in LAUNCHER
+
+
 @pytest.mark.parametrize("cmd", ["rehearse", "verify", "launch", "reattach", "teardown"])
 def test_launcher_dispatches_each_command(cmd):
     assert f"  {cmd}) cmd_{cmd} ;;" in LAUNCHER

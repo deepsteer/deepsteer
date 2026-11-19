@@ -21,6 +21,7 @@ STANDIN_TYPE=t3.micro
 DISK_GB=160
 VCPUS_NEEDED=16
 HARD_LIMIT_MIN=${GPC4_HARD_LIMIT_MIN:-840}   # 14 h, the runner's ceiling
+STANDIN_LIMIT_MIN=720   # the rehearsal's stand-in: 12 h, long enough for a `verify` the next morning
 SETUP_WAIT_MIN=${GPC4_SETUP_WAIT_MIN:-90}
 AMI_PARAM=/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id
 ROOT=~/.gpc4
@@ -177,7 +178,10 @@ cmd_rehearse() {
   preflight $(( VCPUS_NEEDED + 2 ))
   new_session; make_group_and_key
   sed -e "s/__COMMIT__/$COMMIT/" -e "s#__FORWARD_PUB__#$(cat "$D/forward_key.pub")#" \
-    -e "s#__RESULTS_PUB__#$(cat "$D/results_key.pub")#" "$G/vm/cloud_init_standin.sh" > "$D/user_data_standin.sh"
+    -e "s#__RESULTS_PUB__#$(cat "$D/results_key.pub")#" -e "s/__HARD_LIMIT_MIN__/$STANDIN_LIMIT_MIN/" \
+    "$G/vm/cloud_init_standin.sh" > "$D/user_data_standin.sh"
+  # what the host runs, saved now: `verify` keys the record to these, never to the tree it runs in
+  echo "$VM_HASH" > "$D/vm_hash"; echo "$COMMIT" > "$D/commit"
   SI=$(run_instance "$STANDIN_TYPE" "$D/user_data_standin.sh" "$S-standin"); echo "$SI" > "$D/standin"
   trap 'say "the launcher stopped; resources stay for verify or teardown"' EXIT
   vm_setup
@@ -194,28 +198,49 @@ cmd_rehearse() {
 
 cmd_verify() {
   load_session; need aws; need jq
+  [ -f "$D/vm_hash" ] || die "session $S predates the saved hash; rehearse again"
+  local r_hash r_commit; r_hash=$(cat "$D/vm_hash"); r_commit=$(cat "$D/commit")
+  [ "$r_hash" = "$VM_HASH" ] || die "the VM side changed since this rehearsal ($r_hash, now $VM_HASH): its record would name code it never ran; tear down and rehearse again"
   local si_ip vm; si_ip=$(cat "$D/standin_ip"); vm=$(cat "$D/vm")
   local got; got=$(ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$si_ip" curl -s http://127.0.0.1:8001/control.json | jq -c .received)
   local want; want=$(jq -c '[.instructions[].id] | sort' "$G/vm/rehearsal_plan.json")
-  local state; state=$(ip_of "$vm" State.Name)
+  # a terminated instance leaves the listing after about an hour; an id that is gone was terminated
+  local state; state=$(ip_of "$vm" State.Name 2>/dev/null || echo gone)
   local reached; reached=$(jq -n --argjson g "$got" --argjson w "$want" '($w - $g) | length == 0')
   rsync -a -e "ssh ${SSHO[*]} -i $D/admin_key" "ubuntu@$si_ip:/home/gpc4pod/vm_results/" "$D/rehearsal_results/" 2>/dev/null \
     || ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$si_ip" "sudo tar -C /home/gpc4pod -cf - vm_results" | tar -C "$D" -xf -
-  local launched; launched=$(ip_of "$vm" LaunchTime)
-  python3 - "$D" "$state" "$reached" "$launched" "$COMMIT" "$VM_HASH" <<'EOF'
+  local launched; launched=$(ip_of "$vm" LaunchTime 2>/dev/null || echo gone)
+  python3 - "$D" "$state" "$reached" "$launched" "$r_commit" "$r_hash" <<'EOF'
 import json, sys, datetime, pathlib
 d, state, reached, launched, commit, vm_hash = sys.argv[1:]
 D = pathlib.Path(d)
-t0 = datetime.datetime.fromisoformat(launched.replace("Z", "+00:00"))
-hours = (datetime.datetime.now(datetime.timezone.utc) - t0).total_seconds() / 3600
-rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state, "self_terminated": state in ("shutting-down", "terminated"),
+R = D / "rehearsal_results"
+try:
+    t0 = datetime.datetime.fromisoformat(launched.replace("Z", "+00:00"))
+    hours = (datetime.datetime.now(datetime.timezone.utc) - t0).total_seconds() / 3600
+except ValueError:  # the host has left the listing: bounded by the stand-in's limit instead
+    hours = 12.0
+def stage(name):
+    f = R / name / "stage.json"
+    return json.loads(f.read_text()) if f.exists() else {}
+# the instruments ran, not only the plumbing (rehearsal 2 delivered every result with neither running)
+odcv = stage("r1_odcv").get("runs", [])
+ib = {k: stage(k) for k in ("r2_ib_minimal", "r3_ib_tools")}
+instruments = {
+    "odcv": [{k: r.get(k) for k in ("run_id", "compose_exit", "container_error", "tool_calls")} for r in odcv],
+    "ib": {k: {f: v.get(f) for f in ("exit", "n_logs", "n_samples", "n_scored", "n_errored")} for k, v in ib.items()}}
+instruments_ran = bool(odcv) and all(not r.get("container_error") and (r.get("tool_calls") or 0) >= 1 for r in odcv) \
+    and all(v.get("exit") == 0 and (v.get("n_scored") or 0) >= 1 for v in ib.values())
+rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state,
+       "self_terminated": state in ("shutting-down", "terminated", "gone"),
+       "instruments": instruments, "instruments_ran": instruments_ran,
        "every_result_on_the_receiving_side": reached == "true",
        "gate_pre": json.loads((D / "gate_pre.json").read_text()),
        "gate_post": json.loads((D / "gate_post.json").read_text()),
        "setup": json.loads((D / "setup_done.json").read_text()),
        "host_hours_upper": round(hours, 2),
        "cost_usd_upper": round(hours * (0.612 + 160 * 0.08 / 730 + 0.005) + hours * (0.0104 + 8 * 0.08 / 730 + 0.005), 2)}
-rec["passed"] = bool(rec["self_terminated"] and rec["every_result_on_the_receiving_side"]
+rec["passed"] = bool(rec["self_terminated"] and rec["every_result_on_the_receiving_side"] and instruments_ran
                      and rec["gate_pre"].get("passes") and rec["gate_post"].get("passes"))
 (pathlib.Path.home() / ".gpc4" / f"rehearsal_{vm_hash}.json").write_text(json.dumps(rec, indent=1))
 print(json.dumps({k: v for k, v in rec.items() if k not in ("gate_pre", "gate_post")}, indent=1))

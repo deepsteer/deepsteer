@@ -1604,3 +1604,35 @@ into every GPC-4 stage in the runner's order, with the stub as the server and a 
 each instruction (2 min 40 s locally). **Not exercised before the real launch:** `launch`'s pod start and
 endpoint watcher, and `launch_gpc4_pod.sh` itself; the pod's first minutes are the check, under the
 VM's hard limit.
+
+### 11.10 Rehearsal 2's record, and the fixes it forced (2026-11-19)
+
+Rehearsal 2 (session `gpc4-20261119T055448Z`, commit `ca3a9fe9`, started 19:55 HST on 2026-11-18): setup
+in 642 s on the host; all 81 images (80 scenario images and the executor) and 80 file-trace hash files;
+both gate passes, before and after the egress lock; the launcher exited at the kill point and the driver
+delivered every result to the stand-in, through to `stop`. The host left EC2's listing before `teardown`
+ran the next morning, so it terminated more than an hour earlier. That is consistent with its own
+power-off after the confirmed `stop`, but the record cannot tell it apart from the hard limit.
+`verify` was not run, because the results showed the rehearsal had tested the plumbing and not the
+instruments:
+
+- **ImpossibleBench never ran.** Both stages exited in about 2 s: upstream's loader asks for the data by
+  its Hub name, and an offline load by name fails even with the pinned files cached
+  (`OfflineModeIsEnabled`; reproduced locally with the host's install). Fix: setup copies the pinned
+  revision's files to `/opt/gpc4/ib_data`, and the runner points upstream's `hf_dataset` call at that
+  directory (the same files; no other change to upstream's task). Checked locally, offline, with an empty
+  Hub cache: each split loads its tasks by id.
+- **ODCV-Bench ran, and was flagged as an error.** The stub's run made its tool calls and returned its
+  messages record and file trace; the rule required a `result.json` that upstream's executor never
+  writes at the pin (upstream's own logs fall back on every run). Fix: a run errs on a timeout, a
+  nonzero executor exit or no messages record; the run also counts its tool calls.
+- **Each run's own push failed** (rsync makes only the last level of `<stage>/<run>`), so results waited
+  for the stage's end, against §11.3c. Fix: each parent is pushed first as an empty directory.
+- **`verify` would have passed it.** Fix: `rehearse` saves the VM side's hash and the commit, and `verify`
+  refuses a tree whose VM side has changed; it passes only when the ODCV-Bench run has no error and at
+  least one tool call and each ImpossibleBench stage exits 0 with at least one scored sample.
+- **The stand-in had no hard limit** (it ran 11 h); it now has one of 12 h. The setup log counts images by
+  name (variants can share an image id).
+
+All are VM-side, so the rehearsal hash changes and rehearsal 3 is required before `launch`. ImpossibleBench's
+run past the data load (the Docker sandbox, the model through the proxy) is first exercised there.

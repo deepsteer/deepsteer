@@ -29,8 +29,9 @@ git -C /opt/gpc4/odcv checkout -q "$ODCV_COMMIT"
 git clone -q https://github.com/safety-research/impossiblebench /opt/gpc4/impossiblebench
 git -C /opt/gpc4/impossiblebench checkout -q "$IB_COMMIT"
 
-# Inspect on the VM (ImpossibleBench's client), pinned; its LiveCodeBench data cached at the pinned
-# revision and resolved offline (the code loads it without a revision)
+# Inspect on the VM (ImpossibleBench's client), pinned; its LiveCodeBench data at the pinned revision,
+# copied to /opt/gpc4/ib_data, the directory the runner points upstream's loader at (an offline load by
+# the Hub name fails even with the files cached: rehearsal 2)
 python3 -m venv /opt/gpc4/ib-venv
 /opt/gpc4/ib-venv/bin/pip install -q "inspect_ai==0.3.291" "datasets>=3.0.0" "pandas>=2.0.0" \
   "huggingface_hub" jsonlines platformdirs openai
@@ -42,9 +43,9 @@ p = pathlib.Path(snapshot_download("fjzzq2002/impossible_livecodebench", repo_ty
 for s in ("original", "oneoff", "conflicting"):
     n = len(pd.read_parquet(next(p.glob(f"data/{s}-*.parquet"))))
     assert n == 103, (s, n)
-ref = p.parents[1] / "refs" / "main"   # offline loads resolve "main" to the pinned revision
-ref.parent.mkdir(parents=True, exist_ok=True)
-ref.write_text("$IB_DATA_REV")
+import shutil
+shutil.copytree(p, "/opt/gpc4/ib_data", symlinks=False, dirs_exist_ok=True)
+pathlib.Path("/opt/gpc4/ib_data/REVISION").write_text("$IB_DATA_REV\n")
 print("impossiblebench data: 103 per split at $IB_DATA_REV")
 EOF
 docker pull -q aisiuk/inspect-tool-support
@@ -63,7 +64,7 @@ for variant in mandated incentivized; do
     rm -rf "$st"
   done
 done
-echo "odcv images: $(docker images -q 'gpc4/odcv-*' | sort -u | wc -l)"
+echo "odcv images: $(docker images --format '{{.Repository}}' 'gpc4/odcv-*' | sort -u | wc -l) (by name; variants can share an image id)"
 # each scenario image's shipped files, hashed once (the runs' file trace compares against these)
 mkdir -p /var/lib/gpc4/hashes_before
 for tag in $(docker images --format '{{.Repository}}:{{.Tag}}' 'gpc4/odcv-*' | grep -v executor); do
@@ -113,7 +114,7 @@ cat > /etc/systemd/system/gpc4-driver.service <<EOF
 Description=gpc4 stage driver (detached from the launcher)
 After=gpc4-proxy.service gpc4-forward.service
 [Service]
-Environment=GPC4_ODCV=/opt/gpc4/odcv GPC4_IB_PY=/opt/gpc4/ib-venv/bin/python GPC4_IB_SRC=/opt/gpc4/impossiblebench/src/impossiblebench
+Environment=GPC4_ODCV=/opt/gpc4/odcv GPC4_IB_PY=/opt/gpc4/ib-venv/bin/python GPC4_IB_SRC=/opt/gpc4/impossiblebench/src/impossiblebench GPC4_IB_DATA=/opt/gpc4/ib_data
 ExecStart=/usr/bin/python3 $VM driver
 Restart=on-failure
 RestartSec=30

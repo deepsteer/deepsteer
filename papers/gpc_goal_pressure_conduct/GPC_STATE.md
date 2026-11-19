@@ -185,3 +185,7 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
   `gpc4_inputs.sh`, `launch_gpc4_pod.sh`, CST's rank cap by environment, the bounds grid's pilot drawn
   apart from its pool, `test_gpc4.py` (24 fast, 1 slow dry chain). Stage 5 not built (it would void the
   rehearsal).
+- 2026-11-19: rehearsal 2 (`GPC_PLAN.md` §11.10): setup 642 s, both gate passes, every result delivered
+  detached; but ImpossibleBench never ran (offline data load by name) and the ODCV-Bench run was flagged
+  on a file upstream never writes. Fixed with the per-run push, a stricter `verify` and the stand-in's
+  hard limit; rehearsal 3 next.
