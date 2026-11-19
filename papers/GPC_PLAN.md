@@ -1650,3 +1650,14 @@ logs with Inspect's own `read_eval_log` and writes each sample's id, error and s
 the VM's counts and the pod's `ib_scores` read that file, and the `.eval` logs stay as artifacts.
 Checked locally on a real zstd log from Inspect 0.3.291. `verify` was not run on rehearsal 3 (the VM side
 has changed since, and it refuses); rehearsal 4 is the record.
+
+**Rehearsal 4** (session `gpc4-20261119T214320Z`, commit `981a2692`, VM hash `8dfdcd771891a564`,
+2026-11-19 11:43 to 12:00 HST): setup in 687 s; both gate passes; the ODCV-Bench run clean (2 tool calls,
+its messages record, pushed as it finished); both ImpossibleBench scaffolds exit 0 with one scored sample
+each and no errors; every result delivered; the host terminated itself 2 minutes after `stop` (`verify`
+read it `terminated`); $0.19 at most. **`verify` recorded it as failed, on a fault of its own:** the results
+directory on the stand-in is `gpc4pod`'s, so its rsync as `ubuntu` failed and the fallback unpacked one
+level off from where the record reads, and every instrument read null. The downloaded files, read by the
+record's own rule, pass (`instruments_ran` true). The gate is not overridden by hand: the fix (read as
+root, unpacked where the record reads, and no record written on an empty download) changes the launcher,
+a VM-side file, so rehearsal 5 is the record `launch` needs.

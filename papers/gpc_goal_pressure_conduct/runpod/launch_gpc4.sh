@@ -207,8 +207,13 @@ cmd_verify() {
   # a terminated instance leaves the listing after about an hour; an id that is gone was terminated
   local state; state=$(ip_of "$vm" State.Name 2>/dev/null || echo gone)
   local reached; reached=$(jq -n --argjson g "$got" --argjson w "$want" '($w - $g) | length == 0')
-  rsync -a -e "ssh ${SSHO[*]} -i $D/admin_key" "ubuntu@$si_ip:/home/gpc4pod/vm_results/" "$D/rehearsal_results/" 2>/dev/null \
-    || ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$si_ip" "sudo tar -C /home/gpc4pod -cf - vm_results" | tar -C "$D" -xf -
+  # the results directory is gpc4pod's (mode 700), so it is read as root and unpacked where the record
+  # reads it (rehearsal 4: an rsync as ubuntu failed and the fallback unpacked one level off)
+  mkdir -p "$D/rehearsal_results"
+  ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$si_ip" "sudo tar -C /home/gpc4pod/vm_results -cf - ." \
+    | tar -C "$D/rehearsal_results" -xf -
+  ls "$D"/rehearsal_results/*/stage.json >/dev/null 2>&1 \
+    || die "no stage results downloaded from the stand-in; the record is not written (teardown is separate)"
   local launched; launched=$(ip_of "$vm" LaunchTime 2>/dev/null || echo gone)
   python3 - "$D" "$state" "$reached" "$launched" "$r_commit" "$r_hash" <<'EOF'
 import json, sys, datetime, pathlib

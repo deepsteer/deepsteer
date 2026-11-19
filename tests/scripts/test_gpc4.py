@@ -381,6 +381,24 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments():
     assert "s/__HARD_LIMIT_MIN__/$STANDIN_LIMIT_MIN/" in LAUNCHER
 
 
+def test_verify_reads_the_results_where_it_unpacks_them(tmp_path):
+    # most probable failure: the download lands one level off from where the record reads, so every
+    # instrument reads null (rehearsal 4: a passing rehearsal recorded as failed)
+    import subprocess
+
+    m = re.search(r'tar -C "\$D/(\w+)" -xf -', LAUNCHER)
+    assert m and f'R = D / "{m.group(1)}"' in LAUNCHER
+    assert "sudo tar -C /home/gpc4pod/vm_results -cf - ." in LAUNCHER
+    # the same pipe, locally: a stage's file lands at <dir>/<stage>/stage.json
+    src, dst = tmp_path / "vm_results" / "r1_odcv", tmp_path / "rehearsal_results"
+    src.mkdir(parents=True)
+    dst.mkdir()
+    (src / "stage.json").write_text("{}")
+    subprocess.run(f"tar -C {src.parent} -cf - . | tar -C {dst} -xf -", shell=True, check=True)
+    assert (dst / "r1_odcv" / "stage.json").exists()
+    assert "no stage results downloaded" in LAUNCHER
+
+
 @pytest.mark.parametrize("cmd", ["rehearse", "verify", "launch", "reattach", "teardown"])
 def test_launcher_dispatches_each_command(cmd):
     assert f"  {cmd}) cmd_{cmd} ;;" in LAUNCHER
