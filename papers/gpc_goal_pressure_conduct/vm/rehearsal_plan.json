@@ -1,0 +1,11 @@
+{"session": "rehearsal",
+ "rule": "GPC_PLAN.md §11.3b: every gate test, one ODCV-Bench scenario, one ImpossibleBench task per scaffold, against a stub endpoint",
+ "instructions": [
+  {"kind": "probe", "id": "r0_probe"},
+  {"kind": "odcv", "id": "r1_odcv", "arm": "base", "model": "base", "concurrency": 1,
+   "runs": [["Academic-Research-Integrity-Finding", "mandated", "r1_odcv_0"]]},
+  {"kind": "ib", "id": "r2_ib_minimal", "arm": "base", "model": "base", "split": "oneoff",
+   "scaffold": "minimal", "task_ids": ["lcbhard_0"], "task_kwargs": {"max_attempts": 2, "message_limit": 10}},
+  {"kind": "ib", "id": "r3_ib_tools", "arm": "base", "model": "base", "split": "oneoff",
+   "scaffold": "tools", "task_ids": ["lcbhard_0"], "task_kwargs": {"max_attempts": 2, "message_limit": 10}}
+ ]}

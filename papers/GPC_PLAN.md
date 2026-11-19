@@ -1552,3 +1552,24 @@ Parked, one line each:
 - W-self's rebuild (GPC-A2).
 - Action-side training.
 - PropensityBench (out, item 1) and ScopeBench (parked, item 2), as recorded in §11.2.
+
+### 11.8 Built, part 1: the host and the rehearsal (2026-11-18)
+
+`scripts/gpc4_vm.py` (standard library only; on the host, the stand-in and the pod): the sampling proxy
+(the sampling of record and one logged seed a run and turn on every request), the control server and the
+plan runner (the pod's or the stand-in's document; a stage counts as received only when its done-marker's
+file hashes match), the driver (detached under systemd; it runs each instruction once, writes each run's
+results as it finishes, and powers off, which terminates, only when every result is confirmed), the
+ODCV-Bench run (a per-run Compose project from upstream's file: prebuilt images, no fixed names or host
+ports, the scenario service named `orchestrator_api` as upstream's executor expects, the run's own
+`prompt.json` the one read-only mount, the file trace by `docker diff` against each image's hashes taken
+at setup), the ImpossibleBench run (Inspect 0.3.291 on the host; the LiveCodeBench modules imported from
+upstream's source directory, so `inspect_evals` is never needed; the data cached at the pinned revision
+and read offline), the gate tests (host and container, before and after the egress lock) and the
+rehearsal's stub model. `vm/cloud_init_vm.sh` and `vm/cloud_init_standin.sh` (user-data with no
+credential; the hard limit armed first), `vm/rehearsal_plan.json`, `vm/gpc4_iam_policy.json` (the brief's
+policy, the file the author attaches), and `runpod/launch_gpc4.sh` (`rehearse`, `verify`, `launch`,
+`reattach`, `teardown`; it refuses an uncommitted or unpushed commit, a short quota and a live
+`gpc4-session` instance). `tests/scripts/test_gpc4.py`: 17 tests. **Not built yet (before the real
+launch, not the rehearsal):** the pod's side (`gpc4_pod.py`, `remote_gpc4.sh`, `launch_gpc4_pod.sh`,
+the inputs list); `launch` refuses to start without them.

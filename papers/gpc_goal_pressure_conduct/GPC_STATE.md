@@ -178,3 +178,6 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
   bounds clause (`z_bounds_clause.py`), the bounds grid and briefs (`gpc_bounds.py`), the v2 8-gram
   index (`z_index_v2.py`), the summed adapter (`z_summed_adapter.py`), the ratio bar's power
   (`z_gpc4_power.py`).
+- 2026-11-18: GPC-4 built, part 1 (the host and the rehearsal; `GPC_PLAN.md` §11.8): `gpc4_vm.py`, the two
+  cloud-init scripts, the rehearsal plan, the IAM policy file, `launch_gpc4.sh`, `test_gpc4.py` (17). The
+  pod's side is next; `launch` refuses to start without it.

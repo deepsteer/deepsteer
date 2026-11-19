@@ -1,0 +1,138 @@
+{
+ "Version": "2012-10-17",
+ "Statement": [
+  {
+   "Sid": "ReadOnly",
+   "Effect": "Allow",
+   "Action": [
+    "ec2:DescribeInstances",
+    "ec2:DescribeInstanceStatus",
+    "ec2:DescribeImages",
+    "ec2:DescribeKeyPairs",
+    "ec2:DescribeSecurityGroups",
+    "ec2:DescribeVpcs",
+    "ec2:DescribeSubnets",
+    "ec2:DescribeVolumes",
+    "servicequotas:GetServiceQuota"
+   ],
+   "Resource": "*",
+   "Condition": {
+    "StringEquals": {
+     "aws:RequestedRegion": "us-east-2"
+    }
+   }
+  },
+  {
+   "Sid": "DecodeDenials",
+   "Effect": "Allow",
+   "Action": "sts:DecodeAuthorizationMessage",
+   "Resource": "*"
+  },
+  {
+   "Sid": "UbuntuImage",
+   "Effect": "Allow",
+   "Action": "ssm:GetParameter",
+   "Resource": "arn:aws:ssm:us-east-2::parameter/aws/service/canonical/ubuntu/*"
+  },
+  {
+   "Sid": "RunTaggedOnly",
+   "Effect": "Allow",
+   "Action": "ec2:RunInstances",
+   "Resource": [
+    "arn:aws:ec2:us-east-2:*:instance/*",
+    "arn:aws:ec2:us-east-2:*:volume/*"
+   ],
+   "Condition": {
+    "StringLike": {
+     "aws:RequestTag/gpc4-session": "*"
+    },
+    "StringEquals": {
+     "ec2:InstanceType": [
+      "c6a.4xlarge",
+      "t3.micro"
+     ]
+    }
+   }
+  },
+  {
+   "Sid": "RunSupporting",
+   "Effect": "Allow",
+   "Action": "ec2:RunInstances",
+   "Resource": [
+    "arn:aws:ec2:us-east-2::image/*",
+    "arn:aws:ec2:us-east-2::snapshot/*",
+    "arn:aws:ec2:us-east-2:*:subnet/*",
+    "arn:aws:ec2:us-east-2:*:network-interface/*"
+   ]
+  },
+  {
+   "Sid": "RunInSessionGroupWithSessionKey",
+   "Effect": "Allow",
+   "Action": "ec2:RunInstances",
+   "Resource": [
+    "arn:aws:ec2:us-east-2:*:security-group/*",
+    "arn:aws:ec2:us-east-2:*:key-pair/*"
+   ],
+   "Condition": {
+    "StringLike": {
+     "aws:ResourceTag/gpc4-session": "*"
+    }
+   }
+  },
+  {
+   "Sid": "TagOnCreate",
+   "Effect": "Allow",
+   "Action": "ec2:CreateTags",
+   "Resource": "arn:aws:ec2:us-east-2:*:*/*",
+   "Condition": {
+    "StringEquals": {
+     "ec2:CreateAction": [
+      "RunInstances",
+      "CreateSecurityGroup",
+      "CreateKeyPair"
+     ]
+    }
+   }
+  },
+  {
+   "Sid": "ActOnSessionResources",
+   "Effect": "Allow",
+   "Action": [
+    "ec2:TerminateInstances",
+    "ec2:ModifyInstanceMetadataOptions",
+    "ec2:DeleteKeyPair",
+    "ec2:DeleteSecurityGroup",
+    "ec2:AuthorizeSecurityGroupIngress",
+    "ec2:RevokeSecurityGroupIngress",
+    "ec2:AuthorizeSecurityGroupEgress",
+    "ec2:RevokeSecurityGroupEgress"
+   ],
+   "Resource": "*",
+   "Condition": {
+    "StringLike": {
+     "aws:ResourceTag/gpc4-session": "*"
+    },
+    "StringEquals": {
+     "aws:RequestedRegion": "us-east-2"
+    }
+   }
+  },
+  {
+   "Sid": "CreateSessionKeyAndGroup",
+   "Effect": "Allow",
+   "Action": [
+    "ec2:CreateKeyPair",
+    "ec2:CreateSecurityGroup"
+   ],
+   "Resource": "*",
+   "Condition": {
+    "StringLike": {
+     "aws:RequestTag/gpc4-session": "*"
+    },
+    "StringEquals": {
+     "aws:RequestedRegion": "us-east-2"
+    }
+   }
+  }
+ ]
+}
