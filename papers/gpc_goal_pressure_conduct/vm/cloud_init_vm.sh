@@ -81,6 +81,8 @@ iptables -I DOCKER-USER 1 -s 172.30.0.0/24 -m conntrack --ctstate ESTABLISHED,RE
 # the host's INPUT chain: from the bridge, the proxy port only
 iptables -I INPUT 1 -s 172.30.0.0/24 -j DROP
 iptables -I INPUT 1 -s 172.30.0.0/24 -p tcp --dport 18000 -j ACCEPT
+# replies to the host's own connections to the bridge address loop through INPUT (the first rehearsal)
+iptables -I INPUT 1 -s 172.30.0.0/24 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # the services: the forward (both pod ports), the proxy, the driver; each waits for pod.env
 cat > /etc/systemd/system/gpc4-forward.service <<EOF

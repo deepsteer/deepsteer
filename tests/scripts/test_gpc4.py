@@ -242,7 +242,7 @@ def test_launcher_holds_the_host_rules():
         "--http-endpoint disabled",
         "L-1216C47A",
         "a gpc4-session instance exists; run teardown first",
-        "no passed rehearsal at",
+        "no passed rehearsal for this VM side",
         "GPC-4 runs on Thunder with no fallback",
         "revoke-security-group-egress",
         "authorize-security-group-egress",
@@ -298,3 +298,12 @@ def test_rehearsal_plan_covers_both_scaffolds_and_one_scenario():
 @pytest.mark.parametrize("cmd", ["rehearse", "verify", "launch", "reattach", "teardown"])
 def test_launcher_dispatches_each_command(cmd):
     assert f"  {cmd}) cmd_{cmd} ;;" in LAUNCHER
+
+
+def test_gate_reads_the_first_rehearsals_false_alarms_correctly():
+    # most probable failure (the first rehearsal): a disabled metadata endpoint still accepts TCP,
+    # the images' public GPG_KEY reads as a credential, and /dev/root's source reads as /root
+    probe = V.CONTAINER_PROBE
+    assert 'creds.pop("GPG_KEY", None)' in probe and "ln.split()[1]" in probe
+    assert "def _imds_closed" in (GPC / "scripts/gpc4_vm.py").read_text()
+    assert "ESTABLISHED,RELATED -j ACCEPT" in VM_INIT.split("# the services")[0].split("INPUT")[-1]

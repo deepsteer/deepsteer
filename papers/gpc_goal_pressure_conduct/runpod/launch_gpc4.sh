@@ -25,6 +25,11 @@ SETUP_WAIT_MIN=${GPC4_SETUP_WAIT_MIN:-90}
 AMI_PARAM=/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id
 ROOT=~/.gpc4
 COMMIT=$(git rev-parse HEAD)
+# the rehearsal vouches for the VM side: the files the host and the stand-in run (a later commit that
+# changes only the pod's files keeps the rehearsal valid)
+VM_FILES=("$G/scripts/gpc4_vm.py" "$G/vm/cloud_init_vm.sh" "$G/vm/cloud_init_standin.sh"
+          "$G/vm/rehearsal_plan.json" "$G/vm/gpc4_iam_policy.json" "$G/runpod/launch_gpc4.sh")
+VM_HASH=$(cat "${VM_FILES[@]}" | shasum -a 256 | cut -c1-16)
 export AWS_DEFAULT_REGION=$REGION AWS_PAGER=""
 SSHO=(-o IdentitiesOnly=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes
       -o ConnectTimeout=15 -o LogLevel=ERROR)
@@ -127,9 +132,14 @@ vm_setup() {
   say "host $VM ($TYPE) at $VM_IP; setup runs on the host (not on GPU time)"
   wait_ssh "$VM_IP"
   local deadline=$(( $(date +%s) + SETUP_WAIT_MIN * 60 ))
+  local last=""
   until ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$VM_IP" test -f /var/lib/gpc4/setup_done.json 2>/dev/null; do
     [ "$(date +%s)" -lt "$deadline" ] || die "setup did not finish in $SETUP_WAIT_MIN min (see /var/log/gpc4_setup.log)"
-    sleep 30
+    local m; m=$(ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$VM_IP" \
+      "n=\$(sudo docker images --format '{{.Repository}}' 2>/dev/null | grep -c gpc4/odcv- || true); \
+       sudo grep -aE 'impossiblebench data|odcv images' /var/log/gpc4_setup.log 2>/dev/null | tail -1; echo \"images built: \$n\"" 2>/dev/null | tr '\n' ' ')
+    [ -n "$m" ] && [ "$m" != "$last" ] && { say "setup: $m($(( ($(date +%s) - T_SETUP) / 60 )) min)"; last=$m; }
+    sleep 60
   done
   ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$VM_IP" cat /var/lib/gpc4/setup_done.json > "$D/setup_done.json"
   say "setup done in $(( $(date +%s) - T_SETUP )) s wall"
@@ -192,13 +202,13 @@ cmd_verify() {
   rsync -a -e "ssh ${SSHO[*]} -i $D/admin_key" "ubuntu@$si_ip:/home/gpc4pod/vm_results/" "$D/rehearsal_results/" 2>/dev/null \
     || ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$si_ip" "sudo tar -C /home/gpc4pod -cf - vm_results" | tar -C "$D" -xf -
   local launched; launched=$(ip_of "$vm" LaunchTime)
-  python3 - "$D" "$state" "$reached" "$launched" "$COMMIT" <<'EOF'
+  python3 - "$D" "$state" "$reached" "$launched" "$COMMIT" "$VM_HASH" <<'EOF'
 import json, sys, datetime, pathlib
-d, state, reached, launched, commit = sys.argv[1:]
+d, state, reached, launched, commit, vm_hash = sys.argv[1:]
 D = pathlib.Path(d)
 t0 = datetime.datetime.fromisoformat(launched.replace("Z", "+00:00"))
 hours = (datetime.datetime.now(datetime.timezone.utc) - t0).total_seconds() / 3600
-rec = {"commit": commit, "host_state": state, "self_terminated": state in ("shutting-down", "terminated"),
+rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state, "self_terminated": state in ("shutting-down", "terminated"),
        "every_result_on_the_receiving_side": reached == "true",
        "gate_pre": json.loads((D / "gate_pre.json").read_text()),
        "gate_post": json.loads((D / "gate_post.json").read_text()),
@@ -207,10 +217,10 @@ rec = {"commit": commit, "host_state": state, "self_terminated": state in ("shut
        "cost_usd_upper": round(hours * (0.612 + 160 * 0.08 / 730 + 0.005) + hours * (0.0104 + 8 * 0.08 / 730 + 0.005), 2)}
 rec["passed"] = bool(rec["self_terminated"] and rec["every_result_on_the_receiving_side"]
                      and rec["gate_pre"].get("passes") and rec["gate_post"].get("passes"))
-(pathlib.Path.home() / ".gpc4" / f"rehearsal_{commit}.json").write_text(json.dumps(rec, indent=1))
+(pathlib.Path.home() / ".gpc4" / f"rehearsal_{vm_hash}.json").write_text(json.dumps(rec, indent=1))
 print(json.dumps({k: v for k, v in rec.items() if k not in ("gate_pre", "gate_post")}, indent=1))
 EOF
-  say "the rehearsal record: $ROOT/rehearsal_$COMMIT.json"
+  say "the rehearsal record: $ROOT/rehearsal_$VM_HASH.json (the VM side's hash; commit $COMMIT)"
   cmd_teardown
 }
 
@@ -247,8 +257,8 @@ cmd_teardown() {
 }
 
 cmd_launch() {
-  [ -f "$ROOT/rehearsal_$COMMIT.json" ] && jq -e .passed "$ROOT/rehearsal_$COMMIT.json" >/dev/null \
-    || die "no passed rehearsal at $COMMIT (run rehearse, then verify)"
+  [ -f "$ROOT/rehearsal_$VM_HASH.json" ] && jq -e .passed "$ROOT/rehearsal_$VM_HASH.json" >/dev/null \
+    || die "no passed rehearsal for this VM side ($VM_HASH; run rehearse, then verify)"
   [ -z "${TNR_FALLBACK:-}" ] || die "GPC-4 runs on Thunder with no fallback"
   preflight "$VCPUS_NEEDED"
   [ -f "$G/runpod/remote_gpc4.sh" ] || die "the pod's runner (remote_gpc4.sh) is not built yet"

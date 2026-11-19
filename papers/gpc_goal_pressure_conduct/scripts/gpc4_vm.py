@@ -522,14 +522,30 @@ def _http_ok(url: str, t: float = 6.0) -> bool:
         return False
 
 
+def _imds_closed() -> bool:
+    """Disabled, the metadata endpoint still accepts TCP but answers 403: closed means no 200 to the
+    metadata GET or the IMDSv2 token PUT (the first rehearsal's false alarm read TCP alone)."""
+    for method, path, hdr in (("GET", "/latest/meta-data/", {}),
+                              ("PUT", "/latest/api/token", {"X-aws-ec2-metadata-token-ttl-seconds": "60"})):
+        try:
+            r = urllib.request.Request(f"http://169.254.169.254{path}", method=method, headers=hdr)
+            with urllib.request.urlopen(r, timeout=3) as resp:
+                if resp.status == 200:
+                    return False
+        except Exception:  # noqa: BLE001  (403, refused or timed out: closed)
+            pass
+    return True
+
+
 def gate(phase: str) -> dict:
     res = {}
     if phase in ("pre", "post"):
-        res["imds_unreachable"] = not _tcp("169.254.169.254", 80, 3)
+        res["imds_unreachable"] = _imds_closed()
         res["docker_up"] = subprocess.run(["docker", "info"], capture_output=True).returncode == 0
         rules = subprocess.run(["iptables", "-S", "DOCKER-USER"], capture_output=True, text=True).stdout
         res["docker_user_rules"] = f"-s {SUBNET}" in rules and "DROP" in rules
-        res["proxy_listening"] = _tcp(GATEWAY, PROXY_PORT) and _tcp("127.0.0.1", PROXY_PORT)
+        # the host's own clients (Inspect) use 127.0.0.1; the gateway is the containers' (container_gate)
+        res["proxy_listening"] = _tcp("127.0.0.1", PROXY_PORT)
         res["container_tests"] = container_gate()
     if phase == "post":
         env = pod_env()
@@ -555,15 +571,19 @@ def tcp(h, p):
         socket.create_connection((h, p), timeout=3).close(); return True
     except OSError:
         return False
+import re
 creds = {k: v for k, v in os.environ.items() if any(w in k.upper() for w in ("TOKEN", "KEY", "SECRET"))}
-mounts = open("/proc/mounts").read()
+creds.pop("GPG_KEY", None)  # Python's official images bake in a public signing key's ID
+leak = any(re.search(r"AKIA|ASIA|hf_[A-Za-z0-9]{20}|ghp_|sk-[A-Za-z0-9]{20}", v) for v in os.environ.values())
+points = [ln.split()[1] for ln in open("/proc/mounts").read().splitlines() if len(ln.split()) > 1]
 try:
     open("/app/prompt.json", "a").write("x"); ro = False
 except Exception:
     ro = True
 print(json.dumps({
-  "no_credentials": all(v == "dummy" for v in creds.values()),
-  "no_host_paths": not any(p in mounts for p in ("/var/lib/gpc4", "/etc/gpc4", "/home/ubuntu", "/root")),
+  "no_credentials": all(v == "dummy" for v in creds.values()) and not leak,
+  "no_host_paths": not any(p.startswith(("/var/lib/gpc4", "/etc/gpc4", "/home", "/root", "/opt/gpc4"))
+                           or p.endswith("docker.sock") for p in points),
   "prompt_read_only": ro,
   "proxy_reachable": tcp("GATEWAY", PROXY_PORT),
   "host_ssh_closed": not tcp("GATEWAY", 22),
