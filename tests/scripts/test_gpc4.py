@@ -205,6 +205,9 @@ def test_iam_policy_matches_the_brief_and_holds_its_limits():
         "t3.micro",
     ]
     assert "arn:aws:ec2:us-east-2::snapshot/*" in by["RunSupporting"]["Resource"]
+    # the first rehearsal's denial: CreateSecurityGroup is authorized against the VPC too
+    assert by["CreateGroupInAVpc"]["Action"] == "ec2:CreateSecurityGroup"
+    assert by["CreateGroupInAVpc"]["Resource"] == "arn:aws:ec2:us-east-2:*:vpc/*"
     assert not any(
         "security-group" in r or "key-pair" in r for r in by["RunSupporting"]["Resource"]
     )
@@ -212,16 +215,15 @@ def test_iam_policy_matches_the_brief_and_holds_its_limits():
         "aws:ResourceTag/gpc4-session": "*"
     }
     for st in POLICY["Statement"]:
+        res = [st["Resource"]] if isinstance(st["Resource"], str) else st["Resource"]
         writes = [
             a
             for a in _actions(st)
             if not a.startswith(("ec2:Describe", "servicequotas:Get", "ssm:Get", "sts:Decode"))
         ]
-        if writes:
-            assert st.get("Condition") or all(
-                ":us-east-2:" in r or "us-east-2::" in r for r in st["Resource"]
-            ), st["Sid"]
-        for r in [st["Resource"]] if isinstance(st["Resource"], str) else st["Resource"]:
+        if writes:  # a write is region-bound by its condition or its ARNs
+            assert st.get("Condition") or all("us-east-2:" in r for r in res), st["Sid"]
+        for r in res:
             assert r == "*" or "us-east-2" in r
 
 

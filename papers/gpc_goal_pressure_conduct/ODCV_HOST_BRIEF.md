@@ -205,7 +205,9 @@ and acting rates.
     {"Sid": "CreateSessionKeyAndGroup", "Effect": "Allow",
      "Action": ["ec2:CreateKeyPair", "ec2:CreateSecurityGroup"], "Resource": "*",
      "Condition": {"StringLike": {"aws:RequestTag/gpc4-session": "*"},
-                   "StringEquals": {"aws:RequestedRegion": "us-east-2"}}}
+                   "StringEquals": {"aws:RequestedRegion": "us-east-2"}}},
+    {"Sid": "CreateGroupInAVpc", "Effect": "Allow", "Action": "ec2:CreateSecurityGroup",
+     "Resource": "arn:aws:ec2:us-east-2:*:vpc/*"}
   ]
 }
 ```
@@ -220,4 +222,8 @@ RunInstances' resource types (unstarred: evaluated when it applies, as when laun
 EBS-backed image), with the format `arn:${Partition}:ec2:${Region}::snapshot/${SnapshotId}` (no account,
 as for images). **The rehearsal is the policy's real test:** on an access denial, the launcher decodes
 the message (`sts decode-authorization-message`, which needs one more grant, `sts:DecodeAuthorizationMessage`,
-added below) and reports the missing resource; the policy is never widened by guess.
+added below) and reports the missing resource; the policy is never widened by guess. **The first rehearsal's denial
+(2026-11-18):** `ec2:CreateSecurityGroup` on `arn:aws:ec2:us-east-2:<account>:vpc/vpc-...`: creating a group
+is authorized against the VPC as well as the new group, and the request-tag condition cannot hold on the
+VPC. Added: `CreateGroupInAVpc`, that one action on a us-east-2 VPC; the group itself still needs the
+`gpc4-session` tag.

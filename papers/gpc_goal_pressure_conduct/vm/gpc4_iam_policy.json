@@ -133,6 +133,12 @@
      "aws:RequestedRegion": "us-east-2"
     }
    }
+  },
+  {
+   "Sid": "CreateGroupInAVpc",
+   "Effect": "Allow",
+   "Action": "ec2:CreateSecurityGroup",
+   "Resource": "arn:aws:ec2:us-east-2:*:vpc/*"
   }
  ]
 }
