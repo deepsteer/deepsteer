@@ -51,7 +51,7 @@ list_tagged() {
 preflight() {
   need aws "AWS CLI v2"; need jq; need ssh; need rsync
   # the host clones this commit from GitHub: it must be committed and on origin
-  [ -z "$(git status --porcelain --untracked-files=no)" ] || die "the working tree has uncommitted changes"
+  git diff --quiet HEAD -- "${VM_FILES[@]}" || die "the VM side has uncommitted changes (${VM_FILES[*]})"
   git fetch -q origin && git merge-base --is-ancestor "$COMMIT" origin/main \
     || die "commit $COMMIT is not on origin/main (push it first)"
   local acct; acct=$(aws sts get-caller-identity --query Account --output text) || die "no AWS identity"

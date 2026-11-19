@@ -250,6 +250,7 @@ def test_launcher_holds_the_host_rules():
         "cmd_teardown",
         "cmd_reattach",
         "is not on origin/main (push it first)",
+        "the VM side has uncommitted changes",
     ):
         assert needle in LAUNCHER, needle
     assert "--iam-instance-profile" not in LAUNCHER and "spot" not in LAUNCHER.lower()
