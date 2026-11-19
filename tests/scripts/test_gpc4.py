@@ -342,15 +342,27 @@ def test_ib_stage_points_upstreams_loader_at_the_pinned_directory():
 def test_eval_counts_reads_scored_and_errored_samples(tmp_path):
     # most probable failure: an errored sample counts as scored, so verify passes an
     # ImpossibleBench stage that never ran a task
-    import zipfile
-
-    with zipfile.ZipFile(tmp_path / "x.eval", "w") as z:
-        z.writestr(
-            "samples/a_epoch_1.json", json.dumps({"id": "a", "scores": {"s": {"value": "I"}}})
+    (tmp_path / "inspect_logs").mkdir()
+    (tmp_path / "inspect_logs" / "x.eval").write_bytes(b"")
+    (tmp_path / "samples.json").write_text(
+        json.dumps(
+            [
+                {"id": "a", "epoch": 1, "error": None, "scores": {"s": "I"}},
+                {"id": "b", "epoch": 1, "error": "boom", "scores": {}},
+            ]
         )
-        z.writestr("samples/b_epoch_1.json", json.dumps({"id": "b", "error": "boom", "scores": {}}))
+    )
     assert V.eval_counts(tmp_path) == {"n_logs": 1, "n_samples": 2, "n_scored": 1, "n_errored": 1}
-    assert V.eval_counts(tmp_path / "none")["n_logs"] == 0
+    (tmp_path / "none" / "inspect_logs").mkdir(parents=True)
+    assert V.eval_counts(tmp_path / "none")["n_scored"] == 0
+
+
+def test_no_reader_opens_a_zstd_eval_log_with_the_standard_zipfile():
+    # most probable failure: a .eval log is read with zipfile, which cannot open its zstd members
+    # outside inspect_ai (rehearsal 3: both stages' counts failed; the pod's gate would have too)
+    for f in ("gpc4_vm.py", "gpc4_pod.py"):
+        assert "zipfile.ZipFile" not in (GPC / "scripts" / f).read_text(), f
+    assert "read_eval_log(l.location)" in V.IB_TASK and '"samples.json"' in V.IB_TASK
 
 
 def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments():
@@ -409,25 +421,20 @@ def test_an_empty_plan_holds_and_never_stops_the_vm(tmp_path):
     assert json.loads(doc.read_text())["instruction"]["kind"] == "wait"
 
 
-def test_ib_scores_read_upstreams_scorer_from_the_eval_zip(tmp_path):
+def test_ib_scores_read_upstreams_scorer_from_the_runners_samples(tmp_path):
     # most probable failure: a pass is read from the wrong field, or an errored sample counts as
     # a fail
-    import zipfile
-
-    d = tmp_path / "vm_results" / "ins" / "inspect_logs"
+    d = tmp_path / "vm_results" / "ins"
     d.mkdir(parents=True)
-    with zipfile.ZipFile(d / "x.eval", "w") as z:
-        z.writestr(
-            "samples/a_epoch_1.json", json.dumps({"id": "a", "scores": {"s": {"value": "C"}}})
+    (d / "samples.json").write_text(
+        json.dumps(
+            [
+                {"id": "a", "epoch": 1, "error": None, "scores": {"s": "C"}},
+                {"id": "b", "epoch": 1, "error": None, "scores": {"s": "I"}},
+                {"id": "c", "epoch": 1, "error": "boom", "scores": {"s": "C"}},
+            ]
         )
-        z.writestr(
-            "samples/b_epoch_1.json", json.dumps({"id": "b", "scores": {"s": {"value": "I"}}})
-        )
-        z.writestr(
-            "samples/c_epoch_1.json",
-            json.dumps({"id": "c", "error": "boom", "scores": {"s": {"value": "C"}}}),
-        )
-        z.writestr("header.json", "{}")
+    )
     assert P4.ib_scores(tmp_path, "ins") == {"a": True, "b": False, "c": None}
 
 

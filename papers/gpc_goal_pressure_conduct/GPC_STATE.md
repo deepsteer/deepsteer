@@ -189,3 +189,6 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
   detached; but ImpossibleBench never ran (offline data load by name) and the ODCV-Bench run was flagged
   on a file upstream never writes. Fixed with the per-run push, a stricter `verify` and the stand-in's
   hard limit; rehearsal 3 next.
+- 2026-11-19: rehearsal 3 (§11.10): both instruments ran end to end and every result was delivered;
+  Inspect's zstd `.eval` logs could not be read without `inspect_ai`, so the runner now writes
+  `samples.json` and the VM and the pod read that. Rehearsal 4 next.

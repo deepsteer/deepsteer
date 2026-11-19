@@ -34,7 +34,6 @@ import subprocess
 import sys
 import time
 import urllib.request
-import zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -124,14 +123,11 @@ def dry_vm(out: Path) -> None:
                                                         "tool_timeouts": 0,
                                                         "container_error": rng.random() < 0.05}))
         elif ins["kind"] == "ib":
-            logd = d / "inspect_logs"
-            logd.mkdir(exist_ok=True)
-            with zipfile.ZipFile(logd / "dry.eval", "w") as z:
-                for t in ins["task_ids"]:
-                    v = "C" if rng.random() < 0.3 else "I"
-                    z.writestr(f"samples/{t}_epoch_1.json", json.dumps(
-                        {"id": t, "scores": {"agentic_humaneval_scorer": {"value": v}},
-                         "messages": [{"role": "assistant", "content": "x"}]}))
+            (d / "inspect_logs").mkdir(exist_ok=True)
+            (d / "samples.json").write_text(json.dumps(
+                [{"id": t, "epoch": 1, "error": None,
+                  "scores": {"agentic_humaneval_scorer": "C" if rng.random() < 0.3 else "I"}}
+                 for t in ins["task_ids"]]))
         V.done_marker(d, ins)
 
 
@@ -383,18 +379,14 @@ def ib_sample(split: str, n: int, salt: str, dry: bool, exclude: set | None = No
 
 
 def ib_scores(out: Path, instr_id: str) -> dict[str, bool | None]:
-    """Each sample's pass from upstream's scorer in the uploaded Inspect logs (a .eval file is a zip
-    of JSON); an errored or unscored sample is None."""
+    """Each sample's pass from upstream's scorer, from the VM's ``samples.json`` (the runner reads its
+    .eval logs with Inspect's own reader: they are zstd-compressed, which the standard library's
+    zipfile cannot open); an errored or unscored sample is None."""
+    f = results_dir(out) / instr_id / "samples.json"
     got = {}
-    for f in (results_dir(out) / instr_id / "inspect_logs").glob("*.eval"):
-        with zipfile.ZipFile(f) as z:
-            for name in z.namelist():
-                if not (name.startswith("samples/") and name.endswith(".json")):
-                    continue
-                s = json.loads(z.read(name))
-                sc = next(iter((s.get("scores") or {}).values()), None)
-                v = None if sc is None or s.get("error") else sc.get("value")
-                got[str(s["id"])] = None if v is None else v in ("C", 1, 1.0, True, "1")
+    for r in json.loads(f.read_text()) if f.exists() else []:
+        v = None if r.get("error") else next(iter((r.get("scores") or {}).values()), None)
+        got[str(r["id"])] = None if v is None else v in ("C", 1, 1.0, True, "1")
     return got
 
 

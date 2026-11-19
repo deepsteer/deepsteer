@@ -1636,3 +1636,17 @@ instruments:
 
 All are VM-side, so the rehearsal hash changes and rehearsal 3 is required before `launch`. ImpossibleBench's
 run past the data load (the Docker sandbox, the model through the proxy) is first exercised there.
+
+**Rehearsal 3** (session `gpc4-20261119T211100Z`, commit `27e856fa`, 2026-11-19 11:11 to 11:27 HST):
+setup and both gate passes as before; the ODCV-Bench run read clean (no error, 2 tool calls, its messages
+record) and was pushed as it finished; both ImpossibleBench scaffolds ran end to end for the first time
+(the Docker sandbox, the model through the proxy, upstream's scorer: one sample each, scored, accuracy 0
+on the stub); every result was delivered, and the host went unreachable 3 minutes after `stop`. **It
+found one more fault, and the real launch would have hit it at the ImpossibleBench gate:** Inspect writes
+its `.eval` logs zstd-compressed, which the standard library's `zipfile` cannot open outside
+`inspect_ai` (its import patches `zipfile`, which is why the local tests passed). Both stages' counts
+failed on it, and so would the pod's pass read. Fix: the runner, which runs in Inspect's venv, reads its
+logs with Inspect's own `read_eval_log` and writes each sample's id, error and scores to `samples.json`;
+the VM's counts and the pod's `ib_scores` read that file, and the `.eval` logs stay as artifacts.
+Checked locally on a real zstd log from Inspect 0.3.291. `verify` was not run on rehearsal 3 (the VM side
+has changed since, and it refuses); rehearsal 4 is the record.

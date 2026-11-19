@@ -32,7 +32,6 @@ import threading
 import time
 import urllib.error
 import urllib.request
-import zipfile
 import zlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -513,6 +512,16 @@ if a.get("clause_text"):  # the in-context arm: the clause first, upstream's pro
     task.solver = chain(system_message(a["clause_text"]), task.solver)
 logs = inspect_eval(task, model=f"openai-api/gpc4/{a['model']}", log_dir=a["log_dir"],
                     max_sandboxes=a.get("concurrency", 10), max_connections=a.get("concurrency", 10))
+# each sample's id, error and scores, read with Inspect's own reader: a .eval log is zstd-compressed,
+# which the standard library's zipfile cannot read without inspect_ai's patch (rehearsal 3)
+from pathlib import Path
+from inspect_ai.log import read_eval_log
+rows = []
+for l in logs:
+    for smp in read_eval_log(l.location).samples or []:
+        rows.append({"id": str(smp.id), "epoch": smp.epoch, "error": str(smp.error) if smp.error else None,
+                     "scores": {k: v.value for k, v in (smp.scores or {}).items()}})
+(Path(a["log_dir"]).parent / "samples.json").write_text(json.dumps(rows, indent=1, default=str))
 print(json.dumps([str(l.location) for l in logs]))
 '''
 
@@ -533,26 +542,20 @@ def ib_stage(ins: dict, out: Path) -> None:
                        text=True, env=env)
     (out / "inspect_stdout.txt").write_text(p.stdout[-20000:] + "\n---\n" + p.stderr[-20000:])
     (out / "stage.json").write_text(json.dumps({"exit": p.returncode, "wall_s": round(time.time() - t0, 1),
-                                                **eval_counts(log_dir),
+                                                **eval_counts(out),
                                                 "args": {k: v for k, v in arg.items()
                                                          if k != "clause_text"},
                                                 "clause": bool(arg["clause_text"])}, indent=1))
 
 
-def eval_counts(log_dir: Path) -> dict:
+def eval_counts(out: Path) -> dict:
     """The stage's own evidence that ImpossibleBench ran: Inspect logs, samples, scored samples (a
-    sample with a score and no error) and errored samples. A .eval file is a zip of JSON."""
-    c = {"n_logs": 0, "n_samples": 0, "n_scored": 0, "n_errored": 0}
-    for f in sorted(log_dir.glob("*.eval")):
-        c["n_logs"] += 1
-        with zipfile.ZipFile(f) as z:
-            for name in z.namelist():
-                if name.startswith("samples/") and name.endswith(".json"):
-                    smp = json.loads(z.read(name))
-                    c["n_samples"] += 1
-                    c["n_errored"] += bool(smp.get("error"))
-                    c["n_scored"] += bool(smp.get("scores")) and not smp.get("error")
-    return c
+    sample with a score and no error) and errored samples, from the runner's ``samples.json`` (a .eval
+    log is zstd-compressed; only Inspect's own reader opens it)."""
+    rows = json.loads((out / "samples.json").read_text()) if (out / "samples.json").exists() else []
+    return {"n_logs": len(list((out / "inspect_logs").glob("*.eval"))), "n_samples": len(rows),
+            "n_scored": sum(bool(r.get("scores")) and not r.get("error") for r in rows),
+            "n_errored": sum(bool(r.get("error")) for r in rows)}
 
 
 # ---- the gate tests ------------------------------------------------------------------------------
