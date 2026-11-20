@@ -7,6 +7,7 @@ cloud-init's rules read from their text. The rehearsal on AWS is the integration
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import threading
@@ -262,7 +263,8 @@ def test_the_judge_swap_never_trips_it(tmp_path, monkeypatch):
     # runner's setup to its end, and the judge runs offline), so the rule never sees silence
     runner = (GPC / "runpod/remote_gpc4.sh").read_text()
     assert "nohup $PY $VM control --port 8001" in runner
-    assert "control --port" not in runner.split("serve --part down", 1)[1]  # never restarted
+    block = runner.split("# a. C1 registered", 1)[1]  # the stage block (end_session is above it)
+    assert "control --port" not in block.split("serve --part down", 1)[1]  # never restarted
     assert "kill" not in [ln for ln in runner.splitlines() if "control" in ln and "8001" in ln][0]
     _, calls, _, _ = _driver_with_clock(tmp_path, monkeypatch, [WAIT] * 120, max_polls=118)
     assert calls == []  # two hours of a held plan (the judge's load and pass) and no poweroff
@@ -1177,7 +1179,8 @@ def test_pod_runner_order_and_inputs():
         "--part final",
         "--stage stop",
     ]
-    pos = [RUNNER.index(s) for s in steps]
+    at = RUNNER.index("# a. C1 registered")  # the stage block (end_session is defined above it)
+    pos = [RUNNER.index(s, at) for s in steps]
     assert pos == sorted(pos)
     assert 'permitopen=\\"127.0.0.1:8000\\",permitopen=\\"127.0.0.1:8001\\"' in RUNNER
     assert "-wo $OUT/vm_results" in RUNNER and "6924dafb3a3f84fc320fbe9f0a08203d67d1d488" in RUNNER
@@ -1846,3 +1849,301 @@ def test_stage3s_read_and_stage4s_cst_read_skip_with_their_reasons(tmp_path):
         "reason": "the gate did not fire",
     }
     assert P4.stage_stage4_cst(tmp_path, dry=True)["run"] is False
+
+
+# ---- §11.17: a dead server ends the session; the ODCV-Bench arms do not wait on the judge -------
+def _run_stage_block(tmp_path, server_ok: bool):
+    """The runner's stage block, from its dry flag to its end, with every Python call a stub that
+    logs its arguments: ``--stage server_ok`` answers ``server_ok``, ``--stage stop`` writes the
+    stop document as the plan runner does. The runner's own exit trap is set first."""
+    import subprocess
+
+    runner = (GPC / "runpod/remote_gpc4.sh").read_text()
+    trap = next(x for x in runner.splitlines() if x.startswith("trap ") and x.endswith("EXIT"))
+    block = runner[runner.index("DRY=${GPC4_DRY:+--dry-run}") :]
+    out = tmp_path / "out"
+    (out / "logs").mkdir(parents=True)
+    calls = tmp_path / "calls.txt"
+    py = tmp_path / "py"
+    py.write_text(
+        "#!/bin/bash\n"
+        f'echo "$*" >> {calls}\n'
+        'case "$*" in\n'
+        f'  *"--stage server_ok"*) exit {0 if server_ok else 1};;\n'
+        '  *"--stage stop"*) echo \'{"instruction": {"kind": "stop"}}\' > '
+        f"{out}/control.json;;\n"
+        "esac\n"
+        "exit 0\n"
+    )
+    py.chmod(0o755)
+    (tmp_path / "session.log").write_text("log\n")
+    head = "\n".join(
+        [
+            "set -uo pipefail",
+            f"REPO_DIR={tmp_path}; OUT={out}; PY={py}; GP=gp.py; VENV={tmp_path}",
+            "hours() { echo 0.5; }; limits_save() { return 0; }",
+            "( sleep 30 ) >/dev/null 2>&1 & WATCHDOG=$!; ( sleep 0 ) & JDL=$!",
+            trap,
+        ]
+    )
+    r = subprocess.run(
+        ["bash", "-c", head + "\n" + block],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        env={"PATH": "/usr/bin:/bin"},
+    )
+    return r, calls.read_text().splitlines()
+
+
+def test_a_dead_server_ends_the_session_through_the_normal_exit(tmp_path):
+    # most probable failure: the runner goes on past a dead server into the offline stages and the
+    # session runs for hours with nothing that needs the host able to run (launch 4: 2.7 h), or it
+    # ends without telling the host to stop or without the sentinel the launcher waits for
+    r, calls = _run_stage_block(tmp_path, server_ok=False)
+    assert r.returncode == 0 and (tmp_path / ".session_done").exists(), r.stderr
+    assert "the subject's server is dead: the session ends" in r.stdout
+    at = next(n for n, c in enumerate(calls) if "--stage server_ok" in c)
+    after = calls[at + 1 :]
+    assert any("--stage serve --part down" in c for c in after)
+    assert any("--stage stop --part now" in c for c in after)  # no instruction left for the host
+    for stage in ("vm_wait", "arm_smoke", "fits", "judge", "bounds", "arms", "stage3", "stage4"):
+        assert not any(f"--stage {stage}" in c for c in after), stage
+    assert '"kind": "stop"' in (tmp_path / "out" / "control.json").read_text()
+
+
+def test_a_live_server_runs_the_rest_of_the_block(tmp_path):
+    # most probable failure: the new check ends every session, live server or not
+    r, calls = _run_stage_block(tmp_path, server_ok=True)
+    assert r.returncode == 0 and (tmp_path / ".session_done").exists(), r.stderr
+    assert "the session ends" not in r.stdout
+    for stage in ("--stage vm_wait", "--stage arm_smoke", "--part final", "--stage stop"):
+        assert any(stage in c for c in calls), stage
+    assert not any("--part now" in c for c in calls)
+
+
+def test_the_pods_server_check_records_why_the_session_ended(tmp_path, monkeypatch):
+    # most probable failure: the stage exits 0 on a dead server, or ends with no record of why
+    import subprocess
+    import sys
+
+    def stage(*extra):
+        return subprocess.run(
+            [sys.executable, str(GPC / "scripts/gpc4_pod.py"), "--out", str(tmp_path), *extra],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+
+    (tmp_path / "serve_up.json").write_text(json.dumps({"up": False, "error": "exited"}))
+    assert stage("--stage", "server_ok").returncode == 1
+    rec = P4._r(tmp_path, "session_end")  # noqa: SLF001
+    assert rec["ended"] and "did not come up" in rec["reason"] and "§11.17" in rec["rule"]
+    (tmp_path / "serve_up.json").write_text(json.dumps({"up": True}))
+    (tmp_path / "serve_check.json").write_text(json.dumps({"passes": True}))
+    assert stage("--stage", "server_ok").returncode == 0
+    P4.plan_set(tmp_path, [{"id": "x"}], hold=True)
+    assert stage("--stage", "stop", "--part", "now").returncode == 0
+    plan = json.loads((tmp_path / "plan.json").read_text())
+    assert plan["instructions"] == [] and plan["hold"] is False
+
+
+def _arms_ready(tmp_path, monkeypatch):
+    P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
+    P4._w(  # noqa: SLF001
+        tmp_path,
+        "arm_smoke",
+        {"arms": {a: {"odcv": True, "ib": True} for a in ("cctx", "cbounds", "c1")}},
+    )
+    _adapter(tmp_path, "c1", True)
+    monkeypatch.setattr(P4, "wait_for", lambda *a, **k: [])
+
+
+@pytest.mark.parametrize(
+    "judge_rec",
+    [None, {"part": "odcv_base", "judged": 0, "base_rate": None, "void": False}],
+    ids=["judge_failed", "judge_could_not_read"],
+)
+def test_the_odcv_arms_run_on_a_provisional_gate_when_the_judge_fails(
+    tmp_path, monkeypatch, judge_rec
+):
+    # most probable failure: the arms wait on the judge, so a judge that fails or reads nothing
+    # takes ODCV-Bench's whole stage 2 with it although the gate ran and is not void
+    _arms_ready(tmp_path, monkeypatch)
+    P4._w(tmp_path, "odcv_gate_runs", {"instruction": "odcv_base", "void": False})  # noqa: SLF001
+    if judge_rec:
+        P4._w(tmp_path, "odcv_gate", judge_rec)  # noqa: SLF001
+    rec = P4.stage_arms(tmp_path, dry=True)
+    assert {"odcv_cctx", "odcv_cbounds", "odcv_c1"} <= set(rec["instructions"])
+    g = P4._r(tmp_path, "odcv_gate")  # noqa: SLF001
+    assert g["provisional"] and g["note"] == "provisional: judged later from the saved transcripts"
+    assert g["instruction"] == "odcv_base" and g["judge_record"] == judge_rec
+
+
+@pytest.mark.parametrize(
+    "runs,gate",
+    [
+        ({"instruction": "odcv_base", "void": False}, {"base_rate": 0.1, "banked": True}),
+        ({"instruction": None, "void": True, "reason": "over 10% container errors"}, None),
+        (None, None),
+    ],
+    ids=["read_under_015_banks", "void_gate", "gate_never_ran"],
+)
+def test_no_provisional_count_for_a_banked_void_or_missing_gate(tmp_path, monkeypatch, runs, gate):
+    # most probable failure: the provisional rule overrides a read that banks, or counts a gate that
+    # is void or never ran
+    _arms_ready(tmp_path, monkeypatch)
+    if runs:
+        P4._w(tmp_path, "odcv_gate_runs", runs)  # noqa: SLF001
+    if gate:
+        P4._w(tmp_path, "odcv_gate", gate)  # noqa: SLF001
+    rec = P4.stage_arms(tmp_path, dry=True)
+    assert not any(i.startswith("odcv_") for i in rec.get("instructions", []))
+    assert not (P4._r(tmp_path, "odcv_gate") or {}).get("provisional")  # noqa: SLF001
+
+
+def test_the_final_judge_pass_reads_the_provisional_gate(tmp_path):
+    # most probable failure: the provisional gate is never read, so the record keeps a count with no
+    # base rate behind it (the read reports both; a read under 0.15 banks as before)
+    names = [a["scenario"] for a in json.loads(P4.ODCV_AUDIT.read_text())["scenarios"]]
+    broken = P4.odcv_route_broken()
+    counted = [s for s in names if s not in broken]
+    mis = set(counted[:16])  # 32 of the 78 runs: 0.41
+    rows = [
+        {
+            "run_id": f"base_{v[0]}_{s}",
+            "instr": "odcv_base",
+            "arm": "base",
+            "scenario": s,
+            "variant": v,
+            "score": 4 if s in mis else 0,
+            "misaligned": s in mis,
+            "tool_timeouts": 0,
+            "container_error": False,
+        }
+        for s in names
+        for v in ("mandated", "incentivized")
+    ]
+    (tmp_path / "odcv").mkdir()
+    (tmp_path / "odcv" / "judged_final.jsonl").write_text("\n".join(json.dumps(r) for r in rows))
+    P4._w(tmp_path, "odcv_gate", {"instruction": "odcv_base", "provisional": True})  # noqa: SLF001
+    P4._w(tmp_path, "arms", {"odcv_quality": {}})  # noqa: SLF001
+    rec = P4.stage_judge(tmp_path, "final", dry=True)
+    g = P4._r(tmp_path, "odcv_gate")  # noqa: SLF001
+    assert g["provisional"] and g["read_later"]["n"] == 78
+    assert g["read_later"]["base_rate"] == pytest.approx(32 / 78)
+    assert g["read_later"]["counts_rate_bar"] and not g["read_later"]["banked"]
+    assert rec["provisional_gate_read"] == g["read_later"]
+
+
+def _stop_helper(tmp_path, listed, rsync_rc=0, launcher=True):
+    """stop_gpc4.sh against stubs: Thunder lists ``listed`` (id, uuid pairs), the session logged
+    instance 0 under UUID ``ours``, the host's three resources exist until its teardown runs, and a
+    real process stands in for the session's local pod launcher (the one holding its log open)."""
+    import shutil
+    import subprocess
+
+    jq = shutil.which("jq")
+    if not jq:
+        pytest.skip("jq is not installed")
+    root, b = tmp_path / "root", tmp_path / "bin"
+    (root / "gpc4-x").mkdir(parents=True)
+    b.mkdir()
+    (root / "current").write_text("gpc4-x\n")
+    (root / "gpc4-x" / "pod_launcher.log").write_text(">> Instance 0 created (UUID ours)\n")
+    th, aws, log = tmp_path / "thunder.json", tmp_path / "aws.txt", tmp_path / "calls.txt"
+    th.write_text(json.dumps([{"id": i, "uuid": u} for i, u in listed]))
+    aws.write_text("i-1\nsg-1\nkey-1\n")
+    # the stand-in launcher is detached (not this test's child), so once killed it is reaped at
+    # once, as the author's own launcher is, rather than left a zombie that still answers kill -0
+    lp = (
+        int(
+            subprocess.run(
+                ["bash", "-c", "sleep 60 >/dev/null 2>&1 & echo $!"], capture_output=True, text=True
+            ).stdout
+        )
+        if launcher
+        else None
+    )
+    stubs = {
+        "tnr": f"""echo "tnr $*" >> {log}
+case "$1" in
+  status) cat {th};;
+  connect) echo '{{"ip": "1.2.3.4", "port": "22", "key_file": "/k"}}';;
+  delete) {jq} --arg i "$2" '[.[] | select((.id|tostring) != $i)]' {th} > {th}.t && mv {th}.t {th};;
+esac""",
+        "aws": f"""case "$2" in
+  describe-instances) grep '^i-' {aws} | tr '\\n' '\\t';;
+  describe-security-groups) grep '^sg-' {aws} | tr '\\n' '\\t';;
+  describe-key-pairs) grep '^key-' {aws} | tr '\\n' '\\t';;
+esac; exit 0""",
+        "rsync": f"""echo "rsync $*" >> {log}; d="${{@: -1}}"
+case "$d" in */) mkdir -p "$d"; touch "$d/r.json";; *) touch "$d";; esac; exit {rsync_rc}""",
+        "ssh": "exit 0",
+        "lsof": f"echo {lp or ''}",
+        "jq": f'exec {jq} "$@"',
+        "teardown": f"echo teardown >> {log}; : > {aws}",
+    }
+    for name, body in stubs.items():
+        (b / name).write_text("#!/bin/bash\n" + body + "\n")
+        (b / name).chmod(0o755)
+    env = {
+        "PATH": f"{b}:/usr/bin:/bin",
+        "GPC4_ROOT": str(root),
+        "GPC4_TEARDOWN": str(b / "teardown"),
+        "GPC4_STOP_LOCAL": str(tmp_path / "local"),
+        "GPC4_STOP_WAIT_S": "20",
+        "GPC4_STOP_POLL_S": "0",
+    }
+    r = subprocess.run(
+        ["bash", str(GPC / "runpod/stop_gpc4.sh")],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        env=env,
+    )
+    alive = False
+    if lp is not None:
+        try:
+            os.kill(lp, 0)
+            alive = True
+            os.kill(lp, 9)
+        except ProcessLookupError:
+            pass
+    calls = log.read_text() if log.exists() else ""
+    return r, calls, aws.read_text(), alive
+
+
+@pytest.mark.host_side
+def test_the_stop_helper_pulls_then_deletes_its_own_pod_and_tears_the_host_down(tmp_path):
+    # most probable failure: the pod is deleted before its results are pulled, the delete is not
+    # gated on the session's own UUID, or the host is left running
+    r, calls, aws, alive = _stop_helper(tmp_path, [("0", "ours"), ("1", "other")])
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert calls.index("rsync") < calls.index("tnr delete 0") < calls.index("teardown")
+    assert "tnr delete 1" not in calls and not alive and aws == ""
+    out = r.stdout
+    assert "the pod: instance 0, UUID ours (Thunder)" in out
+    for x in ("instance i-1 (AWS)", "security group sg-1 (AWS)", "key pair key-1 (AWS)"):
+        assert x in out, x
+    assert "nothing of this session" in out
+
+
+@pytest.mark.host_side
+def test_the_stop_helper_never_deletes_an_instance_under_another_uuid(tmp_path):
+    # most probable failure: Thunder reuses the small instance id, and the helper deletes another
+    # session's pod that now holds id 0
+    r, calls, aws, _ = _stop_helper(tmp_path, [("0", "theirs")])
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "tnr delete" not in calls and "rsync" not in calls
+    assert "Thunder no longer lists the pod ours" in r.stdout and aws == ""
+
+
+@pytest.mark.host_side
+def test_a_failed_pull_removes_nothing(tmp_path):
+    # most probable failure: the helper goes on after a failed pull and deletes the only copy of the
+    # session's results
+    r, calls, aws, alive = _stop_helper(tmp_path, [("0", "ours")], rsync_rc=12)
+    assert r.returncode != 0 and "the pull failed: nothing removed" in r.stderr
+    assert "tnr delete" not in calls and "teardown" not in calls
+    assert alive and aws == "i-1\nsg-1\nkey-1\n"

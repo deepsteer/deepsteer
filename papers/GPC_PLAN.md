@@ -1565,6 +1565,9 @@ Parked, one line each:
   seems unobserved "may simply have recognized the test").
 - (The author, 2026-11-20) A module ablation of C1, attention projections only and MLP only, each read on
   the S-hi screen and the held-out conduct cell, to locate the conduct effect.
+- (The author, 2026-11-20) Zero GPU: formalize the nine tenets behind `C_conduct` and `C_bounds` in a
+  defeasible deontic logic, check the set for conflicts, and read ODCV-Bench's saved file traces against
+  the formalized bounds clause beside the judge's verdicts.
 
 ### 11.8 Built, part 1: the host and the rehearsal (2026-11-18)
 
@@ -2039,7 +2042,8 @@ under load 3 of 3 the same.
 
 ### 11.14 Launch 4: graceful degradation, the arm smoke, the stage block dry (the lead, 2026-11-20)
 
-**The rule:** no stage's failure stops the session unless nothing downstream can run. Each stage does
+**The rule:** no stage's failure stops the session unless nothing downstream can run (amended in §11.17:
+a dead server at the first server phase ends the session). Each stage does
 what its inputs allow, skips the rest with the reason recorded, and the runner goes on (the `STOP` after
 `prep` is removed). **The dependency table, which `remote_gpc4.sh` and `gpc4_pod.py` follow (a test per
 row, `test_row_*` in `tests/scripts/test_gpc4.py`):**
@@ -2047,14 +2051,14 @@ row, `test_row_*` in `tests/scripts/test_gpc4.py`):**
 | stage | needs | if a need fails |
 |---|---|---|
 | `prep` | GPC-1's C1 (its record and files); P-ctx's two files for the sum | an adapter that cannot be registered, built or read (served parity, run per adapter so one failure does not take the other's read) is recorded in `prep.json` and **not served**; prep never stops the session |
-| `serve` | the base weights | serves only adapters whose served parity reads |
-| `serve_check` | the server | the host's stages read nothing (the failure branch, as before) |
+| `serve` | the base weights | serves only adapters whose served parity reads; **a failed `serve up` at the first server phase ends the session** (§11.17 item 1) |
+| `serve_check` | the server | **the session ends** through its normal exit: the host told to stop at once, the sentinel, the launcher's download and the pod's deletion; the offline stages do not run (§11.17 item 1; it was the failure branch) |
 | `vm_wait` | the host's post-lock probe | the host is lost: every host stage skips (as before) |
 | `arm_smoke` (new) | the server, the host | per configuration and instrument, pass or fail recorded; **never stops the gates** |
 | ODCV-Bench's and ImpossibleBench's gates | the server, the host (the base only) | void, banked or skipped with the reason (§11.11, §11.13) |
-| `judge` (gate) | the judge's weights, the gate's runs | void when the gate is void |
+| `judge` (gate) | the judge's weights, the gate's runs | void when the gate is void; **a gate that ran and is not void but that the judge failed or could not read counts provisionally**, and ODCV-Bench's arms run on it ("provisional: judged later from the saved transcripts"; the final pass reads it); a read under 0.15 banks as before (§11.17 item 2) |
 | `bounds` | the base (offline) | C1's pilot and held-out cells skip when C1 is not usable (`bounds.json` says so); `C_bounds`'s cells run |
-| `arms` | the server, the host, a counting gate | each arm configuration runs only where its smoke passed on that instrument, and **C1's arms only where C1 is usable**; the base and both clause-in-context arms still run; the skipped list is in `arms.json` |
+| `arms` | the server, the host, a counting gate (or a provisional one, §11.17 item 2) | each arm configuration runs only where its smoke passed on that instrument, and **C1's arms only where C1 is usable**; the base and both clause-in-context arms still run; the skipped list is in `arms.json` |
 | `stage3` | C1 usable (the registered gate compares C1 with `C_bounds`) | skipped with the reason; no bounds adapter is trained |
 | `stage4` | the summed adapter usable | skipped with the reason and prep's error; the final judge pass still runs |
 | `judge` (final) | the judge's weights; the arms' runs not void | the void or skipped arms are left out |
@@ -2163,3 +2167,59 @@ runner started at 07:55 and its gate passed (149 collected, floor 149; 148 passe
 4. **A dead server skips the server phase** (`server_ok`): when `serve up` or `serve_check` fails, the arm
    smoke, both gates and the arms skip with the reason (a gate skipped this way is not banked), so no stage
    runs against a server that is not there.
+
+### 11.17 Launch 5: a dead server ends the session; the arms do not wait on the judge (the lead, 2026-11-20)
+
+Registered before launch 5, pod-side or in new files (the VM-side hash stays `54800428559b1fc6`, so
+rehearsal 8's record stands). §11.14's table is amended to match.
+
+1. **A dead server ends the session.** When `serve up` or `serve_check` fails at the first server phase,
+   the runner stops at once through its normal exit: the server down, the control document set to stop
+   with no instruction left (`stop --part now`), so the host powers off; then the exit trap's sentinel, the
+   launcher's download and the pod's deletion. The offline stages do not run. The pod records why in
+   `session_end.json`. **Reason (the lead's):** launch 4 ran 2.7 h with nothing that needs the host able
+   to run. The second server phase (the arms) keeps §11.16's rule: a failed `serve up` there skips the
+   arms with the reason, and stages 3 and 4, which read offline, still run.
+2. **ODCV-Bench's arms do not wait on the judge.** If the gate ran and is not void (§11.11, §11.15) but the
+   judge stage failed or could not read it (no record, or no base rate), the gate counts provisionally and
+   the arms run. `odcv_gate.json` says "provisional: judged later from the saved transcripts" and keeps
+   whatever the judge did write. The final judge pass reads the gate's saved runs with the arms' and
+   records the read beside the provisional count (`read_later`, the 78 counted and the 80 beside, as in
+   §11.13). A gate the judge did read under 0.15 banks as before, with no arms. If the later read is under
+   0.15, the instrument is banked as before, and the arms' runs are reported beside it.
+3. **A stop helper** (`runpod/stop_gpc4.sh`, a new file outside the VM-side set): one command from the
+   laptop ends a running session. In order: the pod's results are pulled as the launcher's download does
+   (a failed pull stops there with nothing removed); the session's local pod launcher is stopped, found as
+   the processes holding its own `pod_launcher.log` open, so no other session's is touched; the pod is
+   deleted only under the UUID its launcher logged, with the instance id checked against that UUID just
+   before the delete (Thunder reuses its small ids); then the host's teardown (`launch_gpc4.sh teardown`).
+   It prints what it removed and what is left.
+4. **Inspect's retries (the lead's question): no, not from the pod.** In Inspect 0.3.291 (the host's pin)
+   a model call retries without limit by default (`max_retries` and `timeout` unset, backoff up to 30
+   minutes between tries). A dead server reaches Inspect as the host proxy's 502, which it retries as
+   transient. What the pod supplies reaches Inspect only
+   as the instruction's fields: the task function's own parameters (`impossible_livecodebench` takes
+   `max_attempts`, `message_limit` and its dataset options, with no time limit and no generate settings)
+   and the eval's `max_sandboxes` and `max_connections`. A bound needs the host's `inspect_eval` call to
+   pass `max_retries`, `timeout` or a sample `time_limit`, which is a VM-side change. **Recorded as a known
+   limit, bounded by the pod's own wait:** each stage's wait returns at its forecast (the arm smoke 0.5 h,
+   ImpossibleBench's gate 1.0 h a step, ODCV-Bench's gate 1.5 h, the arms 3.4 h), and the session goes on
+   or ends. With item 1, a server that never comes up, launch 4's case, no longer reaches the host. What
+   remains is a server that dies mid-phase: the host's task then holds the host's queue until the second
+   server phase brings the server back (its retries then reach it, untested), or until the session ends
+   (the pod gone, the host powers off after 20 minutes, §11.12) or the stop helper runs.
+5. **Tests** for items 1 and 2 and the helper (`tests/scripts/test_gpc4.py`, §11.17): the runner's own stage
+   block, run with a stub for every Python call, ends at a dead server with the server down, the host told
+   to stop now, no later stage called and the sentinel written, and runs to its end with a live server; the
+   pod's server check records why; the arms run on a provisional gate when the judge failed or read
+   nothing, and not for a gate read under 0.15, a void gate or a gate that never ran; the final pass
+   reads the provisional gate (78 counted). The helper, against stubs: it pulls before it deletes, deletes
+   only its own UUID, never an instance under another UUID at the same id, and a failed pull removes
+   nothing.
+
+**Before launch 5** (pod-side and new files; the VM-side hash `54800428559b1fc6`, rehearsal 8's record
+stands): the slow dry chain passed. The standing step: the runner's 2 exported repo paths exist; the summed
+adapter builds through a symlinked repo path, exact; the stage block ran dry to its end in 23 stage calls
+(a live stub server, so the new check passes and the block runs on); **the gate collects 165 tests, floor
+165** (from 156: the 9 pod-side tests of items 1 and 2; the helper's 3 are host-side and run in CI); quiet
+164 passed, 1 skipped, and 3 of 3 under load the same.

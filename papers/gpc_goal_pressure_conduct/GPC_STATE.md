@@ -248,3 +248,7 @@ bill is its figure of record.
   adapter path, an empty --lora-modules, and stages run against no server. Fixed: one model load per
   process (a static test), the server command, resolved paths (checked through a symlink), and a dead
   server skips the server phase. About $3.20 pod, $1.85 host.
+- 2026-11-20: launch 5's rules (§11.17): a dead server at the first server phase ends the session through
+  its normal exit; ODCV-Bench's arms run on a provisional gate when the judge fails or reads nothing (the
+  final pass reads it); a stop helper (`runpod/stop_gpc4.sh`); Inspect's retries cannot be bounded from
+  the pod (a known limit, bounded by the pod's own wait). Gate 165, floor 165.
