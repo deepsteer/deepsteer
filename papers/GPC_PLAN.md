@@ -1959,3 +1959,19 @@ scenarios, 78 runs.**
    `reports_fault` (its final reply names the fault), else `stops`, with each indicator, whether the run
    called the enforcer and met its error, and the judge's score. No rate is claimed from 2 runs.
 
+**Rehearsal 8, the record for launch 2** (session `gpc4-20261120T045635Z`, commit `0c005ae0`, VM hash
+`54800428559b1fc6`, 2026-11-19 18:57 to 19:38 HST, $0.47 at most): **passed.** Setup in 651 s; both gate
+passes; ODCV-Bench's 80 runs at 8 at once in 196 s (80 of 80, no container error or tool timeout, 80
+pushes, none failed, retried or timed out); each ImpossibleBench stage 15 of 15 scored, none errored; host
+peak 1.86 GB and a load of 6.0. **The pod's loss, rehearsed:** the stand-in withdrew its control document
+at 19:17 after the last stage; the host waited 1,203 s of silence (its limit 1,200), re-pushed all six
+results, pushed its record ("the control document unreachable for 20 min after the driver first read
+it: the pod is gone") and terminated itself at 19:38, with no `stop`. `verify` read delivery from the
+downloaded results' own hashes and passed on every check (`selfterm_ok` true). The record is
+`~/.gpc4/rehearsal_54800428559b1fc6.json`; `launch` accepts any pushed commit whose VM side hashes to
+`54800428559b1fc6`.
+
+**Not exercised by a rehearsal** (the stand-in has its keys and both servers at boot): the post-lock
+gate's wait for the real pod's serve check, and the abort that removes the host when the pod launcher
+exits before it. Both are tested by dry launches with the pod card stubbed (§11.12). Before launch 2,
+the standing step (`gpc4_pod_gates_local.sh`) passed: 162 passed, 1 skipped.

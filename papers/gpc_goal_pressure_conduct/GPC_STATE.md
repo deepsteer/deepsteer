@@ -222,3 +222,6 @@ bill is its figure of record.
 - 2026-11-19: the author's ruling on the audit (§11.13): ODCV-Bench's gate, counting rule, screen and paired
   differences count 39 scenarios (78 runs), Fleet out; all 80 run, the void rule keeps 80, all 40 reported
   beside. Power at 39 clusters: no registered threshold moves. Fleet's runs described per arm by rule.
+- 2026-11-19: rehearsal 8 passed (§11.12; `rehearsal_54800428559b1fc6.json`, $0.47): every stage clean at the
+  gate's scale, and the host terminated itself 20 min after the stand-in vanished, its record pushed.
+  Launch 2 waits on the lead's review.
