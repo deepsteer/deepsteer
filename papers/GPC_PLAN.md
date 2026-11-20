@@ -2126,13 +2126,3 @@ dry chain passed. The standing step: the runner's 2 exported repo paths exist; t
 from them, exact; the stage block ran dry to its end; **the gate collects 149 tests, floor 149** (from 140:
 the new tests and one more bail point, the runner's `zstandard` check); quiet 148 passed, 1 skipped, and
 3 of 3 under load the same.
-
-**Before launch 4** (pod-side only; the VM-side hash `54800428559b1fc6`, rehearsal 8's record stands):
-tests for each rule (the call counts leave out `task_complete`, `submit` and `think`; a gate over 25% dead
-is void and reruns once, and is skipped, never banked, if the rerun is dead too; exactly 25% is not void;
-the tools scaffold's void leaves the minimal scaffold running; the zstd reader opens a method-93 member;
-the smoke's retry rescues a one-off failure and records both outcomes, and two failures skip). The slow
-dry chain passed. The standing step: the runner's 2 exported repo paths exist; the summed adapter builds
-from them, exact; the stage block ran dry to its end; **the gate collects 149 tests, floor 149** (from 140:
-the new tests and one more bail point, the runner's `zstandard` check); quiet 148 passed, 1 skipped, and
-3 of 3 under load the same.

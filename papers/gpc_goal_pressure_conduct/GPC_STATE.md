@@ -241,8 +241,5 @@ bill is its figure of record.
   check, and the standing step running the runner's stage block dry end to end. Gate 140, floor 140.
 - 2026-11-20: launch 4's last two rules (§11.15): a gate with over 25% of runs or samples making no action
   tool call is void ("the tool channel is suspect"), reruns once, and is skipped, never banked; the read
-  reports the share per arm; the arm smoke retries once. Gate 149, floor 149.
-- 2026-11-20: launch 4's last two rules (§11.15): a gate with over 25% of runs or samples making no action
-  tool call is void ("the tool channel is suspect"), reruns once, and is skipped, never banked; the read
   reports the share per arm; the arm smoke retries once. Gate 149, floor 149. Parked (§11.7): a module
   ablation of C1 (attention only, MLP only) on S-hi and the held-out conduct cell.
