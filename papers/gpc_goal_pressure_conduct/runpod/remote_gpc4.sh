@@ -17,7 +17,10 @@ mkdir -p "$OUT/logs"
 START=$(date +%s)
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 source "$REPO_DIR/papers/runpod_common/session_limits.sh"
-trap 'kill $RW 2>/dev/null; limits_save "$OUT/logs"; cp "$REPO_DIR/session.log" "$OUT/logs/session_gpc4${SESSION}_${STAMP}.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
+# the exit trap must reach the sentinel on every path: on GPC-4's first launch it opened with `kill $RW`,
+# which an early bail (before RW is set) made an unbound-variable error under set -u, so the trap stopped
+# there, no sentinel was written, and the launcher's stream loop waited on an idle pod
+trap 'set +u +e; { kill ${RW:-} ${WATCHDOG:-} ${JDL:-}; } 2>/dev/null; limits_save "$OUT/logs" || true; cp "$REPO_DIR/session.log" "$OUT/logs/session_gpc4${SESSION:-}_${STAMP:-}.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
 case "$SESSION" in 1) MAX_H=$WATCH_H;;
   *) echo "BAIL: CST_SESSION must be 1"; exit 1;; esac
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}" TOKENIZERS_PARALLELISM=false

@@ -180,6 +180,76 @@ def test_driver_powers_off_only_after_every_result_is_confirmed(tmp_path, monkey
     assert json.loads((tmp_path / "state/instructions_done.json").read_text()) == ["p1"]
 
 
+def _driver_with_clock(tmp_path, monkeypatch, docs, max_polls=500, poll_s=60.0):
+    """The driver against a scripted control document and a fake clock (one poll a minute); returns
+    (pushes, poweroff calls, log lines). Each element of ``docs`` is a document, or None for an
+    unreachable one; past the end the last element repeats."""
+    pod_env = tmp_path / "pod.env"
+    pod_env.write_text("POD_HOST=10.0.0.1\nPOD_PORT=22\nPOD_USER=u\n")
+    monkeypatch.setattr(V, "STATE", tmp_path / "state")
+    monkeypatch.setattr(V, "POD_ENV", pod_env)
+    clock, n, pushes, calls, logs = [1000.0], [0], [], [], []
+    monkeypatch.setattr(V.time, "time", lambda: clock[0])
+
+    def sleep(s):
+        clock[0] += poll_s
+        n[0] += 1
+        if n[0] > max_polls:
+            raise TimeoutError("the driver never powered off")
+
+    monkeypatch.setattr(V.time, "sleep", sleep)
+    monkeypatch.setattr(V, "control_doc", lambda: docs[min(n[0], len(docs) - 1)])
+    monkeypatch.setattr(V, "push", lambda local, dest: pushes.append(dest) or True)
+    monkeypatch.setattr(V.subprocess, "run", lambda *a, **k: calls.append(a[0]))
+    monkeypatch.setattr(V, "log", lambda m: logs.append(m))
+    try:
+        V.driver(poll_s=0)
+    except TimeoutError:
+        pass
+    return pushes, calls, logs, clock[0] - 1000.0
+
+
+WAIT = {"instruction": {"kind": "wait", "id": "hold"}, "received": []}
+
+
+def test_the_host_terminates_itself_when_the_pod_is_gone(tmp_path, monkeypatch):
+    # most probable failure: the pod dies mid-plan and the host, waiting on a document that never
+    # answers again, idles to its 14 h limit (the lead, for rehearsal 8)
+    pushes, calls, logs, t = _driver_with_clock(tmp_path, monkeypatch, [WAIT, WAIT, None])
+    assert calls == [["systemctl", "poweroff"]]
+    assert V.POD_GONE_S <= t <= V.POD_GONE_S + 3 * 60  # 20 min of silence, not more
+    assert "host_selfterm" in pushes and any("the pod is gone" in m for m in logs)
+    rec = json.loads((tmp_path / "state/out/host_selfterm/selfterm.json").read_text())
+    assert rec["unreachable_s"] >= V.POD_GONE_S and "unreachable" in rec["reason"]
+
+
+def test_a_document_never_read_never_starts_the_clock(tmp_path, monkeypatch):
+    # most probable failure: the host powers off while the pod is still in setup, before its
+    # control server is up (the launcher, not this rule, removes a host whose pod never came up)
+    _, calls, _, _ = _driver_with_clock(tmp_path, monkeypatch, [None], max_polls=60)
+    assert calls == []
+
+
+def test_a_long_stage_or_a_short_outage_never_trips_it(tmp_path, monkeypatch):
+    # most probable failure: the rule counts the time since the last read, which a 60-minute stage
+    # exceeds, or a forward reconnect of a few minutes
+    docs = [WAIT, None, None, None, WAIT] + [WAIT] * 30 + [None] * 5 + [WAIT] * 30
+    _, calls, _, _ = _driver_with_clock(tmp_path, monkeypatch, docs, max_polls=len(docs) + 5)
+    assert calls == []
+
+
+def test_the_judge_swap_never_trips_it(tmp_path, monkeypatch):
+    # most probable failure: the subject's server goes down for the judge and the host reads that as
+    # the pod's loss; the control document stays up through the swap (its server runs from the
+    # runner's setup to its end, and the judge runs offline), so the rule never sees silence
+    runner = (GPC / "runpod/remote_gpc4.sh").read_text()
+    assert "nohup $PY $VM control --port 8001" in runner
+    assert "control --port" not in runner.split("serve --part down", 1)[1]  # never restarted
+    assert "kill" not in [ln for ln in runner.splitlines() if "control" in ln and "8001" in ln][0]
+    _, calls, _, _ = _driver_with_clock(tmp_path, monkeypatch, [WAIT] * 120, max_polls=118)
+    assert calls == []  # two hours of a held plan (the judge's load and pass) and no poweroff
+
+
 # ---- the IAM policy ------------------------------------------------------------------------------
 def _actions(st):
     return [st["Action"]] if isinstance(st["Action"], str) else st["Action"]
@@ -459,8 +529,11 @@ def test_ib_stage_points_upstreams_loader_at_the_pinned_directory():
     # files cached (rehearsal 2: OfflineModeIsEnabled on both stages)
     assert "T.hf_dataset = _pinned" in V.IB_TASK and "sys.argv[3]" in V.IB_TASK
     assert "IB_SRC, IB_DATA]" in (GPC / "scripts/gpc4_vm.py").read_text()
-    assert f"GPC4_IB_DATA={V.IB_DATA}" in VM_INIT
-    assert f'copytree(p, "{V.IB_DATA}"' in VM_INIT
+    # the host's path, as a literal: V.IB_DATA reads GPC4_IB_DATA, which the pod's runner sets to
+    # its own copy (/workspace/ib_data/data), so this test failed in the pod's gate run (launch 1)
+    host = "/opt/gpc4/ib_data"
+    assert f"GPC4_IB_DATA={host}" in VM_INIT and f'copytree(p, "{host}"' in VM_INIT
+    assert f'os.environ.get("GPC4_IB_DATA", "{host}")' in (GPC / "scripts/gpc4_vm.py").read_text()
     assert "refs" not in VM_INIT  # the old offline-by-name workaround is gone
 
 
@@ -498,7 +571,7 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_pa
 
     assert 'echo "$VM_HASH" > "$D/vm_hash"' in LAUNCHER
     assert '[ "$r_hash" = "$VM_HASH" ] || die' in LAUNCHER
-    assert '"$r_commit" "$r_hash" "$G/vm/rehearsal_plan.json"' in LAUNCHER
+    assert '"$r_commit" "$r_hash" "$G/vm/rehearsal_plan.json" "$G/scripts"' in LAUNCHER
     assert "and instruments_ran" in LAUNCHER
     # the stand-in's hard limit, armed first and filled by the launcher
     assert STANDIN_INIT.index('shutdown -h +"__HARD_LIMIT_MIN__"') < STANDIN_INIT.index("apt-get")
@@ -518,8 +591,13 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_pa
         (D / f).parent.mkdir(parents=True, exist_ok=True)
         (D / f).write_text(json.dumps(v))
 
-    def session(odcv_errors=0, ib_short=0, push_failed=0):
+    def session(odcv_errors=0, ib_short=0, push_failed=0, selfterm=True, undelivered=None):
+        import shutil
+
+        shutil.rmtree(D / "rehearsal_results", ignore_errors=True)
         for ins in plan:
+            if ins["kind"] == "vanish":
+                continue
             d = D / "rehearsal_results" / ins["id"]
             d.mkdir(parents=True, exist_ok=True)
             (d / "resources.json").write_text(
@@ -543,6 +621,21 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_pa
                         {"exit": 0, "n_logs": 1, "n_samples": n, "n_scored": n, "n_errored": 0}
                     )
                 )
+            if ins["id"] != undelivered:  # delivery is the done-marker whose hashes match
+                V.done_marker(d, ins)
+        if selfterm:  # the host's record of terminating itself on the pod's loss
+            st = D / "rehearsal_results" / "host_selfterm"
+            st.mkdir(parents=True)
+            (st / "selfterm.json").write_text(
+                json.dumps(
+                    {
+                        "reason": "the control document unreachable for 20 min after the "
+                        "driver first read it: the pod is gone",
+                        "unreachable_s": 1205,
+                        "pod_gone_s": 1200.0,
+                    }
+                )
+            )
         home = tmp_path / "home"
         (home / ".gpc4").mkdir(parents=True, exist_ok=True)
         r = subprocess.run(
@@ -551,11 +644,11 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_pa
                 str(tmp_path / "v.py"),
                 str(D),
                 "terminated",
-                "true",
                 "2026-11-19T00:00:00+00:00",
                 "c0",
                 "h0",
                 str(GPC / "vm/rehearsal_plan.json"),
+                str(GPC / "scripts"),
             ],
             capture_output=True,
             text=True,
@@ -570,6 +663,10 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_pa
     assert not session(odcv_errors=1)["passed"]  # one container error of 80 fails the rehearsal
     assert not session(ib_short=1)["passed"]  # 14 of 15 tasks scored fails it
     assert not session(push_failed=1)["passed"]  # a lost push fails it (rehearsal 6's fault)
+    # the pod's loss, rehearsed: no record of the host terminating itself fails it (rehearsal 8)
+    assert any(i["kind"] == "vanish" for i in plan)
+    assert not session(selfterm=False)["passed"]
+    assert not session(undelivered="r3_ib_tools_conflicting")["passed"]  # every result delivered
 
 
 def test_verify_reads_the_results_where_it_unpacks_them(tmp_path):
@@ -620,7 +717,7 @@ STUB_SSH = r"""#!/usr/bin/env bash
 echo "ssh $*" >> "$STUB_DIR/ssh.log"
 case "$*" in
   *setup_done.json*) [[ "$*" == *cat* ]] && echo '{"setup_s": 1}' ;;
-  *"gate --phase pre"*) echo '{"passes": true}' ;;
+  *"gate --phase pre"*|*"gate --phase post"*) echo '{"passes": true}' ;;
 esac
 exit 0
 """
@@ -640,7 +737,24 @@ exit 1
 """
 
 
-def _dry_launch(tmp_path, a100xl: str):
+ENDPOINT_THEN_EXIT_CARD = """#!/usr/bin/env bash
+echo ">> SSH endpoint: ubuntu@192.0.2.20:40009"
+sleep 2
+echo "BAIL: gate tests (see logs/gate_tests1.log)"
+exit 1
+"""
+SERVED_CARD = """#!/usr/bin/env bash
+echo ">> SSH endpoint: ubuntu@192.0.2.20:40009"
+sleep 2
+echo ">> the host's keys installed (forward: :8000 and :8001; results: rrsync -wo vm_results)"
+sleep 1
+echo ">> stage done at 0.9 h: --stage serve_check"
+sleep 2
+exit 0
+"""
+
+
+def _dry_launch(tmp_path, a100xl: str, card: str = BAIL_CARD):
     """`launch` with every outside call stubbed (aws, ssh, scp, curl, git) and the pod card forced
     to bail; returns (the completed process, the stub's aws log, seconds taken)."""
     import hashlib
@@ -663,7 +777,7 @@ def _dry_launch(tmp_path, a100xl: str):
     ):
         (stub / name).write_text(body)
         (stub / name).chmod(0o755)
-    (tmp_path / "card.sh").write_text(BAIL_CARD)
+    (tmp_path / "card.sh").write_text(card)
     (tmp_path / "capacity.json").write_text(
         json.dumps({"gpu_type": {"a100xl": {"1": a100xl}}, "specs": {"a100xl_x1": a100xl}})
     )
@@ -681,6 +795,7 @@ def _dry_launch(tmp_path, a100xl: str):
         "GPC4_POD_CARD": str(tmp_path / "card.sh"),
         "GPC4_IN_DIR": str(tmp_path / "gpc4_in"),
         "GPC4_POD_POLL_S": "1",
+        "GPC4_GATE_SETTLE_S": "0",
         "AWS_PROFILE": "stub",
     }
     env.pop("TNR_FALLBACK", None)
@@ -722,6 +837,31 @@ def test_launch_stops_at_once_and_removes_the_host_when_the_pod_card_bails(tmp_p
     assert log.index("run-instances") < log.index("terminate-instances")
     assert not (tmp_path / "running").exists() and not (tmp_path / "sg").exists()
     assert not (tmp_path / "key").exists()
+
+
+def test_the_post_lock_gate_waits_for_the_pods_serve_check(tmp_path):
+    # most probable failure: the gate runs as soon as the endpoint appears, before the pod has its
+    # keys or servers, and fails (GPC-4's first launch: 40 s after the pod was created)
+    r, log, _ = _dry_launch(tmp_path, "available", SERVED_CARD)
+    assert r.returncode == 0, r.stderr[-1500:]
+    ssh = (tmp_path / "ssh.log").read_text()
+    assert "gate --phase post" in ssh and "post-lock gate tests pass" in r.stdout
+    out = r.stdout
+    assert out.index("egress locked") < out.index(
+        "the post-lock gate waits for the pod's serve check"
+    )
+    assert out.index("serve_check") < out.index("post-lock gate tests pass")
+    assert "terminate-instances" not in log  # a session that reached its handoff runs on, detached
+
+
+def test_a_pod_that_bails_before_its_serve_check_takes_the_host_down(tmp_path):
+    # most probable failure: the pod bails at its gate tests after the endpoint appeared, and the
+    # host, detached and egress-locked, idles to its 14 h limit (GPC-4's first launch)
+    r, log, _ = _dry_launch(tmp_path, "available", ENDPOINT_THEN_EXIT_CARD)
+    assert r.returncode != 0 and "exited before its serve check" in r.stderr, r.stderr[-1500:]
+    assert "gate --phase post" not in (tmp_path / "ssh.log").read_text()
+    assert log.index("authorize-security-group-egress") < log.index("terminate-instances")
+    assert "delete-security-group" in log and "delete-key-pair" in log
 
 
 def test_launch_creates_nothing_when_thunder_lists_no_a100(tmp_path):
@@ -956,6 +1096,53 @@ def test_pod_runner_order_and_inputs():
         assert f in inp, f
     card = (GPC / "runpod/launch_gpc4_pod.sh").read_text()
     assert "remote_gpc4.sh" in card and "outputs/gpc4_v1" in card and 'TNR_FALLBACK=""' in card
+
+
+def _runner_bail_points():
+    """Every bail in the runner between its exit trap and ``RW=$!``, with the trap's variables
+    already set at that line (WATCHDOG from limits_watchdog, JDL from the judge's download)."""
+    lines = (GPC / "runpod/remote_gpc4.sh").read_text().splitlines()
+    trap_at = next(n for n, x in enumerate(lines) if x.startswith("trap ") and x.endswith("EXIT"))
+    rw_at = next(n for n, x in enumerate(lines) if x.strip().startswith("RW=$!"))
+    wd_at = next(n for n, x in enumerate(lines) if x.startswith("limits_watchdog "))
+    jdl_at = next(n for n, x in enumerate(lines) if x.strip().startswith("JDL=$!"))
+    pts = [n for n in range(trap_at + 1, rw_at) if re.search(r"BAIL:.*exit 1|exit 1;", lines[n])]
+    return [(n + 1, n > wd_at, n > jdl_at) for n in pts], lines[trap_at]
+
+
+@pytest.mark.parametrize("line,watchdog,jdl", _runner_bail_points()[0])
+def test_the_runners_exit_trap_reaches_the_sentinel_at_every_bail(tmp_path, line, watchdog, jdl):
+    # most probable failure: a bail before RW is set makes the trap's first command an unbound
+    # variable under set -u, the trap stops, no sentinel is written, and the launcher waits on an
+    # idle pod (GPC-4's first launch, at its gate tests: the lead's item 3, every bail point)
+    import subprocess
+
+    trap = _runner_bail_points()[1]
+    (tmp_path / "session.log").write_text("log\n")
+    body = [
+        "set -euo pipefail",
+        f"REPO_DIR={tmp_path}; OUT={tmp_path}/out; mkdir -p $OUT/logs",
+        "limits_save() { return 1; }",
+        trap,
+    ]  # a failing helper does not stop the trap either
+    if watchdog:
+        body.insert(
+            3, f"( while true; do sleep 1; done ) & WATCHDOG=$!; echo $WATCHDOG > {tmp_path}/wd"
+        )
+    if jdl:
+        body.insert(3, "( sleep 30 ) & JDL=$!")
+    body.append(f'echo "BAIL at line {line}"; exit 1')
+    r = subprocess.run(
+        ["bash", "-c", "\n".join(body)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env={"PATH": "/usr/bin:/bin"},
+    )  # SESSION and STAMP unset as well
+    assert r.returncode == 1 and (tmp_path / ".session_done").exists(), (line, r.stderr)
+    if watchdog:
+        wd = int((tmp_path / "wd").read_text())
+        assert subprocess.run(["bash", "-c", f"sleep 0.3; kill -0 {wd}"]).returncode != 0
 
 
 @pytest.mark.slow

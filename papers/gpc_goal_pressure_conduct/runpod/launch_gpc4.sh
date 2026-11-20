@@ -30,6 +30,7 @@ ROOT=${GPC4_ROOT:-~/.gpc4}
 POD_CARD=${GPC4_POD_CARD:-$G/runpod/launch_gpc4_pod.sh}
 POD_WAIT_MIN=${GPC4_POD_WAIT_MIN:-60}
 POD_POLL_S=${GPC4_POD_POLL_S:-15}
+GATE_SETTLE_S=${GPC4_GATE_SETTLE_S:-20}   # after the egress lock, before the post-lock gate reads it
 # Thunder's public availability (no login; GET /v2/status): read before any AWS resource exists
 TNR_STATUS_URL=https://api.thundercompute.com:8443/v2/status
 COMMIT=$(git rev-parse HEAD)
@@ -163,7 +164,11 @@ vm_setup() {
   say "pre-lock gate tests pass"
 }
 
-handoff() {  # <pod host> <pod port> <pod user>: pod.env, the forward and driver, then the egress lock
+handoff() {  # <pod host> <pod port> <pod user>: the lock, then at once the post-lock gate (the rehearsal)
+  handoff_lock "$@" && gate_post
+}
+
+handoff_lock() {  # <pod host> <pod port> <pod user>: pod.env, the forward and driver, then the egress lock
   ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$VM_IP" \
     "printf 'POD_HOST=%s\nPOD_PORT=%s\nPOD_USER=%s\n' '$1' '$2' '$3' | sudo tee /etc/gpc4/pod.env >/dev/null \
      && sudo chmod 600 /etc/gpc4/pod.env && sudo systemctl start gpc4-forward gpc4-driver"
@@ -174,7 +179,10 @@ handoff() {  # <pod host> <pod port> <pod user>: pod.env, the forward and driver
     --ip-permissions 'IpProtocol=-1,Ipv6Ranges=[{CidrIpv6=::/0}]' >/dev/null 2>&1 || true
   aws ec2 authorize-security-group-egress --group-id "$SG" --protocol tcp --port "$2" --cidr "$1/32" >/dev/null
   say "egress locked to $1:$2"
-  sleep 20
+}
+
+gate_post() {  # the post-lock gate: the internet closed, the pod's port open, the forward and the results path
+  sleep "$GATE_SETTLE_S"
   ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$VM_IP" \
     sudo python3 /opt/gpc4/deepsteer/$G/scripts/gpc4_vm.py gate --phase post > "$D/gate_post.json" \
     || { cat "$D/gate_post.json"; return 1; }
@@ -209,11 +217,8 @@ cmd_verify() {
   local r_hash r_commit; r_hash=$(cat "$D/vm_hash"); r_commit=$(cat "$D/commit")
   [ "$r_hash" = "$VM_HASH" ] || die "the VM side changed since this rehearsal ($r_hash, now $VM_HASH): its record would name code it never ran; tear down and rehearse again"
   local si_ip vm; si_ip=$(cat "$D/standin_ip"); vm=$(cat "$D/vm")
-  local got; got=$(ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$si_ip" curl -s http://127.0.0.1:8001/control.json | jq -c .received)
-  local want; want=$(jq -c '[.instructions[].id] | sort' "$G/vm/rehearsal_plan.json")
   # a terminated instance leaves the listing after about an hour; an id that is gone was terminated
   local state; state=$(ip_of "$vm" State.Name 2>/dev/null || echo gone)
-  local reached; reached=$(jq -n --argjson g "$got" --argjson w "$want" '($w - $g) | length == 0')
   # the results directory is gpc4pod's (mode 700), so it is read as root and unpacked where the record
   # reads it (rehearsal 4: an rsync as ubuntu failed and the fallback unpacked one level off)
   mkdir -p "$D/rehearsal_results"
@@ -222,12 +227,25 @@ cmd_verify() {
   ls "$D"/rehearsal_results/*/stage.json >/dev/null 2>&1 \
     || die "no stage results downloaded from the stand-in; the record is not written (teardown is separate)"
   local launched; launched=$(ip_of "$vm" LaunchTime 2>/dev/null || echo gone)
-  python3 - "$D" "$state" "$reached" "$launched" "$r_commit" "$r_hash" "$G/vm/rehearsal_plan.json" <<'EOF'
+  python3 - "$D" "$state" "$launched" "$r_commit" "$r_hash" "$G/vm/rehearsal_plan.json" "$G/scripts" <<'EOF'
 import json, sys, datetime, pathlib
-d, state, reached, launched, commit, vm_hash, plan_f = sys.argv[1:]
+d, state, launched, commit, vm_hash, plan_f, scripts = sys.argv[1:]
+sys.path.insert(0, scripts)
+import gpc4_vm as V  # received(): a stage counts only when its done-marker's file hashes match
 plan = json.loads(pathlib.Path(plan_f).read_text())["instructions"]
 D = pathlib.Path(d)
 R = D / "rehearsal_results"
+# delivery, from the downloaded results (the control document answers 503 once the stand-in vanishes)
+got = set(V.received(R))
+want = {i["id"] for i in plan if i["kind"] != "vanish"}
+reached = "true" if want <= got else "false"
+# the pod's loss, rehearsed: with a vanish in the plan, the host must have terminated itself on the
+# control document's silence and pushed its record of why (the lead, rehearsal 8)
+vanish = any(i["kind"] == "vanish" for i in plan)
+selfterm = json.loads((R / "host_selfterm" / "selfterm.json").read_text()) if (
+    R / "host_selfterm" / "selfterm.json").exists() else None
+selfterm_ok = (not vanish) or bool(selfterm and "unreachable" in selfterm.get("reason", "")
+                                    and selfterm.get("unreachable_s", 0) >= selfterm.get("pod_gone_s", 1))
 try:
     t0 = datetime.datetime.fromisoformat(launched.replace("Z", "+00:00"))
     hours = (datetime.datetime.now(datetime.timezone.utc) - t0).total_seconds() / 3600
@@ -244,6 +262,8 @@ def usage(name):
 # and every ImpossibleBench task scored with no sample error
 checks, stages, runs = {}, {}, []
 for ins in plan:
+    if ins["kind"] == "vanish":
+        continue
     k, st = ins["id"], stage(ins["id"])
     stages[k] = {"kind": ins["kind"], **usage(k)}
     # every push during the stage landed (rehearsal 6: 8 parallel runs collided on rrsync's lock and
@@ -271,6 +291,7 @@ instruments = {"stages": stages, "checks": checks}
 rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state,
        "self_terminated": state in ("shutting-down", "terminated", "gone"),
        "instruments": instruments, "instruments_ran": instruments_ran, "odcv_runs": runs,
+       "host_selfterm": selfterm, "selfterm_ok": selfterm_ok,
        "every_result_on_the_receiving_side": reached == "true",
        "gate_pre": json.loads((D / "gate_pre.json").read_text()),
        "gate_post": json.loads((D / "gate_post.json").read_text()),
@@ -278,6 +299,7 @@ rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state,
        "host_hours_upper": round(hours, 2),
        "cost_usd_upper": round(hours * (0.612 + 160 * 0.08 / 730 + 0.005) + hours * (0.0104 + 8 * 0.08 / 730 + 0.005), 2)}
 rec["passed"] = bool(rec["self_terminated"] and rec["every_result_on_the_receiving_side"] and instruments_ran
+                     and selfterm_ok
                      and rec["gate_pre"].get("passes") and rec["gate_post"].get("passes"))
 (pathlib.Path.home() / ".gpc4" / f"rehearsal_{vm_hash}.json").write_text(json.dumps(rec, indent=1))
 print(json.dumps({k: v for k, v in rec.items() if k not in ("gate_pre", "gate_post", "odcv_runs")}, indent=1))
@@ -369,10 +391,20 @@ cmd_launch() {
     [ $(( $(date +%s) - t0 )) -lt $(( POD_WAIT_MIN * 60 )) ] || die "no pod endpoint in $POD_WAIT_MIN min (see $plog)"
     sleep "$POD_POLL_S"
   done
-  # from the handoff on, the pod and the host run detached: a failure here is the pod's failure branch
-  trap 'say "the launcher stopped: the pod and the host run on (reattach, or teardown)"' EXIT
   local user=${ep%@*} rest=${ep#*@}; local host=${rest%:*} port=${rest#*:}
-  handoff "$host" "$port" "$user" || say "the host failed its post-lock gate tests: the pod runs its no-VM items and stops"
+  handoff_lock "$host" "$port" "$user"
+  # the post-lock gate waits for the pod's serve check: by then the pod has installed the host's keys and
+  # started its control server and the subject's server, so every forward check can pass (GPC-4's first
+  # launch ran the gate 40 s after the pod was created, before any key existed). A pod launcher that
+  # exits first is a launch that failed before the handoff: the abort path removes the host.
+  say "the post-lock gate waits for the pod's serve check"
+  while ! grep -aqE '^>> stage done at [0-9.]+ h: --stage serve_check$|^>> serve_check failed' "$plog"; do
+    kill -0 "$POD_PID" 2>/dev/null || die "the pod launcher exited before its serve check (see $plog)"
+    sleep "$POD_POLL_S"
+  done
+  # from here the pod and the host run detached: a failure now is the pod's failure branch
+  trap 'say "the launcher stopped: the pod and the host run on (reattach, or teardown)"' EXIT
+  gate_post || say "the host failed its post-lock gate tests: the pod runs its no-VM items and stops"
   wait "$POD_PID" || true
   kill "$TAIL_PID" 2>/dev/null || true
 }

@@ -162,6 +162,11 @@ def received(results: Path) -> list[str]:
     return out
 
 
+def gone_marker(doc: Path) -> Path:
+    """The stand-in's `vanish` writes this beside the control document; the real pod never does."""
+    return doc.with_name(doc.name + ".gone")
+
+
 class Control(BaseHTTPRequestHandler):
     doc = Path("control.json")
     results = Path("vm_results")
@@ -172,6 +177,10 @@ class Control(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.rstrip("/") not in ("/control.json", "/control"):
             self.send_response(404)
+            self.end_headers()
+            return
+        if gone_marker(self.doc).exists():  # the rehearsal's stand-in, playing the pod's loss
+            self.send_response(503)
             self.end_headers()
             return
         try:
@@ -203,6 +212,10 @@ def run_plan(plan_f: Path, doc: Path, results: Path, poll_s: int = 10) -> None:
         ins = next_instruction(plan.get("instructions", []), received(results))
         if plan.get("hold"):
             ins = {"kind": "wait", "id": "hold"}
+        if ins.get("kind") == "vanish":  # the rehearsal's stand-in plays the pod's loss
+            gone_marker(doc).write_text(f"{ins['id']} {time.time()}\n")
+            log(f"plan: {ins['id']}: the control document no longer answers (the pod's loss, rehearsed)")
+            return
         tmp = doc.with_suffix(".tmp")
         tmp.write_text(json.dumps({"session": plan.get("session"), "instruction": ins}))
         tmp.replace(doc)
@@ -398,6 +411,26 @@ class Usage:
                 "cpus": os.cpu_count()}
 
 
+# the host terminates itself when the pod is gone (the lead, for rehearsal 8): once the driver has read the
+# control document, POD_GONE_S of it being unreachable without a break (not the time since the last read,
+# which a long stage would exceed) means the pod is gone; the driver pushes what it can, records why, and
+# powers off. The pod's control server runs from its runner's setup to its end, through every server
+# swap (the judge runs offline in the pod's own process), so only the pod's loss stops it answering.
+POD_GONE_S = float(os.environ.get("GPC4_POD_GONE_S", 20 * 60))
+
+
+def self_terminate(done: set, since: float, reason: str) -> None:
+    pushed = {i: push(STATE / "out" / i, i) for i in sorted(done)}
+    rec = {"reason": reason, "unreachable_s": round(time.time() - since), "pod_gone_s": POD_GONE_S,
+           "pushed": pushed, "at": time.time()}
+    d = STATE / "out" / "host_selfterm"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "selfterm.json").write_text(json.dumps(rec, indent=1))
+    rec["record_pushed"] = push(d, "host_selfterm")
+    log(f"driver: {reason}; pushed what it could {json.dumps(rec)}; powering off (terminates)")
+    subprocess.run(["systemctl", "poweroff"], check=False)
+
+
 def driver(poll_s: int = 20) -> None:
     STATE.mkdir(parents=True, exist_ok=True)
     done_f = STATE / "instructions_done.json"
@@ -405,11 +438,19 @@ def driver(poll_s: int = 20) -> None:
     while not POD_ENV.exists():
         time.sleep(poll_s)
     log("driver: pod.env present; polling the control document")
+    first_read, down_since = False, None
     while True:
         doc = control_doc()
         if not doc:
+            if first_read:
+                down_since = down_since or time.time()
+                if time.time() - down_since >= POD_GONE_S:
+                    self_terminate(done, down_since, f"the control document unreachable for "
+                                   f"{POD_GONE_S / 60:g} min after the driver first read it: the pod is gone")
+                    return
             time.sleep(poll_s)
             continue
+        first_read, down_since = True, None
         ins = doc.get("instruction") or {"kind": "wait"}
         iid = ins.get("id", "")
         if ins.get("kind") == "stop":

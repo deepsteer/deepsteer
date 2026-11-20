@@ -1800,3 +1800,66 @@ own examples repeat them), else `other`. Each indicator is also reported on its 
 read with Inspect's own reader (`GPC4_INSPECT_PY`); the path was checked on rehearsal 7's stub logs.
 Upstream's default split here is `canmod` (the tests may be edited, and the scorer runs the edited
 file), so `test_edit` is the route the class most needs to see.
+
+### 11.12 GPC-4 launch 1 (2026-11-19): no result; the fixes for launch 2 (rehearsal 8)
+
+**What ran.** `launch` at commit `a59918d4` (VM hash `f09eb0d563ee2508`, rehearsal 7's record), 14:09 HST:
+Thunder listed an A100 80GB; the host was set up and passed its pre-lock gate; the pod was created at
+14:24 ($1.18 an hour, the CLI's estimate). The handoff locked the host's egress to the pod 40 s later and
+ran the post-lock gate at once, which failed its three pod-side checks (`forward_control`,
+`forward_model`, `results_path`: "Permission denied (publickey)"): the real pod installs the host's two
+keys in its runner, after bring-up and a 35-minute sync, and the stand-in had them at boot, so no
+rehearsal could see the order. A retry of the same gate after the pod's serve check was armed (it never
+fired). The pod's runner started at 15:01; its setup finished at 0.27 h; **its gate tests failed 1 of
+138 and it bailed at 15:19.** The failing test, `test_ib_stage_points_upstreams_loader_at_the_pinned_
+directory`, compared against `V.IB_DATA`, which reads `GPC4_IB_DATA`, a name the pod's runner sets for its
+own copy of the data; locally the name was unset, so the test passed here and failed there. The host's
+code was right; the test was wrong.
+
+**The idle billing, and its cause.** The runner's exit trap opened with `kill $RW`; `RW` is set only at
+line 169, after the gate tests, so under `set -u` the trap stopped at its first command, no
+`.session_done` was written, and the launcher's stream loop, which ends only on that sentinel, waited on an
+idle pod (the pod's watchdog would not have ended it either: at 11 h it kills the stages and writes no
+sentinel). The author touched the sentinel by hand at about 15:30; the launcher downloaded the logs and
+deleted the pod (teardown verified at 15:31), and the author tore the host down. About 12 minutes of the
+pod and the host were idle billing.
+
+**Cost and outcome.** The pod 14:24 to 15:31, about 1.12 h at $1.18: **about $1.32**, no stage of the
+plan run. The host about 14:09 to 15:35, about 1.45 h at about $0.635: **about $0.92**. **No result was
+produced**: no ODCV-Bench run, no ImpossibleBench task, no adapter trained or read. Nothing in §11.4 is
+read, and nothing is banked.
+
+**The fixes (the lead's rulings).**
+1. **The handoff order** (`launch_gpc4.sh`, VM side). The handoff splits: at the endpoint, `pod.env`,
+   the forward and the driver, then the egress lock; the post-lock gate then waits for the pod's
+   serve-check line (`>> stage done at … h: --stage serve_check`). The lead's ruling named the "keys
+   installed" line; the gate waits later than that because its two forward checks need the pod's control
+   server (started after the gate tests) and the subject's server (started at `serve up`), and every
+   check can pass only once both are up; `vm_wait` follows the serve check with its 30-minute window. A
+   pod launcher that exits before the serve check is a launch that failed before the handoff: the abort
+   path removes the host, its key and its group (today's case, without a hand). Tested with the pod card
+   stubbed both ways.
+2. **The host terminates itself when the pod is gone** (`gpc4_vm.py`, VM side). Once the driver has read
+   the control document, 20 minutes of it unreachable *without a break* (not the time since the last
+   read, which a long stage exceeds) means the pod is gone: the driver pushes every result it holds,
+   writes and pushes `host_selfterm/selfterm.json` (the reason, how long, what was pushed) and powers off.
+   A document never read never starts the clock (the launcher removes a host whose pod never came up).
+   **The judge swap never trips it:** the pod's control server runs from the runner's setup to its end
+   and is never restarted, and the judge runs offline in the pod's own process, so the document answers
+   through every server swap; tests cover two hours of a held plan, a 60-minute stage and a short
+   outage. **Rehearsal 8 tests it:** the plan ends with a `vanish` instruction, at which the stand-in's
+   control server answers 503 (a marker the real pod never writes) instead of sending `stop`; the host
+   must terminate itself about 20 minutes later, and `verify` passes only with its record pushed, the
+   reason "unreachable" and at least 20 minutes of silence. `verify` now reads delivery from the
+   downloaded results (each done-marker's hashes, by the host's own `received()`), since the document no
+   longer answers.
+3. **Pod side, no effect on the record.** The test compares against the host's literal default path. The
+   runner's exit trap begins `set +u +e`, kills `RW`, the watchdog and the judge's download if set, and
+   always reaches the sentinel; it is tested at each of the 17 bail points between the trap and `RW=$!`,
+   with exactly the variables set there (and `SESSION` unset). **Standing step before any launch:**
+   `runpod/gpc4_pod_gates_local.sh` runs the pod's gate tests locally under the runner's own exports at
+   that point (its `export` lines and its `TESTS` list, read from `remote_gpc4.sh`; `PATH` and `HF_TOKEN`
+   left out; names printed, never values), and the launch report records its line. Before rehearsal 8:
+   161 passed, 1 skipped. (Its first run caught a `verify` test this build had broken.)
+
+The VM side changes, so rehearsal 8 is the record; the lead reviews before launch 2.

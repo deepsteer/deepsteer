@@ -138,8 +138,11 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | 11-15 | GPC-1 on Thunder (A100 80GB, $1.15 logged; all stages run, done at 7.90 h; the 8-gram fix swapped in at 4.11 h, `ec672abc`) | 7.90 | 8.05 | 9.26 | 8.05 | 9.26 |
 | 11-15/16 | GPC-2 on Thunder (A100 80GB, $1.15; instance up 22:17 to 02:36 PST; all stages run, done at 4.23 h) | 4.23 | 4.32 | 4.97 | 12.37 | 14.23 |
 | 11-17 | GPC-3 on RunPod Secure (A100-SXM4-80GB, $2.19; the Thunder card fell back; all stages run, done at 4.39 h) | 4.39 | 4.50 | 9.86 | 16.87 | 24.09 |
+| 11-19 | GPC-4 launch 1 on Thunder (A100 80GB, $1.18; the gate tests bailed at 0.30 h and the exit trap left the pod idle until the sentinel was touched by hand; no result; `GPC_PLAN.md` §11.12) | 0.30 | 1.12 | 1.32 | 17.99 | 25.41 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09).
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: **$147.59 remain** ($173.00 − $25.41) on this table. The EC2 host's spend to
+date (rehearsals 1 to 7 and launch 1's host, about $4 at the records' upper bounds) is not in it; the AWS
+bill is its figure of record.
 
 ## Implementation log (one line each)
 
@@ -207,3 +210,8 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
 - 2026-11-19: rehearsal 7 passed at the gate's scale (§11.11; `rehearsal_f09eb0d563ee2508.json`, commit
   `0892b9e4`, $0.25): every stage clean, 81 pushes during stages with none failed, retried or timed out.
   `launch` is unlocked at that VM hash.
+- 2026-11-19: GPC-4 launch 1 (§11.12): no result. The pod's gate tests bailed on a test that read an env
+  name the pod sets; the exit trap stopped before the sentinel, so the pod idled until it was touched by
+  hand. About $1.32 for the pod, $0.92 for the host. Built for rehearsal 8: the gate waits for the pod's
+  serve check, the host terminates itself 20 min after the pod is gone, the trap reaches the sentinel at
+  every bail, and the pod's gate tests run locally under the runner's exports before any launch.
