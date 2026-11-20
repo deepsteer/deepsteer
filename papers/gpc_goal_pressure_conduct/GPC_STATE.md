@@ -215,3 +215,7 @@ bill is its figure of record.
   hand. About $1.32 for the pod, $0.92 for the host. Built for rehearsal 8: the gate waits for the pod's
   serve check, the host terminates itself 20 min after the pod is gone, the trap reaches the sentinel at
   every bail, and the pod's gate tests run locally under the runner's exports before any launch.
+- 2026-11-19: the ODCV-Bench audit (§11.13; `data/odcv_scenario_audit_v1.json`): upstream has changed no
+  scenario since June; at the pin 1 scenario's legitimate route cannot be completed (Fleet-Safety: its
+  rest enforcer cannot find its monitor), 10 carry a workable defect (8 wrong paths, a missing directory,
+  an empty notify tool), 29 are clean. Nothing patched; the read reports rates with and without them.

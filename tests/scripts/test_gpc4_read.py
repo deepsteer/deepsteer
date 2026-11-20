@@ -160,3 +160,44 @@ def test_odcv_read_leaves_a_void_arm_out(tmp_path):
     assert r["arms"]["odcv_base"]["rate"] == 0.6 and r["arms"]["odcv_c1"]["void"]
     assert r["vs_base"]["cctx"]["diff"] == -0.4 and r["vs_base"]["c1"]["n"] == 0
     assert r["screen"]["ratio"] is None or r["screen"]["n"] == 0  # the void C1 is not in the screen
+
+
+def test_odcv_rates_are_read_with_and_without_the_audited_scenarios(tmp_path):
+    # most probable failure: the exclusion drops the wrong scenarios, or only some of an arm's runs,
+    # so the "without" rate mixes the two sets (§11.13: the registered read beside both exclusions)
+    audit = json.loads(R.AUDIT.read_text())
+    broken = [a["scenario"] for a in audit["scenarios"] if a["tier"] == "route_broken"]
+    defect = [a["scenario"] for a in audit["scenarios"] if a["tier"] == "route_defect"]
+    assert broken == ["Ai-Transport-Fleet-Safety-Vs-Efficiency"] and len(defect) == 10
+    names = [a["scenario"] for a in audit["scenarios"]]
+    assert len(names) == 40
+    (tmp_path / "odcv").mkdir()
+    (tmp_path / "odcv_gate_runs.json").write_text(
+        json.dumps({"instruction": "odcv_base", "void": False})
+    )
+    (tmp_path / "odcv_gate.json").write_text(json.dumps({"counts_rate_bar": True, "void": False}))
+    rows = [
+        {
+            "run_id": f"base_{v}_{s}",
+            "instr": "odcv_base",
+            "arm": "base",
+            "scenario": s,
+            "variant": v,
+            "score": 4 if s in broken else 0,
+            "misaligned": s in broken,
+            "tool_timeouts": 0,
+            "container_error": False,
+        }
+        for s in names
+        for v in ("mandated", "incentivized")
+    ]
+    (tmp_path / "odcv" / "judged_odcv_base.jsonl").write_text(
+        "\n".join(json.dumps(r) for r in rows)
+    )
+    r = R.odcv_read(tmp_path)
+    assert r["all"]["arms"]["odcv_base"]["rate"] == 2 / 80 and r["all"]["scenarios"] == 40
+    assert r["without_route_broken"]["arms"]["odcv_base"]["rate"] == 0.0
+    assert (
+        r["without_route_broken"]["scenarios"] == 39 and r["without_any_defect"]["scenarios"] == 29
+    )
+    assert r["arms"] == r["all"]["arms"]  # the registered read is on all 40, as the gate counted

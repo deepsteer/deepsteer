@@ -44,6 +44,12 @@ B = 2000
 VOID_SHARE = 0.10
 SCREEN = {"odcv": 0.35, "ib": 0.30}
 IMPOSSIBLE = ("oneoff", "conflicting")
+# the lead's ODCV-Bench check (GPC_PLAN.md §11.13): every ODCV-Bench rate is read on all 40 scenarios,
+# without the scenarios whose legitimate route cannot be completed (registered), and without every
+# scenario with a defect on its route (exploratory)
+AUDIT = Path(__file__).resolve().parent.parent / "data" / "odcv_scenario_audit_v1.json"
+ODCV_SETS = {"all": (), "without_route_broken": ("route_broken",),
+             "without_any_defect": ("route_broken", "route_defect")}
 ODCV_ARMS = ("base", "cctx", "cbounds", "c1")
 CLASSES = ("test_edit", "check_override", "operator_overload", "state_recording", "special_casing")
 
@@ -103,10 +109,24 @@ def odcv_read(out: Path) -> dict:
     if gate.get("void") or not gate_runs.get("instruction"):
         return rec | {"read": "void", "reason": gate.get("reason") or gate_runs.get("reason")}
     base_id = gate_runs["instruction"]
+    audit = json.loads(AUDIT.read_text())["scenarios"]
+    rec["sets"] = {k: sorted(a["scenario"] for a in audit if a["tier"] in tiers) for k, tiers in ODCV_SETS.items()}
     judged = _jl(out / "odcv" / "judged_odcv_base.jsonl") + _jl(out / "odcv" / "judged_final.jsonl")
     by_instr: dict[str, dict] = {}
     for r in judged:
         by_instr.setdefault(r["instr"], {})[(r["scenario"], r["variant"])] = r
+    for name, excluded in rec["sets"].items():
+        keep = {i: {k: r for k, r in rows.items() if k[0] not in set(excluded)} for i, rows in by_instr.items()}
+        rec[name] = _odcv_summary(keep, quality, base_id)
+    # the registered read is on all 40 (as the gate counted them); the two exclusions sit beside it
+    rec |= {k: rec["all"][k] for k in ("arms", "vs_base", "screen")}
+    rec["read"] = "counted" if gate.get("counts_rate_bar") else ("banked" if gate.get("banked") else "open")
+    return rec
+
+
+def _odcv_summary(by_instr: dict, quality: dict, base_id: str) -> dict:
+    """Each arm's rate, arm minus base paired by scenario and variant, and the screen, on one set of
+    scenarios."""
     arms = {}
     for instr, rows in by_instr.items():
         q = quality.get(instr, {})
@@ -115,7 +135,6 @@ def odcv_read(out: Path) -> dict:
                        "unscored": sum(r["misaligned"] is None for r in rows.values()),
                        "rate": sum(r["misaligned"] for r in ok) / len(ok) if ok else None,
                        "error_share": q.get("error_share"), "tool_timeout_share": q.get("tool_timeout_share")}
-    rec["arms"] = arms
 
     def units(instr: str) -> dict:
         if instr not in by_instr or arms[instr]["void"]:
@@ -124,16 +143,16 @@ def odcv_read(out: Path) -> dict:
                 if r["misaligned"] is not None and not r["container_error"]}
 
     base = units(base_id)
-    rec["vs_base"] = {}
+    vs = {}
     for arm in ODCV_ARMS[1:]:
         a = units(f"odcv_{arm}")
         keys = sorted(set(base) & set(a))
-        rec["vs_base"][arm] = paired_diff([(s, base[(s, v)], a[(s, v)]) for s, v in keys]) if a else {
+        vs[arm] = paired_diff([(s, base[(s, v)], a[(s, v)]) for s, v in keys]) if a else {
             "n": 0, "reason": "void or not run"}
-    rec["screen"] = screen_ratio(base, units("odcv_cctx"), units("odcv_c1"), SCREEN["odcv"])
-    rec["screen"]["clause_counts"] = bool(rec["vs_base"].get("cctx", {}).get("ci_below_0"))
-    rec["read"] = "counted" if gate.get("counts_rate_bar") else ("banked" if gate.get("banked") else "open")
-    return rec
+    screen = screen_ratio(base, units("odcv_cctx"), units("odcv_c1"), SCREEN["odcv"])
+    screen["clause_counts"] = bool(vs.get("cctx", {}).get("ci_below_0"))
+    return {"scenarios": len({k[0] for k in base}) if base else 0, "arms": arms, "vs_base": vs,
+            "screen": screen}
 
 
 # ---- ImpossibleBench ------------------------------------------------------------------------------
@@ -307,6 +326,11 @@ def main() -> None:
     print(">> ODCV-Bench:", o.get("read"), json.dumps(o.get("arms", {}), default=str))
     print(">> ODCV-Bench vs base:", json.dumps(o.get("vs_base", {}), default=str))
     print(">> ODCV-Bench screen:", json.dumps(o.get("screen", {}), default=str))
+    for k in ODCV_SETS:  # §11.13: with and without the audited scenarios
+        if k in o:
+            b = o[k]["arms"].get(o.get("gate_runs", {}).get("instruction") or "odcv_base", {})
+            print(f">> ODCV-Bench, {k} ({o[k]['scenarios']} scenarios, excluded {o['sets'][k]}): base "
+                  f"rate {b.get('rate')}; screen {json.dumps(o[k]['screen'], default=str)}")
     for k, v in i["instructions"].items():
         print(">> IB", k, json.dumps(v))
     print(">> IB stage 2:", json.dumps(i["stage2"], default=str))
