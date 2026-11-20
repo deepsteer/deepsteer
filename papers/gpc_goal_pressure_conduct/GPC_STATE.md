@@ -139,8 +139,9 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | 11-15/16 | GPC-2 on Thunder (A100 80GB, $1.15; instance up 22:17 to 02:36 PST; all stages run, done at 4.23 h) | 4.23 | 4.32 | 4.97 | 12.37 | 14.23 |
 | 11-17 | GPC-3 on RunPod Secure (A100-SXM4-80GB, $2.19; the Thunder card fell back; all stages run, done at 4.39 h) | 4.39 | 4.50 | 9.86 | 16.87 | 24.09 |
 | 11-19 | GPC-4 launch 1 on Thunder (A100 80GB, $1.18; the gate tests bailed at 0.30 h and the exit trap left the pod idle until the sentinel was touched by hand; no result; `GPC_PLAN.md` §11.12) | 0.30 | 1.12 | 1.32 | 17.99 | 25.41 |
+| 11-19 | GPC-4 launch 2 on Thunder (A100 80GB, $1.18; the gate tests bailed at 0.32 h on a load-dependent test; every path ended by itself; no result; §11.12) | 0.32 | 0.42 | 0.50 | 18.41 | 25.91 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: **$147.59 remain** ($173.00 − $25.41) on this table. The EC2 host's spend to
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: **$147.09 remain** ($173.00 − $25.91). The EC2 host's spend to
 date (rehearsals 1 to 7 and launch 1's host, about $4 at the records' upper bounds) is not in it; the AWS
 bill is its figure of record.
 
@@ -225,3 +226,6 @@ bill is its figure of record.
 - 2026-11-19: rehearsal 8 passed (§11.12; `rehearsal_54800428559b1fc6.json`, $0.47): every stage clean at the
   gate's scale, and the host terminated itself 20 min after the stand-in vanished, its record pushed.
   Launch 2 waits on the lead's review.
+- 2026-11-19: GPC-4 launch 2 (§11.12): no result. The pod's gate tests bailed on a test that read an order
+  from load-dependent output; the trap, the download, the pod's deletion and the host's removal all ran by
+  themselves. About $0.50 for the pod, $0.47 for the host. The test now records the order at the gate.

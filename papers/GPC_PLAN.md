@@ -1975,3 +1975,21 @@ downloaded results' own hashes and passed on every check (`selfterm_ok` true). T
 gate's wait for the real pod's serve check, and the abort that removes the host when the pod launcher
 exits before it. Both are tested by dry launches with the pod card stubbed (§11.12). Before launch 2,
 the standing step (`gpc4_pod_gates_local.sh`) passed: 162 passed, 1 skipped.
+
+**GPC-4 launch 2 (2026-11-19, at `ad58e890`, rehearsal 8's record): no result; a flaky test.** Launch at
+19:48 HST; host set up; the pod created at about 20:08 ($1.18 an hour); the handoff locked the host's
+egress and the post-lock gate waited for the serve check, as built (no early gate). The pod's runner
+started at 20:11 and finished setup at 0.32 h; **its gate tests failed 1 of 162 and it bailed at about
+20:31.** The failing test, `test_the_post_lock_gate_waits_for_the_pods_serve_check`, read the order of the
+card's `serve_check` line and the gate's pass line from the launcher's output, where the card's lines
+arrive through a live `tail -f`, so their order depends on the machine's load: it passed locally, under
+the pod's environment and in CI, and failed on the pod. The code it tests was right; the test read the
+order from the wrong place. **This time every path ended cleanly by itself:** the trap wrote the
+sentinel, the launcher downloaded the logs and deleted the pod (verified 20:33), and, the pod launcher
+having exited before its serve check, the abort path removed the host, its key and its group. No idle
+billing. **Cost:** the pod about 0.42 h, **about $0.50**; the host about 0.74 h, **about $0.47**. **No result.**
+
+**The fix (tests only, no VM-side or pod-side code):** the stub `ssh` records, at the moment the gate is
+called, whether the card's log already holds the serve-check line, and the test asserts that; the
+launcher's own lines keep their order checks. Before the fix was committed, the pod's full gate-test list
+ran 4 times locally under heavy CPU load (two busy loops per core): 162 passed, 1 skipped, each time.

@@ -717,7 +717,11 @@ STUB_SSH = r"""#!/usr/bin/env bash
 echo "ssh $*" >> "$STUB_DIR/ssh.log"
 case "$*" in
   *setup_done.json*) [[ "$*" == *cat* ]] && echo '{"setup_s": 1}' ;;
-  *"gate --phase pre"*|*"gate --phase post"*) echo '{"passes": true}' ;;
+  *"gate --phase pre"*) echo '{"passes": true}' ;;
+  *"gate --phase post"*)  # the order that matters, recorded when the gate runs, not from the output
+    if grep -aqs 'stage done at .*serve_check' "$GPC4_ROOT"/*/pod_launcher.log; then
+      echo served >> "$STUB_DIR/gate_order"; else echo early >> "$STUB_DIR/gate_order"; fi
+    echo '{"passes": true}' ;;
 esac
 exit 0
 """
@@ -841,16 +845,19 @@ def test_launch_stops_at_once_and_removes_the_host_when_the_pod_card_bails(tmp_p
 
 def test_the_post_lock_gate_waits_for_the_pods_serve_check(tmp_path):
     # most probable failure: the gate runs as soon as the endpoint appears, before the pod has its
-    # keys or servers, and fails (GPC-4's first launch: 40 s after the pod was created)
+    # keys or servers, and fails (GPC-4's first launch: 40 s after the pod was created). The order
+    # is read from the card's log at the moment the gate is called: the launcher's output
+    # interleaves the card's lines through a live tail, so their order there depends on load
+    # (launch 2 bailed on a test that read it from the output)
     r, log, _ = _dry_launch(tmp_path, "available", SERVED_CARD)
     assert r.returncode == 0, r.stderr[-1500:]
-    ssh = (tmp_path / "ssh.log").read_text()
-    assert "gate --phase post" in ssh and "post-lock gate tests pass" in r.stdout
-    out = r.stdout
+    assert (tmp_path / "gate_order").read_text().split() == ["served"]
+    assert "post-lock gate tests pass" in r.stdout
+    out = r.stdout  # the launcher's own lines, in its own order
     assert out.index("egress locked") < out.index(
         "the post-lock gate waits for the pod's serve check"
     )
-    assert out.index("serve_check") < out.index("post-lock gate tests pass")
+    assert out.index("the post-lock gate waits") < out.index("post-lock gate tests pass")
     assert "terminate-instances" not in log  # a session that reached its handoff runs on, detached
 
 
@@ -860,6 +867,7 @@ def test_a_pod_that_bails_before_its_serve_check_takes_the_host_down(tmp_path):
     r, log, _ = _dry_launch(tmp_path, "available", ENDPOINT_THEN_EXIT_CARD)
     assert r.returncode != 0 and "exited before its serve check" in r.stderr, r.stderr[-1500:]
     assert "gate --phase post" not in (tmp_path / "ssh.log").read_text()
+    assert not (tmp_path / "gate_order").exists()
     assert log.index("authorize-security-group-egress") < log.index("terminate-instances")
     assert "delete-security-group" in log and "delete-key-pair" in log
 
