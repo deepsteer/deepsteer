@@ -1563,6 +1563,8 @@ Parked, one line each:
   Großmann, Jahn and Mannino, arXiv 2611.02162) and names this as the cell that separates them, as far as
   the subject takes the sentence at face value (the paper's own objection: a model that complies when it
   seems unobserved "may simply have recognized the test").
+- (The author, 2026-11-20) A module ablation of C1, attention projections only and MLP only, each read on
+  the S-hi screen and the held-out conduct cell, to locate the conduct effect.
 
 ### 11.8 Built, part 1: the host and the rehearsal (2026-11-18)
 
@@ -2114,6 +2116,16 @@ Registered before launch 4, pod-side only (the VM-side hash stays `54800428559b1
 2. **The arm smoke retries once.** Each configuration and instrument that fails its first smoke is rerun
    once, under its own instruction id (`…_r2`); it is skipped in stage 2 only if both fail. `arm_smoke.json`
    records the first outcome, the retry's, and the result.
+
+**Before launch 4** (pod-side only; the VM-side hash `54800428559b1fc6`, rehearsal 8's record stands):
+tests for each rule (the call counts leave out `task_complete`, `submit` and `think`; a gate over 25% dead
+is void and reruns once, and is skipped, never banked, if the rerun is dead too; exactly 25% is not void;
+the tools scaffold's void leaves the minimal scaffold running; the zstd reader opens a method-93 member;
+the smoke's retry rescues a one-off failure and records both outcomes, and two failures skip). The slow
+dry chain passed. The standing step: the runner's 2 exported repo paths exist; the summed adapter builds
+from them, exact; the stage block ran dry to its end; **the gate collects 149 tests, floor 149** (from 140:
+the new tests and one more bail point, the runner's `zstandard` check); quiet 148 passed, 1 skipped, and
+3 of 3 under load the same.
 
 **Before launch 4** (pod-side only; the VM-side hash `54800428559b1fc6`, rehearsal 8's record stands):
 tests for each rule (the call counts leave out `task_complete`, `submit` and `think`; a gate over 25% dead
