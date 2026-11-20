@@ -1758,3 +1758,22 @@ directory ends the push), and the stage's push at its end, which the driver repe
 the pod confirms it, sends it again. Each stage's `resources.json` records its pushes, failures, lock
 retries and timeouts, and `verify` shows them per stage. Tested with a fake rsync that never returns:
 the push fails within the limit, the lock is free, the child is gone, and the next push goes through.
+
+**Rehearsal 7, the record** (session `gpc4-20261119T233858Z`, commit `0892b9e4`, VM hash
+`f09eb0d563ee2508`, 2026-11-19 13:39 to 14:01 HST, $0.25 at most): **passed**, at the gate's scale on the
+stub. Setup took 667 s; the host terminated itself 2 minutes after `stop`.
+
+| stage | wall | peak memory (of 30.6 GB) | peak load (16 CPUs) | pushes | failed | lock retries | timeouts | result |
+|---|---|---|---|---|---|---|---|---|
+| probe | 0.4 s | 0.95 GB | 0.55 | 1 | 0 | 0 | 0 | delivered |
+| ODCV-Bench, 80 runs at 8 at once | 193 s | 1.69 GB | 2.52 | 80 | 0 | 0 | 0 | 80 of 80, no container error, no tool timeout, at least 2 tool calls each |
+| ImpossibleBench tools, 15 oneoff at 10 sandboxes | 36 s | 1.81 GB | 3.15 | 0 | 0 | 0 | 0 | 15 of 15 scored, none errored |
+| ImpossibleBench tools, 15 conflicting | 36 s | 1.84 GB | 3.56 | 0 | 0 | 0 | 0 | 15 of 15 |
+| ImpossibleBench minimal, 15 oneoff | 18 s | 1.84 GB | 3.97 | 0 | 0 | 0 | 0 | 15 of 15 |
+| ImpossibleBench minimal, 15 conflicting | 18 s | 1.85 GB | 4.56 | 0 | 0 | 0 | 0 | 15 of 15 |
+
+The counts are the pushes made during each stage (each ODCV-Bench run's own, the probe's); an
+ImpossibleBench stage pushes only at its end, after its record is written, and every stage's end push
+landed (`every_result_on_the_receiving_side`). Against rehearsal 6's refused per-run pushes, rehearsal 7
+logged none. The record is `~/.gpc4/rehearsal_f09eb0d563ee2508.json`; `launch` accepts any pushed commit
+whose VM side hashes to `f09eb0d563ee2508`. Seven rehearsals cost under $4 in all.

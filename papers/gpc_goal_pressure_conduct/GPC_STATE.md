@@ -204,3 +204,6 @@ After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-
 - 2026-11-19: rehearsal 6 at the gate's scale (§11.11): ODCV-Bench 80 of 80 clean in 195 s, ImpossibleBench
   60 of 60 scored, host peak under 2 GB and load under 6; but parallel pushes met rrsync's lock. Fixed
   (pushes one at a time, a retry on the lock, verify fails a lost push); rehearsal 7 is the record.
+- 2026-11-19: rehearsal 7 passed at the gate's scale (§11.11; `rehearsal_f09eb0d563ee2508.json`, commit
+  `0892b9e4`, $0.25): every stage clean, 81 pushes during stages with none failed, retried or timed out.
+  `launch` is unlocked at that VM hash.
