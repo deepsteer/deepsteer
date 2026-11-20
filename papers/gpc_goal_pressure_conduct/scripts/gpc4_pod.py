@@ -175,14 +175,22 @@ def adapters(out: Path) -> dict[str, str]:
     return {t: trained(out, t) for t in ("c1", "sum", "bounds") if adapter_ok(out, t)}
 
 
+# §11.18: Qwen3.8's chat template writes a tool call as XML (`<function=bash><parameter=command>`), which
+# vLLM 0.31 reads under `qwen3_coder`; launch 5's `hermes` reads JSON and parsed none (the serve check
+# stopped the session). `gpc4_parser_probe.py` runs this parser on the template's own call, on the pod in
+# the gate and locally in the standing step.
+TOOL_PARSER = "qwen3_coder"
+REASONING_PARSER = "qwen3"
+
+
 def serve_cmd(path: str, mods: dict[str, str]) -> list[str]:
     """The subject's vLLM server: the base, and each usable adapter as a LoRA module. With no usable
     adapter the LoRA flags are left out (launch 4: `--lora-modules` with no value stopped the server)."""
     lora = (["--enable-lora", "--max-lora-rank", "32", "--max-loras", str(len(mods)), "--lora-modules",
              *[f"{k}={v}" for k, v in mods.items()]] if mods else [])
     return [os.environ.get("GPC4_VLLM", "vllm"), "serve", path, "--host", "127.0.0.1", "--port", "8000",
-            "--served-model-name", "base", *lora, "--reasoning-parser", "qwen3",
-            "--enable-auto-tool-choice", "--tool-call-parser", "hermes", "--max-model-len", "32768",
+            "--served-model-name", "base", *lora, "--reasoning-parser", REASONING_PARSER,
+            "--enable-auto-tool-choice", "--tool-call-parser", TOOL_PARSER, "--max-model-len", "32768",
             "--gpu-memory-utilization", "0.90", "--max-num-seqs", "128", "--seed", "0"]
 
 
@@ -263,20 +271,25 @@ def serve_check(out: Path, dry: bool) -> dict:
                                                  "command": {"type": "string"}},
                                                  "required": ["command"]}}}
     tool_ok = code_ok = 0
+    fails = []  # §11.18: a call that did not parse, as the server returned it (its cause is in the text)
     for i in range(5):
         m = _chat({"model": "base", "messages": [{"role": "user", "content":
                    f"List the files in /tmp/dir{i} using the bash tool."}], "tools": [tool],
                    "tool_choice": "auto", **V.SAMPLING,
                    "chat_template_kwargs": V.EFFORT})["choices"][0]["message"]
-        tool_ok += bool(m.get("tool_calls")) and m["tool_calls"][0]["function"]["name"] in (
+        parsed = bool(m.get("tool_calls")) and m["tool_calls"][0]["function"]["name"] in (
             "bash", "task_complete") if dry else bool(m.get("tool_calls"))
+        tool_ok += parsed
+        if not parsed and len(fails) < 2:
+            fails.append({"content": (m.get("content") or "")[:1500],
+                          "reasoning_tail": (m.get("reasoning_content") or m.get("reasoning") or "")[-300:]})
         m = _chat({"model": "base", "messages": [{"role": "user", "content":
                    f"Write a Python function add{i}(a, b) that returns a + b. Answer with one code "
                    "block."}], **V.SAMPLING, "chat_template_kwargs": V.EFFORT})["choices"][0]["message"]
         content = m.get("content") or ""
         code_ok += "```" in content and "</think>" not in content
     rec = {"served": sorted(names), "all_served": want <= names, "tool_calls_parsed": tool_ok,
-           "code_in_answer": code_ok}
+           "code_in_answer": code_ok, "tool_parser": TOOL_PARSER, "tool_call_failures": fails}
     rec["passes"] = rec["all_served"] and tool_ok >= 4 and code_ok >= 4
     _w(out, "serve_check", rec)
     print(">> serve_check:", json.dumps(rec), flush=True)

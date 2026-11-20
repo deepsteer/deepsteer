@@ -2223,3 +2223,46 @@ adapter builds through a symlinked repo path, exact; the stage block ran dry to 
 (a live stub server, so the new check passes and the block runs on); **the gate collects 165 tests, floor
 165** (from 156: the 9 pod-side tests of items 1 and 2; the helper's 3 are host-side and run in CI); quiet
 164 passed, 1 skipped, and 3 of 3 under load the same.
+
+### 11.18 GPC-4 launch 5 (2026-11-20, at `63c7a2f0`): no result; the served tool parser
+
+**What ran.** Launch at 12:32 pm HST; the pod's runner started at 12:46 pm and its gate passed (165
+collected, floor 165; 164 passed, 1 skipped). Prep registered both adapters and built the sum (exact); the
+HF letters and the served parity, each in its own process (§11.16), read **both C1 and the summed adapter as
+usable**, the first reads of this session's adapters on the GPU. The server came up in 430 s serving
+`base`, `c1` and `sum`. **The serve check then failed: 0 of 5 tool calls parsed** (the reasoning split was
+right, 5 of 5 code answers outside the trace). The session ended by itself at 0.69 h under §11.17 item 1:
+the server down, the host told to stop (it powered off and terminated), the sentinel, the download, the pod
+deleted and verified. **Cost:** the pod about 0.84 h, **about $0.99**; the host about 1 h. **No result.**
+
+**The cause.** The server was started with `--tool-call-parser hermes`, which reads JSON inside
+`<tool_call>`. Qwen3.8's own chat template writes a call as XML (`<tool_call>\n<function=bash>\n
+<parameter=command>…`), so every call raised a JSON decode error in the server's log and none reached the
+client. vLLM 0.31 reads that format under `qwen3_coder` (or `qwen3_xml`, the same parser). No earlier check
+could see it: the rehearsals and the dry runs serve a stub, and launch 4's server never came up. Without
+the serve check, both gates would have run with a dead tool channel and voided under §11.15. **Blast
+radius:** the parser is GPC-4's own (GPC-1 to GPC-3 read letters from offline engines), so no earlier
+result used it.
+
+**The fixes (pod side and new files; the VM-side hash `54800428559b1fc6` unchanged):**
+1. **The server reads Qwen3.8's calls:** `--tool-call-parser qwen3_coder` (`TOOL_PARSER` in `gpc4_pod.py`).
+2. **A probe of the parser on the subject's own call** (`scripts/gpc4_parser_probe.py`): the pinned chat
+   template renders one bash call, and vLLM's parser under the served name must read it back as that call.
+   Its control is launch 5's `hermes`, which must parse none. It runs in the pod's gate (the pod's own
+   vLLM and snapshot, before the model loads; required there) and in the standing step, on the Python
+   sources of the runner's own vLLM wheel (its URL and sha256) in a local venv; it skips only off the pod
+   with no vLLM (CI).
+3. **The template's format, checked against the parser locally** (with the pinned tokenizer only): the
+   rendered call is XML and the served parser is one of vLLM's two XML names.
+4. **The serve check keeps the text of a call that did not parse** (up to 2, with the trace's tail) and the
+   parser's name, so a failure's cause is in the record.
+
+**Before launch 6** (pod-side and new files; the VM-side hash `54800428559b1fc6`, rehearsal 8's record
+stands): launch 5's failure reproduced locally first (vLLM 0.31's `hermes` on the template's own call raises
+the server log's JSON decode error and parses none; `qwen3_coder` reads `bash` with `{"command": "ls
+/tmp/dir0"}`). The slow dry chain passed. The standing step: the runner's 2 exported repo paths exist; the
+summed adapter builds through a symlinked repo path, exact; the stage block ran dry to its end in 23 stage
+calls; the served parser reads the subject's own call with the runner's own vLLM and its control parses
+none; **the gate collects 168 tests, floor 168** (from 165: the probe's test, the template's check and the
+serve check's failure record; the probe's test ran, not skipped); quiet 167 passed, 1 skipped, and 3 of 3
+under load the same.

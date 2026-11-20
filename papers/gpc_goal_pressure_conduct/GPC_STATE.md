@@ -142,8 +142,9 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | 11-19 | GPC-4 launch 2 on Thunder (A100 80GB, $1.18; the gate tests bailed at 0.32 h on a load-dependent test; every path ended by itself; no result; §11.12) | 0.32 | 0.42 | 0.50 | 18.41 | 25.91 |
 | 11-19 | GPC-4 launch 3 on Thunder (A100 80GB, $1.18; gate passed; prep stopped at 0.37 h on a doubled path to P-ctx; every path ended by itself; no result; §11.12) | 0.37 | 0.45 | 0.53 | 18.86 | 26.44 |
 | 11-20 | GPC-4 launch 4 on Thunder (A100 80GB, $1.18; gate passed; prep lost both adapters (parity's two loads in one process, an unresolved path); the server failed with no adapter; stages ran against no server until stopped; no result; §11.16) | 2.6 | 2.7 | 3.20 | 21.56 | 29.64 |
+| 11-20 | GPC-4 launch 5 on Thunder (A100 80GB, $1.18; gate passed; both adapters read; the server came up and failed its serve check, 0 of 5 tool calls parsed (`hermes` on Qwen3.8's XML calls); the session ended by itself at 0.69 h; no result; §11.18) | 0.69 | 0.84 | 0.99 | 22.40 | 30.63 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: **$143.36 remain** ($173.00 − $29.64). The EC2 host's spend to
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: **$142.37 remain** ($173.00 − $30.63). The EC2 host's spend to
 date (rehearsals 1 to 7 and launch 1's host, about $4 at the records' upper bounds) is not in it; the AWS
 bill is its figure of record.
 
@@ -252,3 +253,8 @@ bill is its figure of record.
   its normal exit; ODCV-Bench's arms run on a provisional gate when the judge fails or reads nothing (the
   final pass reads it); a stop helper (`runpod/stop_gpc4.sh`); Inspect's retries cannot be bounded from
   the pod (a known limit, bounded by the pod's own wait). Gate 165, floor 165.
+- 2026-11-20: GPC-4 launch 5 (§11.18): no result; the gate passed, both adapters read on the GPU, and the
+  server served base, C1 and the sum, but `--tool-call-parser hermes` parsed none of Qwen3.8's XML tool
+  calls, so the serve check failed and the session ended by itself at 0.69 h (§11.17 item 1; the host
+  powered off). Fixed: `qwen3_coder`, read on the template's own call with the pinned vLLM on the pod's
+  gate and in the standing step. About $0.99 pod. Gate 168, floor 168.

@@ -2147,3 +2147,75 @@ def test_a_failed_pull_removes_nothing(tmp_path):
     assert r.returncode != 0 and "the pull failed: nothing removed" in r.stderr
     assert "tnr delete" not in calls and "teardown" not in calls
     assert alive and aws == "i-1\nsg-1\nkey-1\n"
+
+
+# ---- §11.18: the served tool parser reads the subject's own tool call -------------------------
+def _parser_probe(parser):
+    import subprocess
+
+    py = os.environ.get("GPC4_VLLM_PY", sys.executable)
+    src = os.environ.get("GPC4_VLLM_SRC")
+    r = subprocess.run(
+        [py, "-I", str(GPC / "scripts/gpc4_parser_probe.py"), "--parser", parser]
+        + (["--vllm-src", src] if src else []),
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
+    return r, json.loads(r.stdout.strip().splitlines()[-1])
+
+
+def test_the_served_tool_parser_reads_the_subjects_own_tool_call():
+    # most probable failure: the server starts with a parser that cannot read the subject's
+    # tool-call format, so no call in the gates or the arms is parsed (launch 5: hermes, which reads
+    # JSON, on Qwen3.8's XML calls; the serve check parsed 0 of 5 and ended the session)
+    cmd = P4.serve_cmd("m", {})
+    assert cmd[cmd.index("--tool-call-parser") + 1] == P4.TOOL_PARSER
+    r, rec = _parser_probe(P4.TOOL_PARSER)
+    if r.returncode == 2 and not Path("/workspace/venv_vllm/bin/python").exists():
+        pytest.skip(rec["skip"])  # off the pod with no vLLM; the standing step supplies one
+    assert r.returncode == 0 and rec["passes"], rec
+    # the probe's control: launch 5's parser fails on the same call, so a pass is the parser's
+    r2, rec2 = _parser_probe("hermes")
+    assert r2.returncode == 1 and not rec2["passes"], rec2
+
+
+def test_the_subjects_template_writes_the_format_the_server_reads():
+    # most probable failure: the parser and the template disagree on the call's format (XML here),
+    # found only once the 27B is served
+    import gpc4_parser_probe as PP
+    from transformers import AutoTokenizer
+
+    try:
+        snap = PP.snapshot()
+    except Exception as e:  # noqa: BLE001  (CI has no model cache)
+        pytest.skip(f"the pinned snapshot is not cached here ({e!r})"[:200])
+    turn = PP.rendered_turn(AutoTokenizer.from_pretrained(snap))
+    want = "<tool_call>\n<function=bash>\n<parameter=command>\nls /tmp/dir0\n"
+    assert turn.startswith(want), turn
+    assert P4.TOOL_PARSER in ("qwen3_coder", "qwen3_xml")  # vLLM 0.31's names for the XML format
+
+
+def test_the_serve_check_keeps_the_text_of_a_call_that_did_not_parse(tmp_path, monkeypatch):
+    # most probable failure: a parse failure is recorded only as a count, so its cause has to be dug
+    # out of the server's log on a pod that is already being deleted (launch 5)
+    import contextlib
+    import io
+
+    raw = "<tool_call>\n<function=bash>\n<parameter=command>\nls /tmp/dir0\n</parameter>"
+
+    @contextlib.contextmanager
+    def models(*a, **k):
+        yield io.BytesIO(json.dumps({"data": [{"id": "base"}, {"id": "c1"}]}).encode())
+
+    def chat(body):
+        if body.get("tools"):
+            return {"choices": [{"message": {"content": raw, "tool_calls": []}}]}
+        return {"choices": [{"message": {"content": "```python\nx\n```"}}]}
+
+    monkeypatch.setattr(P4.urllib.request, "urlopen", models)
+    monkeypatch.setattr(P4, "_chat", chat)
+    rec = P4.serve_check(tmp_path, dry=True)
+    assert rec["tool_calls_parsed"] == 0 and not rec["passes"]
+    assert rec["tool_parser"] == "qwen3_coder"
+    assert len(rec["tool_call_failures"]) == 2 and rec["tool_call_failures"][0]["content"] == raw

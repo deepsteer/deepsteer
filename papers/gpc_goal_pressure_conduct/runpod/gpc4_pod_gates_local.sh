@@ -10,7 +10,8 @@
 # In order: every path the runner exports into the repo exists; prep's CPU part (the summed adapter
 # built from the runner's own paths and GPC-1's C1, exact); the runner's own stage block run dry, start
 # to finish, under its real exports and the real local inputs (the pod-only /workspace paths mapped to
-# local copies at the runner's pins, cached in GPC4_LOCAL_CACHE); then the gate, quietly and under load.
+# local copies at the runner's pins, cached in GPC4_LOCAL_CACHE); the served tool parser read on the
+# subject's own tool call with the runner's own vLLM (§11.18); then the gate, quietly and under load.
 # Reads the runner's own marker expression, floor, TESTS list and `export` lines (those before its gate
 # tests), so they never drift. Leaves out PATH (the local interpreter stays) and HF_TOKEN (never
 # copied). Prints the variables' names only, never their values, the collected count against the floor,
@@ -137,6 +138,34 @@ print(f">> the runner's stage block ran dry to its end ({stages} stage calls): a
 PYEOF
 echo ">>   (dry, the stand-in model cannot load the real 27B adapters, so C1's and the sum's parity fail and"
 echo ">>   their consumers take the skip path; the slow dry chain runs those paths with dry adapters)"
+# the served tool parser on the subject's own call (§11.18; launch 5's hermes parsed none of Qwen3.8's XML
+# calls): the runner's own vLLM wheel (its URL and sha256), its Python sources only (no compiled part
+# runs), in a venv over this interpreter with the few modules the parser's imports need; then the gate's
+# parser test runs here instead of skipping
+wurl=$(grep -E '^VLLM_WHEEL_URL=' "$R" | cut -d'"' -f2); wsha=$(grep -E '^VLLM_WHEEL_SHA256=' "$R" | cut -d= -f2)
+[ -n "$wurl" ] && [ -n "$wsha" ] || { echo "BAIL: the runner's VLLM_WHEEL_URL or VLLM_WHEEL_SHA256 not found"; exit 1; }
+VW=$CACHE/vllm_$wsha
+if [ ! -f "$VW/src/vllm/tool_parsers/__init__.py" ]; then
+  mkdir -p "$VW/src"
+  [ -f "$VW/vllm.whl" ] || curl -sSL -o "$VW/vllm.whl" "$wurl"
+  [ "$(shasum -a 256 "$VW/vllm.whl" | cut -d' ' -f1)" = "$wsha" ] || { rm -f "$VW/vllm.whl"; echo "BAIL: the vLLM wheel's sha256 does not match the runner's"; exit 1; }
+  # unzip's * crosses directories, so one pattern takes every .py (a second, unmatched one exits 11)
+  ( cd "$VW/src" && unzip -q -o ../vllm.whl 'vllm/*.py' ) || { echo "BAIL: the vLLM wheel did not unpack"; exit 1; }
+  rm -f "$VW/vllm.whl"
+fi
+if [ ! -x "$VW/venv/bin/python" ]; then
+  "$PY" -m venv --system-site-packages "$VW/venv"
+  "$VW/venv/bin/pip" install -q cachetools==8.0.2 cbor2==6.3.0 fastapi==0.165.0 ijson==3.6.0 \
+    mistral_common==1.13.1 msgspec==0.22.0 openai-harmony==0.0.8 partial-json-parser==0.2.1.1.post7 \
+    prometheus_client==0.26.0 py-cpuinfo==9.0.0 pybase64==1.5.2 pyzmq==27.3.0 uvloop==0.23.0 \
+    xgrammar==0.2.9 2>&1 | grep -v notice || true
+fi
+export GPC4_VLLM_PY=$VW/venv/bin/python GPC4_VLLM_SRC=$VW/src
+tp=$("$PY" -c "import sys; sys.path.insert(0, 'papers/gpc_goal_pressure_conduct/scripts'); import gpc4_pod as P4; print(P4.TOOL_PARSER)")
+probe() { "$GPC4_VLLM_PY" -I papers/gpc_goal_pressure_conduct/scripts/gpc4_parser_probe.py --parser "$1" --vllm-src "$GPC4_VLLM_SRC" 2>/dev/null | tail -1; }
+p_ok=$(probe "$tp") || { echo "$p_ok"; echo "BAIL: vLLM's $tp parser does not read the subject's own tool call"; exit 1; }
+p_ctl=$(probe hermes) && { echo "$p_ctl"; echo "BAIL: the probe's control (hermes) parsed the XML call: the probe cannot tell"; exit 1; }
+echo ">> the served tool parser ($tp, vLLM at the runner's wheel) reads the subject's own call: $(echo "$p_ok" | "$PY" -c 'import json,sys; print(json.load(sys.stdin)["calls"])'); its control (hermes) parses none"
 out=$(run_gate quiet) || { echo "$out"; echo "BAIL: the quiet run failed"; exit 1; }
 echo "$out" | sed '$d'; echo ">> run 1, quiet: $(echo "$out" | tail -1)"
 burners=()
