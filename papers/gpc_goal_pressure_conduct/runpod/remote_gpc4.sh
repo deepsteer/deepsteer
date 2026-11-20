@@ -100,7 +100,12 @@ for f in outputs/_sync/eval_8gram_hashes_v2.npy outputs/gpc4_in/vm_keys/forward_
   [ -f "$G/$f" ] || { echo "BAIL: $f did not sync"; exit 1; }
 done
 mkdir -p "$OUT/vm_results" && cp "$I/session" "$OUT/session"
-export GPC4_PCTX="$C/outputs/pressure/adapters/p_ctx/1.94053e+06"
+# P-ctx, put back above by the copy into $C (which already ends in .../outputs): GPC-4's launch 3 stopped
+# at prep on a doubled outputs/ in this path, so its two files are checked here, minutes into the session
+export GPC4_PCTX="$C/pressure/adapters/p_ctx/1.94053e+06"
+for f in adapter_config.json adapter_model.safetensors; do
+  [ -f "$GPC4_PCTX/$f" ] || { echo "BAIL: P-ctx's $f is not at $GPC4_PCTX"; exit 1; }
+done
 # upstream code and data at their pins (fetched here, never committed)
 git clone -q https://github.com/McGill-DMaS/ODCV-Bench /workspace/ODCV-Bench && \
   git -C /workspace/ODCV-Bench checkout -q 6924dafb3a3f84fc320fbe9f0a08203d67d1d488 || { echo "BAIL: ODCV-Bench"; exit 1; }
@@ -161,7 +166,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=131   # the gate's collected count when set (launch 3); fewer means a file failed to collect
+GATE_FLOOR=132   # the gate's collected count when set (launch 3); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }

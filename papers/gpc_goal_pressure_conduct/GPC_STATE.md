@@ -140,8 +140,9 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | 11-17 | GPC-3 on RunPod Secure (A100-SXM4-80GB, $2.19; the Thunder card fell back; all stages run, done at 4.39 h) | 4.39 | 4.50 | 9.86 | 16.87 | 24.09 |
 | 11-19 | GPC-4 launch 1 on Thunder (A100 80GB, $1.18; the gate tests bailed at 0.30 h and the exit trap left the pod idle until the sentinel was touched by hand; no result; `GPC_PLAN.md` §11.12) | 0.30 | 1.12 | 1.32 | 17.99 | 25.41 |
 | 11-19 | GPC-4 launch 2 on Thunder (A100 80GB, $1.18; the gate tests bailed at 0.32 h on a load-dependent test; every path ended by itself; no result; §11.12) | 0.32 | 0.42 | 0.50 | 18.41 | 25.91 |
+| 11-19 | GPC-4 launch 3 on Thunder (A100 80GB, $1.18; gate passed; prep stopped at 0.37 h on a doubled path to P-ctx; every path ended by itself; no result; §11.12) | 0.37 | 0.45 | 0.53 | 18.86 | 26.44 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: **$147.09 remain** ($173.00 − $25.91). The EC2 host's spend to
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: **$146.56 remain** ($173.00 − $26.44). The EC2 host's spend to
 date (rehearsals 1 to 7 and launch 1's host, about $4 at the records' upper bounds) is not in it; the AWS
 bill is its figure of record.
 
@@ -232,3 +233,6 @@ bill is its figure of record.
 - 2026-11-19: launch 3's review (§11.12): the pod's gate deselects host-side tests (34 items, CI keeps
   them) and bails under a floor of 131; the standing step adds 3 loaded runs. Before launch 3: 131
   collected, 130 passed and 1 skipped, quiet and 3 of 3 under load.
+- 2026-11-19: GPC-4 launch 3 (§11.12): gate passed (131), then prep stopped at 0.37 h on a doubled outputs/
+  in the runner's GPC4_PCTX export; every path ended by itself; about $0.53 pod, $0.40 host. Fixed, with an
+  early check on the pod and an exported-path check in the standing step.

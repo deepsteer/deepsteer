@@ -44,6 +44,22 @@ fi
 exit \${PIPESTATUS[0]}
 "
 }
+# every path the runner exports into the repo exists (launch 3 stopped at prep on a doubled outputs/ in
+# GPC4_PCTX): the runner's paths are evaluated with the repo here, where the synced inputs come from
+all_exports=$(grep -E '^export ' "$R" | grep -vE '^export (PATH|HF_TOKEN)=')
+missing=$(bash -c "
+REPO_DIR='$PWD' G=\$REPO_DIR/papers/gpc_goal_pressure_conduct
+C=\$REPO_DIR/papers/cst_constitutional_steering/outputs I=\$G/outputs/gpc4_in VENV=/workspace/venv_vllm
+START=\$(date +%s) PRICE_H=10.5 SESSION=1
+$all_exports
+for v in \$(printf '%s\n' \"$all_exports\" | grep -oE '[A-Z_0-9]+=' | tr -d =); do
+  val=\${!v}; case \"\$val\" in '$PWD'/*) [ -e \"\$val\" ] || echo \"\$v=\${val#'$PWD'/}\";; esac
+done" 2>/dev/null)
+n_paths=$(bash -c "REPO_DIR='$PWD' G=\$REPO_DIR/papers/gpc_goal_pressure_conduct C=\$REPO_DIR/papers/cst_constitutional_steering/outputs I=\$G/outputs/gpc4_in VENV=/workspace/venv_vllm START=0 PRICE_H=10.5 SESSION=1
+$all_exports
+for v in \$(printf '%s\n' \"$all_exports\" | grep -oE '[A-Z_0-9]+=' | tr -d =); do case \"\${!v}\" in '$PWD'/*) echo x;; esac; done" 2>/dev/null | wc -l | tr -d ' ')
+[ -z "$missing" ] || { echo "BAIL: the runner exports paths into the repo that do not exist: $missing"; exit 1; }
+echo ">> the runner's $n_paths exported repo paths all exist"
 out=$(run_gate quiet) || { echo "$out"; echo "BAIL: the quiet run failed"; exit 1; }
 echo "$out" | sed '$d'; echo ">> run 1, quiet: $(echo "$out" | tail -1)"
 burners=()

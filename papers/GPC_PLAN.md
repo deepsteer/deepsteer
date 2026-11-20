@@ -2015,3 +2015,22 @@ hash stays `54800428559b1fc6`, so rehearsal 8's record stands.
    3 times under heavy CPU load (two busy loops a core), all passing.
 3. **Before launch 3:** 131 collected, floor 131; quiet 130 passed, 1 skipped; under load 130 passed, 1
    skipped, 3 of 3.
+
+**GPC-4 launch 3 (2026-11-19, at `6c7c6dbb`, rehearsal 8's record): no result; a doubled path.** Launch
+at 21:13 HST; the pod created at about 21:25; its runner started at 21:27, finished setup at 0.34 h, and
+**passed its gate** (131 collected against the floor of 131; 130 passed, 1 skipped). Then **`prep`
+stopped at 0.37 h** ("the summed adapter did not build"): `remote_gpc4.sh` exported
+`GPC4_PCTX="$C/outputs/pressure/..."` where `$C` already ends in `.../cst_constitutional_steering/outputs`,
+so the path read `outputs/outputs/` and P-ctx's `adapter_config.json` was not found. The runner's copy had
+put the file at `$C/pressure/...`. No test reads that export (the gate tests and the dry chain set their
+own paths), so nothing before the pod could see it. Every path ended by itself: the sentinel, the
+download, the pod deleted (verified 21:51), the host removed by the abort path. **Cost:** the pod about
+0.45 h, **about $0.53**; the host about 0.63 h, **about $0.40**. **No result.**
+
+**The fix (pod side; the VM hash unchanged):** the export reads `$C/pressure/adapters/p_ctx/1.94053e+06`,
+and the runner checks P-ctx's two files right after it and bails within minutes if either is missing. The
+standing pre-launch step now also evaluates every path the runner exports into the repo against the repo
+here and fails on any that does not exist: run against the runner as launched, it flags this `GPC4_PCTX`.
+The runner's new check is one more bail point, so the gate collects 132 and its floor is 132. Before
+launch 4: the runner's 2 exported repo paths exist; 132 collected, floor 132; quiet 131 passed, 1 skipped;
+under load 3 of 3 the same.
