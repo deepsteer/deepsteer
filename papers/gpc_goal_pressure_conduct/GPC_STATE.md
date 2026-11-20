@@ -236,3 +236,6 @@ bill is its figure of record.
 - 2026-11-19: GPC-4 launch 3 (§11.12): gate passed (131), then prep stopped at 0.37 h on a doubled outputs/
   in the runner's GPC4_PCTX export; every path ended by itself; about $0.53 pod, $0.40 host. Fixed, with an
   early check on the pod and an exported-path check in the standing step.
+- 2026-11-20: launch 4's build (§11.14): graceful degradation (no STOP; a failed adapter is not served and
+  its consumers skip with reasons; a dependency table with a test per row), the arm smoke after the serve
+  check, and the standing step running the runner's stage block dry end to end. Gate 140, floor 140.

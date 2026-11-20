@@ -166,7 +166,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=132   # the gate's collected count when set (launch 3); fewer means a file failed to collect
+GATE_FLOOR=140   # the gate's collected count when set (launch 4); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
@@ -181,29 +181,35 @@ python3 papers/cst_constitutional_steering/scripts/rate_watch.py --log "$REPO_DI
   --forecast '{"bounds": 1800, "stage4": 1800}' &
 RW=$!
 
-run() { echo "$2" > "$OUT/.stage"; $PY "$1" --out "$OUT" "${@:3}" || echo ">> stage failed: ${*:3}"; echo ">> stage done at $(hours) h: ${*:3}"; }
-fits() { $PY $GP --out "$OUT" --stage fits --next "$1"; }
+# GPC4_DRY=1 (the standing pre-launch step's local run of this block) adds --dry-run to every stage; unset
+# on the pod, it adds nothing
+DRY=${GPC4_DRY:+--dry-run}
+run() { echo "$2" > "$OUT/.stage"; $PY "$1" --out "$OUT" "${@:3}" $DRY || echo ">> stage failed: ${*:3}"; echo ">> stage done at $(hours) h: ${*:3}"; }
+fits() { $PY $GP --out "$OUT" --stage fits --next "$1" $DRY; }
 ok() { python3 -c "import json,sys; sys.exit(0 if json.load(open('$OUT/$1')).get('$2') else 1)" 2>/dev/null; }
 stop() { echo ">> $1"; echo ">> done at $(hours) h"; kill $WATCHDOG $JDL 2>/dev/null; exit 0; }
 
 VM=papers/gpc_goal_pressure_conduct/scripts/gpc4_vm.py
 # the control document for the host (the plan runner rewrites it from plan.json; the host polls it)
-$PY $GP --out "$OUT" --stage hold
+$PY $GP --out "$OUT" --stage hold $DRY
 nohup $PY $VM control --port 8001 --doc "$OUT/control.json" --results "$OUT/vm_results" > "$OUT/logs/control.log" 2>&1 &
 nohup $PY $VM plan --plan "$OUT/plan.json" --doc "$OUT/control.json" --results "$OUT/vm_results" > "$OUT/logs/plan.log" 2>&1 &
 export GPC4_VLLM="$VENV/bin/vllm"
-item() { if $PY $GP --out "$OUT" --stage fits --next "$1"; then run $GP "$1" --stage "$1"; else echo ">> cut: $1"; fi; }
+item() { if $PY $GP --out "$OUT" --stage fits --next "$1" $DRY; then run $GP "$1" --stage "$1"; else echo ">> cut: $1"; fi; }
 
-# a. C1 registered, the summed adapter built (exact), both adapters' parity (offline)
+# The stages follow GPC_PLAN.md §11.14's dependency table: no stage's failure stops the session unless
+# nothing downstream can run; each stage skips, with its reason recorded, what it cannot do.
+# a. C1 registered, the summed adapter built (exact), each adapter's parity (offline). A failed adapter
+#    is not served: C1's failure skips C1's arms and stage 3; the sum's failure skips stage 4.
 run $GP prep --stage prep
-ok prep.json sum || stop "STOP: the summed adapter did not build"
-# b. the server phase: the host's gate probe, ODCV-Bench's gate, ImpossibleBench's stage 1
+# b. the server phase: the host's gate probe, the arm smoke, ODCV-Bench's gate, ImpossibleBench's stage 1
 run $GP serve --stage serve --part up
 run $GP serve_check --stage serve_check || echo ">> serve_check failed: the host's stages read nothing (the failure branch)"
 run $GP vm_wait --stage vm_wait
+run $GP arm_smoke --stage arm_smoke
 item odcv_gate
 item ib_gate
-$PY $GP --out "$OUT" --stage hold; run $GP serve --stage serve --part down
+$PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
 # c. offline: the judge on ODCV-Bench's base runs (the gate), the bounds grid
 wait $JDL; tail -1 "$OUT/logs/judge_download.log"   # the judge's weights (downloaded behind setup)
 run $GP judge --stage judge --part odcv_base
@@ -211,12 +217,12 @@ item bounds
 # d. the server phase again: the arms on each counting instrument
 run $GP serve --stage serve --part up
 item arms
-$PY $GP --out "$OUT" --stage hold; run $GP serve --stage serve --part down
+$PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
 # e. offline: stage 3's gate and the bounds adapter, stage 4 (the summed adapter), the final judge pass
 item stage3
 item stage4
 run $GP judge --stage judge --part final
 # f. the host: stop (it powers off, which terminates it, once every result is confirmed here)
-$PY $GP --out "$OUT" --stage stop
+$PY $GP --out "$OUT" --stage stop $DRY
 for _ in $(seq 1 40); do grep -q '"kind": "stop"' "$OUT/control.json" 2>/dev/null && break; sleep 15; done
 stop "all stages run"

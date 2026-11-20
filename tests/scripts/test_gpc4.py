@@ -1258,6 +1258,7 @@ def test_dry_session_chains_gpc1_into_every_gpc4_stage(tmp_path):
             ["serve", "--part", "up"],
             ["serve_check"],
             ["vm_wait"],
+            ["arm_smoke"],
             ["odcv_gate"],
             ["ib_gate"],
             ["hold"],
@@ -1289,6 +1290,10 @@ def test_dry_session_chains_gpc1_into_every_gpc4_stage(tmp_path):
         "impossiblebench",
     )
     assert (o4 / "g5" / "blackmail.jsonl").exists() and (o4 / "stage4.json").exists()
+    sm = json.loads((o4 / "arm_smoke.json").read_text())
+    assert set(sm["arms"]) == {"cctx", "cbounds", "c1"} and all(
+        v["odcv"] and v["ib"] for v in sm["arms"].values()
+    )
     plan = json.loads((o4 / "plan.json").read_text())
     assert plan["hold"] is False
 
@@ -1317,3 +1322,172 @@ def test_the_pods_gate_runs_only_pod_code_and_holds_a_floor():
     # the floor itself is checked where it binds: by the runner on the pod and by the standing step
     # under the pod's environment (a collected count depends on the environment it is taken in)
     assert int(re.search(r"^GATE_FLOOR=(\d+)", runner, re.M).group(1)) > 100
+
+
+# ---- §11.14: the dependency table, one test a row ------------------------------------------------
+def _adapter(out, tag, parity_passes):
+    d = out / "fake_adapters" / tag
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "adapter_config.json").write_text("{}")
+    P4._w(out, f"train_{tag}", {"rung": tag, "trained": True, "adapters": {"1": str(d)}})  # noqa: SLF001
+    if parity_passes is not None:
+        P4._w(out / "parity", tag, {"passes": parity_passes, "read": parity_passes})  # noqa: SLF001
+    return d
+
+
+def test_row_prep_a_sum_that_does_not_build_is_not_served_and_prep_goes_on(tmp_path, monkeypatch):
+    # most probable failure: the build's exception ends the session (launch 3 stopped here), or the
+    # unbuilt adapter is still handed to the server
+    import gpc2_pod as P2
+    import z_summed_adapter as Z
+
+    c1 = _adapter(tmp_path, "c1", None)
+    monkeypatch.setattr(P2, "c1_dir", lambda out: str(c1))
+    monkeypatch.setattr(Z, "build", lambda s: (_ for _ in ()).throw(FileNotFoundError("p_ctx")))
+
+    def parity(out, tags, dry):
+        for t in tags:
+            P4._w(out / "parity", t, {"passes": True, "read": True})  # noqa: SLF001
+
+    monkeypatch.setattr(P4, "parity", parity)
+    rec = P4.stage_prep(tmp_path, dry=False)
+    assert rec["usable"] == {"c1": True, "sum": False}
+    assert not (tmp_path / "train_sum.json").exists()
+    assert "p_ctx" in P4._r(tmp_path, "prep")["status"]["sum"]["error"]  # noqa: SLF001
+    assert set(P4.adapters(tmp_path)) == {"c1"}
+
+
+def test_row_prep_a_parity_that_raises_is_recorded_not_fatal(tmp_path, monkeypatch):
+    # most probable failure: one adapter's parity error (a vLLM fault at rank 32) ends prep, and the
+    # other adapter's read is lost with it
+    import gpc2_pod as P2
+
+    c1 = _adapter(tmp_path, "c1", None)
+    monkeypatch.setattr(P2, "c1_dir", lambda out: str(c1))
+
+    def parity(out, tags, dry):
+        if tags == ["sum"]:
+            raise RuntimeError("max_lora_rank")
+        P4._w(out / "parity", "c1", {"passes": True, "read": True})  # noqa: SLF001
+
+    monkeypatch.setattr(P4, "parity", parity)
+    rec = P4.stage_prep(tmp_path, dry=True)  # the dry sum is C1's copy, then its parity raises
+    assert rec["usable"] == {"c1": True, "sum": False}
+    assert "max_lora_rank" in P4._r(tmp_path / "parity", "sum")["error"]  # noqa: SLF001
+
+
+def test_row_serve_serves_only_adapters_whose_parity_reads(tmp_path):
+    # most probable failure: a failed adapter is loaded into the server anyway
+    _adapter(tmp_path, "c1", False)
+    _adapter(tmp_path, "sum", True)
+    assert set(P4.adapters(tmp_path)) == {"sum"}
+
+
+def test_row_arm_smoke_marks_a_failed_configuration_and_skips_c1_without_parity(
+    tmp_path, monkeypatch
+):
+    # most probable failure: an arm configuration that cannot run is found only in stage 2, after
+    # the gates' hours, or a smoke failure stops the gates
+    _adapter(tmp_path, "c1", False)  # C1's parity failed
+    P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
+    P4.plan_set(tmp_path, [], hold=True)
+
+    def wait_for(out, ids, dry, max_h):
+        P4.dry_vm(out)
+        # cbounds' ODCV-Bench run comes back with a container error
+        for r in (P4.results_dir(out) / "smoke_odcv_cbounds").glob("*/run.json"):
+            d = json.loads(r.read_text()) | {"container_error": True}
+            r.write_text(json.dumps(d))
+        return []
+
+    monkeypatch.setattr(P4, "wait_for", wait_for)
+    rec = P4.stage_arm_smoke(tmp_path, dry=True)
+    a = rec["arms"]
+    assert a["cctx"]["odcv"] and a["cctx"]["ib"]
+    assert not a["cbounds"]["odcv"] and a["cbounds"]["ib"]
+    assert not a["c1"]["odcv"] and "parity" in a["c1"]["reason"]
+    assert P4.smoke_ok(tmp_path, "cbounds", "odcv")[0] is False
+    assert P4.smoke_ok(tmp_path, "cbounds", "ib")[0] is True
+    # the gates do not read the smoke: ODCV-Bench's gate still runs its 8 dry runs
+    monkeypatch.setattr(P4, "wait_for", lambda out, ids, dry, h: (P4.dry_vm(out), [])[1])
+    g = P4.stage_odcv_gate(tmp_path, dry=True)
+    assert g["first"]["instruction"] == "odcv_base" and g["first"]["arrived"] == 8
+
+
+def test_row_arms_skip_what_the_smoke_or_c1_rules_out_and_run_the_rest(tmp_path, monkeypatch):
+    # most probable failure: C1's failure takes the clause-in-context arms with it, or a skipped
+    # arm runs anyway
+    P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
+    P4._w(tmp_path, "odcv_gate", {"counts_rate_bar": True})  # noqa: SLF001
+    P4._w(
+        tmp_path,
+        "ib_gate",
+        {
+            "scaffolds": {
+                "tools": {  # noqa: SLF001
+                    "banked": False,
+                    "counts_rate_bar": True,
+                    "all_60": {"rate": 0.3},
+                }
+            }
+        },
+    )
+    P4._w(
+        tmp_path,
+        "arm_smoke",
+        {
+            "arms": {  # noqa: SLF001
+                "cctx": {"odcv": True, "ib": True},
+                "cbounds": {"odcv": False, "ib": True},
+                "c1": {"odcv": False, "ib": False, "reason": "c1's served parity does not read"},
+            }
+        },
+    )
+    _adapter(tmp_path, "c1", False)
+    monkeypatch.setattr(P4, "wait_for", lambda *a, **k: [])
+    rec = P4.stage_arms(tmp_path, dry=True)
+    ids = rec["instructions"]
+    assert "odcv_cctx" in ids and "odcv_cbounds" not in ids and "odcv_c1" not in ids
+    assert any(i.endswith("_cbounds") and i.startswith("ib_s2") for i in ids)
+    assert not any(i.endswith("_c1") for i in ids) and any(i.endswith("_base") for i in ids)
+    assert set(rec["skipped"]) == {"odcv_cbounds", "odcv_c1", "ib_tools_c1"}
+
+
+def test_row_stage3_is_skipped_with_its_reason_when_c1_cannot_be_read(tmp_path):
+    # most probable failure: the registered gate runs without C1 and reads "C1 does not carry" by
+    # default, firing the bounds adapter's training on a missing comparison
+    _adapter(tmp_path, "c1", False)
+    rec = P4.stage_stage3(tmp_path, dry=True)
+    assert "C1" in rec["skipped"] and P4._r(tmp_path, "gate3")["fires"] is False  # noqa: SLF001
+    assert P4._r(tmp_path, "train_bounds")["trained"] is False  # noqa: SLF001
+
+
+def test_row_stage4_is_skipped_with_its_reason_when_the_sum_is_not_usable(tmp_path):
+    # most probable failure: stage 4 raises (it bailed before) and the final judge pass never runs
+    P4._w(tmp_path, "prep", {"status": {"sum": {"error": "FileNotFoundError"}}})  # noqa: SLF001
+    rec = P4.stage_stage4(tmp_path, dry=True)
+    assert rec["run"] is False and "summed adapter" in rec["reason"]
+    assert P4._r(tmp_path, "stage4")["prep"] == {"error": "FileNotFoundError"}  # noqa: SLF001
+
+
+def test_row_runner_follows_the_table(tmp_path):
+    # most probable failure: the runner still stops at prep, or the smoke runs before the host's
+    # probe (it needs the host), or a stage call misses the dry flag the standing step relies on
+    runner = (GPC / "runpod/remote_gpc4.sh").read_text()
+    block = runner.split('echo setup > "$OUT/.stage"', 1)[1]
+    assert "STOP: the summed adapter" not in block and "ok prep.json" not in block
+    order = [
+        block.index(x)
+        for x in (
+            "--stage prep",
+            "--stage serve_check",
+            "--stage vm_wait",
+            "--stage arm_smoke",
+            "item odcv_gate",
+            "item ib_gate",
+        )
+    ]
+    assert order == sorted(order)
+    for ln in block.splitlines():
+        if re.search(r"\$PY \$GP", ln):
+            assert "$DRY" in ln, ln

@@ -132,7 +132,7 @@ def dry_vm(out: Path) -> None:
                 (r / "result.json").write_text(json.dumps({"status": "DONE"}))
                 (r / "run.json").write_text(json.dumps({"run_id": run_id, "scenario": scenario,
                                                         "variant": variant, "arm": ins["arm"],
-                                                        "tool_timeouts": 0,
+                                                        "tool_timeouts": 0, "tool_calls": 2,
                                                         "container_error": rng.random() < 0.05}))
         elif ins["kind"] == "ib":
             (d / "inspect_logs").mkdir(exist_ok=True)
@@ -144,10 +144,18 @@ def dry_vm(out: Path) -> None:
 
 
 # ---- the subject's server --------------------------------------------------------------------------
+def adapter_ok(out: Path, tag: str) -> bool:
+    """An adapter is usable when it was trained or built and its served parity reads (GPC_PLAN.md
+    §11.14: a failed adapter is not served, and what needs it is skipped with the reason)."""
+    import gpc2_pod as P2
+
+    return bool(trained(out, tag)) and P2._parity_reads(out, tag)  # noqa: SLF001
+
+
 def adapters(out: Path) -> dict[str, str]:
-    """The served LoRA modules: C1 (GPC-1's), the summed adapter (built here), the bounds adapter (when
-    trained)."""
-    return {t: trained(out, t) for t in ("c1", "sum", "bounds") if trained(out, t)}
+    """The served LoRA modules: each of C1 (GPC-1's), the summed adapter (built here) and the bounds
+    adapter (when trained) whose served parity reads."""
+    return {t: trained(out, t) for t in ("c1", "sum", "bounds") if adapter_ok(out, t)}
 
 
 def serve(out: Path, part: str, dry: bool) -> dict:
@@ -281,30 +289,50 @@ def parity(out: Path, tags: list[str], dry: bool) -> dict:
 
 def stage_prep(out: Path, dry: bool) -> dict:
     """C1 registered from GPC-1, the summed adapter built here (P-ctx's update plus C1's, exact), and
-    both adapters' parity."""
+    each adapter's served parity. No failure here stops the session (§11.14): an adapter that cannot be
+    registered, built or read is recorded, not served, and what needs it is skipped later."""
     import z_summed_adapter as Z
 
     import gpc2_pod as P2
 
-    c1 = P2.c1_dir(out)  # GPC-1's record names the checkpoint (612732 on the real run)
-    _w(out, "train_c1", {"rung": "c1", "trained": True, "adapters": {"1": c1},
-                         "from": "GPC-1 (outputs/gpc1_v1)"})
-    s = out / "adapters" / "sum" / "1"
-    if dry:
-        rec = {"dry": True, "note": "the dry sum is C1's copy"}
-        s = Path(c1)
+    status = {"c1": {}, "sum": {}}
+    try:
+        c1 = P2.c1_dir(out)  # GPC-1's record names the checkpoint (612732 on the real run)
+        if not (Path(c1) / "adapter_config.json").exists():
+            raise FileNotFoundError(f"{c1}/adapter_config.json")
+        _w(out, "train_c1", {"rung": "c1", "trained": True, "adapters": {"1": c1},
+                             "from": "GPC-1 (outputs/gpc1_v1)"})
+    except Exception as e:  # noqa: BLE001  (recorded; C1's arms, stage 3 and the sum are skipped)
+        c1, status["c1"]["error"] = None, repr(e)[:300]
+    s, rec = out / "adapters" / "sum" / "1", None
+    if c1 is None:
+        status["sum"]["error"] = "no C1 to sum with"
+    elif dry:
+        rec, s = {"dry": True, "note": "the dry sum is C1's copy"}, Path(c1)
     else:
-        Z.PCTX = Path(os.environ.get("GPC4_PCTX", str(Z.PCTX)))
-        Z.C1 = Path(c1)
-        rec = Z.build(s)
-        if not rec["exact"]:
-            raise SystemExit("BAIL: the summed adapter is not exact")
-    _w(out, "train_sum", {"rung": "sum", "trained": True, "adapters": {"1": str(s)}, "check": rec})
-    p = parity(out, ["c1", "sum"], dry)
+        try:
+            Z.PCTX = Path(os.environ.get("GPC4_PCTX", str(Z.PCTX)))
+            Z.C1 = Path(c1)
+            rec = Z.build(s)
+            if not rec["exact"]:
+                raise ValueError("the summed adapter is not exact")
+        except Exception as e:  # noqa: BLE001  (recorded; stage 4 is skipped)
+            rec, status["sum"]["error"] = None, repr(e)[:300]
+    if rec is not None:
+        _w(out, "train_sum", {"rung": "sum", "trained": True, "adapters": {"1": str(s)}, "check": rec})
+    for tag in ("c1", "sum"):  # each on its own, so one adapter's failure does not take the other's read
+        if not trained(out, tag):
+            continue
+        try:
+            parity(out, [tag], dry)
+        except Exception as e:  # noqa: BLE001
+            _w(out / "parity", tag, {"passes": False, "read": False, "error": repr(e)[:300]})
+        status[tag]["parity_reads"] = P2._parity_reads(out, tag)  # noqa: SLF001
+    usable = {t: adapter_ok(out, t) for t in ("c1", "sum")}
     _w(out, "prep", {"sum": rec, "parity": {t: (_r(out / "parity", t) or {}).get("passes")
-                                            for t in ("c1", "sum")}})
-    print(">> prep:", json.dumps({"sum": rec}, default=str)[:400], flush=True)
-    return p
+                                            for t in ("c1", "sum")}, "status": status, "usable": usable})
+    print(">> prep:", json.dumps({"usable": usable, "status": status}, default=str)[:500], flush=True)
+    return {"usable": usable}
 
 
 # ---- ODCV-Bench --------------------------------------------------------------------------------
@@ -357,6 +385,65 @@ def odcv_quality(out: Path, ins: dict) -> dict:
             "arrived": len(got), "container_errors": err, "error_share": share,
             "tool_timeout_runs": tt, "tool_timeout_share": tt / len(got) if got else None,
             "void": share > ODCV_VOID_SHARE}
+
+
+SMOKE_ARMS = (("cctx", "base", "conduct"), ("cbounds", "base", "bounds"), ("c1", "c1", None))
+
+
+def stage_arm_smoke(out: Path, dry: bool) -> dict:
+    """§11.14 item 2: right after the serve check and the host's probe, one ODCV-Bench run and one
+    ImpossibleBench task for each arm configuration (`C_conduct` in context, `C_bounds` in context, C1),
+    built by the arms' own instruction builders and run through the host as the arms are. A
+    configuration that fails on an instrument is skipped there in stage 2; nothing here stops the gates."""
+    rec = {"rule": "GPC_PLAN.md §11.14 item 2", "arms": {}}
+    if vm_lost(out):
+        rec |= {"run": False, "reason": "the VM is lost (the failure branch)"}
+        _w(out, "arm_smoke", rec)
+        return rec
+    scen = next(s for s in odcv_scenarios(dry) if s not in odcv_route_broken())
+    task = ib_sample("oneoff", 1, "smoke", dry)
+    ins, by_arm = [], {}
+    for arm, model, which in SMOKE_ARMS:
+        if model != "base" and not adapter_ok(out, model):
+            rec["arms"][arm] = {"odcv": False, "ib": False,
+                                "reason": f"{model}'s served parity does not read"}
+            continue
+        ctext = clause(which) if which else None
+        o = odcv_instruction(arm, model, dry, ctext)
+        o |= {"id": f"smoke_odcv_{arm}", "concurrency": 1,
+              "runs": [r for r in o["runs"] if r[0] == scen and r[1] == "mandated"]}
+        i = ib_instruction("tools", "oneoff", task, arm, model, "smoke", ctext)
+        ins += [o, i]
+        by_arm[arm] = (o, i)
+    if ins:
+        prev = json.loads((out / "plan.json").read_text())["instructions"] if (out / "plan.json").exists() else []
+        plan_set(out, prev + ins)
+        rec["missing"] = wait_for(out, [x["id"] for x in ins], dry, 0.5)
+    for arm, (o, i) in by_arm.items():
+        runs = odcv_rows(out, o["id"])
+        odcv_ok = bool(runs) and all(not r.get("container_error") and (r.get("tool_calls") or 0) >= 1
+                                     for r in runs)
+        sc = ib_scores(out, i["id"])
+        ib_ok = bool(sc) and all(v is not None for v in sc.values())
+        rec["arms"][arm] = {"odcv": odcv_ok, "ib": ib_ok, "odcv_instruction": o["id"],
+                            "ib_instruction": i["id"]}
+    rec["run"] = True
+    _w(out, "arm_smoke", rec)
+    print(">> arm_smoke:", json.dumps({a: {k: v[k] for k in ("odcv", "ib")} for a, v in rec["arms"].items()}),
+          flush=True)
+    return rec
+
+
+def smoke_ok(out: Path, arm: str, instrument: str) -> tuple[bool, str | None]:
+    """Whether an arm configuration may run on an instrument in stage 2, and the reason if not."""
+    if arm == "c1" and not adapter_ok(out, "c1"):
+        return False, "C1's served parity does not read"
+    sm = (_r(out, "arm_smoke") or {}).get("arms", {}).get(arm)
+    if not sm:
+        return False, "no arm smoke for this configuration"
+    if not sm.get(instrument):
+        return False, f"its arm smoke failed on {instrument}" + (f" ({sm['reason']})" if sm.get("reason") else "")
+    return True, None
 
 
 def stage_odcv_gate(out: Path, dry: bool) -> dict:
@@ -648,7 +735,9 @@ def stage_bounds(out: Path, dry: bool) -> dict:
             P1._cached(cdir / f"{name}.jsonl", items, lambda it, t=tag, n=name: P1.letter_rows(  # noqa: SLF001
                 ks, P2._gen(per, t, tok, it, dry), n))  # noqa: SLF001
     _w(out, "bounds", {"conduct_stage": rec if isinstance(rec, dict) else None,
-                       "slots_kept": len((slots or {}).get("kept", {}))})
+                       "slots_kept": len((slots or {}).get("kept", {})),
+                       "c1_cells": "run" if adapter_ok(out, "c1") else
+                       "skipped: C1's served parity does not read"})
     print(">> bounds:", json.dumps({"kept": len((slots or {}).get("kept", {}))}), flush=True)
     return rec
 
@@ -663,10 +752,14 @@ def stage_arms(out: Path, dry: bool) -> dict:
     ins = []
     if vm_lost(out):
         gate, ibg = {}, {}
+    skipped = {}
     if gate.get("counts_rate_bar"):
-        ins += [odcv_instruction("cctx", "base", dry, clause("conduct")),
-                odcv_instruction("cbounds", "base", dry, clause("bounds")),
-                odcv_instruction("c1", "c1", dry)]
+        for arm, model, which in SMOKE_ARMS:
+            ok, why = smoke_ok(out, arm, "odcv")
+            if ok:
+                ins.append(odcv_instruction(arm, model, dry, clause(which) if which else None))
+            else:
+                skipped[f"odcv_{arm}"] = why
     for scaffold, r in (ibg.get("scaffolds") or {}).items():
         if r.get("banked") or not r.get("counts_rate_bar"):
             continue
@@ -675,15 +768,20 @@ def stage_arms(out: Path, dry: bool) -> dict:
         tasks = {sp: ib_sample(sp, n, f"arms|{scaffold}", dry) for sp in ("oneoff", "conflicting")}
         for arm, model, ctext in (("base", "base", None), ("cctx", "base", clause("conduct")),
                                   ("cbounds", "base", clause("bounds")), ("c1", "c1", None)):
+            ok, why = (True, None) if arm == "base" else smoke_ok(out, arm, "ib")
+            if not ok:
+                skipped[f"ib_{scaffold}_{arm}"] = why
+                continue
             ins += [ib_instruction(scaffold, sp, t, arm, model, "s2", ctext) for sp, t in tasks.items()]
         break  # one scaffold's stage 2 in this pod (§11.5: the second holds for the next pod)
     if not ins:
-        _w(out, "arms", {"run": False, "reason": "no instrument passed its gate"})
+        _w(out, "arms", {"run": False, "reason": "no instrument passed its gate, or every arm was "
+                                                 "skipped", "skipped": skipped})
         return {}
     prev = json.loads((out / "plan.json").read_text())["instructions"] if (out / "plan.json").exists() else []
     plan_set(out, prev + ins)
     miss = wait_for(out, [i["id"] for i in ins], dry, FORECAST_H["arms"] * 1.5)
-    rec = {"run": True, "instructions": [i["id"] for i in ins], "missing": miss,
+    rec = {"run": True, "instructions": [i["id"] for i in ins], "missing": miss, "skipped": skipped,
            "ib_stage2": any(i["kind"] == "ib" for i in ins),
            # §11.11: over 10% container errors voids an arm; tool-timeout shares are reported only
            "odcv_quality": {i["id"]: odcv_quality(out, i) for i in ins if i["kind"] == "odcv"}}
@@ -741,6 +839,13 @@ def stage_stage3(out: Path, dry: bool) -> dict:
     import pilot_train as PT
     import reasoning_formats as rf
 
+    if not adapter_ok(out, "c1"):  # §11.14: the registered gate compares C1 with C_bounds
+        why = "C1's served parity does not read: the registered gate needs C1"
+        _w(out, "gate3", {"fires": False, "skipped": why, "reads_on": None, "c_bounds_cuts": None,
+                          "c1_carries": None})
+        _w(out, "train_bounds", {"trained": False, "reason": why})
+        print(">> gate3:", json.dumps({"skipped": why}), flush=True)
+        return {"skipped": why}
     g = gate3(out)
     _w(out, "gate3", g)
     print(">> gate3:", json.dumps({k: g[k] for k in ("reads_on", "c_bounds_cuts", "c1_carries",
@@ -790,15 +895,19 @@ def stage_stage4(out: Path, dry: bool) -> dict:
     import gpc2_pod as P2
 
     os.environ["CST_MAX_LORA_RANK"] = "32"
+    if not adapter_ok(out, "sum"):  # §11.14: built and read in prep, or stage 4 is skipped
+        why = "the summed adapter did not build, or its served parity does not read"
+        rec = {"run": False, "reason": why, "prep": (_r(out, "prep") or {}).get("status", {}).get("sum")}
+        _w(out, "stage4", rec)
+        print(">> stage4:", json.dumps({"skipped": why}), flush=True)
+        return rec
     rec = {}
     if not dry:
         rec["cst"] = PL.stage_read(out, [("sum", trained(out, "sum"))], dry,
                                    parts=("panel_operator", "forced_plain"),
                                    k_override={"panel_operator": 2, "forced_plain": 8}, base=True)
     path, tok, fmt, per = _engine_for(out, dry, ["sum"])
-    tag = "sum" if "sum" in per else None
-    if tag is None:
-        raise SystemExit("BAIL: the summed adapter's served parity does not read")
+    tag = "sum"
     sl = P2.slots1(out)
     ks = sl["kept"]
     items = [(f"holdout_sum|{i}|0", P1._render(tok, fmt, GC.agent_messages(ks[i], ks[i])))  # noqa: SLF001
@@ -833,8 +942,8 @@ def mark_done(out: Path, item: str) -> None:
     _w(out, "items_done", d)
 
 
-STAGES = ("prep", "serve", "serve_check", "vm_wait", "odcv_gate", "ib_gate", "judge", "bounds", "arms", "stage3",
-          "stage4", "hold", "stop", "fits")
+STAGES = ("prep", "serve", "serve_check", "vm_wait", "arm_smoke", "odcv_gate", "ib_gate", "judge", "bounds",
+          "arms", "stage3", "stage4", "hold", "stop", "fits")
 
 
 def main() -> None:
@@ -865,7 +974,8 @@ def main() -> None:
     import cst_finalist_pod as F
 
     F.configure()
-    fn = {"prep": stage_prep, "vm_wait": stage_vm_wait, "odcv_gate": stage_odcv_gate, "ib_gate": stage_ib_gate, "bounds": stage_bounds,
+    fn = {"prep": stage_prep, "vm_wait": stage_vm_wait, "arm_smoke": stage_arm_smoke,
+          "odcv_gate": stage_odcv_gate, "ib_gate": stage_ib_gate, "bounds": stage_bounds,
           "arms": stage_arms, "stage3": stage_stage3, "stage4": stage_stage4}
     if a.stage == "judge":
         stage_judge(out, a.part, dry)

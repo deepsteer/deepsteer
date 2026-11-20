@@ -2034,3 +2034,57 @@ here and fails on any that does not exist: run against the runner as launched, i
 The runner's new check is one more bail point, so the gate collects 132 and its floor is 132. Before
 launch 4: the runner's 2 exported repo paths exist; 132 collected, floor 132; quiet 131 passed, 1 skipped;
 under load 3 of 3 the same.
+
+### 11.14 Launch 4: graceful degradation, the arm smoke, the stage block dry (the lead, 2026-11-20)
+
+**The rule:** no stage's failure stops the session unless nothing downstream can run. Each stage does
+what its inputs allow, skips the rest with the reason recorded, and the runner goes on (the `STOP` after
+`prep` is removed). **The dependency table, which `remote_gpc4.sh` and `gpc4_pod.py` follow (a test per
+row, `test_row_*` in `tests/scripts/test_gpc4.py`):**
+
+| stage | needs | if a need fails |
+|---|---|---|
+| `prep` | GPC-1's C1 (its record and files); P-ctx's two files for the sum | an adapter that cannot be registered, built or read (served parity, run per adapter so one failure does not take the other's read) is recorded in `prep.json` and **not served**; prep never stops the session |
+| `serve` | the base weights | serves only adapters whose served parity reads |
+| `serve_check` | the server | the host's stages read nothing (the failure branch, as before) |
+| `vm_wait` | the host's post-lock probe | the host is lost: every host stage skips (as before) |
+| `arm_smoke` (new) | the server, the host | per configuration and instrument, pass or fail recorded; **never stops the gates** |
+| ODCV-Bench's and ImpossibleBench's gates | the server, the host (the base only) | void, banked or skipped with the reason (§11.11, §11.13) |
+| `judge` (gate) | the judge's weights, the gate's runs | void when the gate is void |
+| `bounds` | the base (offline) | C1's pilot and held-out cells skip when C1 is not usable (`bounds.json` says so); `C_bounds`'s cells run |
+| `arms` | the server, the host, a counting gate | each arm configuration runs only where its smoke passed on that instrument, and **C1's arms only where C1 is usable**; the base and both clause-in-context arms still run; the skipped list is in `arms.json` |
+| `stage3` | C1 usable (the registered gate compares C1 with `C_bounds`) | skipped with the reason; no bounds adapter is trained |
+| `stage4` | the summed adapter usable | skipped with the reason and prep's error; the final judge pass still runs |
+| `judge` (final) | the judge's weights; the arms' runs not void | the void or skipped arms are left out |
+
+**The arm smoke** (`arm_smoke`, right after the serve check and the host's probe, which it needs): one
+ODCV-Bench run (the first of the 39, mandated) and one ImpossibleBench task (the tools scaffold, oneoff)
+for each of `C_conduct` in context, `C_bounds` in context and C1, built by the arms' own instruction
+builders and run through the host as the arms are. An ODCV-Bench run passes with no container error and at
+least one tool call; an ImpossibleBench task passes when scored. A configuration that fails on an
+instrument is skipped there in stage 2; C1 without a reading parity is recorded as skipped.
+
+**The standing pre-launch step runs the runner's own stage block** (`gpc4_pod_gates_local.sh`), in order:
+1. every path the runner exports into the repo exists;
+2. **prep's CPU part on the real files:** the summed adapter built from the runner's own `GPC4_PCTX` and
+   C1 from GPC-1's record, exact;
+3. **the stage block, dry, start to finish:** the lines of `remote_gpc4.sh` from its stage block to its
+   end, run unchanged locally with `GPC4_DRY=1` (which adds `--dry-run` to every stage call and nothing
+   on the pod), under the runner's real exports and the real local inputs (GPC-1's outputs linked in).
+   **What cannot run that way, and what stands in:** the three pod-only `/workspace` paths (the ODCV-Bench
+   and agentic-misalignment clones, the ImpossibleBench data) map to local copies at the runner's own
+   pins; the subject and judge are the dry stand-ins, and the host is the stand-in VM; and **the dry
+   stand-in model cannot load the real 27B adapters**, so C1's and the summed adapter's served parity fail
+   and everything that loads their weights (C1's bounds cells, C1's arms, stage 3, stage 4) takes the
+   skip path. The run therefore exercises the degraded session end to end. The slow dry chain runs those
+   same paths with dry-trained adapters, and step 2 builds the real summed adapter;
+4. the gate, once quietly and 3 times under load.
+
+**Before launch 4** (all pod-side or test-side; the VM-side hash is still `54800428559b1fc6`, rehearsal 8's
+record stands): the runner's 2 exported repo paths exist; the summed adapter builds from them (rank 32,
+alpha 64, 496 modules, exact); the stage block ran dry to its end in 16 stage calls (C1 and the sum
+unusable as above; the arm smoke passed `C_conduct` and `C_bounds` on both instruments and skipped C1; the
+arms ran the base and both clause-in-context arms and skipped C1's two; stages 3 and 4 skipped with their
+reasons; the final judge pass ran). **The gate collects 140 tests, floor 140** (from 132: the 8
+dependency-table rows); quiet 139 passed, 1 skipped; under load 3 of 3 the same. The slow dry chain, with
+the arm smoke in its order, passed.
