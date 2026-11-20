@@ -170,7 +170,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=149   # the gate's collected count when set (launch 4); fewer means a file failed to collect
+GATE_FLOOR=156   # the gate's collected count when set (launch 5); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
@@ -203,9 +203,15 @@ item() { if $PY $GP --out "$OUT" --stage fits --next "$1" $DRY; then run $GP "$1
 
 # The stages follow GPC_PLAN.md §11.14's dependency table: no stage's failure stops the session unless
 # nothing downstream can run; each stage skips, with its reason recorded, what it cannot do.
-# a. C1 registered, the summed adapter built (exact), each adapter's parity (offline). A failed adapter
-#    is not served: C1's failure skips C1's arms and stage 3; the sum's failure skips stage 4.
+# One model load per process (§11.16): every stage that loads a model is its own run, as GPC-1 to
+# GPC-3's were (launch 4's prep loaded the HF letters model and then vLLM in one process and ran out
+# of memory).
+# a. C1 registered, the summed adapter built (exact); each adapter's letters on HF, then its served
+#    parity, each its own process. A failed adapter is not served: C1's failure skips C1's arms and
+#    stage 3; the sum's failure skips stage 4.
 run $GP prep --stage prep
+run $GP parity_hf --stage parity_hf
+run $GP parity --stage parity
 # b. the server phase: the host's gate probe, the arm smoke, ODCV-Bench's gate, ImpossibleBench's stage 1
 run $GP serve --stage serve --part up
 run $GP serve_check --stage serve_check || echo ">> serve_check failed: the host's stages read nothing (the failure branch)"
@@ -218,13 +224,22 @@ $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
 wait $JDL; tail -1 "$OUT/logs/judge_download.log"   # the judge's weights (downloaded behind setup)
 run $GP judge --stage judge --part odcv_base
 item bounds
+run $GP bounds_cells --stage bounds_cells
 # d. the server phase again: the arms on each counting instrument
 run $GP serve --stage serve --part up
 item arms
 $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
 # e. offline: stage 3's gate and the bounds adapter, stage 4 (the summed adapter), the final judge pass
 item stage3
-item stage4
+run $GP parity_hf --stage parity_hf    # the bounds adapter's, when stage 3 trained one
+run $GP parity --stage parity
+run $GP stage3_read --stage stage3_read
+if $PY $GP --out "$OUT" --stage fits --next stage4 $DRY; then
+  run $GP stage4_cst --stage stage4_cst
+  run $GP stage4 --stage stage4
+else
+  echo ">> cut: stage4"
+fi
 run $GP judge --stage judge --part final
 # f. the host: stop (it powers off, which terminates it, once every result is confirmed here)
 $PY $GP --out "$OUT" --stage stop $DRY

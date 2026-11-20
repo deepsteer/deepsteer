@@ -175,6 +175,27 @@ def adapters(out: Path) -> dict[str, str]:
     return {t: trained(out, t) for t in ("c1", "sum", "bounds") if adapter_ok(out, t)}
 
 
+def serve_cmd(path: str, mods: dict[str, str]) -> list[str]:
+    """The subject's vLLM server: the base, and each usable adapter as a LoRA module. With no usable
+    adapter the LoRA flags are left out (launch 4: `--lora-modules` with no value stopped the server)."""
+    lora = (["--enable-lora", "--max-lora-rank", "32", "--max-loras", str(len(mods)), "--lora-modules",
+             *[f"{k}={v}" for k, v in mods.items()]] if mods else [])
+    return [os.environ.get("GPC4_VLLM", "vllm"), "serve", path, "--host", "127.0.0.1", "--port", "8000",
+            "--served-model-name", "base", *lora, "--reasoning-parser", "qwen3",
+            "--enable-auto-tool-choice", "--tool-call-parser", "hermes", "--max-model-len", "32768",
+            "--gpu-memory-utilization", "0.90", "--max-num-seqs", "128", "--seed", "0"]
+
+
+def server_ok(out: Path) -> tuple[bool, str | None]:
+    """§11.16: the subject's server is up and passed its check; the server-phase stages need both."""
+    up, chk = _r(out, "serve_up") or {}, _r(out, "serve_check") or {}
+    if not up.get("up"):
+        return False, "the subject's server did not come up" + (f" ({up['error']})" if up.get("error") else "")
+    if not chk.get("passes"):
+        return False, "the subject's server failed its serve check"
+    return True, None
+
+
 def serve(out: Path, part: str, dry: bool) -> dict:
     pidf = out / "serve.pid"
     if part == "down":
@@ -195,14 +216,7 @@ def serve(out: Path, part: str, dry: bool) -> dict:
     else:
         import cst_s0a_pod as S
 
-        path = S.V._model_path(False)  # noqa: SLF001
-        mods = [f"{k}={v}" for k, v in adapters(out).items()]
-        cmd = [os.environ.get("GPC4_VLLM", "vllm"), "serve", path, "--host", "127.0.0.1",
-               "--port", "8000", "--served-model-name", "base", "--enable-lora",
-               "--max-lora-rank", "32", "--max-loras", str(max(len(mods), 1)), "--lora-modules",
-               *mods, "--reasoning-parser", "qwen3", "--enable-auto-tool-choice",
-               "--tool-call-parser", "hermes", "--max-model-len", "32768",
-               "--gpu-memory-utilization", "0.90", "--max-num-seqs", "128", "--seed", "0"]
+        cmd = serve_cmd(S.V._model_path(False), adapters(out))  # noqa: SLF001
     logf = open(out / "logs" / "serve.log", "a")  # noqa: SIM115
     p = subprocess.Popen(cmd, stdout=logf, stderr=subprocess.STDOUT, start_new_session=True)
     pidf.write_text(str(p.pid))
@@ -217,8 +231,10 @@ def serve(out: Path, part: str, dry: bool) -> dict:
                 return rec
         except Exception:  # noqa: BLE001  (still loading)
             if p.poll() is not None:
+                _w(out, "serve_up", {"up": False, "error": "the vLLM server exited while loading"})
                 raise SystemExit("BAIL: the vLLM server exited while loading (see logs/serve.log)")
             time.sleep(5)
+    _w(out, "serve_up", {"up": False, "error": "the vLLM server did not come up in 30 minutes"})
     raise SystemExit("BAIL: the vLLM server did not come up in 30 minutes")
 
 
@@ -233,8 +249,14 @@ def _chat(body: dict) -> dict:
 def serve_check(out: Path, dry: bool) -> dict:
     """§11.6 rider 2: every adapter served by name; the tool-call parser on 5 calls; the reasoning
     split on 5 code answers (the answer's code block never taken from the trace)."""
-    with urllib.request.urlopen("http://127.0.0.1:8000/v1/models", timeout=10) as r:
-        names = {m["id"] for m in json.loads(r.read())["data"]}
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:8000/v1/models", timeout=10) as r:
+            names = {m["id"] for m in json.loads(r.read())["data"]}
+    except OSError as e:  # §11.16: recorded, so the server-phase stages skip with the reason
+        rec = {"passes": False, "error": repr(e)[:200]}
+        _w(out, "serve_check", rec)
+        print(">> serve_check:", json.dumps(rec), flush=True)
+        return rec
     want = {"base", *adapters(out)} if not dry else {"base", "c1"}
     tool = {"type": "function", "function": {"name": "bash", "description": "Run a shell command.",
                                              "parameters": {"type": "object", "properties": {
@@ -291,17 +313,49 @@ def _engine_for(out: Path, dry: bool, tags: list[str]):
     return path, tok, rf.build_format("qwen38_27b", tok), per
 
 
-def parity(out: Path, tags: list[str], dry: bool) -> dict:
-    """Letters on HF and served parity (the program's gate) for each named adapter not yet checked."""
+PARITY_TAGS = ("c1", "sum", "bounds")
+
+
+def stage_parity_hf(out: Path, dry: bool) -> dict:
+    """Letters on HF for each trained adapter without a served parity yet, in its own process (§11.16:
+    the HF model must be off the GPU before vLLM starts; GPC-2's two stages). A failure is recorded
+    against each adapter, which is then not served."""
     import pilot_pod_lib as PL
 
     os.environ["CST_MAX_LORA_RANK"] = "32"
-    todo = [(t, trained(out, t)) for t in tags if trained(out, t)
+    todo = [(t, trained(out, t)) for t in PARITY_TAGS if trained(out, t)
             and not (out / "parity" / f"{t}.json").exists()]
     if not todo:
         return {"done": True}
-    PL.hf_letters(out, todo, dry)
-    return PL.stage_read(out, todo, dry, parts=(), base=False)
+    try:
+        return PL.hf_letters(out, todo, dry)
+    except Exception as e:  # noqa: BLE001
+        for t, _ in todo:
+            _w(out / "parity", t, {"passes": False, "read": False, "error": f"hf letters: {repr(e)[:280]}"})
+        return {"error": repr(e)[:300]}
+
+
+def stage_parity(out: Path, dry: bool) -> dict:
+    """Served parity for each adapter left to read, one at a time, in its own process (§11.16)."""
+    import gpc2_pod as P2
+    import pilot_pod_lib as PL
+
+    os.environ["CST_MAX_LORA_RANK"] = "32"
+    for t in PARITY_TAGS:
+        if not trained(out, t) or (out / "parity" / f"{t}.json").exists():
+            continue
+        try:
+            PL.stage_read(out, [(t, trained(out, t))], dry, parts=(), base=False)
+        except Exception as e:  # noqa: BLE001
+            _w(out / "parity", t, {"passes": False, "read": False, "error": repr(e)[:300]})
+    usable = {t: adapter_ok(out, t) for t in PARITY_TAGS if trained(out, t)}
+    pr = _r(out, "prep") or {}
+    for t in ("c1", "sum"):
+        pr.setdefault("status", {}).setdefault(t, {})["parity_reads"] = P2._parity_reads(out, t)  # noqa: SLF001
+    pr["usable"] = {t: adapter_ok(out, t) for t in ("c1", "sum")}
+    _w(out, "prep", pr)
+    print(">> parity:", json.dumps({"usable": usable}), flush=True)
+    return {"usable": usable}
 
 
 def stage_prep(out: Path, dry: bool) -> dict:
@@ -328,28 +382,29 @@ def stage_prep(out: Path, dry: bool) -> dict:
         rec, s = {"dry": True, "note": "the dry sum is C1's copy"}, Path(c1)
     else:
         try:
-            Z.PCTX = Path(os.environ.get("GPC4_PCTX", str(Z.PCTX)))
-            Z.C1 = Path(c1)
-            rec = Z.build(s)
-            if not rec["exact"]:
-                raise ValueError("the summed adapter is not exact")
+            rec = build_sum(s, c1, os.environ.get("GPC4_PCTX", str(Z.PCTX)))
         except Exception as e:  # noqa: BLE001  (recorded; stage 4 is skipped)
             rec, status["sum"]["error"] = None, repr(e)[:300]
     if rec is not None:
         _w(out, "train_sum", {"rung": "sum", "trained": True, "adapters": {"1": str(s)}, "check": rec})
-    for tag in ("c1", "sum"):  # each on its own, so one adapter's failure does not take the other's read
-        if not trained(out, tag):
-            continue
-        try:
-            parity(out, [tag], dry)
-        except Exception as e:  # noqa: BLE001
-            _w(out / "parity", tag, {"passes": False, "read": False, "error": repr(e)[:300]})
-        status[tag]["parity_reads"] = P2._parity_reads(out, tag)  # noqa: SLF001
-    usable = {t: adapter_ok(out, t) for t in ("c1", "sum")}
-    _w(out, "prep", {"sum": rec, "parity": {t: (_r(out / "parity", t) or {}).get("passes")
-                                            for t in ("c1", "sum")}, "status": status, "usable": usable})
-    print(">> prep:", json.dumps({"usable": usable, "status": status}, default=str)[:500], flush=True)
-    return {"usable": usable}
+    # parity is its own two stages, parity_hf then parity, each in its own process (§11.16)
+    _w(out, "prep", {"sum": rec, "status": status, "usable": {t: False for t in ("c1", "sum")}})
+    print(">> prep:", json.dumps({"registered": {t: bool(trained(out, t)) for t in ("c1", "sum")},
+                                  "status": status}, default=str)[:500], flush=True)
+    return {"registered": {t: bool(trained(out, t)) for t in ("c1", "sum")}}
+
+
+def build_sum(s: Path, c1: str, pctx: str) -> dict:
+    """The summed adapter (P-ctx's update plus C1's, exact), from resolved paths: on the pod /workspace
+    is a symlink, and the build's record compares each path with the resolved repo root (launch 4)."""
+    import z_summed_adapter as Z
+
+    Z.PCTX = Path(pctx).resolve()
+    Z.C1 = Path(c1).resolve()
+    rec = Z.build(s)
+    if not rec["exact"]:
+        raise ValueError("the summed adapter is not exact")
+    return rec
 
 
 # ---- ODCV-Bench --------------------------------------------------------------------------------
@@ -431,6 +486,12 @@ def stage_arm_smoke(out: Path, dry: bool) -> dict:
     built by the arms' own instruction builders and run through the host as the arms are. A
     configuration that fails on an instrument is skipped there in stage 2; nothing here stops the gates."""
     rec = {"rule": "GPC_PLAN.md §11.14 item 2", "arms": {}}
+    ok, why = server_ok(out)
+    if not ok:  # §11.16: never run against a dead server (launch 4: an Inspect task hung for hours)
+        rec |= {"run": False, "reason": why}
+        _w(out, "arm_smoke", rec)
+        print(">> arm_smoke:", json.dumps({"skipped": why}), flush=True)
+        return rec
     if vm_lost(out):
         rec |= {"run": False, "reason": "the VM is lost (the failure branch)"}
         _w(out, "arm_smoke", rec)
@@ -512,6 +573,11 @@ def stage_odcv_gate(out: Path, dry: bool) -> dict:
     skipped with the reason recorded (GPC_PLAN.md §11.11)."""
     if vm_lost(out):
         _w(out, "odcv_gate_runs", {"run": False, "reason": "the VM is lost (the failure branch)"})
+        return {}
+    ok, why = server_ok(out)
+    if not ok:  # §11.16
+        _w(out, "odcv_gate_runs", {"run": False, "void": True, "reason": why})
+        print(">> odcv_gate:", json.dumps({"skipped": why}), flush=True)
         return {}
     ins = odcv_instruction("base", "base", dry)
     plan_set(out, [ins])
@@ -665,6 +731,12 @@ def stage_ib_gate(out: Path, dry: bool) -> dict:
     if vm_lost(out):
         rec |= {"run": False, "both_banked": True, "reason": "the VM is lost (the failure branch)"}
         _w(out, "ib_gate", rec)
+        return rec
+    ok, why = server_ok(out)
+    if not ok:  # §11.16: skipped, not banked
+        rec |= {"run": False, "both_banked": False, "reason": why}
+        _w(out, "ib_gate", rec)
+        print(">> ib_gate:", json.dumps({"skipped": why}), flush=True)
         return rec
     done_ins = []
     for scaffold in ("tools", "minimal"):
@@ -856,6 +928,18 @@ def stage_bounds(out: Path, dry: bool) -> dict:
         rec = P1.stage_conduct(bo, dry)
     cdir = bo / "conduct"
     slots = _r(cdir, "slots")
+    _w(out, "bounds", {"conduct_stage": rec if isinstance(rec, dict) else None,
+                       "slots_kept": len((slots or {}).get("kept", {}))})
+    print(">> bounds:", json.dumps({"kept": len((slots or {}).get("kept", {}))}), flush=True)
+    return rec
+
+
+def stage_bounds_cells(out: Path, dry: bool) -> dict:
+    """C1 and `C_bounds` in context on the bounds pilot cells, and C1 on the held-out cell (letters):
+    one engine, in its own process after the conduct stage's (§11.16)."""
+    cdir = out / "bounds" / "conduct"
+    slots = _r(cdir, "slots")
+    rec = {"c1_cells": "run" if adapter_ok(out, "c1") else "skipped: C1's served parity does not read"}
     if slots:  # C1 and C_bounds-in-context on the pilot cells and C1 on the held-out cell (letters)
         import gpc2_pod as P2
         import gpc_conduct as GC
@@ -872,11 +956,10 @@ def stage_bounds(out: Path, dry: bool) -> dict:
                      for i in ids]
             P1._cached(cdir / f"{name}.jsonl", items, lambda it, t=tag, n=name: P1.letter_rows(  # noqa: SLF001
                 ks, P2._gen(per, t, tok, it, dry), n))  # noqa: SLF001
-    _w(out, "bounds", {"conduct_stage": rec if isinstance(rec, dict) else None,
-                       "slots_kept": len((slots or {}).get("kept", {})),
-                       "c1_cells": "run" if adapter_ok(out, "c1") else
-                       "skipped: C1's served parity does not read"})
-    print(">> bounds:", json.dumps({"kept": len((slots or {}).get("kept", {}))}), flush=True)
+    else:
+        rec["reason"] = "the bounds grid's conduct stage kept no slots"
+    _w(out, "bounds_cells", rec)
+    print(">> bounds_cells:", json.dumps(rec), flush=True)
     return rec
 
 
@@ -890,6 +973,11 @@ def stage_arms(out: Path, dry: bool) -> dict:
     ins = []
     if vm_lost(out):
         gate, ibg = {}, {}
+    ok, why = server_ok(out)
+    if not ok:  # §11.16 (the second server phase's own up and check)
+        _w(out, "arms", {"run": False, "reason": why})
+        print(">> arms:", json.dumps({"skipped": why}), flush=True)
+        return {}
     skipped = {}
     if gate.get("counts_rate_bar"):
         for arm, model, which in SMOKE_ARMS:
@@ -1009,7 +1097,20 @@ def stage_stage3(out: Path, dry: bool) -> dict:
            "lora": {k: cfg[k] for k in ("rank", "alpha", "dropout")}, "gate3": g}
     _w(out, "train_bounds", rec)
     print(">> train_bounds:", json.dumps({k: v for k, v in rec.items() if k != "gate3"}), flush=True)
-    parity(out, ["bounds"], dry)
+    return rec  # its parity (parity_hf, parity) and its held-out read (stage3_read) are their own stages
+
+
+def stage_stage3_read(out: Path, dry: bool) -> dict:
+    """The bounds adapter on its own held-out cell, when it was trained and its parity reads (§11.16:
+    one engine, in its own process after the training and the parity stages)."""
+    import gpc_conduct as GC
+
+    if not adapter_ok(out, "bounds"):
+        why = (_r(out, "train_bounds") or {}).get("reason") or "the bounds adapter's served parity does not read"
+        _w(out, "stage3_read", {"run": False, "reason": why})
+        return {"run": False, "reason": why}
+    cdir = out / "bounds" / "conduct"
+    kept = _r(cdir, "slots")["kept"]
     path, tok, fmt, per = _engine_for(out, dry, ["bounds"])
     if "bounds" in per:  # its own held-out cell now; ImpossibleBench in the next pod unless stage 2 ran here
         items = [(f"holdout_bounds|{i}|0", P1._render(tok, fmt, GC.agent_messages(kept[i], kept[i])))  # noqa: SLF001
@@ -1017,18 +1118,38 @@ def stage_stage3(out: Path, dry: bool) -> dict:
         P1._cached(cdir / "holdout_bounds.jsonl", items, lambda it: P1.letter_rows(  # noqa: SLF001
             kept, P1.generate(per["bounds"][0], tok, it, dry, "letter", lora=per["bounds"][1]),
             "holdout_bounds"))
-    return rec
+    _w(out, "stage3_read", {"run": True})
+    return {"run": True}
 
 
 # ---- stage 4: the summed adapter ---------------------------------------------------------------
+def stage_stage4_cst(out: Path, dry: bool) -> dict:
+    """The summed adapter on CST's operator cell and cell A′ (a52's read): its own engine, in its own
+    process before stage 4's other cells (§11.16)."""
+    import pilot_pod_lib as PL
+
+    os.environ["CST_MAX_LORA_RANK"] = "32"
+    if not adapter_ok(out, "sum"):
+        rec = {"run": False, "reason": "the summed adapter did not build, or its served parity does not read"}
+    elif dry:
+        rec = {"run": True, "cst": {"dry": True}}
+    else:
+        rec = {"run": True, "cst": PL.stage_read(out, [("sum", trained(out, "sum"))], dry,
+                                                 parts=("panel_operator", "forced_plain"),
+                                                 k_override={"panel_operator": 2, "forced_plain": 8},
+                                                 base=True)}
+    _w(out, "stage4_cst", rec)
+    return rec
+
+
+
 def stage_stage4(out: Path, dry: bool) -> dict:
-    """The summed adapter (built and checked in ``prep``) on CST's operator cell and cell A′ (a52's read),
-    the held-out conduct cell (GPC-1's 100) and the blackmail continuity cell (G5's main cell, 50 each
-    for the session base and the summed adapter, at G5's settings)."""
+    """The summed adapter (built and checked in ``prep``) on the held-out conduct cell (GPC-1's 100) and
+    the blackmail continuity cell (G5's main cell, 50 each for the session base and the summed adapter,
+    at G5's settings); CST's two cells are ``stage4_cst``'s."""
     import gpc3_pod as P3
     import gpc_am as AM
     import gpc_conduct as GC
-    import pilot_pod_lib as PL
 
     import gpc2_pod as P2
 
@@ -1039,11 +1160,7 @@ def stage_stage4(out: Path, dry: bool) -> dict:
         _w(out, "stage4", rec)
         print(">> stage4:", json.dumps({"skipped": why}), flush=True)
         return rec
-    rec = {}
-    if not dry:
-        rec["cst"] = PL.stage_read(out, [("sum", trained(out, "sum"))], dry,
-                                   parts=("panel_operator", "forced_plain"),
-                                   k_override={"panel_operator": 2, "forced_plain": 8}, base=True)
+    rec = {"cst": (_r(out, "stage4_cst") or {}).get("cst")}  # read in its own stage (§11.16)
     path, tok, fmt, per = _engine_for(out, dry, ["sum"])
     tag = "sum"
     sl = P2.slots1(out)
@@ -1080,8 +1197,9 @@ def mark_done(out: Path, item: str) -> None:
     _w(out, "items_done", d)
 
 
-STAGES = ("prep", "serve", "serve_check", "vm_wait", "arm_smoke", "odcv_gate", "ib_gate", "judge", "bounds",
-          "arms", "stage3", "stage4", "hold", "stop", "fits")
+STAGES = ("prep", "parity_hf", "parity", "serve", "serve_check", "vm_wait", "arm_smoke", "odcv_gate",
+          "ib_gate", "judge", "bounds", "bounds_cells", "arms", "stage3", "stage3_read", "stage4_cst",
+          "stage4", "hold", "stop", "fits")
 
 
 def main() -> None:
@@ -1112,7 +1230,9 @@ def main() -> None:
     import cst_finalist_pod as F
 
     F.configure()
-    fn = {"prep": stage_prep, "vm_wait": stage_vm_wait, "arm_smoke": stage_arm_smoke,
+    fn = {"prep": stage_prep, "parity_hf": stage_parity_hf, "parity": stage_parity,
+          "bounds_cells": stage_bounds_cells, "stage3_read": stage_stage3_read,
+          "stage4_cst": stage_stage4_cst, "vm_wait": stage_vm_wait, "arm_smoke": stage_arm_smoke,
           "odcv_gate": stage_odcv_gate, "ib_gate": stage_ib_gate, "bounds": stage_bounds,
           "arms": stage_arms, "stage3": stage_stage3, "stage4": stage_stage4}
     if a.stage == "judge":

@@ -71,18 +71,22 @@ mkdir -p "$CACHE"
 pctx=$(bash -c "REPO_DIR='$PWD' G=\$REPO_DIR/papers/gpc_goal_pressure_conduct C=\$REPO_DIR/papers/cst_constitutional_steering/outputs I=\$G/outputs/gpc4_in START=0 PRICE_H=10.5 SESSION=1
 $all_exports
 echo \$GPC4_PCTX")
-"$PY" - "$pctx" "$CACHE/prep_cpu/sum/1" <<'PYEOF' || { echo "BAIL: prep's CPU part failed"; exit 1; }
+# as on the pod, the paths go through a symlink to the repo (/workspace is one there; launch 4's build
+# failed comparing an unresolved path with the resolved repo root), and the pod's own build_sum runs
+ln -sfn "$PWD" "$CACHE/wsroot"
+pctx_ws="$CACHE/wsroot/${pctx#$PWD/}"
+"$PY" - "$pctx_ws" "$CACHE/wsroot" "$CACHE/prep_cpu/sum/1" <<'PYEOF' || { echo "BAIL: prep's CPU part failed"; exit 1; }
 import sys
 from pathlib import Path
 sys.path.insert(0, "papers/gpc_goal_pressure_conduct/scripts")
-import z_summed_adapter as Z
 import gpc2_pod as P2
-Z.PCTX = Path(sys.argv[1])
-Z.C1 = Path(P2.c1_dir(Path("papers/gpc_goal_pressure_conduct/outputs/gpc4_v1").resolve()))
-rec = Z.build(Path(sys.argv[2]))
-assert rec["exact"], rec
-print(f">> prep's CPU part: the summed adapter builds from the runner's paths (rank {rec['rank']}, "
-      f"alpha {rec['alpha']}, {rec['modules']} modules, exact)")
+import gpc4_pod as P4
+ws = Path(sys.argv[2])
+c1 = P2.c1_dir(Path("papers/gpc_goal_pressure_conduct/outputs/gpc4_v1").resolve())
+c1_ws = ws / Path(c1).relative_to(Path.cwd().resolve())
+rec = P4.build_sum(Path(sys.argv[3]), str(c1_ws), sys.argv[1])
+print(f">> prep's CPU part: the pod's build_sum makes the summed adapter through a symlinked repo path, "
+      f"as on the pod (rank {rec['rank']}, alpha {rec['alpha']}, {rec['modules']} modules, exact)")
 PYEOF
 # the runner's own stage block, dry, start to finish, under its real exports and against the real
 # local inputs (GPC-1's outputs linked in). The pod-only /workspace paths (the two clones, the

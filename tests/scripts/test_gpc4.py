@@ -22,6 +22,15 @@ sys.path.insert(0, str(GPC / "scripts"))
 
 import gpc4_vm as V  # noqa: E402
 
+
+@pytest.fixture(autouse=True)
+def _server_up(tmp_path):
+    """Each test's session has a server that came up and passed its check (§11.16 skips the
+    server-phase stages otherwise; that rule has its own tests, which remove these records)."""
+    (tmp_path / "serve_up.json").write_text(json.dumps({"up": True}))
+    (tmp_path / "serve_check.json").write_text(json.dumps({"passes": True}))
+
+
 POLICY = json.loads((GPC / "vm/gpc4_iam_policy.json").read_text())
 LAUNCHER = (GPC / "runpod/launch_gpc4.sh").read_text()
 VM_INIT = (GPC / "vm/cloud_init_vm.sh").read_text()
@@ -1147,18 +1156,24 @@ def test_pod_runner_order_and_inputs():
     # its weights arrive, or the host is never told to stop
     steps = [
         "--stage prep",
+        "--stage parity_hf",
+        "--stage parity\n",
         "--part up",
         "--stage serve_check",
         "--stage vm_wait",
+        "--stage arm_smoke",
         "item odcv_gate",
         "item ib_gate",
         "--part down",
         "wait $JDL",
         "--part odcv_base",
         "item bounds",
+        "--stage bounds_cells",
         "item arms",
         "item stage3",
-        "item stage4",
+        "--stage stage3_read",
+        "--stage stage4_cst",
+        "--stage stage4\n",
         "--part final",
         "--stage stop",
     ]
@@ -1266,6 +1281,8 @@ def test_dry_session_chains_gpc1_into_every_gpc4_stage(tmp_path):
     try:
         for a in (
             ["prep"],
+            ["parity_hf"],
+            ["parity"],
             ["serve", "--part", "up"],
             ["serve_check"],
             ["vm_wait"],
@@ -1276,11 +1293,16 @@ def test_dry_session_chains_gpc1_into_every_gpc4_stage(tmp_path):
             ["serve", "--part", "down"],
             ["judge", "--part", "odcv_base"],
             ["bounds"],
+            ["bounds_cells"],
             ["serve", "--part", "up"],
             ["arms"],
             ["hold"],
             ["serve", "--part", "down"],
             ["stage3"],
+            ["parity_hf"],
+            ["parity"],
+            ["stage3_read"],
+            ["stage4_cst"],
             ["stage4"],
             ["judge", "--part", "final"],
             ["stop"],
@@ -1350,41 +1372,54 @@ def test_row_prep_a_sum_that_does_not_build_is_not_served_and_prep_goes_on(tmp_p
     # most probable failure: the build's exception ends the session (launch 3 stopped here), or the
     # unbuilt adapter is still handed to the server
     import gpc2_pod as P2
+    import pilot_pod_lib as PL
     import z_summed_adapter as Z
 
     c1 = _adapter(tmp_path, "c1", None)
     monkeypatch.setattr(P2, "c1_dir", lambda out: str(c1))
     monkeypatch.setattr(Z, "build", lambda s: (_ for _ in ()).throw(FileNotFoundError("p_ctx")))
-
-    def parity(out, tags, dry):
-        for t in tags:
-            P4._w(out / "parity", t, {"passes": True, "read": True})  # noqa: SLF001
-
-    monkeypatch.setattr(P4, "parity", parity)
-    rec = P4.stage_prep(tmp_path, dry=False)
-    assert rec["usable"] == {"c1": True, "sum": False}
+    assert P4.stage_prep(tmp_path, dry=False)["registered"] == {"c1": True, "sum": False}
     assert not (tmp_path / "train_sum.json").exists()
     assert "p_ctx" in P4._r(tmp_path, "prep")["status"]["sum"]["error"]  # noqa: SLF001
+    monkeypatch.setattr(PL, "hf_letters", lambda out, todo, dry: {"done": [t for t, _ in todo]})
+
+    def read(out, todo, dry, parts, base):
+        for t, _ in todo:
+            P4._w(out / "parity", t, {"passes": True, "read": True})  # noqa: SLF001
+
+    monkeypatch.setattr(PL, "stage_read", read)
+    P4.stage_parity_hf(tmp_path, dry=False)
+    assert P4.stage_parity(tmp_path, dry=False)["usable"] == {"c1": True}
+    assert P4._r(tmp_path, "prep")["usable"] == {"c1": True, "sum": False}  # noqa: SLF001
     assert set(P4.adapters(tmp_path)) == {"c1"}
 
 
-def test_row_prep_a_parity_that_raises_is_recorded_not_fatal(tmp_path, monkeypatch):
-    # most probable failure: one adapter's parity error (a vLLM fault at rank 32) ends prep, and the
-    # other adapter's read is lost with it
-    import gpc2_pod as P2
+def test_row_parity_a_failure_is_recorded_per_adapter_not_fatal(tmp_path, monkeypatch):
+    # most probable failure: one adapter's parity error (a vLLM fault at rank 32) ends the stage,
+    # and the other adapter's read is lost with it
+    import pilot_pod_lib as PL
 
-    c1 = _adapter(tmp_path, "c1", None)
-    monkeypatch.setattr(P2, "c1_dir", lambda out: str(c1))
+    _adapter(tmp_path, "c1", None)
+    _adapter(tmp_path, "sum", None)
+    monkeypatch.setattr(PL, "hf_letters", lambda out, todo, dry: {})
 
-    def parity(out, tags, dry):
-        if tags == ["sum"]:
+    def read(out, todo, dry, parts, base):
+        ((t, _),) = todo
+        if t == "sum":
             raise RuntimeError("max_lora_rank")
-        P4._w(out / "parity", "c1", {"passes": True, "read": True})  # noqa: SLF001
+        P4._w(out / "parity", t, {"passes": True, "read": True})  # noqa: SLF001
 
-    monkeypatch.setattr(P4, "parity", parity)
-    rec = P4.stage_prep(tmp_path, dry=True)  # the dry sum is C1's copy, then its parity raises
-    assert rec["usable"] == {"c1": True, "sum": False}
+    monkeypatch.setattr(PL, "stage_read", read)
+    assert P4.stage_parity(tmp_path, dry=False)["usable"] == {"c1": True, "sum": False}
     assert "max_lora_rank" in P4._r(tmp_path / "parity", "sum")["error"]  # noqa: SLF001
+    # the HF letters failing records every adapter left to read, and the stage still returns
+    for t in ("c1", "sum"):
+        (tmp_path / "parity" / f"{t}.json").unlink()
+    monkeypatch.setattr(
+        PL, "hf_letters", lambda out, todo, dry: (_ for _ in ()).throw(MemoryError())
+    )
+    P4.stage_parity_hf(tmp_path, dry=False)
+    assert all("hf letters" in P4._r(tmp_path / "parity", t)["error"] for t in ("c1", "sum"))  # noqa: SLF001
 
 
 def test_row_serve_serves_only_adapters_whose_parity_reads(tmp_path):
@@ -1715,3 +1750,99 @@ def test_the_arm_smoke_retries_once_and_skips_only_on_two_failures(tmp_path, mon
     assert a["c1"]["odcv_first"] is False and a["c1"]["odcv_retry"] is False and not a["c1"]["odcv"]
     assert a["cbounds"]["odcv_retry"] is None and a["cbounds"]["odcv"]  # no retry when it passed
     assert P4.smoke_ok(tmp_path, "cctx", "odcv")[0] and not P4.smoke_ok(tmp_path, "c1", "odcv")[0]
+
+
+# ---- §11.16: one model load per process; the server command; a dead server ---------------------
+@pytest.mark.parametrize("mods", [{}, {"c1": "/a/c1"}, {"c1": "/a/c1", "sum": "/a/sum"}])
+def test_the_server_command_serves_the_usable_adapters_and_none_without_lora_flags(mods):
+    # most probable failure: with no usable adapter, --lora-modules is passed with no value and the
+    # server never starts (launch 4)
+    cmd = P4.serve_cmd("/m/qwen", mods)
+    assert cmd[1:3] == ["serve", "/m/qwen"] and "--served-model-name" in cmd
+    if not mods:
+        assert not any(f.startswith("--enable-lora") or "lora" in f for f in cmd), cmd
+    else:
+        i = cmd.index("--lora-modules")
+        assert cmd[i + 1 : i + 1 + len(mods)] == [f"{k}={v}" for k, v in mods.items()]
+        assert cmd[cmd.index("--max-loras") + 1] == str(len(mods))
+
+
+def test_every_pod_stage_loads_at_most_one_model():
+    # most probable failure: a stage loads two models in one process and the second cannot get the
+    # GPU (launch 4's prep: HF letters, then vLLM, 26 of 79 GiB free)
+    import ast
+
+    loads = (
+        "subject",
+        "_engine_for",
+        "stage_read",
+        "hf_letters",
+        "load_model",
+        "_train",
+        "stage_conduct",
+        "_judge_engine",
+        "g5_transcripts",
+    )
+    shares = {"g5_transcripts", "_train"}  # each uses the model or engine it is handed
+    src = (GPC / "scripts/gpc4_pod.py").read_text()
+    tree = ast.parse(src)
+    for fn in tree.body:
+        if not (
+            isinstance(fn, ast.FunctionDef)
+            and (fn.name.startswith("stage_") or fn.name == "stage_prep")
+        ):
+            continue
+        calls = [
+            n.func.attr if isinstance(n.func, ast.Attribute) else getattr(n.func, "id", "")
+            for n in ast.walk(fn)
+            if isinstance(n, ast.Call)
+        ]
+        n = sum(c in loads and c not in shares for c in calls)
+        assert n <= 1, (fn.name, [c for c in calls if c in loads])
+
+
+def test_the_sum_is_built_from_resolved_paths(tmp_path, monkeypatch):
+    # most probable failure: the build compares an unresolved /workspace path with the resolved repo
+    # root and fails (launch 4: /workspace is a symlink on the pod)
+    import z_summed_adapter as Z
+
+    real = tmp_path / "real"
+    (real / "pctx").mkdir(parents=True)
+    (real / "c1").mkdir()
+    link = tmp_path / "workspace"
+    link.symlink_to(real)
+    seen = {}
+    monkeypatch.setattr(Z, "build", lambda s: seen.update(p=Z.PCTX, c=Z.C1) or {"exact": True})
+    assert P4.build_sum(tmp_path / "sum", str(link / "c1"), str(link / "pctx"))["exact"]
+    assert seen == {"p": (real / "pctx").resolve(), "c": (real / "c1").resolve()}
+
+
+def test_a_dead_server_skips_the_server_phase_stages_with_the_reason(tmp_path, monkeypatch):
+    # most probable failure: the smoke and the gates run against a server that never started, and an
+    # Inspect task hangs for hours on a model that is not there (launch 4)
+    P4._w(tmp_path, "serve_up", {"up": False, "error": "the vLLM server exited while loading"})  # noqa: SLF001
+    P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
+    P4._w(tmp_path, "odcv_gate", {"counts_rate_bar": True})  # noqa: SLF001
+    published = []
+    monkeypatch.setattr(P4, "plan_set", lambda out, ins, hold=False: published.append(ins))
+    assert "did not come up" in P4.stage_arm_smoke(tmp_path, dry=True)["reason"]
+    assert P4.stage_odcv_gate(tmp_path, dry=True) == {}
+    assert "did not come up" in P4._r(tmp_path, "odcv_gate_runs")["reason"]  # noqa: SLF001
+    ib = P4.stage_ib_gate(tmp_path, dry=True)
+    assert ib["run"] is False and ib["both_banked"] is False  # skipped, never banked
+    assert P4.stage_arms(tmp_path, dry=True) == {}
+    assert published == []  # nothing was sent to the host
+    P4._w(tmp_path, "serve_up", {"up": True})  # noqa: SLF001
+    P4._w(tmp_path, "serve_check", {"passes": False})  # noqa: SLF001
+    assert "serve check" in P4.server_ok(tmp_path)[1]
+
+
+def test_stage3s_read_and_stage4s_cst_read_skip_with_their_reasons(tmp_path):
+    # most probable failure: the split stages raise when their adapter is missing, which the runner
+    # would log as a failure rather than a skip
+    P4._w(tmp_path, "train_bounds", {"trained": False, "reason": "the gate did not fire"})  # noqa: SLF001
+    assert P4.stage_stage3_read(tmp_path, dry=True) == {
+        "run": False,
+        "reason": "the gate did not fire",
+    }
+    assert P4.stage_stage4_cst(tmp_path, dry=True)["run"] is False

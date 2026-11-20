@@ -2126,3 +2126,40 @@ dry chain passed. The standing step: the runner's 2 exported repo paths exist; t
 from them, exact; the stage block ran dry to its end; **the gate collects 149 tests, floor 149** (from 140:
 the new tests and one more bail point, the runner's `zstandard` check); quiet 148 passed, 1 skipped, and
 3 of 3 under load the same.
+
+### 11.16 GPC-4 launch 4 (2026-11-20, at `697f5077`): no result; one model load per process
+
+**What ran.** Launch at 07:41 HST; the host set up and its egress locked to the pod at 07:52; the pod's
+runner started at 07:55 and its gate passed (149 collected, floor 149; 148 passed, 1 skipped). Then
+**`prep` lost both adapters** and the session degraded as §11.14 allows:
+- **C1's served parity:** prep ran parity in one process, the HF letters (the 27B on HF, about 53 GB)
+  and then vLLM, which found 26 of 79 GiB free and would not start. GPC-2 ran the two as separate stages
+  (`parity_hf`, `parity`), each its own process; GPC-4's build had joined them, and no dry run can see GPU
+  memory.
+- **The summed adapter's build:** `'/workspace/deepsteer/…/p_ctx/…' is not in the subpath of
+  '/home/ubuntu/workspace/deepsteer'`. On the pod `/workspace` is a symlink; the build's record compared
+  the exported (unresolved) path with the resolved repo root. The local check of prep's CPU part ran
+  without a symlink and could not see it.
+- **The server then failed to start:** with no usable adapter, `--lora-modules` was passed with no value
+  (`vllm serve: error: argument --lora-modules: expected at least one argument`). The post-lock gate
+  failed only `forward_model`; the host's probe still reached the pod, so `vm_wait` read the host as live,
+  and the arm smoke and the gates ran against no server: the arm smoke failed every configuration after
+  an hour, and an ImpossibleBench smoke task hung on the host for over 50 minutes (Inspect retrying a
+  model that was not there), holding the gates' instructions behind it.
+- **Stopped by the author** at about 10:30 (teardown; the pod deleted by hand, since Ctrl-C stops only the
+  launcher after the handoff, by design). **Cost:** the pod about 2.7 h, **about $3.20**; the host about
+  2.9 h, **about $1.85**. **No result.**
+
+**The fixes (pod side; the VM-side hash `54800428559b1fc6` unchanged):**
+1. **One model load per process.** `S.subject` makes a new vLLM engine on every call (no reuse), and an
+   engine asks for 92% of the GPU, so every stage that loaded two models in one process is split, as
+   GPC-1 to GPC-3 ran them: `prep` (register, build), `parity_hf`, `parity`; `bounds`, `bounds_cells`;
+   `stage3` (gate, train), `parity_hf`, `parity`, `stage3_read`; `stage4_cst`, `stage4`. The runner calls
+   each as its own run. A static test fails any pod stage with more than one model load.
+2. **The server command** leaves out every LoRA flag when no adapter is usable (tested at 0, 1 and 2).
+3. **The adapters' paths are resolved** before the build (`build_sum`); the standing step now runs the
+   pod's own `build_sum` through a symlinked repo path, as on the pod (the old unresolved assignment fails
+   there, as it did on the pod).
+4. **A dead server skips the server phase** (`server_ok`): when `serve up` or `serve_check` fails, the arm
+   smoke, both gates and the arms skip with the reason (a gate skipped this way is not banked), so no stage
+   runs against a server that is not there.

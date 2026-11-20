@@ -141,8 +141,9 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | 11-19 | GPC-4 launch 1 on Thunder (A100 80GB, $1.18; the gate tests bailed at 0.30 h and the exit trap left the pod idle until the sentinel was touched by hand; no result; `GPC_PLAN.md` §11.12) | 0.30 | 1.12 | 1.32 | 17.99 | 25.41 |
 | 11-19 | GPC-4 launch 2 on Thunder (A100 80GB, $1.18; the gate tests bailed at 0.32 h on a load-dependent test; every path ended by itself; no result; §11.12) | 0.32 | 0.42 | 0.50 | 18.41 | 25.91 |
 | 11-19 | GPC-4 launch 3 on Thunder (A100 80GB, $1.18; gate passed; prep stopped at 0.37 h on a doubled path to P-ctx; every path ended by itself; no result; §11.12) | 0.37 | 0.45 | 0.53 | 18.86 | 26.44 |
+| 11-20 | GPC-4 launch 4 on Thunder (A100 80GB, $1.18; gate passed; prep lost both adapters (parity's two loads in one process, an unresolved path); the server failed with no adapter; stages ran against no server until stopped; no result; §11.16) | 2.6 | 2.7 | 3.20 | 21.56 | 29.64 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: **$146.56 remain** ($173.00 − $26.44). The EC2 host's spend to
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: **$143.36 remain** ($173.00 − $29.64). The EC2 host's spend to
 date (rehearsals 1 to 7 and launch 1's host, about $4 at the records' upper bounds) is not in it; the AWS
 bill is its figure of record.
 
@@ -243,3 +244,7 @@ bill is its figure of record.
   tool call is void ("the tool channel is suspect"), reruns once, and is skipped, never banked; the read
   reports the share per arm; the arm smoke retries once. Gate 149, floor 149. Parked (§11.7): a module
   ablation of C1 (attention only, MLP only) on S-hi and the held-out conduct cell.
+- 2026-11-20: GPC-4 launch 4 (§11.16): no result; parity's two model loads in one process, an unresolved
+  adapter path, an empty --lora-modules, and stages run against no server. Fixed: one model load per
+  process (a static test), the server command, resolved paths (checked through a symlink), and a dead
+  server skips the server phase. About $3.20 pod, $1.85 host.
