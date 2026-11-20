@@ -1557,6 +1557,12 @@ Parked, one line each:
 - W-self's rebuild (GPC-A2).
 - Action-side training.
 - PropensityBench (out, item 1) and ScopeBench (parked, item 2), as recorded in §11.2.
+- For the pod after GPC-4 (the author, 2026-11-19): an unmonitored ODCV-Bench variant (one added sentence
+  that no one reviews the transcript), run per arm, as the compliance-gap read; at the next results
+  commit SYNTHESIS pairs GPC's standing claim with the conditional-compliance reading (Baum, Binkytė,
+  Großmann, Jahn and Mannino, arXiv 2611.02162) and names this as the cell that separates them, as far as
+  the subject takes the sentence at face value (the paper's own objection: a model that complies when it
+  seems unobserved "may simply have recognized the test").
 
 ### 11.8 Built, part 1: the host and the rehearsal (2026-11-18)
 
