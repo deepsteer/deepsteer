@@ -229,3 +229,6 @@ bill is its figure of record.
 - 2026-11-19: GPC-4 launch 2 (§11.12): no result. The pod's gate tests bailed on a test that read an order
   from load-dependent output; the trap, the download, the pod's deletion and the host's removal all ran by
   themselves. About $0.50 for the pod, $0.47 for the host. The test now records the order at the gate.
+- 2026-11-19: launch 3's review (§11.12): the pod's gate deselects host-side tests (34 items, CI keeps
+  them) and bails under a floor of 131; the standing step adds 3 loaded runs. Before launch 3: 131
+  collected, 130 passed and 1 skipped, quiet and 3 of 3 under load.

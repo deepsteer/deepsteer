@@ -163,4 +163,5 @@ markers = [
     "slow: marks tests that require real model weights (deselect with '-m \"not slow\"')",
     "regression: marks regression tests against paper outputs (requires model weights)",
     "network: fetches external data (opt-in via DEEPSTEER_NETWORK_TESTS=1; never in CI)",
+    "host_side: tests code that runs only on GPC-4's EC2 host, the stand-in or the laptop's launcher; the pod's gate deselects them, CI runs them",
 ]

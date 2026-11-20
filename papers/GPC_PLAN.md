@@ -1993,3 +1993,25 @@ billing. **Cost:** the pod about 0.42 h, **about $0.50**; the host about 0.74 h,
 called, whether the card's log already holds the serve-check line, and the test asserts that; the
 launcher's own lines keep their order checks. Before the fix was committed, the pod's full gate-test list
 ran 4 times locally under heavy CPU load (two busy loops per core): 162 passed, 1 skipped, each time.
+
+**Launch 3: the lead's review (2026-11-19), built.** Both items are pod-side or test-side; the VM-side
+hash stays `54800428559b1fc6`, so rehearsal 8's record stands.
+1. **The pod's gate runs only tests of code the pod executes.** A `host_side` marker (registered in
+   `pyproject.toml`) is on the 30 test functions (34 items) of code that runs only on the EC2 host, the
+   stand-in or the laptop's launcher: the sampling proxy and the stub, the Compose project and the run's
+   evidence rule, the driver and its self-termination, the push path and its limits, the
+   ImpossibleBench stage runner and its counts, the gate tests, the sampler, the IAM policy, the
+   launcher and its dry launches, `verify`, cloud-init and the rehearsal plan. `remote_gpc4.sh`'s gate
+   runs `-m "not slow and not host_side"`; CI still runs everything. **Kept in the pod's gate:** the parts
+   of `gpc4_vm.py` the pod runs (the control server and the plan runner: `received`, `next_instruction`,
+   a held plan), all of `gpc4_pod.py`'s tests, the runner's order and its exit trap at each bail, and two
+   tests that also guard pod code (the judge-swap test reads the runner; the zstd test covers
+   `gpc4_pod.py`). **The gate collects 131 tests** (from 163 before: 129 pod-side, one more trap case for
+   the floor's own bail, and the new guard below); the runner bails if fewer than its floor of 131 are
+   collected. A guard test fails any test that reads the launcher, the policy or cloud-init without the
+   marker, and checks the runner's selection and floor.
+2. **The standing pre-launch step now includes load** (`gpc4_pod_gates_local.sh`): under the runner's
+   exports, it prints the gate's collected count against the floor, runs the gate once quietly and then
+   3 times under heavy CPU load (two busy loops a core), all passing.
+3. **Before launch 3:** 131 collected, floor 131; quiet 130 passed, 1 skipped; under load 130 passed, 1
+   skipped, 3 of 3.

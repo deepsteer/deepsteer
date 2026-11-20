@@ -29,6 +29,7 @@ STANDIN_INIT = (GPC / "vm/cloud_init_standin.sh").read_text()
 
 
 # ---- the sampling proxy --------------------------------------------------------------------------
+@pytest.mark.host_side
 def test_rewrite_applies_the_sampling_of_record_and_a_stable_seed():
     # most probable failure: ODCV-Bench's agent sends temperature 0 and it reaches the server, or a
     # retried call draws a new seed
@@ -52,6 +53,7 @@ def test_rewrite_applies_the_sampling_of_record_and_a_stable_seed():
     assert V.rewrite(later, "run1")[1] != seed and V.rewrite(body, "run2")[1] != seed
 
 
+@pytest.mark.host_side
 def test_run_path_names_the_run():
     assert V._run_of("/run/r1_odcv_0/v1/chat/completions") == ("r1_odcv_0", "/v1/chat/completions")  # noqa: SLF001
     assert V._run_of("/v1/models") == ("-", "/v1/models")  # noqa: SLF001
@@ -63,6 +65,7 @@ def _serve(handler):
     return s
 
 
+@pytest.mark.host_side
 def test_proxy_enforces_the_sampling_of_record_on_a_temperature_0_client(tmp_path, monkeypatch):
     # most probable failure: the proxy forwards the client's own sampling (the stub reports what
     # it saw)
@@ -86,6 +89,7 @@ def test_proxy_enforces_the_sampling_of_record_on_a_temperature_0_client(tmp_pat
     proxy.shutdown()
 
 
+@pytest.mark.host_side
 def test_stub_answers_tool_loops_and_code_tasks():
     s = _serve(V.Stub)
     url = f"http://127.0.0.1:{s.server_address[1]}/v1/chat/completions"
@@ -112,6 +116,7 @@ def test_stub_answers_tool_loops_and_code_tasks():
 
 
 # ---- ODCV-Bench's per-run Compose project --------------------------------------------------------
+@pytest.mark.host_side
 def test_compose_project_has_no_fixed_names_ports_or_extra_mounts():
     # most probable failure: upstream's fixed container names collide across concurrent runs, or the
     # scenario container joins the bridge (reaching the proxy) or a host port is published
@@ -153,6 +158,7 @@ def test_next_instruction_walks_the_plan_then_stops():
     assert V.next_instruction(plan, ["p1", "p2"])["kind"] == "stop"
 
 
+@pytest.mark.host_side
 def test_driver_powers_off_only_after_every_result_is_confirmed(tmp_path, monkeypatch):
     # most probable failure: the VM terminates on "stop" while a result is still undelivered
     # (its disk is deleted on termination)
@@ -212,6 +218,7 @@ def _driver_with_clock(tmp_path, monkeypatch, docs, max_polls=500, poll_s=60.0):
 WAIT = {"instruction": {"kind": "wait", "id": "hold"}, "received": []}
 
 
+@pytest.mark.host_side
 def test_the_host_terminates_itself_when_the_pod_is_gone(tmp_path, monkeypatch):
     # most probable failure: the pod dies mid-plan and the host, waiting on a document that never
     # answers again, idles to its 14 h limit (the lead, for rehearsal 8)
@@ -223,6 +230,7 @@ def test_the_host_terminates_itself_when_the_pod_is_gone(tmp_path, monkeypatch):
     assert rec["unreachable_s"] >= V.POD_GONE_S and "unreachable" in rec["reason"]
 
 
+@pytest.mark.host_side
 def test_a_document_never_read_never_starts_the_clock(tmp_path, monkeypatch):
     # most probable failure: the host powers off while the pod is still in setup, before its
     # control server is up (the launcher, not this rule, removes a host whose pod never came up)
@@ -230,6 +238,7 @@ def test_a_document_never_read_never_starts_the_clock(tmp_path, monkeypatch):
     assert calls == []
 
 
+@pytest.mark.host_side
 def test_a_long_stage_or_a_short_outage_never_trips_it(tmp_path, monkeypatch):
     # most probable failure: the rule counts the time since the last read, which a 60-minute stage
     # exceeds, or a forward reconnect of a few minutes
@@ -255,6 +264,7 @@ def _actions(st):
     return [st["Action"]] if isinstance(st["Action"], str) else st["Action"]
 
 
+@pytest.mark.host_side
 def test_iam_policy_matches_the_brief_and_holds_its_limits():
     # most probable failure: a write action is left unconditioned (another instance, group or
     # key, or another region), or the brief's copy and the attached file drift apart
@@ -303,6 +313,7 @@ def test_iam_policy_matches_the_brief_and_holds_its_limits():
 
 
 # ---- the launcher and cloud-init, from their text ------------------------------------------------
+@pytest.mark.host_side
 def test_launcher_holds_the_host_rules():
     # most probable failure: a rule the author ruled on is missing from the script that runs
     for needle in (
@@ -341,6 +352,7 @@ def test_launcher_holds_the_host_rules():
     )
 
 
+@pytest.mark.host_side
 def test_cloud_init_carries_no_credential_and_arms_the_hard_limit_first():
     # most probable failure: a token lands in user-data (readable in the instance's attributes),
     # or the hard-limit shutdown is set after a step that can hang
@@ -359,6 +371,7 @@ def test_cloud_init_carries_no_credential_and_arms_the_hard_limit_first():
     assert "-wo $R" in STANDIN_INIT
 
 
+@pytest.mark.host_side
 def test_rehearsal_plan_is_the_gates_own_scale():
     # most probable failure: the rehearsal runs a toy load, so the gate's 80 runs at 8 at once and
     # its 30 tasks a scaffold at 10 sandboxes run for the first time on GPU time (the lead's item 2)
@@ -387,6 +400,7 @@ def test_rehearsal_plan_is_the_gates_own_scale():
             assert i["task_ids"] == P4.ib_sample(i["split"], 15, f"first|{i['scaffold']}", False)
 
 
+@pytest.mark.host_side
 def test_push_creates_each_parent_before_the_run(tmp_path, monkeypatch):
     # most probable failure: rsync makes only the last level of the destination, so a run's push to
     # <stage>/<run> fails until the stage's own push at its end (rehearsal 2, every ODCV-Bench run)
@@ -404,6 +418,7 @@ def test_push_creates_each_parent_before_the_run(tmp_path, monkeypatch):
     assert calls == ["u@h:gate_probe/"]  # a top-level push needs no parent
 
 
+@pytest.mark.host_side
 def test_parallel_pushes_never_meet_rrsyncs_lock(tmp_path, monkeypatch):
     # most probable failure: 8 runs finishing together push at once and rrsync, which locks the
     # results directory per connection, refuses all but one (rehearsal 6: every run's own push)
@@ -445,6 +460,7 @@ def test_parallel_pushes_never_meet_rrsyncs_lock(tmp_path, monkeypatch):
     assert V.PUSH_STATS == {"pushes": 8, "failed": 0, "busy_retries": 0, "timeouts": 0}
 
 
+@pytest.mark.host_side
 def test_a_push_retries_while_another_process_holds_the_lock(tmp_path, monkeypatch):
     # most probable failure: the post-lock gate's probe push (its own process) meets the driver's,
     # and one of them is lost on the first refusal
@@ -467,6 +483,7 @@ def test_a_push_retries_while_another_process_holds_the_lock(tmp_path, monkeypat
     assert V.PUSH_STATS["failed"] == 1  # a lock held throughout is a failed push, counted
 
 
+@pytest.mark.host_side
 def test_a_push_that_never_returns_fails_in_time_and_frees_the_lock(tmp_path, monkeypatch):
     # most probable failure: a push hangs on a dead link and holds the lock, so no later push (nor
     # the stage's end) ever goes out (the lead, before rehearsal 7)
@@ -499,6 +516,7 @@ def test_a_push_that_never_returns_fails_in_time_and_frees_the_lock(tmp_path, mo
     assert V.push(tmp_path, "r1_odcv/run_1", timeout_s=1) is True  # the next push goes through
 
 
+@pytest.mark.host_side
 def test_the_results_ssh_and_rsync_carry_their_own_limits():
     # most probable failure: a dead link leaves ssh waiting with no keepalive and rsync with no
     # I/O timeout
@@ -508,6 +526,7 @@ def test_the_results_ssh_and_rsync_carry_their_own_limits():
     assert 'f"--timeout={RSYNC_IO_TIMEOUT_S}"' in src and V.RSYNC_IO_TIMEOUT_S < V.PUSH_TIMEOUT_S
 
 
+@pytest.mark.host_side
 def test_a_good_run_without_result_json_is_not_an_error(tmp_path):
     # most probable failure: the run errs on upstream's result.json, which its executor never writes
     # at the pin (rehearsal 2's good stub run read container_error true)
@@ -524,6 +543,7 @@ def test_a_good_run_without_result_json_is_not_an_error(tmp_path):
     assert V.run_evidence(tmp_path, {"compose_exit": 0, "run_timeout": False})["container_error"]
 
 
+@pytest.mark.host_side
 def test_ib_stage_points_upstreams_loader_at_the_pinned_directory():
     # most probable failure: the loader asks the Hub by name, which fails offline even with the
     # files cached (rehearsal 2: OfflineModeIsEnabled on both stages)
@@ -537,6 +557,7 @@ def test_ib_stage_points_upstreams_loader_at_the_pinned_directory():
     assert "refs" not in VM_INIT  # the old offline-by-name workaround is gone
 
 
+@pytest.mark.host_side
 def test_eval_counts_reads_scored_and_errored_samples(tmp_path):
     # most probable failure: an errored sample counts as scored, so verify passes an
     # ImpossibleBench stage that never ran a task
@@ -563,6 +584,7 @@ def test_no_reader_opens_a_zstd_eval_log_with_the_standard_zipfile():
     assert "read_eval_log(l.location)" in V.IB_TASK and '"samples.json"' in V.IB_TASK
 
 
+@pytest.mark.host_side
 def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_path):
     # most probable failure: verify passes on delivery alone (rehearsal 2 would have, with neither
     # instrument running), passes a stage short of its plan's scale, or names the tree it runs in
@@ -669,6 +691,7 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_pa
     assert not session(undelivered="r3_ib_tools_conflicting")["passed"]  # every result delivered
 
 
+@pytest.mark.host_side
 def test_verify_reads_the_results_where_it_unpacks_them(tmp_path):
     # most probable failure: the download lands one level off from where the record reads, so every
     # instrument reads null (rehearsal 4: a passing rehearsal recorded as failed)
@@ -815,6 +838,7 @@ def _dry_launch(tmp_path, a100xl: str, card: str = BAIL_CARD):
     return r, log, time.time() - t0
 
 
+@pytest.mark.host_side
 def test_launch_stops_at_once_and_removes_the_host_when_the_pod_card_bails(tmp_path):
     # most probable failure: with no capacity the card bails, launch waits an hour for an endpoint
     # that cannot appear, then leaves the host up to its 14 h limit (the lead's review, item 1)
@@ -843,6 +867,7 @@ def test_launch_stops_at_once_and_removes_the_host_when_the_pod_card_bails(tmp_p
     assert not (tmp_path / "key").exists()
 
 
+@pytest.mark.host_side
 def test_the_post_lock_gate_waits_for_the_pods_serve_check(tmp_path):
     # most probable failure: the gate runs as soon as the endpoint appears, before the pod has its
     # keys or servers, and fails (GPC-4's first launch: 40 s after the pod was created). The order
@@ -861,6 +886,7 @@ def test_the_post_lock_gate_waits_for_the_pods_serve_check(tmp_path):
     assert "terminate-instances" not in log  # a session that reached its handoff runs on, detached
 
 
+@pytest.mark.host_side
 def test_a_pod_that_bails_before_its_serve_check_takes_the_host_down(tmp_path):
     # most probable failure: the pod bails at its gate tests after the endpoint appeared, and the
     # host, detached and egress-locked, idles to its 14 h limit (GPC-4's first launch)
@@ -872,6 +898,7 @@ def test_a_pod_that_bails_before_its_serve_check_takes_the_host_down(tmp_path):
     assert "delete-security-group" in log and "delete-key-pair" in log
 
 
+@pytest.mark.host_side
 def test_launch_creates_nothing_when_thunder_lists_no_a100(tmp_path):
     # most probable failure: the host is built (and billed) before Thunder is known to have a GPU
     r, log, _ = _dry_launch(tmp_path, "unavailable")
@@ -880,11 +907,13 @@ def test_launch_creates_nothing_when_thunder_lists_no_a100(tmp_path):
         assert call not in log, log
 
 
+@pytest.mark.host_side
 @pytest.mark.parametrize("cmd", ["rehearse", "verify", "launch", "reattach", "teardown"])
 def test_launcher_dispatches_each_command(cmd):
     assert f"  {cmd}) cmd_{cmd} ;;" in LAUNCHER
 
 
+@pytest.mark.host_side
 def test_gate_reads_the_first_rehearsals_false_alarms_correctly():
     # most probable failure (the first rehearsal): a disabled metadata endpoint still accepts TCP,
     # the images' public GPG_KEY reads as a credential, and /dev/root's source reads as /root
@@ -972,6 +1001,7 @@ def test_bounds_grid_swap_restores_the_conduct_grid():
     assert (GC.SETTINGS, GC.GRID, GC.brief, GC.check, P4.P1.c_conduct) == before
 
 
+@pytest.mark.host_side
 def test_usage_records_the_hosts_peak_memory_and_load(tmp_path, monkeypatch):
     # most probable failure: the sampler reads a field wrongly and records 0 for every stage, so the
     # rehearsal's capacity read (the lead's item 2) is empty
@@ -1261,3 +1291,48 @@ def test_dry_session_chains_gpc1_into_every_gpc4_stage(tmp_path):
     assert (o4 / "g5" / "blackmail.jsonl").exists() and (o4 / "stage4.json").exists()
     plan = json.loads((o4 / "plan.json").read_text())
     assert plan["hold"] is False
+
+
+def test_the_pods_gate_runs_only_pod_code_and_holds_a_floor():
+    # most probable failure: a new host-side test lands unmarked and runs in the pod's gate, where
+    # it protects nothing (launches 1 and 2 bailed that way), or the gate collects too few tests to
+    # mean anything and passes (the lead's launch 3 review)
+    import ast
+    import subprocess
+
+    src = Path(__file__).read_text()
+    tree = ast.parse(src)
+    host_names = ("LAUNCHER", "POLICY", "VM_INIT", "STANDIN_INIT", "_dry_launch")
+    for fn in [
+        n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name.startswith("test_")
+    ]:
+        body = ast.get_source_segment(src, fn)
+        marked = any("host_side" in ast.get_source_segment(src, d) for d in fn.decorator_list)
+        if any(re.search(rf"\b{h}\b", body) for h in host_names) and fn.name not in (
+            "test_the_pods_gate_runs_only_pod_code_and_holds_a_floor",
+        ):
+            assert marked, f"{fn.name} reads host-side code but is not marked host_side"
+    runner = (GPC / "runpod/remote_gpc4.sh").read_text()
+    assert 'GATE_MARK="not slow and not host_side"' in runner
+    assert '-m "$GATE_MARK" $TESTS >' in runner and "under its floor" in runner
+    floor = int(re.search(r"^GATE_FLOOR=(\d+)", runner, re.M).group(1))
+    tests = re.search(r'^TESTS="([^"]+)"', runner, re.M).group(1).split()
+    r = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "--collect-only",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "-m",
+            "not slow and not host_side",
+            *tests,
+        ],
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+    )
+    n = sum("::" in ln for ln in r.stdout.splitlines())
+    assert floor <= n, (floor, n)

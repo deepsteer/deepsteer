@@ -156,8 +156,16 @@ fi
 echo ">> setup done at $(hours) h"
 
 TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_gpc2.py tests/scripts/test_gpc1.py tests/scripts/test_session_limits.py tests/scripts/test_cst_teacher.py tests/scripts/test_cst_parity.py tests/scripts/test_mch_thinking_pod.py"
-# the slow dry chains are Z9's local check (run in the sync emulation); the pod runs the rest
-$PY -m pytest -q -p no:cacheprovider -m "not slow" $TESTS > "$OUT/logs/gate_tests${SESSION}.log" 2>&1; GT=$?
+# the slow dry chains are Z9's local check (run in the sync emulation). The pod runs only tests of code
+# it executes: the host-side tests (the launcher, the IAM policy, cloud-init, the rehearsal plan, verify
+# and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
+# launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
+GATE_MARK="not slow and not host_side"
+GATE_FLOOR=131   # the gate's collected count when set (launch 3); fewer means a file failed to collect
+NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
+echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
+[ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
+$PY -m pytest -q -p no:cacheprovider -m "$GATE_MARK" $TESTS > "$OUT/logs/gate_tests${SESSION}.log" 2>&1; GT=$?
 grep -E '[0-9]+ (passed|failed)' "$OUT/logs/gate_tests${SESSION}.log" | tail -1
 grep -E '^FAILED' "$OUT/logs/gate_tests${SESSION}.log" | head -5
 [ "$GT" = 0 ] || { echo "BAIL: gate tests (see logs/gate_tests${SESSION}.log)"; exit 1; }
