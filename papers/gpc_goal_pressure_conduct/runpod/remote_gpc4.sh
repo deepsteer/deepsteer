@@ -65,6 +65,10 @@ if [ ! -x "$VENV/bin/python" ]; then
 fi
 # G5's judge runs upstream's classifiers (BeautifulSoup with lxml)
 "$VENV/bin/pip" install -q beautifulsoup4 lxml -c "$CONSTRAINTS" 2>&1 | tail -1
+# the gates read each ImpossibleBench sample's tool calls from its zstd .eval log (GPC_PLAN.md §11.15),
+# with Inspect's own zstandard version
+"$VENV/bin/pip" install -q "zstandard==0.25.0" 2>&1 | tail -1
+"$VENV/bin/python" -c "import zstandard" || { echo "BAIL: zstandard did not install"; exit 1; }
 PY="$VENV/bin/python"
 export PATH="$VENV/bin:$PATH"
 export VLLM_USE_FLASHINFER_SAMPLER=0
@@ -166,7 +170,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=140   # the gate's collected count when set (launch 4); fewer means a file failed to collect
+GATE_FLOOR=149   # the gate's collected count when set (launch 4); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }

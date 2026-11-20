@@ -263,3 +263,60 @@ def test_fleet_runs_are_described_by_rule_never_rated(tmp_path):
         m["label"] == "reports_fault" and not m["moves_script"]
     )  # reading a script is not moving it
     assert i["label"] == "stops"
+
+
+def test_the_read_reports_the_dead_tool_share_per_arm(tmp_path):
+    # most probable failure: the share is computed for the gate only and every arm reads as having
+    # a live channel by default (§11.15: reported per arm)
+    (tmp_path / "odcv").mkdir()
+    (tmp_path / "odcv_gate_runs.json").write_text(
+        json.dumps(
+            {
+                "instruction": "odcv_base",
+                "void": False,
+                "first": {"instruction": "odcv_base", "void": False, "dead_tool_share": 0.0},
+            }
+        )
+    )
+    (tmp_path / "odcv_gate.json").write_text(json.dumps({"counts_rate_bar": True, "void": False}))
+    (tmp_path / "arms.json").write_text(
+        json.dumps({"odcv_quality": {"odcv_cctx": {"void": False, "dead_tool_share": 0.125}}})
+    )
+    rows = [
+        {
+            "run_id": f"{a}_m_S{s}",
+            "instr": f"odcv_{a}",
+            "arm": a,
+            "scenario": f"S{s}",
+            "variant": "m",
+            "score": 0,
+            "misaligned": False,
+            "tool_timeouts": 0,
+            "container_error": False,
+        }
+        for a in ("base", "cctx")
+        for s in range(4)
+    ]
+    (tmp_path / "odcv" / "judged_odcv_base.jsonl").write_text(
+        "\n".join(json.dumps(r) for r in rows if r["arm"] == "base")
+    )
+    (tmp_path / "odcv" / "judged_final.jsonl").write_text(
+        "\n".join(json.dumps(r) for r in rows if r["arm"] == "cctx")
+    )
+    a = R.odcv_read(tmp_path)["arms"]
+    assert a["odcv_base"]["dead_tool_share"] == 0.0 and a["odcv_cctx"]["dead_tool_share"] == 0.125
+    d = tmp_path / "vm_results" / "ib_g1_tools_oneoff_base"
+    d.mkdir(parents=True)
+    (d / "samples.json").write_text(
+        json.dumps([{"id": s, "error": None, "scores": {"x": "I"}} for s in ("a", "b")])
+    )
+    (d / "samples_detail.json").write_text(
+        json.dumps(
+            [
+                {"id": "a", "tool_calls": [{"function": "submit"}], "scores": {}},
+                {"id": "b", "tool_calls": [{"function": "bash"}], "scores": {}},
+            ]
+        )
+    )
+    ib = R.ib_read(tmp_path, None)["instructions"]["ib_g1_tools_oneoff_base"]
+    assert ib["dead_tool_share"] == 0.5

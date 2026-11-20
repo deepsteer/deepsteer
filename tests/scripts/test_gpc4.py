@@ -577,10 +577,16 @@ def test_eval_counts_reads_scored_and_errored_samples(tmp_path):
 
 
 def test_no_reader_opens_a_zstd_eval_log_with_the_standard_zipfile():
-    # most probable failure: a .eval log is read with zipfile, which cannot open its zstd members
-    # outside inspect_ai (rehearsal 3: both stages' counts failed; the pod's gate would have too)
-    for f in ("gpc4_vm.py", "gpc4_pod.py"):
-        assert "zipfile.ZipFile" not in (GPC / "scripts" / f).read_text(), f
+    # most probable failure: a .eval log is read with zipfile's own decompression, which cannot open
+    # its zstd members outside inspect_ai (rehearsal 3: both stages' counts failed). The host never
+    # opens one; the pod reads members only through its zstd reader (§11.15)
+    assert "zipfile.ZipFile" not in (GPC / "scripts/gpc4_vm.py").read_text()
+    pod = (GPC / "scripts/gpc4_pod.py").read_text()
+    assert "info.compress_type != 93" in pod and "zstandard.ZstdDecompressor()" in pod
+    reads = [ln for ln in pod.splitlines() if "z.read(" in ln]
+    assert reads == ["        return z.read(info)"], (
+        reads
+    )  # the non-zstd branch of _eval_member only
     assert "read_eval_log(l.location)" in V.IB_TASK and '"samples.json"' in V.IB_TASK
 
 
@@ -980,6 +986,8 @@ def test_ib_gate_banks_at_one_pass_and_runs_the_rest_only_on_a_survivor(tmp_path
 
     monkeypatch.setattr(P4, "ib_scores", fake_scores)
     monkeypatch.setattr(P4, "wait_for", lambda out, ids, dry, h: [])
+    # a live tool channel (§11.15's rule has its own test)
+    monkeypatch.setattr(P4, "ib_tool_quality", lambda out, ids: {"void_tool": False})
     (tmp_path / "vm_results").mkdir()
     rec = P4.stage_ib_gate(tmp_path, dry=True)
     assert rec["scaffolds"]["tools"]["banked"] is True and "all_60" not in rec["scaffolds"]["tools"]
@@ -1037,6 +1045,9 @@ def _odcv_results(out, ins, errors=0, missing=0):
                 }
             )
         )
+        (d / "docker_output.log").write_text(
+            "executor-1  | [Tool]: bash with {}\n"
+        )  # a live channel
 
 
 def test_the_odcv_gate_counts_the_78_and_the_void_rule_the_80(tmp_path):
@@ -1394,10 +1405,11 @@ def test_row_arm_smoke_marks_a_failed_configuration_and_skips_c1_without_parity(
 
     def wait_for(out, ids, dry, max_h):
         P4.dry_vm(out)
-        # cbounds' ODCV-Bench run comes back with a container error
-        for r in (P4.results_dir(out) / "smoke_odcv_cbounds").glob("*/run.json"):
-            d = json.loads(r.read_text()) | {"container_error": True}
-            r.write_text(json.dumps(d))
+        # cbounds' ODCV-Bench run comes back with a container error, on its retry too (§11.15)
+        for iid in ("smoke_odcv_cbounds", "smoke_odcv_cbounds_r2"):
+            for r in (P4.results_dir(out) / iid).glob("*/run.json"):
+                d = json.loads(r.read_text()) | {"container_error": True}
+                r.write_text(json.dumps(d))
         return []
 
     monkeypatch.setattr(P4, "wait_for", wait_for)
@@ -1491,3 +1503,215 @@ def test_row_runner_follows_the_table(tmp_path):
     for ln in block.splitlines():
         if re.search(r"\$PY \$GP", ln):
             assert "$DRY" in ln, ln
+
+
+# ---- §11.15: a dead tool channel voids a gate; the arm smoke retries -----------------------------
+def _odcv_logged(out, ins, dead=0, errors=0):
+    """Run records plus each run's docker log: the first ``dead`` runs call only task_complete."""
+    for n, (sc, var, rid) in enumerate(ins["runs"]):
+        d = out / "vm_results" / ins["id"] / rid
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "run.json").write_text(
+            json.dumps(
+                {
+                    "run_id": rid,
+                    "scenario": sc,
+                    "variant": var,
+                    "arm": ins["arm"],
+                    "tool_timeouts": 0,
+                    "container_error": n < errors,
+                }
+            )
+        )
+        calls = [] if n < dead else ["bash"]
+        (d / "docker_output.log").write_text(
+            "".join(f"executor-1  | [Tool]: {c} with {{}}\n" for c in [*calls, "task_complete"])
+        )
+
+
+def test_odcv_action_calls_leave_out_task_complete(tmp_path):
+    # most probable failure: task_complete counts as a tool call, so a run that only ends itself
+    # reads as a live channel
+    (tmp_path / "docker_output.log").write_text(
+        "executor-1  | [Tool]: task_complete with {}\n\x1b[Kexecutor-1  | [Tool]: bash with {}\n"
+    )
+    assert P4.odcv_action_calls(tmp_path) == 1
+    (tmp_path / "docker_output.log").write_text("executor-1  | [Tool]: task_complete with {}\n")
+    assert P4.odcv_action_calls(tmp_path) == 0
+    assert P4.odcv_action_calls(tmp_path / "none") is None
+
+
+@pytest.mark.parametrize("dead_rerun,want", [(0, "odcv_base_c4"), (8, None)])
+def test_a_dead_tool_channel_voids_the_odcv_gate_never_banks_it(
+    tmp_path, monkeypatch, dead_rerun, want
+):
+    # most probable failure: a subject that never calls a tool reads as a clean 0% misaligned base
+    # and the instrument banks (the lead: a banked instrument is a claim about the subject)
+    first = P4.odcv_instruction("base", "base", dry=True)  # 8 dry runs
+    _odcv_logged(tmp_path, first, dead=3)  # 3 of 8 = 37.5% > 25%
+    monkeypatch.setattr(P4, "plan_set", lambda *a, **k: None)
+    monkeypatch.setattr(P4, "fits", lambda out, item: True)
+
+    def wait(out, ids, dry, h):
+        if "odcv_base_c4" in ids:
+            _odcv_logged(tmp_path, first | {"id": "odcv_base_c4"}, dead=dead_rerun)
+        return []
+
+    monkeypatch.setattr(P4, "wait_for", wait)
+    rec = P4.stage_odcv_gate(tmp_path, dry=True)
+    assert rec["first"]["dead_tool_share"] == 3 / 8 and rec["first"]["void_tool"]
+    assert "the tool channel is suspect" in rec["first_void"]
+    assert rec["instruction"] == want and rec["void"] is (want is None)
+    if want is None:
+        assert "the tool channel is suspect" in rec["reason"]
+        assert P4.stage_judge(tmp_path, "odcv_base", dry=True)["banked"] is False
+
+
+def test_a_quarter_dead_is_not_void(tmp_path):
+    # most probable failure: the bar is applied as at-or-over, voiding a gate at exactly 25%
+    ins = P4.odcv_instruction("base", "base", dry=True)
+    _odcv_logged(tmp_path, ins, dead=2)  # 2 of 8 = 25%
+    q = P4.odcv_quality(tmp_path, ins)
+    assert q["dead_tool_share"] == 0.25 and not q["void_tool"]
+
+
+def _ib_eval(out, instr, samples, zstd=False):
+    import zipfile
+
+    d = out / "vm_results" / instr / "inspect_logs"
+    d.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(d / "x.eval", "w", zipfile.ZIP_DEFLATED) as z:
+        for sid, calls in samples.items():
+            z.writestr(
+                f"samples/{sid}_epoch_1.json",
+                json.dumps(
+                    {
+                        "id": sid,
+                        "messages": [
+                            {"role": "assistant", "tool_calls": [{"function": c} for c in calls]}
+                        ],
+                    }
+                ),
+            )
+    (out / "vm_results" / instr / "samples.json").write_text(
+        json.dumps([{"id": s, "epoch": 1, "error": None, "scores": {"s": "I"}} for s in samples])
+    )
+
+
+def test_ib_action_calls_count_only_action_tools(tmp_path):
+    # most probable failure: submit or think counts as acting, so a sample that only submits reads
+    # as a live channel
+    _ib_eval(
+        tmp_path,
+        "ib_g1_tools_oneoff_base",
+        {"a": ["think", "submit"], "b": ["bash", "submit"], "c": ["text_editor", "python"]},
+    )
+    assert P4.ib_action_calls(tmp_path, "ib_g1_tools_oneoff_base") == {"a": 0, "b": 1, "c": 2}
+    q = P4.ib_tool_quality(tmp_path, ["ib_g1_tools_oneoff_base"])
+    assert q["dead_tool_samples"] == 1 and q["dead_tool_share"] == 1 / 3 and q["void_tool"]
+
+
+def test_the_eval_reader_opens_inspects_zstd_members(tmp_path):
+    # most probable failure: the reader cannot open a real .eval member (zstd, method 93), which the
+    # standard library's zipfile rejects (rehearsal 3)
+    zstandard = pytest.importorskip("zstandard")
+    import struct
+    import zipfile
+
+    body = json.dumps({"id": "t1", "messages": [{"tool_calls": [{"function": "bash"}]}]}).encode()
+    comp = zstandard.ZstdCompressor().compress(body)
+    name = b"samples/t1_epoch_1.json"
+    local = (
+        struct.pack(
+            "<IHHHHHIIIHH",
+            0x04034B50,
+            20,
+            0,
+            93,
+            0,
+            0,
+            zipfile.crc32(body),
+            len(comp),
+            len(body),
+            len(name),
+            0,
+        )
+        + name
+        + comp
+    )
+    central = (
+        struct.pack(
+            "<IHHHHHHIIIHHHHHII",
+            0x02014B50,
+            20,
+            20,
+            0,
+            93,
+            0,
+            0,
+            zipfile.crc32(body),
+            len(comp),
+            len(body),
+            len(name),
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        )
+        + name
+    )
+    end = struct.pack("<IHHHHIIH", 0x06054B50, 0, 0, 1, 1, len(central), len(local), 0)
+    d = tmp_path / "vm_results" / "ib_g1_tools_oneoff_base" / "inspect_logs"
+    d.mkdir(parents=True)
+    (d / "x.eval").write_bytes(local + central + end)
+    assert P4.ib_action_calls(tmp_path, "ib_g1_tools_oneoff_base") == {"t1": 1}
+
+
+def test_a_dead_tool_channel_voids_the_tools_scaffold_and_the_minimal_still_runs(
+    tmp_path, monkeypatch
+):
+    # most probable failure: the tools scaffold banks at 0 passes because the subject never called
+    # a tool, and is read as a floor on the subject
+    P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
+    monkeypatch.setattr(P4, "fits", lambda out, item: True)
+    monkeypatch.setattr(P4, "wait_for", lambda out, ids, dry, h: (P4.dry_vm(out), [])[1])
+    monkeypatch.setattr(
+        P4, "ib_tool_quality", lambda out, ids: {"dead_tool_share": 0.9, "void_tool": True}
+    )
+    rec = P4.stage_ib_gate(tmp_path, dry=True)
+    t = rec["scaffolds"]["tools"]
+    assert t["void"] and not t["banked"] and "the tool channel is suspect" in t["reason"]
+    assert "tool_channel_rerun" in t and "rerun too" in t["reason"]  # rerun once, then skipped
+    assert "first_30" in rec["scaffolds"]["minimal"]  # the minimal scaffold still runs
+    assert rec["both_banked"] is False  # a void scaffold is not banked
+
+
+def test_the_arm_smoke_retries_once_and_skips_only_on_two_failures(tmp_path, monkeypatch):
+    # most probable failure: one transient failure skips an arm for the whole pod, or the retry's
+    # outcome is lost
+    _adapter(tmp_path, "c1", True)
+    P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
+    P4.plan_set(tmp_path, [], hold=True)
+
+    def wait_for(out, ids, dry, max_h):
+        P4.dry_vm(out)
+        for iid, broken in (
+            ("smoke_odcv_cctx", True),
+            ("smoke_odcv_c1", True),
+            ("smoke_odcv_c1_r2", True),
+        ):  # cctx fails once, C1 twice
+            if iid in ids and broken:
+                for r in (P4.results_dir(out) / iid).glob("*/run.json"):
+                    r.write_text(json.dumps(json.loads(r.read_text()) | {"container_error": True}))
+        return []
+
+    monkeypatch.setattr(P4, "wait_for", wait_for)
+    a = P4.stage_arm_smoke(tmp_path, dry=True)["arms"]
+    assert (
+        a["cctx"]["odcv_first"] is False and a["cctx"]["odcv_retry"] is True and a["cctx"]["odcv"]
+    )
+    assert a["c1"]["odcv_first"] is False and a["c1"]["odcv_retry"] is False and not a["c1"]["odcv"]
+    assert a["cbounds"]["odcv_retry"] is None and a["cbounds"]["odcv"]  # no retry when it passed
+    assert P4.smoke_ok(tmp_path, "cctx", "odcv")[0] and not P4.smoke_ok(tmp_path, "c1", "odcv")[0]

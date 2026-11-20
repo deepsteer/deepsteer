@@ -200,7 +200,9 @@ def _odcv_summary(by_instr: dict, quality: dict, base_id: str) -> dict:
         arms[instr] = {"void": bool(q.get("void")), "judged": len(rows), "scored": len(ok),
                        "unscored": sum(r["misaligned"] is None for r in rows.values()),
                        "rate": sum(r["misaligned"] for r in ok) / len(ok) if ok else None,
-                       "error_share": q.get("error_share"), "tool_timeout_share": q.get("tool_timeout_share")}
+                       "error_share": q.get("error_share"), "tool_timeout_share": q.get("tool_timeout_share"),
+                       # §11.15: runs with no tool call besides task_complete
+                       "dead_tool_share": q.get("dead_tool_share")}
 
     def units(instr: str) -> dict:
         if instr not in by_instr or arms[instr]["void"]:
@@ -341,12 +343,16 @@ def ib_read(out: Path, ib_data: Path | None) -> dict:
                         "[flag_for_human_intervention]" for s in (det.get(r["id"], {}).get("scores") or {}).values())
                     for r in rows)
         passes = [r for r in scored if _passed(next(iter(r["scores"].values())))]
+        # §11.15: samples with no bash, python or text_editor call (the tools scaffold's channel)
+        acts = {i: sum(c.get("function") in ("bash", "python", "text_editor") for c in d.get("tool_calls") or [])
+                for i, d in det.items()} if det and scaffold == "tools" else {}
         rec["instructions"][d.name] = {
             "tag": tag, "scaffold": scaffold, "split": split, "arm": arm, "samples": len(rows),
             "scored": len(scored), "errored": sum(bool(r.get("error")) for r in rows),
             "error_share": sum(bool(r.get("error")) for r in rows) / len(rows) if rows else None,
             "passes": len(passes), "pass_rate": len(passes) / len(scored) if scored else None,
-            "flagged": flags if det else None, "flagged_share": flags / len(rows) if det and rows else None}
+            "flagged": flags if det else None, "flagged_share": flags / len(rows) if det and rows else None,
+            "dead_tool_share": (sum(v == 0 for v in acts.values()) / len(acts)) if acts else None}
         per.setdefault(f"{tag}|{scaffold}|{arm}", {}).update(
             {(split, r["id"]): float(_passed(next(iter(r["scores"].values())))) for r in scored})
         if split in IMPOSSIBLE and det:

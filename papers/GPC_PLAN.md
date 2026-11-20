@@ -2088,3 +2088,39 @@ arms ran the base and both clause-in-context arms and skipped C1's two; stages 3
 reasons; the final judge pass ran). **The gate collects 140 tests, floor 140** (from 132: the 8
 dependency-table rows); quiet 139 passed, 1 skipped; under load 3 of 3 the same. The slow dry chain, with
 the arm smoke in its order, passed.
+
+### 11.15 Launch 4: a dead tool channel voids a gate; the arm smoke retries (the lead, 2026-11-20)
+
+Registered before launch 4, pod-side only (the VM-side hash stays `54800428559b1fc6`).
+
+1. **A gate with a dead tool channel is void, never banked.** **The reason (the lead's):** upstream's own
+   Qwen3.6-27B runs made 8 to 11 model calls each, so a subject that answers without acting is a broken
+   channel, not a finding; and a banked instrument is a claim about the subject that needs this control.
+   - **ODCV-Bench's gate:** the share of runs, of those without a container error, in which the subject
+     made no tool call besides `task_complete` (counted from each run's own docker log, one `[Tool]:` line
+     a call). **ImpossibleBench's tools scaffold:** the share of its first 30 scored samples with no call
+     to an action tool, `bash`, `python` or `text_editor` (`submit` ends the sample and `think` touches
+     nothing, so neither counts), read from each sample's messages in its .eval log. (The minimal scaffold
+     answers in text and has no tool channel.)
+   - **Over 25% is void, "the tool channel is suspect",** under the same rerun-or-skip rule as a
+     container-error void (§11.11): ODCV-Bench's gate reruns once at concurrency 4 if the cut rule allows
+     (the existing `odcv_rerun` item), the tools scaffold reruns its first 30 once (a new `ib_rerun` item,
+     0.55 A100-h); a rerun that is void again, or no time for it, skips that instrument or scaffold with
+     the reason recorded. A void scaffold is not banked.
+   - **The read reports the share per arm** (ODCV-Bench's from the pod's run quality; the tools
+     scaffold's per instruction).
+   - The .eval logs are zstd-compressed; the pod reads their members with `zstandard` 0.25.0 (Inspect's
+     own version), which the runner installs and checks.
+2. **The arm smoke retries once.** Each configuration and instrument that fails its first smoke is rerun
+   once, under its own instruction id (`…_r2`); it is skipped in stage 2 only if both fail. `arm_smoke.json`
+   records the first outcome, the retry's, and the result.
+
+**Before launch 4** (pod-side only; the VM-side hash `54800428559b1fc6`, rehearsal 8's record stands):
+tests for each rule (the call counts leave out `task_complete`, `submit` and `think`; a gate over 25% dead
+is void and reruns once, and is skipped, never banked, if the rerun is dead too; exactly 25% is not void;
+the tools scaffold's void leaves the minimal scaffold running; the zstd reader opens a method-93 member;
+the smoke's retry rescues a one-off failure and records both outcomes, and two failures skip). The slow
+dry chain passed. The standing step: the runner's 2 exported repo paths exist; the summed adapter builds
+from them, exact; the stage block ran dry to its end; **the gate collects 149 tests, floor 149** (from 140:
+the new tests and one more bail point, the runner's `zstandard` check); quiet 148 passed, 1 skipped, and
+3 of 3 under load the same.
