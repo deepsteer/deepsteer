@@ -739,17 +739,17 @@ exit 1
 
 ENDPOINT_THEN_EXIT_CARD = """#!/usr/bin/env bash
 echo ">> SSH endpoint: ubuntu@192.0.2.20:40009"
-sleep 2
+sleep 0.5
 echo "BAIL: gate tests (see logs/gate_tests1.log)"
 exit 1
 """
 SERVED_CARD = """#!/usr/bin/env bash
 echo ">> SSH endpoint: ubuntu@192.0.2.20:40009"
-sleep 2
+sleep 0.5
 echo ">> the host's keys installed (forward: :8000 and :8001; results: rrsync -wo vm_results)"
-sleep 1
+sleep 0.3
 echo ">> stage done at 0.9 h: --stage serve_check"
-sleep 2
+sleep 0.5
 exit 0
 """
 
@@ -794,7 +794,7 @@ def _dry_launch(tmp_path, a100xl: str, card: str = BAIL_CARD):
         "GPC4_ROOT": str(root),
         "GPC4_POD_CARD": str(tmp_path / "card.sh"),
         "GPC4_IN_DIR": str(tmp_path / "gpc4_in"),
-        "GPC4_POD_POLL_S": "1",
+        "GPC4_POD_POLL_S": "0.2",
         "GPC4_GATE_SETTLE_S": "0",
         "AWS_PROFILE": "stub",
     }
@@ -1127,10 +1127,12 @@ def test_the_runners_exit_trap_reaches_the_sentinel_at_every_bail(tmp_path, line
     ]  # a failing helper does not stop the trap either
     if watchdog:
         body.insert(
-            3, f"( while true; do sleep 1; done ) & WATCHDOG=$!; echo $WATCHDOG > {tmp_path}/wd"
+            3,
+            "( while true; do sleep 0.1; done ) >/dev/null 2>&1 & WATCHDOG=$!; "
+            f"echo $WATCHDOG > {tmp_path}/wd",
         )
     if jdl:
-        body.insert(3, "( sleep 30 ) & JDL=$!")
+        body.insert(3, "( sleep 30 ) >/dev/null 2>&1 & JDL=$!")
     body.append(f'echo "BAIL at line {line}"; exit 1')
     r = subprocess.run(
         ["bash", "-c", "\n".join(body)],
