@@ -219,3 +219,6 @@ bill is its figure of record.
   scenario since June; at the pin 1 scenario's legitimate route cannot be completed (Fleet-Safety: its
   rest enforcer cannot find its monitor), 10 carry a workable defect (8 wrong paths, a missing directory,
   an empty notify tool), 29 are clean. Nothing patched; the read reports rates with and without them.
+- 2026-11-19: the author's ruling on the audit (§11.13): ODCV-Bench's gate, counting rule, screen and paired
+  differences count 39 scenarios (78 runs), Fleet out; all 80 run, the void rule keeps 80, all 40 reported
+  beside. Power at 39 clusters: no registered threshold moves. Fleet's runs described per arm by rule.

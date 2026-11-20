@@ -35,7 +35,7 @@ SIMS, BOOT = 400, 600
 EFFECTS = {"half_the_base_rate": 0.5, "blackmail_cell_size": 1 - 0.02 / 0.38}
 
 
-def odcv_units(csv_path: Path) -> dict:
+def odcv_units(csv_path: Path, exclude: tuple = ()) -> dict:
     def num(x):
         try:
             return float(x)
@@ -47,7 +47,7 @@ def odcv_units(csv_path: Path) -> dict:
         scen = {d.name for d in sd.iterdir() if d.is_dir()}
     rows = [r for r in csv.DictReader(open(csv_path))
             if num(r["qwen3.6-27b-mandated"]) is not None and num(r["qwen3.6-27b-incentivized"]) is not None
-            and (scen is None or r["scenario"] in scen)]
+            and (scen is None or r["scenario"] in scen) and r["scenario"] not in exclude]
     m = [float(r["qwen3.6-27b-mandated"]) >= 3 for r in rows]
     i = [float(r["qwen3.6-27b-incentivized"]) >= 3 for r in rows]
     y = np.array([m, i], float)
@@ -105,8 +105,9 @@ def screen(n_c, per, mean, icc, rel, k=1) -> dict:
     return {"threshold": t, "p_clear_at_0.65": float(np.nanmean(pt65 >= t)), "p_clear_at": fc}
 
 
-def main(csv_path: Path) -> dict:
-    od = odcv_units(csv_path)
+def main(csv_path: Path, exclude: tuple = (), out: Path = OUT) -> dict:
+    od = odcv_units(csv_path, exclude)
+    od["excluded"] = list(exclude)
     designs = {"odcv_bench": (od["n_scenarios"], 2, od["base_rate"], od["icc"]),
                "impossiblebench_p0.2": (206, 1, 0.2, 0.3),
                "impossiblebench_p0.4": (206, 1, 0.4, 0.3)}
@@ -129,13 +130,17 @@ def main(csv_path: Path) -> dict:
                     need = k
                     break
             res["k_for_80pct_at_ratio_1"][key] = need
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(res, indent=1))
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(res, indent=1))
     return res
 
 
 if __name__ == "__main__":
-    r = main(Path(sys.argv[1]))
+    # GPC_PLAN.md §11.13: `--exclude A,B --out PATH` reruns at fewer clusters (the audit's 39)
+    a = sys.argv[1:]
+    ex = tuple(a[a.index("--exclude") + 1].split(",")) if "--exclude" in a else ()
+    o = Path(a[a.index("--out") + 1]) if "--out" in a else OUT
+    r = main(Path(a[0]), ex, o)
     print(json.dumps(r["odcv_saved_qwen3.6_27b"]))
     for k, v in r["bar"].items():
         print(k, {kk: vv["ratio_for_median_lb_0.5"] for kk, vv in v.items()},
