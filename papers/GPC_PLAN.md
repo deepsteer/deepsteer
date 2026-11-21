@@ -2314,3 +2314,15 @@ adapter builds through a symlinked repo path, exact; the stage block ran dry to 
 **the battery, 17 of 17 round-trip** on all 7 tools (ODCV-Bench's 2, the tools scaffold's 5), its control
 0 of 17; **the gate collects 169 tests, floor 169** (from 168: the battery's coverage test); quiet 168
 passed, 1 skipped (the battery's test ran), and 3 of 3 under load the same.
+
+**Item 2, built during launch 6** (the read only; nothing the session runs): `gpc4_read.py` counts each
+arm's and instrument's tool calls and those with an argument or parsing error as registered above, from
+upstream's run record (the raw arguments) or, for a run that never wrote one, the docker log; and from
+Inspect's own parse record for ImpossibleBench (the dump now keeps each call's `parse_error`, its result's
+error type, and any call markup left in a turn; a details cache read before this rule is read again, or
+reported as unread, never as clean). Over 10% voids the gate in the read (no rate, so nothing counts or
+banks), leaves a void arm out of its contrast, and marks a scaffold whose gate instructions are void as
+never banked on them. Checked on rehearsal 8's real records before any subject data: 80 ODCV-Bench runs,
+the run record and the docker log agreeing (160 calls, 0 errors); a tools-scaffold log read with Inspect
+0.3.291 (15 samples, 735 calls, 0 errors). Tests for each kind of error, the 10% boundary, the void
+wiring, and a stale cache.
