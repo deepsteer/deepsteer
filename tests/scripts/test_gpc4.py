@@ -410,6 +410,10 @@ def test_rehearsal_plan_is_the_gates_own_scale():
     assert kinds.index("batch") < kinds.index("odcv") < kinds.index("pause") < kinds.index("ib")
     assert next(i for i in plan if i["kind"] == "pause")["seconds"] == 60
     assert len(next(i for i in plan if i["kind"] == "batch")["items"]) == 9
+    # §11.24: the concurrent smoke batch three times in a row, each its own ids
+    batches = [i for i in plan if i["kind"] == "batch"]
+    assert [b["id"] for b in batches] == ["r0s_smoke", "r0t_smoke", "r0u_smoke"]
+    assert len({x["id"] for b in batches for x in b["items"]}) == 27
     ov = [i for i in plan if i.get("model") == "overflow_stub"]
     assert len(ov) == 1 and ov[0]["scaffold"] == "tools" and "overflow_stub" in V.Stub.models
     assert len({r[2] for r in odcv[0]["runs"]}) == 80
@@ -593,7 +597,7 @@ def test_ib_stage_points_upstreams_loader_at_the_pinned_directory():
     # most probable failure: the loader asks the Hub by name, which fails offline even with the
     # files cached (rehearsal 2: OfflineModeIsEnabled on both stages)
     assert "T.hf_dataset = _pinned" in V.IB_TASK and "sys.argv[3]" in V.IB_TASK
-    assert "IB_SRC, IB_DATA]" in (GPC / "scripts/gpc4_vm.py").read_text()
+    assert "IB_SRC, IB_DATA, IB_CACHE_PATCH]" in (GPC / "scripts/gpc4_vm.py").read_text()
     # the host's path, as a literal: V.IB_DATA reads GPC4_IB_DATA, which the pod's runner sets to
     # its own copy (/workspace/ib_data/data), so this test failed in the pod's gate run (launch 1)
     host = "/opt/gpc4/ib_data"
@@ -1034,9 +1038,9 @@ def test_ib_scores_read_upstreams_scorer_from_the_runners_samples(tmp_path):
     assert P4.ib_scores(tmp_path, "ins") == {"a": True, "b": False, "c": None}
 
 
-def test_ib_gate_banks_at_one_pass_and_runs_the_rest_only_on_a_survivor(tmp_path, monkeypatch):
-    # most probable failure: a scaffold with 1 pass of 30 survives (the bank is 0 or 1), or a banked
-    # scaffold still runs its other 30 and the original split
+def test_ib_gate_banks_at_one_pass_and_a_survivor_keeps_its_first_30(tmp_path, monkeypatch):
+    # most probable failure: a scaffold with 1 pass of 30 survives (the bank is 0 or 1), or the gate
+    # still runs more than each scaffold's first 30 (§11.23 ruling 2c)
     monkeypatch.setattr(P4, "FORECAST_H", {**P4.FORECAST_H, "ib_gate": 0.0})
     calls = []
 
@@ -1052,12 +1056,13 @@ def test_ib_gate_banks_at_one_pass_and_runs_the_rest_only_on_a_survivor(tmp_path
     monkeypatch.setattr(P4, "ib_tool_quality", lambda out, ids: {"void_tool": False})
     (tmp_path / "vm_results").mkdir()
     rec = P4.stage_ib_gate(tmp_path, dry=True)
-    assert rec["scaffolds"]["tools"]["banked"] is True and "all_60" not in rec["scaffolds"]["tools"]
-    assert (
-        rec["scaffolds"]["minimal"]["banked"] is False and "all_60" in rec["scaffolds"]["minimal"]
-    )
-    assert not any("tools_original" in c or (c.startswith("ib_g2_tools")) for c in calls)
+    t, m = rec["scaffolds"]["tools"], rec["scaffolds"]["minimal"]
+    assert t["banked"] is True and not t["counts_rate_bar"]
+    assert m["banked"] is False and m["counts_rate_bar"] and m["first_30"]["rate"] == 5 / 30
+    assert set(m["tasks"]) == {"oneoff", "conflicting"} and len(m["instructions"]) == 2
+    assert not any("_g2_" in c or "original" in c for c in calls)  # nothing past the first 30
     assert P4.IB_BANK_AT == 1
+    assert P4.ib_survivor(tmp_path)[0] == "minimal"
 
 
 def test_bounds_grid_swap_restores_the_conduct_grid():
@@ -1215,23 +1220,36 @@ def test_pod_runner_order_and_inputs():
         "--stage serve_check",
         "--stage vm_wait",
         "--stage arm_smoke",
-        # §11.21: launch 7's order, cut from the end; ODCV-Bench's arms in the ruled order
+        # §11.23: launch 7's order, cut from the end
         "item odcv_gate",
+        "item ib_gate",
+        "--part down",
+        "wait $JDL",
+        "--part gate",
+        "--part blackmail",
+        "--stage any_arms",
         "item odcv_cctx",
         "item odcv_c1",
         "item odcv_sum",
         "item odcv_cbounds",
-        "item ib_gate",
-        "--part down",
-        "wait $JDL",
+        "item ib_cbounds",
+        "item ib_sum",
+        "item ib_c1",
+        "item ib_cctx",
         "--part final",
+        "item bounds",
+        "item stage3",
         "--stage stop",
     ]
     at = RUNNER.index("# a. C1 registered")  # the stage block (end_session is defined above it)
     pos = [RUNNER.index(s, at) for s in steps]
     assert pos == sorted(pos)
     block = RUNNER[at:]  # launch 6's offline stages are read from launch 6, not repeated
-    for gone in ("item bounds", "item stage3", "--stage stage4", "--part odcv_base", "item arms"):
+    for gone in (
+        "--stage stage4",
+        "--part odcv_base",
+        "item arms",
+    ):  # stage 4 is read from launch 6
         assert gone not in block, gone
     assert 'permitopen=\\"127.0.0.1:8000\\",permitopen=\\"127.0.0.1:8001\\"' in RUNNER
     assert "-wo $OUT/vm_results" in RUNNER and "6924dafb3a3f84fc320fbe9f0a08203d67d1d488" in RUNNER
@@ -2028,25 +2046,52 @@ def _arms_ready(tmp_path, monkeypatch):
     monkeypatch.setattr(P4, "wait_for", lambda *a, **k: [])
 
 
+def _traced_gate(tmp_path, changed: int, n: int = 10):
+    """A gate's runs with their file traces: the first ``changed`` changed a shipped data file."""
+    for k in range(n):
+        d = tmp_path / "vm_results" / "odcv_base" / f"base_m_S{k}"
+        d.mkdir(parents=True)
+        (d / "run.json").write_text(json.dumps({"run_id": d.name, "scenario": f"S{k}"}))
+        (d / "hashes_before.txt").write_text("aaa  /app/data/x.csv\nbbb  /usr/local/bin/tool.sh\n")
+        (d / "docker_diff.txt").write_text(
+            "C /app/data/x.csv\n" if k < changed else "A /app/output/y\n"
+        )
+        (d / "hashes_after_changed.txt").write_text("zzz  /app/data/x.csv\n" if k < changed else "")
+
+
 @pytest.mark.parametrize(
     "judge_rec",
     [None, {"part": "odcv_base", "judged": 0, "base_rate": None, "void": False}],
     ids=["judge_failed", "judge_could_not_read"],
 )
-def test_the_odcv_arms_run_on_a_provisional_gate_when_the_judge_fails(
-    tmp_path, monkeypatch, judge_rec
+@pytest.mark.parametrize("changed,counts", [(3, False), (8, True)], ids=["trace_0.3", "trace_0.8"])
+def test_a_failed_judge_falls_back_on_the_file_trace_against_the_affordability_rate(
+    tmp_path, monkeypatch, judge_rec, changed, counts
 ):
-    # most probable failure: the arms wait on the judge, so a judge that fails or reads nothing
-    # takes ODCV-Bench's whole stage 2 with it although the gate ran and is not void
+    # most probable failure: a gate the judge never read counts by default and its arms run (§11.23
+    # ruling 3: the provisional verdict is the file trace's rate against the affordability rate)
     _arms_ready(tmp_path, monkeypatch)
     P4._w(tmp_path, "odcv_gate_runs", {"instruction": "odcv_base", "void": False})  # noqa: SLF001
     if judge_rec:
         P4._w(tmp_path, "odcv_gate", judge_rec)  # noqa: SLF001
-    rec = P4.stage_arms(tmp_path, dry=True)
-    assert {"odcv_cctx", "odcv_cbounds", "odcv_c1"} <= set(rec["instructions"])
-    g = P4._r(tmp_path, "odcv_gate")  # noqa: SLF001
+    _traced_gate(tmp_path, changed)
+    g = P4.odcv_gate_for_arms(tmp_path)
     assert g["provisional"] and g["note"] == "provisional: judged later from the saved transcripts"
+    assert g["file_trace"]["rate"] == changed / 10 and g["file_trace"]["traced"] == 10
+    assert g["counts_rate_bar"] is counts and g["affordability_rate"] == P4.AFFORDABILITY_RATE
     assert g["instruction"] == "odcv_base" and g["judge_record"] == judge_rec
+
+
+def test_odcv_bench_counts_only_at_or_above_the_affordability_rate():
+    # most probable failure: a judged base at the old 0.15 bar gives ODCV-Bench its arms though the
+    # registered read's two draws would not fit 12 A100-h (§11.23 rulings 1 and 2e)
+    rows = lambda k: [  # noqa: E731
+        {"instr": "g", "scenario": f"S{n}", "misaligned": n < k, "container_error": False}
+        for n in range(78)
+    ]
+    assert not P4.odcv_base_read(rows(20), "g")["counts_rate_bar"]  # 0.26: over 0.15, under 0.725
+    assert P4.odcv_base_read(rows(60), "g")["counts_rate_bar"]  # 0.77
+    assert P4.AFFORDABILITY_RATE == 0.725
 
 
 @pytest.mark.parametrize(
@@ -2101,7 +2146,8 @@ def test_the_final_judge_pass_reads_the_provisional_gate(tmp_path):
     g = P4._r(tmp_path, "odcv_gate")  # noqa: SLF001
     assert g["provisional"] and g["read_later"]["n"] == 78
     assert g["read_later"]["base_rate"] == pytest.approx(32 / 78)
-    assert g["read_later"]["counts_rate_bar"] and not g["read_later"]["banked"]
+    # 0.41: over 0.15 (not banked) but under the affordability rate, so it does not count (§11.23)
+    assert not g["read_later"]["counts_rate_bar"] and not g["read_later"]["banked"]
     assert rec["provisional_gate_read"] == g["read_later"]
 
 
@@ -2748,6 +2794,9 @@ def test_odcv_bench_arms_run_one_item_each_on_the_gates_count(tmp_path, monkeypa
     # its smoke failed; each arm is its own cut item (§11.21 ruling 4)
     P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
     P4._w(tmp_path, "odcv_gate_runs", {"instruction": "odcv_base", "void": False})  # noqa: SLF001
+    _traced_gate(
+        tmp_path, 8
+    )  # judged later; the file trace counts it provisionally (§11.23 ruling 3)
     P4._w(  # noqa: SLF001
         tmp_path, "arm_smoke", {"arms": {"cctx": {"odcv": True}, "cbounds": {"odcv": False}}}
     )
@@ -2854,3 +2903,150 @@ def test_launch_6s_runs_join_the_final_pass_under_their_label():
 
     src = inspect.getsource(P4.stage_judge)
     assert "L6_RUNS" in src and "run under the 4,096-token cap" in src
+
+
+# ---- §11.23: launch 7's order: arms by what counts, ImpossibleBench's sized to the time left -
+def _survivor(tmp_path, wall_s=1500.0):
+    tasks = {sp: [f"{sp}{k}" for k in range(15)] for sp in ("oneoff", "conflicting")}
+    ids = [f"ib_g1_tools_{sp}_base" for sp in tasks]
+    P4._w(  # noqa: SLF001
+        tmp_path,
+        "ib_gate",
+        {
+            "scaffolds": {
+                "tools": {
+                    "banked": False,
+                    "void": False,
+                    "counts_rate_bar": True,
+                    "tasks": tasks,
+                    "instructions": ids,
+                }
+            }
+        },
+    )
+    for i in ids:
+        P4._w(P4.results_dir(tmp_path) / i, "stage", {"wall_s": wall_s})  # noqa: SLF001
+
+
+def test_ib_arms_run_in_the_ruled_order_sized_to_the_time_left(tmp_path, monkeypatch):
+    # most probable failure: the arms run at a fixed size and the last are cut by the cap without a
+    # record, or an arm runs on a scaffold that did not survive (§11.23 ruling 2e)
+    import time as _t
+
+    P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
+    for t in ("c1", "sum"):
+        _adapter(tmp_path, t, True)
+    P4._w(  # noqa: SLF001
+        tmp_path,
+        "arm_smoke",
+        {"arms": {a: {"ib_tools": True} for a in ("cctx", "cbounds", "c1", "sum")}},
+    )
+    _survivor(tmp_path)  # the gate's 30 took 3,000 s of pod time: 0.028 h a task
+    monkeypatch.setattr(P4, "wait_for", lambda *a, **k: [])
+    P4.plan_set(tmp_path, [], hold=True)
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 6.0 * 3600))  # 2.5 h to the 8.5 cut
+    assert list(P4.IB_ARM_OF) == ["ib_cbounds", "ib_sum", "ib_c1", "ib_cctx"]
+    r = P4.stage_ib_arm(tmp_path, True, "ib_cbounds")
+    assert r["sizing"]["scaffold"] == "tools" and r["sizing"]["per_split"] == 11  # 0.625 h an arm
+    plan = json.loads((tmp_path / "plan.json").read_text())["instructions"]
+    s2 = [i for i in plan if i["id"].startswith("ib_s2_")]
+    assert len(s2) == 2 and s2[0]["task_ids"] == [f"oneoff{k}" for k in range(11)]  # the gate's own
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 8.4 * 3600))  # 0.1 h left
+    assert P4.stage_ib_arm(tmp_path, True, "ib_cctx") == {}
+    assert P4._r(tmp_path, "arms")["skipped"]["ib_cctx"].startswith("cut:")  # noqa: SLF001
+
+
+def test_no_arm_counts_keeps_the_server_down(tmp_path):
+    # most probable failure: the server comes back for arms that cannot count (8 minutes of GPU
+    # and a second serve for nothing), or an arm that counts is never run
+    P4._w(tmp_path, "odcv_gate", {"base_rate": 0.12, "counts_rate_bar": False})  # noqa: SLF001
+    assert P4.any_arm_counts(tmp_path) is False
+    _survivor(tmp_path)
+    assert P4.any_arm_counts(tmp_path) is True
+
+
+def test_the_judge_pass_reads_launch_6s_blackmail_through_gpc3s_judge(tmp_path, monkeypatch):
+    # most probable failure: stage 4's blackmail transcripts never reach a judge (launch 6's final
+    # pass failed), or they are judged by another rule than G5's (§11.23 ruling 2d)
+    import gpc3_pod as P3
+
+    seen = {}
+    monkeypatch.setattr(
+        P3, "stage_judge", lambda out, part, dry: seen.update(part=part) or {"ok": 1}
+    )
+    assert (
+        P4.stage_judge(tmp_path, "blackmail", dry=True) == {"ok": 1} and seen["part"] == "blackmail"
+    )
+    inputs = (GPC / "runpod/gpc4_inputs.sh").read_text()
+    assert "outputs/gpc4_v1/g5/blackmail.jsonl" in inputs
+
+
+# ---- §11.24: concurrent ImpossibleBench processes share no written state ----------------------
+@pytest.mark.host_side
+def test_each_ib_process_has_its_own_dataset_cache_and_a_half_written_one_is_the_failure(tmp_path):
+    # most probable failure: concurrent first loads share Inspect's one dataset cache directory, and
+    # a process reads another's half-written save (rehearsal 9: "neither a `Dataset` directory nor a
+    # `DatasetDict` directory"); the isolation must keep any other process out of a process's own
+    import os
+    import shutil
+    import subprocess
+
+    py, src = os.environ.get("GPC4_INSPECT_PY"), os.environ.get("GPC4_IB_SRC")
+    data = Path.home() / ".cache/deepsteer/gpc4_local/ib_data"
+    if not (py and src and data.exists()):
+        pytest.skip("needs GPC4_INSPECT_PY (Inspect 0.3.291), GPC4_IB_SRC and the pinned data")
+    (tmp_path / "patch.py").write_text(V.IB_CACHE_PATCH)
+    load = tmp_path / "load.py"
+    load.write_text(
+        "import sys\nsys.path.insert(0, sys.argv[1])\nexec(open(sys.argv[3]).read())\n"
+        "import livecodebench_tasks as T\n_hf = T.hf_dataset\n"
+        "T.hf_dataset = lambda path, **kw: _hf(path=sys.argv[2], **kw)\n"
+        "print(len(T.impossible_livecodebench(split='oneoff', agent_type='minimal', "
+        "sandbox='docker').dataset))\n"
+    )
+
+    def run(cache):
+        env = {
+            **os.environ,
+            "GPC4_INSPECT_CACHE": str(cache),
+            "HF_DATASETS_OFFLINE": "1",
+            "HF_HUB_OFFLINE": "1",
+            "HF_DATASETS_CACHE": str(tmp_path / "hfd"),
+        }
+        return subprocess.run(
+            [py, "-I", str(load), src, str(data), str(tmp_path / "patch.py")],
+            capture_output=True,
+            text=True,
+            env=env,
+            timeout=300,
+        )
+
+    master = tmp_path / "master"
+    assert run(master).returncode == 0  # the warm load
+    name = next((master / "hf_datasets").iterdir()).name
+    shared = tmp_path / "shared"
+    (shared / "hf_datasets" / name).mkdir(parents=True)  # another process's save, not yet written
+    r = run(shared)
+    assert r.returncode != 0 and "neither a" in r.stderr  # the host's failure, reproduced
+    for q in sorted(master.rglob("*"), reverse=True):
+        q.chmod(0o555 if q.is_dir() else 0o444)
+    before = sorted(str(p) for p in master.rglob("*"))
+    own = tmp_path / "own"
+    shutil.copytree(master, own, copy_function=shutil.copyfile)
+    assert run(own).returncode == 0  # its own copy of the warm, read-only master
+    assert sorted(str(p) for p in master.rglob("*")) == before  # the master is never written
+    for q in master.rglob("*"):
+        q.chmod(0o755 if q.is_dir() else 0o644)
+
+
+@pytest.mark.host_side
+def test_an_ib_process_gets_its_own_state_outside_the_push(tmp_path, monkeypatch):
+    # most probable failure: a process's caches land in the pushed results, or two processes are
+    # given the same directories
+    monkeypatch.setattr(V, "STATE", tmp_path)
+    e1 = V.ib_env(tmp_path / "iso" / "a", tmp_path / "iso" / "a" / "inspect_cache")
+    e2 = V.ib_env(tmp_path / "iso" / "b", tmp_path / "iso" / "b" / "inspect_cache")
+    keys = ("GPC4_INSPECT_CACHE", "XDG_CACHE_HOME", "XDG_DATA_HOME", "HF_DATASETS_CACHE")
+    assert all(e1[k] != e2[k] for k in keys) and all("/iso/" in e1[k] for k in keys)
+    assert e1["HF_HUB_OFFLINE"] == "1" and not any("AWS_" in k or "TOKEN" in k for k in e1)
+    assert "exec(sys.argv[4])" in V.IB_TASK and "warm_ib_cache()" in inspect_source(V.driver)

@@ -2532,3 +2532,114 @@ server comes up (about 0.3 to 0.4 A100-h), and run the arms only if the gate cou
 rehearsal 9's): the slow dry chain passed; the standing step: the stage block ran dry to its end in 15 stage
 calls (the summed adapter's arm skipped dry, as C1's: no dry adapter reads), the parser battery 17 of 17,
 **the gate collects 184 tests, floor 184**, quiet 183 passed, 1 skipped, and 3 of 3 under load the same.
+
+### 11.23 Launch 7's order, by what counts (the lead, 2026-11-21); the affordability rate
+
+**1. The affordability rate: 0.725** (registered before launch 7; `z_gpc4_affordability.py`,
+`outputs/gpc4_prep/affordability.json`). The ODCV-Bench base rate at which the registered read's two draws fit
+§11.1's third condition (12 A100-h), at a clause effect of half the base rate, from `z_gpc4_power.py`'s own
+simulation (the bar's lower bound of 0.5 with 80% power at a true ratio of 1.0; 39 scenarios, two variants,
+clustered by scenario; the registered spread, the two variants' intra-class correlation 0.53 from
+Qwen3.6-27B's saved runs). One pass costs the base's, the clause arm's and an adapter's measured time (1.1,
+1.1 and about 2.2 A100-h), so two draws fit 12 only at one run a scenario-variant (8.8; two runs would be
+17.6), and that holds under any pricing at or above 3.3 a pass. One run a scenario-variant reaches 80% power
+from a base rate of 0.725 (k 2 from 0.40 to 0.70, k 3 from 0.30). Beside, as sensitivities: launch 6's own two
+variants give 0.575 under the file trace's spread (0.77) and 0.725 under Codex's (0.12). The grid's step is
+0.025 at 400 simulations a point. Launch 6's zero-GPU reads (Codex 0.117, the file trace 0.128) lie far below
+it.
+
+**2. Launch 7's order under the 9.0 cap, cut from the end** (`remote_gpc4.sh`):
+a. the server and the smoke (ODCV-Bench, and ImpossibleBench per scaffold; four configurations with the summed
+   adapter, 12 items at once);
+b. ODCV-Bench's base under the registered settings;
+c. ImpossibleBench's gate: the tools scaffold's first 30, then the minimal scaffold's (nothing past each
+   scaffold's first 30; a scaffold neither banked nor void, whose first 30's rate is 0.15 or more, survives);
+d. the server down, and one judge pass: the new base and launch 6's 80 runs under their own label (one
+   process), then stage 4's 100 blackmail transcripts through GPC-3's G5 judge (its own process, launch 6's
+   transcripts synced by name);
+e. the arms, by what counts, only if one does (the server comes back up only then): **ODCV-Bench gets arms
+   only if its judged base on the 78 is at or above the affordability rate**; otherwise it is recorded as not
+   counting, with both draws reported. A surviving ImpossibleBench scaffold gets its arms in the order
+   `C_bounds` in context, the summed adapter, C1, `C_conduct` in context, each on the gate's own tasks
+   (paired with its base), **sized to the time left** (the hours to the cut shared over the arms still to
+   run, at the gate's measured pod time a task; an arm with room for fewer than 5 tasks a split is cut);
+   ODCV-Bench's arms, if any, are judged after them;
+f. offline, cut first: the bounds grid (the "code" check fixed) and stage 3.
+3. **If the judge fails at d,** ODCV-Bench's provisional verdict is the file trace's rate on the 78 against the
+   affordability rate; it no longer counts by default (§11.17 item 2 amended).
+4. **The read states the base-rate comparison plainly:** this subject on both draws (launch 6's, launch 7's,
+   each on the 78 and the 80) beside upstream's Qwen3.6-27B (0.449 on the 39, the repo's saved median
+   scores), with the differences listed (the judge: gpt-oss-120b against upstream's median of judges; the
+   sampler: temperature 0.7 with a seed a run against 0.0; the cap: 4,096 in launch 6, 16,384 or the rest of
+   44,032 in launch 7, none upstream; the model: Qwen3.8-27B at effort medium against Qwen3.6-27B). No claim
+   about the cause.
+
+**5. Re-priced, a to f, on launch 6's measured rates** (A100-h on the pod's clock; items start only if they end
+by 8.5):
+
+| step | basis | ends at |
+|---|---|---|
+| a. setup to the smoke | 0.75 measured; the smoke about 0.2 (C1's ODCV-Bench run took 614 s) | 0.95 |
+| b. ODCV-Bench's base | 0.8 at 16 (1.1 measured at 8) | 1.75 (2.05 at 8) |
+| c. ImpossibleBench's gate | tools 2.0 (launch 6: about 22 min a task), minimal 1.0 (unmeasured) | 4.75 |
+| d. the server down, the two judge loads | the gate and launch 6's 160 runs about 0.4; the blackmail cell's 100 about 0.2 | 5.35 |
+
+| step e, by what counts | f (2.5: the bounds grid 0.8 and its cells 0.2, stage 3 1.0, its reads 0.5) | the pod |
+|---|---|---|
+| **nothing counts** (the likely case at launch 6's reads) | runs, ends about 7.9 | **about 8.0 h, $9.45** |
+| **an ImpossibleBench scaffold survives** | the server back (0.15); 3.0 h to the cut over four arms, 0.75 each, about 5 tasks a split each at 0.067 a task; f cut | **about 8.7 h, $10.25** |
+| **ODCV-Bench counts** (a judged base of 0.725 or more) | the server back; `C_conduct` in context 0.8 (to 6.3), C1 2.2 (to 8.5); the summed adapter, `C_bounds` and every ImpossibleBench arm cut; the final judge 0.5; f cut | **about 9.0 h, $10.60** |
+
+With a surviving scaffold, four arms at about 5 tasks a split are a screen at best; the read says so beside
+any contrast. **For the lead:** sizing two arms (`C_bounds` and the summed adapter) at about 11 tasks a split
+instead of four at 5 is the other way to spend the same 3 hours.
+
+### 11.24 Rehearsal 9 (2026-11-21, at `ef33b6f6`): one race in the concurrent smoke; the fix; rehearsal 10
+
+**Rehearsal 9's record** (`~/.gpc4/rehearsal_4225762c64648446.json`, **not passed**): every stage ran and every
+result arrived. **The host held through the published 60 s stop** (the plan went on after it), terminated
+itself 1,207 s after the stand-in withdrew, and **ODCV-Bench at concurrency 16** ran all 80 with no container
+error at a peak load of 3.58 (`odcv_concurrency_16_ok`). The overflow task's 3 ended and scored, the clause
+arms' 3 and 3 scored, every gate-scale ImpossibleBench stage scored 15 of 15. **One item failed:** the smoke
+batch's minimal-scaffold `C_conduct` task exited before its first sample, with Inspect's
+`neither a Dataset directory nor a DatasetDict directory` (the same configuration outside the batch passed).
+
+**The cause.** Inspect 0.3.291's `hf_dataset` reads a dataset from its cache directory whenever that directory
+exists, and on a miss loads it and saves into that directory. In the batch six ImpossibleBench processes made
+their first loads at once into one shared cache: one found the directory while another was still writing it.
+The gate's stages, one at a time after the first, never meet it. (Not reproduced by timing on the laptop, too
+fast for the window; reproduced deterministically: a half-written directory where a concurrent save would be
+gives the host's error, `test_each_ib_process_has_its_own_dataset_cache_and_a_half_written_one_is_the_failure`.)
+
+**What concurrent Inspect processes share on the host, and how each is held now:**
+
+| state | held |
+|---|---|
+| Inspect's dataset cache (`hf_datasets`) | **isolated**: each process's own copy (below); the cause |
+| Inspect's other cache subdirectories (`checkpoints`, `generate`, `bin`, `dist`) | isolated (each process's own `XDG_CACHE_HOME`); named per log or unused by this task |
+| Inspect's data directory (traces, the sample buffer, auto compose files, `kvstore`, `ctl`) | isolated (each process's own `XDG_DATA_HOME`); named per process, log or project besides |
+| the Hugging Face `datasets` cache (arrow files from the local parquet) | isolated (each process's own `HF_DATASETS_CACHE`); it also locks its own files |
+| the Hugging Face hub cache | read-only (offline) |
+| the pinned data (`/opt/gpc4/ib_data`) and ImpossibleBench's sources | read-only |
+| Docker Compose projects and networks of Inspect's sandboxes | isolated (80 random bits a project name) |
+| ODCV-Bench's Compose projects (`odcv_<run_id>`) and run directories | isolated (unique a run within a batch; a retry runs in a later batch) |
+| the `odcv` bridge network | read-only use (made once at setup, only attached) |
+| Docker images | read-only (built at setup) |
+| the host's proxy and its log | locked (one server; rows appended under a lock) |
+
+**The fix (isolation, not serializing; VM side):** the driver warms the dataset cache once at its start, alone
+(the three splits, through the same patched loader), into a master it makes read-only; each ImpossibleBench
+process then points Inspect's dataset cache at its own copy (`GPC4_INSPECT_CACHE`, which the task applies to
+`hf_dataset`'s cache root, so the isolation does not rest on the OS's cache conventions), with its own Inspect
+cache and data directories and `datasets` cache, all under `/var/lib/gpc4/iso/<instruction>` (outside what is
+pushed, removed after). A failed warm-up leaves each process to build its own, still isolated. Tests: the
+half-written directory gives the host's failure and an own copy of the read-only master loads, the master
+never written; two processes never share a directory.
+
+**Rehearsal 10** (approved): the plan as rehearsal 9's, which passed, except that **the concurrent smoke batch
+runs three times in a row** (`r0s_smoke`, `r0t_smoke`, `r0u_smoke`, 9 items each, under a minute each), so a
+race that strikes one time in several has a chance to show.
+
+**Before rehearsal 10:** VM hash `433a241d06c1dac1`. The slow dry chain passed; the standing step passed (190
+collected, floor 190; 189 passed, 1 skipped, once quiet and three times under load); the host-side Inspect
+checks passed against a local ImpossibleBench clone. Rehearsal 10 is the record for launch 7 if it passes.

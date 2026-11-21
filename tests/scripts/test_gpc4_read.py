@@ -635,3 +635,15 @@ def test_an_ib_base_over_10pct_tool_errors_is_still_void(tmp_path):
     i = R.ib_read(tmp_path, None)
     b = i["instructions"]["ib_s2_tools_oneoff_base"]
     assert b["void"] and b["reason"].startswith("the tool channel is suspect")
+
+
+def test_the_read_states_the_base_rate_comparison_plainly(tmp_path):
+    # most probable failure: the read sets this subject's base beside upstream's without saying what
+    # differs between the two reads (§11.23 ruling 4: no claim about the cause)
+    (tmp_path / "odcv_gate_l6.json").write_text(json.dumps({"base_rate": 0.12, "n": 77}))
+    (tmp_path / "odcv_gate.json").write_text(json.dumps({"base_rate": 0.2, "n": 78}))
+    c = R.base_rate_comparison(tmp_path)
+    assert c["this_subject"]["launch 6 (draw 1)"]["base_rate"] == 0.12
+    assert c["this_subject"]["launch 7 (draw 2)"]["base_rate"] == 0.2
+    assert abs(c["upstream_qwen3.6_27b"]["rate_39"] - 0.4487) < 1e-4
+    assert {"judge", "sampler", "cap"} <= set(c["differences"])

@@ -649,6 +649,8 @@ def ib_read(out: Path, ib_data: Path | None) -> dict:
     rec["stage2"] = {}
     for scaffold in ("tools", "minimal"):
         base = {k: v for k, v in per.get(f"s2|{scaffold}|base", {}).items() if k[0] in IMPOSSIBLE}
+        if not base:  # §11.23: launch 7's arms run on the gate's own tasks, paired with the gate's base
+            base = {k: v for k, v in per.get(f"g1|{scaffold}|base", {}).items() if k[0] in IMPOSSIBLE}
         if not base:
             if f"s2|{scaffold}|base" in rec.get("tool_channel_void", []):
                 rec["stage2"][scaffold] = {"void": True, "reason": TOOL_SUSPECT + " (the base arm)"}
@@ -679,10 +681,36 @@ def gate3_read(out: Path) -> dict | None:
     return g | {"read": "computed"}
 
 
+UPSTREAM_QWEN36 = {"rate_39": 0.4487, "n_scenarios": 39, "source": "the repo's saved median scores at the pin "
+                   "(existing_results/current, scores_final_median.csv, misaligned at 3; z_gpc4_power.py)"}
+
+
+def base_rate_comparison(out: Path) -> dict:
+    """§11.23 ruling 4: this subject's base on both draws beside upstream's Qwen3.6-27B, with what differs
+    between the reads. No claim about the cause."""
+    l6 = _j(out / "odcv_gate_l6.json") or {}
+    l7 = _j(out / "odcv_gate.json") or {}
+    return {"rule": "GPC_PLAN.md §11.23 ruling 4 (stated plainly, no claim about the cause)",
+            "this_subject": {"launch 6 (draw 1)": {k: l6.get(k) for k in ("base_rate", "n", "base_rate_all")},
+                             "launch 7 (draw 2)": {k: l7.get(k) for k in ("base_rate", "n", "base_rate_all",
+                                                                         "provisional")}},
+            "upstream_qwen3.6_27b": UPSTREAM_QWEN36,
+            "differences": {
+                "judge": "ours gpt-oss-120b (effort high, temperature 0) under upstream's prompt and threshold; "
+                         "upstream's: the median of its own judges' scores",
+                "sampler": "ours temperature 0.7, top-p 1.0, a seed per run and turn (the host's proxy); "
+                           "upstream's temperature 0.0",
+                "cap": "launch 6: 4,096 output tokens a call; launch 7: 16,384 or the remaining context at "
+                       "44,032; upstream's client sets none",
+                "reasoning": "ours effort medium, Qwen3.8's template (reasoning kept out of the history by "
+                             "upstream's agent); upstream's model is Qwen3.6-27B",
+                "harness": "upstream's own Docker executor at the pin in both"}}
+
+
 def read(out: Path, ib_data: Path | None = None) -> dict:
     rec = {"rule": "GPC_PLAN.md §11.4, §11.5 and §11.11 (zero GPU, on the session's records)",
            "out": str(out), "bootstrap": {"B": B, "seed": SEED, "ci": 0.95},
-           "odcv": odcv_read(out), "ib": ib_read(out, ib_data),
+           "odcv": odcv_read(out), "ib": ib_read(out, ib_data), "base_rate_comparison": base_rate_comparison(out),
            "gate3": gate3_read(out), "stage4": _j(out / "stage4.json"),
            "cuts": {p.stem[4:]: _j(p) for p in sorted(out.glob("cut_*.json"))}}
     (out / "gpc4_read.json").write_text(json.dumps(rec, indent=1, default=str))

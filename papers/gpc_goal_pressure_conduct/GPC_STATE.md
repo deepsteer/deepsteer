@@ -281,3 +281,10 @@ bill is its figure of record.
   Built: the judge's GPU wait and 65,536 context, launch 6's runs in launch 7's final pass, overflow-ended
   ODCV-Bench runs labeled, the bounds grid's "code", §11.19's amendment (the void is the base's), the summed
   adapter as an arm after C1. Rehearsal 9 running.
+- 2026-11-21: launch 7's order (§11.23), built pod-side: the affordability rate 0.725 (two draws at k = 1 fit
+  12 A100-h; 80% power first at 0.725 under the registered ICC 0.53), the smoke, ODCV-Bench's base, the IB
+  gate on the first 30 per scaffold, one judge pass (the new base, launch 6's 80, stage 4's blackmail), the
+  arms by what counts, then the bounds grid and stage 3 (cut first); the file-trace fallback with the judge
+  failed; the base-rate comparison in the read. Rehearsal 9 failed on a dataset-cache race in the smoke batch
+  (§11.24): each ImpossibleBench process now gets its own copy of a cache warmed once at setup. Rehearsal 10
+  runs the smoke batch three times. Gate 190, floor 190.

@@ -531,6 +531,7 @@ def driver(poll_s: int = 20) -> None:
     done = set(json.loads(done_f.read_text())) if done_f.exists() else set()
     while not POD_ENV.exists():
         time.sleep(poll_s)
+    warm_ib_cache()  # §11.24: once, alone, before any instruction
     log("driver: pod.env present; polling the control document")
     first_read, down_since, stop_since = False, None, None
     while True:
@@ -778,9 +779,27 @@ IB_SRC = os.environ.get("GPC4_IB_SRC", "/opt/gpc4/impossiblebench/src/impossible
 # the LiveCodeBench modules import each other as top-level modules (`from livecodebench_scorers import
 # find_code`) and need only inspect_ai and datasets; the package's __init__ pulls in SWE-bench and an
 # unpinned inspect_evals, so it is never imported
+# GPC_PLAN.md §11.24: Inspect saves a pinned dataset into one shared cache directory on its first load and reads
+# from that directory whenever it exists, so concurrent first loads race (rehearsal 9: a smoke item read a
+# half-written save and exited). Each process points Inspect's dataset cache at its own directory
+# (GPC4_INSPECT_CACHE), a copy of the master warmed once at the driver's start; its Inspect cache and data
+# directories and its datasets cache are its own too (XDG_CACHE_HOME, XDG_DATA_HOME, HF_DATASETS_CACHE).
+IB_CACHE_PATCH = r'''
+import os
+from pathlib import Path
+import inspect_ai.dataset._sources.hf as _H
+if os.environ.get("GPC4_INSPECT_CACHE"):
+    def _own_cache_dir(subdir, create=True):
+        d = Path(os.environ["GPC4_INSPECT_CACHE"]) / (subdir or "")
+        if create:
+            d.mkdir(parents=True, exist_ok=True)
+        return d
+    _H.inspect_cache_dir = _own_cache_dir
+'''
 IB_TASK = r'''
 import json, sys
 sys.path.insert(0, sys.argv[2])
+exec(sys.argv[4])  # IB_CACHE_PATCH: this process's own dataset cache
 from inspect_ai import eval as inspect_eval
 from inspect_ai.solver import chain, system_message
 import livecodebench_tasks as T
@@ -826,20 +845,73 @@ print(json.dumps([str(l.location) for l in logs]))
 '''
 
 
+IB_CACHE_MASTER = STATE / "inspect_cache_master"
+IB_WARM = r'''
+import sys
+sys.path.insert(0, sys.argv[2])
+exec(sys.argv[4])
+import livecodebench_tasks as T
+_hf = T.hf_dataset
+T.hf_dataset = lambda path, **kw: _hf(path=sys.argv[3], **kw)
+for sp in ("oneoff", "conflicting", "original"):
+    print(sp, len(T.impossible_livecodebench(split=sp, agent_type="tools", sandbox="docker").dataset))
+'''
+
+
+def ib_env(iso: Path, cache: Path) -> dict:
+    """An ImpossibleBench process's environment: no secrets; its own caches and data directories."""
+    env = {k: v for k, v in os.environ.items() if not re.search(r"TOKEN|SECRET|AWS_", k)}
+    env.update({"GPC4_INSPECT_CACHE": str(cache), "XDG_CACHE_HOME": str(iso / "xdg_cache"),
+                "XDG_DATA_HOME": str(iso / "xdg_data"), "HF_DATASETS_CACHE": str(iso / "hf_datasets"),
+                "HF_HUB_OFFLINE": "1", "HF_DATASETS_OFFLINE": "1"})  # the egress lock: the pinned data
+    return env
+
+
+def warm_ib_cache() -> bool:
+    """§11.24: the pinned dataset's three splits loaded once, alone, into the master cache (made read-only);
+    each ImpossibleBench process then starts from its own copy. Idempotent; a failure leaves each process to
+    build its own (still isolated)."""
+    done = IB_CACHE_MASTER / ".warm"
+    if done.exists():
+        return True
+    if not Path(IB_PY).exists() or not Path(IB_SRC).exists():
+        return False
+    iso = STATE / "iso" / "_warm"
+    shutil.rmtree(iso, ignore_errors=True)
+    shutil.rmtree(IB_CACHE_MASTER, ignore_errors=True)
+    p = subprocess.run([IB_PY, "-c", IB_WARM, "-", IB_SRC, IB_DATA, IB_CACHE_PATCH], capture_output=True,
+                       text=True, env=ib_env(iso, IB_CACHE_MASTER / "cache"))
+    shutil.rmtree(iso, ignore_errors=True)
+    if p.returncode != 0:
+        log(f"driver: the dataset cache did not warm ({p.stderr.strip().splitlines()[-1:]}); each process builds its own")
+        return False
+    for q in sorted(IB_CACHE_MASTER.rglob("*"), reverse=True):
+        q.chmod(0o555 if q.is_dir() else 0o444)
+    done.write_text(p.stdout)
+    log(f"driver: the dataset cache warmed ({' '.join(p.stdout.split())})")
+    return True
+
+
 def ib_stage(ins: dict, out: Path) -> None:
     log_dir = out / "inspect_logs"
     log_dir.mkdir(parents=True, exist_ok=True)
+    # §11.24: this process's own state, outside what is pushed, from a copy of the warm master
+    iso = STATE / "iso" / ins["id"]
+    shutil.rmtree(iso, ignore_errors=True)
+    cache = iso / "inspect_cache"
+    if (IB_CACHE_MASTER / ".warm").exists():
+        shutil.copytree(IB_CACHE_MASTER / "cache", cache, copy_function=shutil.copyfile)
     arg = {**{k: ins[k] for k in ("split", "scaffold", "task_ids", "model")},
            "task_fn": ins.get("task_fn", "impossible_livecodebench"),
            "task_kwargs": ins.get("task_kwargs", {}), "clause_text": ins.get("clause_text"),
            "concurrency": ins.get("concurrency", 10), "log_dir": str(log_dir)}
-    env = {k: v for k, v in os.environ.items() if not re.search(r"TOKEN|SECRET|AWS_", k)}
+    env = ib_env(iso, cache)
     env.update({"GPC4_BASE_URL": f"http://127.0.0.1:{PROXY_PORT}/run/{ins['id']}/v1",
                 "GPC4_API_KEY": "dummy"})
     t0 = time.time()
-    env.update({"HF_HUB_OFFLINE": "1", "HF_DATASETS_OFFLINE": "1"})  # the egress lock: the pinned cache
-    p = subprocess.run([IB_PY, "-c", IB_TASK, json.dumps(arg), IB_SRC, IB_DATA], capture_output=True,
-                       text=True, env=env)
+    p = subprocess.run([IB_PY, "-c", IB_TASK, json.dumps(arg), IB_SRC, IB_DATA, IB_CACHE_PATCH],
+                       capture_output=True, text=True, env=env)
+    shutil.rmtree(iso, ignore_errors=True)
     (out / "inspect_stdout.txt").write_text(p.stdout[-20000:] + "\n---\n" + p.stderr[-20000:])
     _write_rows(out / "proxy.jsonl", proxy_rows({ins["id"]}))  # §11.21: usage, finish reasons, overflows
     (out / "stage.json").write_text(json.dumps({"exit": p.returncode, "wall_s": round(time.time() - t0, 1),
