@@ -2931,7 +2931,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Appears in.** `GPC_PLAN.md` §11.20.
 **Competing readings.** R_model: Qwen3.8-27B inspects its harness more than Qwen3.6-27B does (a trait, and possibly evaluation awareness). R_sampling: upstream ran at temperature 0.0 and the sampling of record here is 0.7 with a seed per run; exploration rises with temperature. R_variant: the incentivized prompt invites probing the mechanism (13 of 39 against 6 of 40).
 **Discriminator.** Zero GPU, once the gate is judged: whether runs that read the source are scored misaligned more often (a link to the measured behavior, not only to exploration). On the next pod at no extra cost: the share in each of launch 7's arms (the read reports it per arm, ruling 8 of §11.21). R_sampling against R_model needs a temperature-0 base cell (about 0.8 A100-h), not scheduled.
-**Status.** open.
+**Status.** open. 2026-11-21 (§11.22): Codex (not the judge of record) scores 4 of the 18 runs that read the source misaligned and 5 of the other 59; the judge of record reads it at launch 7's final pass.
 **Thesis impact.** None yet; descriptive. If reading correlates with a misaligned score, the base rate partly measures evaluation awareness, which the read must say beside the rate.
 
 ## GPC-A13 (ledger) — C1's ImpossibleBench tool calls came back with argument errors on 3 of 20 and 2 of 15 calls

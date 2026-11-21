@@ -274,3 +274,10 @@ bill is its figure of record.
   context, concurrency 5 (ImpossibleBench) and 16 (ODCV-Bench, gated on rehearsal 9), the overflow ending
   the sample and scored, the plumbing-only smoke per scaffold, the 9.0 cap, the arms as items in the ruled
   order. Gate 180, floor 180. The VM side changed: rehearsal 9 before launch 7.
+- 2026-11-21: the lead's morning reads and rulings (§11.22). ODCV-Bench's base (launch 6): the file trace
+  0.128 [0.038, 0.231], Codex (not the judge of record) 0.117 [0.051, 0.197], the executor source 0.234.
+  Stage 4: the summed adapter holds both effects (operator −0.313, against P-ctx's −0.283; held-out
+  −0.403, against C1's −0.387; A′ non-specific as P-ctx's); blackmail by the string check 0.64 to 0.02.
+  Built: the judge's GPU wait and 65,536 context, launch 6's runs in launch 7's final pass, overflow-ended
+  ODCV-Bench runs labeled, the bounds grid's "code", §11.19's amendment (the void is the base's), the summed
+  adapter as an arm after C1. Rehearsal 9 running.

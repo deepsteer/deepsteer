@@ -31,6 +31,7 @@ GPC_INPUTS=(
   outputs/_sync/eval_8gram_hashes_v2.npy                        # the bounds writer's 8-gram check
   outputs/gpc4_in/vm_keys/forward_key.pub outputs/gpc4_in/vm_keys/results_key.pub
   outputs/gpc4_in/session
+  outputs/gpc4_in/l6_odcv_base.jsonl  # launch 6's gate runs for the final pass (z_gpc4_l6_transcripts.py)
 )
 I="$G/outputs/gpc4_in/cst"
 rm -rf "$I" && mkdir -p "$I"

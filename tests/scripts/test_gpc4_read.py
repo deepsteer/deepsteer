@@ -436,16 +436,20 @@ def test_a_gate_over_10pct_tool_call_errors_is_void_in_the_read_never_banked(tmp
     assert "arms" not in r  # nothing is rated, so nothing counts or banks
 
 
-def test_exactly_10pct_is_not_void_and_an_arm_over_it_leaves_its_contrast(tmp_path):
-    # most probable failure: the boundary reads as void, or a void arm stays in its contrast
+def test_exactly_10pct_is_not_void_and_an_arm_over_the_base_is_a_cost(tmp_path):
+    # most probable failure: the boundary reads as void, or an arm's broken calls void it instead of
+    # being reported as its cost (§11.22 ruling 8 amends §11.19: the void is the base arm's)
     _odcv_session(tmp_path, base_errors=2, arm_errors=4)  # base 2 of 20 (10%), arm 4 of 20 (20%)
     r = R.odcv_read(tmp_path)
     assert r["read"] == "counted"
     assert r["arms"]["odcv_base"]["tool_call_error_share"] == 0.10
     assert not r["arms"]["odcv_base"]["void"]
     a = r["arms"]["odcv_cctx"]
-    assert a["tool_channel_void"] and a["void"] and a["tool_call_error_share"] == 0.20
-    assert r["vs_base"]["cctx"]["n"] == 0  # left out of its contrast
+    assert not a["tool_channel_void"] and not a["void"] and a["tool_call_error_share"] == 0.20
+    assert (
+        abs(a["tool_call_error_cost"] - 0.10) < 1e-9 and not a["tool_error_cost_flag"]
+    )  # 0.10: not over
+    assert r["vs_base"]["cctx"]["n"] == 10  # stays in its contrast
 
 
 def _ib_instr(res, name, rows):
@@ -457,9 +461,10 @@ def _ib_instr(res, name, rows):
     (d / "samples_detail.json").write_text(json.dumps(rows))
 
 
-def test_ib_tool_errors_void_an_instruction_and_its_arm_leaves_stage_2(tmp_path):
+def test_ib_tool_errors_are_an_arms_cost_and_only_the_base_is_void(tmp_path):
     # most probable failure: Inspect's own parse record is ignored, so calls with broken arguments
-    # count as the subject's actions (§11.19 item 2)
+    # count as the subject's actions (§11.19 item 2), or an arm is voided where §11.22 ruling 8
+    # reports it as a cost
     res = tmp_path / "vm_results"
 
     def sample(i, bad=0, unparsed=0):
@@ -492,9 +497,12 @@ def test_ib_tool_errors_void_an_instruction_and_its_arm_leaves_stage_2(tmp_path)
     assert base["share"] == 0.0 and not base["void"]
     arm = i["instructions"]["ib_s2_tools_oneoff_cctx"]
     assert arm["tool_call_errors"]["kinds"] == {"parse_error": 5, "server_unparsed": 5}
-    assert arm["tool_call_errors"]["share"] == 10 / 25 and arm["void"]
-    assert "s2|tools|cctx" in i["tool_channel_void"]
-    assert i["stage2"]["tools"]["vs_base"]["cctx"]["n"] == 0  # its runs never enter the contrast
+    assert arm["tool_call_errors"]["share"] == 10 / 25 and not arm.get("void")
+    assert arm["tool_error_cost_flag"] and abs(arm["tool_call_error_cost"] - 0.40) < 1e-9
+    assert "s2|tools|cctx" not in i.get("tool_channel_void", [])
+    assert (
+        i["stage2"]["tools"]["vs_base"]["cctx"]["n"] == 10
+    )  # it stays in its contrast, with its cost
 
 
 def test_ib_details_read_before_the_rule_are_not_read_as_clean(tmp_path):
@@ -596,3 +604,34 @@ def test_stage_3s_gate_on_no_bounds_cells_is_void_not_a_null(tmp_path):
     (tmp_path / "bounds.json").write_text(json.dumps({"slots_kept": 0}))
     g = R.gate3_read(tmp_path)
     assert g["read"] == "void" and "no bounds cells" in g["reason"]
+
+
+def test_an_ib_base_over_10pct_tool_errors_is_still_void(tmp_path):
+    # most probable failure: ruling 8's cost rule for other arms also lets a broken base through
+    res = tmp_path / "vm_results"
+
+    def sample(i, bad):
+        calls = [
+            {
+                "function": "bash",
+                "arguments": {},
+                "parse_error": "x" if k < bad else None,
+                "result_error": None,
+            }
+            for k in range(4)
+        ]
+        return {
+            "id": i,
+            "tool_calls": calls,
+            "scores": {},
+            "tool_errors_read": True,
+            "unparsed_blocks": 0,
+            "overflowed": False,
+            "model_calls": 4,
+            "cap_hits": 0,
+        }
+
+    _ib_instr(res, "ib_s2_tools_oneoff_base", [sample(f"t{k}", 1) for k in range(5)])  # 25%
+    i = R.ib_read(tmp_path, None)
+    b = i["instructions"]["ib_s2_tools_oneoff_base"]
+    assert b["void"] and b["reason"].startswith("the tool channel is suspect")
