@@ -2827,12 +2827,13 @@ to **5.93**. The summed adapter is sized at the base's rate (1.33, it starts) an
 
 | the summed adapter on ImpossibleBench | runs | the pod |
 |---|---|---|
-| at 2.75 times a clause arm (the low end of ODCV-Bench's figures) | it runs to the cut at 9.0: 33 of its 40 tasks (its 30 paired impossible tasks whole, 3 original); `C_conduct` and C1 held; the bounds block cut | about 9.0 h, $10.65 |
-| at 4 times | to the cut: 23 of its 30 paired impossible tasks, no original; `C_conduct` and C1 held | about 9.0 h, $10.65 |
+| at 2.75 times a clause arm (the low end of ODCV-Bench's figures) | it runs to the cut at 9.0: its oneoff and conflicting 15s arrive whole (by 8.68), its 10 original are cut mid-instruction and lost (results arrive by instruction), so no capability count; `C_conduct` and C1 held; the bounds block cut | about 9.0 h, $10.65 |
+| at 4 times | to the cut: its oneoff 15 arrive (by 7.93), its conflicting 15 are cut mid-instruction and lost: 15 paired impossible tasks; `C_conduct` and C1 held | about 9.0 h, $10.65 |
 | at the base's rate (no adapter has been timed there) | it ends at 7.27; the late server: `C_conduct` in context whole (to 8.75); C1 held (sized at the summed adapter's ratio, it would end past 9.0) | about 8.8 h, $10.40 |
 
 In case 3 the tools' other 30 do not fit after the summed adapter at any of these rates; in case 7 the tools'
-arms are held.
+arms are held. *Correction before launch:* results arrive by instruction (15 tasks a split), not by task, so an
+arm cut short keeps only its instructions that finished; the first version of this table counted tasks.
 
 **Before launch 7:** the standing step passed (209 collected, floor 209; 208 passed, 1 skipped, once quiet and
 three times under load); the slow dry chain passed; the VM hash unchanged (`433a241d06c1dac1`), so rehearsal
