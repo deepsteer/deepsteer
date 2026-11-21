@@ -2791,3 +2791,49 @@ at 8.68 and holds the second arm.
 **Before launch 7:** the standing step passed (204 collected, floor 204; 203 passed, 1 skipped, once quiet and
 three times under load); the slow dry chain passed; the VM hash unchanged (`433a241d06c1dac1`), so rehearsal
 10's record applies.
+
+### 11.28 The lead's ruling on `98f1c695` (2026-11-21; pod side only; dated before launch 7)
+
+1. **The bounds block versus the third arm: as built, neither option.** The ranking "a trained bounds adapter
+   is worth more to the next pod than a third arm" priced the block at 1.75 h. At 2.75 h it buys an adapter with
+   no outside read this session, and an arm is an outside read. **With an arm scaffold the bounds block moves to
+   the next pod** (as built, the cut rule takes it whenever the arms leave it no room, the case at every rate
+   priced here).
+2. **The third arm is `C_conduct` in context, and C1 is fourth.** The read's ratio needs an adapter and its
+   matching clause. After `C_bounds` in context and the summed adapter, C1 adds a second adapter and no ratio;
+   `C_conduct` in context gives the summed adapter its matching clause, at a clause arm's known cost.
+3. **Two exploratory lines in the read** (ImpossibleBench, the arm scaffold): the summed adapter's reduction
+   over `C_conduct` in context's and over `C_bounds` in context's, each labeled **"exploratory: the summed
+   adapter. The registered screen is C1 over C_conduct and waits for C1's arm"**, with no bar and no pass.
+   Registered here, before launch.
+4. **An arm's wait.** `stage_ib_arm` waited 1.5 times the base's rate a task plus 0.1 h, then moved on with the
+   arm still running on the host, and the server went down under it; the plan's own ODCV-Bench figures put an
+   adapter arm at 2.75 to 4 times a clause arm, and no adapter has been timed on ImpossibleBench. **An arm that
+   has started now waits to the cut, or until the VM is lost, whichever comes first** (`wait_arm`). Before this,
+   the pod marked the VM lost only at `vm_wait`; the wait now also takes the VM as lost when the served engine's
+   log stays still for 30 minutes while the arm's results are missing (a running arm calls the model
+   throughout). Sizing stays at the base's rate. **Confirmed:** an arm's instructions are published oneoff,
+   conflicting, then original, and the host runs a plan's instructions in order, so an arm cut short keeps its
+   paired impossible tasks.
+5. **Each arm's measured time a task and its ratio to the base's** are recorded in `arms.json` and in the read
+   (`arm_timing`). A later adapter arm (C1) is sized at the summed adapter's measured ratio; the clause arms at
+   the base's rate.
+6. **Not taken:** skipping the server's down and up when the block is cut. The deferred judge uses that point.
+
+**Re-priced, cases 3, 4 and 7** (the cut 9.0, ODCV-Bench not counting; a task on the minimal scaffold 0.033 at
+the base's rate; the arms on the minimal scaffold in all three, the tools scaffold's other 30 or its arms
+waiting behind them). To the second arm's start: 4.27, the capability base 0.33 and `C_bounds` in context 1.33,
+to **5.93**. The summed adapter is sized at the base's rate (1.33, it starts) and runs at its own:
+
+| the summed adapter on ImpossibleBench | runs | the pod |
+|---|---|---|
+| at 2.75 times a clause arm (the low end of ODCV-Bench's figures) | it runs to the cut at 9.0: 33 of its 40 tasks (its 30 paired impossible tasks whole, 3 original); `C_conduct` and C1 held; the bounds block cut | about 9.0 h, $10.65 |
+| at 4 times | to the cut: 23 of its 30 paired impossible tasks, no original; `C_conduct` and C1 held | about 9.0 h, $10.65 |
+| at the base's rate (no adapter has been timed there) | it ends at 7.27; the late server: `C_conduct` in context whole (to 8.75); C1 held (sized at the summed adapter's ratio, it would end past 9.0) | about 8.8 h, $10.40 |
+
+In case 3 the tools' other 30 do not fit after the summed adapter at any of these rates; in case 7 the tools'
+arms are held.
+
+**Before launch 7:** the standing step passed (209 collected, floor 209; 208 passed, 1 skipped, once quiet and
+three times under load); the slow dry chain passed; the VM hash unchanged (`433a241d06c1dac1`), so rehearsal
+10's record applies.

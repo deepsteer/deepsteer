@@ -6,6 +6,7 @@ cloud-init's rules read from their text. The rehearsal on AWS is the integration
 
 from __future__ import annotations
 
+import inspect
 import json
 import os
 import re
@@ -1144,6 +1145,9 @@ def test_depth_before_breadth_the_arm_scaffold_runs_its_arms_before_the_other_30
     _ib_arms_ready(tmp_path, monkeypatch)
     monkeypatch.setattr(P4, "ib_scores", scores)
     monkeypatch.setattr(P4, "wait_for", wait)
+    monkeypatch.setattr(
+        P4, "wait_arm", lambda out, ids, dry, **k: (wait(out, ids, dry, 0), "finished")
+    )
     monkeypatch.setattr(P4, "ib_tool_quality", lambda out, ids: {"void_tool": False})
     (tmp_path / "vm_results").mkdir(exist_ok=True)
     P4.stage_ib_gate(tmp_path, dry=True)
@@ -1445,8 +1449,8 @@ def test_pod_runner_order_and_inputs():
         "--stage any_arms --part late",
         "item odcv_gate",  # a late decision that counts: ODCV-Bench in the late server phase
         "item odcv_cbounds",
+        "item ib_cctx",  # §11.28 item 2: C_conduct in context third, C1 fourth
         "item ib_c1",
-        "item ib_cctx",
         "--part final",
         "--stage stop",
     ]
@@ -3197,6 +3201,7 @@ def _ib_arms_ready(tmp_path, monkeypatch):
         },
     )
     monkeypatch.setattr(P4, "wait_for", lambda *a, **k: [])
+    monkeypatch.setattr(P4, "wait_arm", lambda out, ids, dry, **k: ([], "finished"))
     P4.plan_set(tmp_path, [], hold=True)
 
 
@@ -3208,7 +3213,6 @@ def test_ib_arms_run_their_whole_set_on_the_arm_scaffold_or_are_held(tmp_path, m
 
     _ib_arms_ready(tmp_path, monkeypatch)
     _survivor(tmp_path, "minimal")  # 4,500 s over 40 tasks: 0.03125 h a task, 1.25 h a whole set
-    assert list(P4.IB_ARM_OF) == ["ib_cbounds", "ib_sum", "ib_c1", "ib_cctx"]
     monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 6.0 * 3600))  # 2.5 h to the 8.5 cut
     r = P4.stage_ib_arm(tmp_path, True, "ib_cbounds")
     assert r["sizing"]["scaffold"] == "minimal" and r["sizing"]["n"] == 40 and r["whole_set"]
@@ -3241,9 +3245,8 @@ def test_the_late_arms_need_room_for_a_whole_set_after_the_servers_start(tmp_pat
     monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.0 * 3600))
     P4._w(tmp_path, "items_done", {"done": ["ib_c1", "ib_cctx"]})  # noqa: SLF001
     assert P4.late_arms_room(tmp_path) is False  # both late arms already ran
-    assert P4.IB_LATE_ARMS == ("ib_c1", "ib_cctx")
     pr = P4.PRIORITY
-    assert pr.index("ib_sum") < pr.index("bounds") < pr.index("stage3") < pr.index("ib_c1")
+    assert pr.index("ib_sum") < pr.index("bounds") < pr.index("stage3") < pr.index("ib_cctx")
 
 
 def test_a_late_judge_holds_odcv_bench_until_its_decision_then_runs_it_late(tmp_path, monkeypatch):
@@ -3295,6 +3298,117 @@ def test_the_runner_waits_10_minutes_for_the_judges_weights_and_no_longer():
 
     assert ready("sleep 20 >/dev/null 2>&1 &", 0) == 1  # still downloading at the limit: deferred
     assert ready("true &", 5) == 0  # already there: the judge runs now
+
+
+def test_the_third_arm_is_c_conduct_in_context_and_c1_fourth():
+    # most probable failure: C1 runs third, a second adapter with no ratio, and the summed adapter
+    # is
+    # left without its matching clause (§11.28 item 2)
+    assert list(P4.IB_ARM_OF) == ["ib_cbounds", "ib_sum", "ib_cctx", "ib_c1"]
+    assert P4.IB_ARM_OF["ib_cctx"] == ("cctx", "base", "conduct")
+    assert P4.IB_LATE_ARMS == ("ib_cctx", "ib_c1")
+    pr = P4.PRIORITY
+    assert pr.index("ib_sum") < pr.index("ib_cctx") < pr.index("ib_c1")
+    late = RUNNER[RUNNER.index("--stage any_arms --part late") :]
+    assert late.index("item ib_cctx") < late.index("item ib_c1")
+
+
+def _arm_ready_to_wait(tmp_path, monkeypatch, cut_in_s: float):
+    """An arm's two instructions published and none arrived; the cut ``cut_in_s`` seconds away."""
+    import time as _t
+
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - (8.5 * 3600 - cut_in_s)))
+    _counts(tmp_path, 0.5)  # the cut is 8.5 here
+    (tmp_path / "vm_results").mkdir(exist_ok=True)
+    return ["ib_s2_minimal_oneoff_cbounds", "ib_s2_minimal_conflicting_cbounds"]
+
+
+def test_the_arms_wait_ends_at_the_cut_not_at_a_multiple_of_its_forecast(tmp_path, monkeypatch):
+    # most probable failure: the wait ends at 1.5 times the forecast with the arm unfinished, and
+    # the
+    # server goes down under an arm still running on the host (§11.28 item 4)
+    import time as _t
+
+    ids = _arm_ready_to_wait(tmp_path, monkeypatch, cut_in_s=1.5)
+    t0 = _t.time()
+    miss, ended = P4.wait_arm(tmp_path, ids, dry=False, poll_s=0.2)
+    assert ended == "the cut" and miss == ids and _t.time() - t0 >= 1.2
+    # an arm slower than any forecast still ends "finished" when its results arrive before the cut
+    ids = _arm_ready_to_wait(tmp_path, monkeypatch, cut_in_s=60)
+    polls = []
+    monkeypatch.setattr(
+        P4.V, "received", lambda d: (polls.append(1), ids if len(polls) > 3 else [])[1]
+    )
+    assert (
+        P4.wait_arm(tmp_path, ids, dry=False, poll_s=0.05) == ([], "finished") and len(polls) == 4
+    )
+    src = inspect.getsource(P4.stage_ib_arm)
+    assert "wait_arm(" in src and "1.5" not in src
+
+
+def test_the_arms_wait_ends_when_the_vm_is_lost(tmp_path, monkeypatch):
+    # most probable failure: a host that died mid-arm leaves the pod waiting to the cut, since the
+    # VM
+    # was marked lost only at vm_wait (§11.28 item 4: the cut or the VM's loss, whichever first)
+    ids = _arm_ready_to_wait(tmp_path, monkeypatch, cut_in_s=600)
+    P4._w(tmp_path, "vm", {"lost": True})  # noqa: SLF001
+    assert P4.wait_arm(tmp_path, ids, dry=False, poll_s=0.05) == (ids, "the VM is lost")
+    P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
+    (tmp_path / "logs").mkdir(exist_ok=True)
+    (tmp_path / "logs" / "serve.log").write_text("Running: 0 reqs, Waiting: 0 reqs\n")  # still
+    assert P4.ARM_IDLE_LOST_S == 1800  # half an hour with no model call while an arm runs
+    monkeypatch.setattr(P4, "ARM_IDLE_LOST_S", 0.3)
+    miss, ended = P4.wait_arm(tmp_path, ids, dry=False, poll_s=0.05)
+    assert ended == "the VM is lost (the served engine idle)" and P4.vm_lost(tmp_path)
+
+
+def test_an_arm_runs_its_impossible_splits_before_its_10_original(tmp_path, monkeypatch):
+    # most probable failure: the original tasks run first and an arm cut short loses its paired
+    # impossible tasks (§11.28 item 4: the host runs a plan's instructions in order)
+    import time as _t
+
+    _ib_arms_ready(tmp_path, monkeypatch)
+    _survivor(tmp_path, "minimal")
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 6.0 * 3600))
+    P4.stage_ib_arm(tmp_path, True, "ib_cbounds")
+    plan = json.loads((tmp_path / "plan.json").read_text())["instructions"]
+    splits = [i["split"] for i in plan if i["id"].startswith("ib_s2_")]
+    assert splits == ["oneoff", "conflicting", "original"]
+
+
+def test_each_arm_records_its_rate_and_a_later_adapter_arm_is_sized_at_the_sums_ratio(
+    tmp_path, monkeypatch
+):
+    # most probable failure: C1 is sized at the base's rate though an adapter arm runs 2.75 to 4
+    # times
+    # a clause arm on ODCV-Bench, so it is started and cannot finish by the cut (§11.28 item 5)
+    import time as _t
+
+    _ib_arms_ready(tmp_path, monkeypatch)
+    _survivor(tmp_path, "minimal")  # the base: 4,500 s over 40 tasks, 112.5 s a task
+
+    def finish(out, ids, dry, **k):  # the summed adapter's blocks take three times the base's time
+        for i in ids:
+            n = 15 if "original" not in i else 10
+            st = {"wall_s": 3 * 112.5 * n, "args": {"task_ids": [f"t{j}" for j in range(n)]}}
+            P4._w(P4.results_dir(out) / i, "stage", st)  # noqa: SLF001
+        return [], "finished"
+
+    monkeypatch.setattr(P4, "wait_arm", finish)
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 2.0 * 3600))
+    r = P4.stage_ib_arm(tmp_path, True, "ib_sum")
+    assert r["ratio_to_base"] == pytest.approx(3.0) and r["per_task_h"] == pytest.approx(
+        3 * 112.5 / 3600
+    )
+    assert P4._r(tmp_path, "arms")["ib"]["ib_sum"]["ratio_to_base"] == pytest.approx(3.0)  # noqa: SLF001
+    _, c1 = P4.ib_arm_room(tmp_path, item="ib_c1")
+    _, cc = P4.ib_arm_room(tmp_path, item="ib_cctx")
+    assert c1["per_task_h"] == pytest.approx(3 * cc["per_task_h"], rel=1e-2)  # rounded to 4 places
+    assert (
+        "summed adapter's measured ratio" in c1["sized_at"] and cc["sized_at"] == "the base's rate"
+    )
+    _, s2 = P4.ib_arm_room(tmp_path, item="ib_sum")
+    assert s2["sized_at"] == "the base's rate"  # the summed adapter itself, at the base's rate
 
 
 def test_no_arm_counts_keeps_the_server_down(tmp_path):

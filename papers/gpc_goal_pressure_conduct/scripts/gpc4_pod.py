@@ -56,7 +56,7 @@ IB_PARQUET = Path(os.environ.get("GPC4_IB_DATA", "/workspace/ib_data/data"))
 PRIORITY = ("odcv_gate", "odcv_rerun", "odcv_cctx", "odcv_c1", "odcv_sum", "odcv_cbounds", "ib_gate", "ib_rerun",
             "ib_minimal", "ib_capability", "ib_cbounds", "ib_sum", "ib_more_tools", "ib_more_minimal",
             "bounds_block", "bounds", "stage3",
-            "ib_c1", "ib_cctx", "arms", "stage4")
+            "ib_cctx", "ib_c1", "arms", "stage4")
 # A100-h at GPC-3's measured rates (GPC_PLAN.md §11.5); re-priced from stage 1's own
 # §11.27 item 1: a passing bounds grid from GPC-1's conduct stage (2.82 h for 700 slots, generation and its
 # loads and checks together) scaled to the bounds grid's 60, 340 and 130 slots (530): 2.1; launch 6's 0.23 was
@@ -1542,9 +1542,12 @@ def stage_arms(out: Path, dry: bool) -> dict:
     return rec
 
 
+# §11.25 item 4's order, §11.28 item 2: C_conduct in context third (it gives the summed adapter its matching
+# clause, at a clause arm's known cost), C1 fourth (a second adapter and no ratio after the first three)
 IB_ARM_OF = {"ib_cbounds": ("cbounds", "base", "bounds"), "ib_sum": ("sum", "sum", None),
-             "ib_c1": ("c1", "c1", None), "ib_cctx": ("cctx", "base", "conduct")}  # §11.25 item 4's order
-IB_LATE_ARMS = ("ib_c1", "ib_cctx")  # §11.25 item 5: after the bounds grid and stage 3
+             "ib_cctx": ("cctx", "base", "conduct"), "ib_c1": ("c1", "c1", None)}
+IB_LATE_ARMS = ("ib_cctx", "ib_c1")  # §11.25 item 5: after the bounds grid and stage 3
+ARM_IDLE_LOST_S = 1800  # §11.28 item 4: the served engine's log still this long while an arm runs: the VM is lost
 IB_ARM_MIN_TASKS = 30  # §11.25 item 4; §11.26: an arm runs its whole set (the first 30 and 10 original) or is held
 SERVE_UP_H = 0.15  # launch 6's measured server start (0.12 to 0.14)
 
@@ -1576,35 +1579,84 @@ def ib_paired_set(g: dict) -> list[tuple[str, str]]:
     return out + [("original", x) for x in t.get("original", [])]
 
 
-def ib_task_h(out: Path, g: dict) -> float:
-    """The survivor's measured pod time a task (its gate's walls over its tasks), else the forecast's."""
+def ib_ids_task_h(out: Path, ids: list[str]) -> float | None:
+    """Measured pod time a task over instructions (their walls over their tasks); None when none has one."""
     n, wall = 0, 0.0
-    for i in g.get("instructions", []):
+    for i in ids:
         st = _r(results_dir(out) / i, "stage") or {}
         if st.get("wall_s"):
             wall += st["wall_s"]
             n += len((st.get("args") or {}).get("task_ids") or []) or 15
-    return wall / n / 3600 if n and wall else FORECAST_H["ib_gate"] / 30
+    return wall / n / 3600 if n and wall else None
 
 
-def ib_arm_room(out: Path, extra_h: float = 0.0) -> tuple[str | None, dict]:
-    """The survivor and the paired tasks an arm starting now has room for, inside the cut."""
+def ib_task_h(out: Path, g: dict) -> float:
+    """The survivor's measured pod time a task (its gate's walls over its tasks), else the forecast's."""
+    return ib_ids_task_h(out, g.get("instructions", [])) or FORECAST_H["ib_gate"] / 30
+
+
+def ib_arm_rate(out: Path, item: str, base_h: float) -> tuple[float, str]:
+    """§11.28 items 4 and 5: an arm is sized at the base's rate a task; an adapter arm after the summed
+    adapter's, at the summed adapter's measured ratio to the base."""
+    if IB_ARM_OF[item][1] != "base" and item != "ib_sum":
+        r = (((_r(out, "arms") or {}).get("ib") or {}).get("ib_sum") or {}).get("ratio_to_base")
+        if r:
+            return base_h * r, f"the base's rate times the summed adapter's measured ratio ({r:.2f})"
+    return base_h, "the base's rate"
+
+
+def elapsed_h() -> float:
+    return (time.time() - float(os.environ.get("CST_START_EPOCH", time.time()))) / 3600
+
+
+def ib_arm_room(out: Path, extra_h: float = 0.0, item: str | None = None) -> tuple[str | None, dict]:
+    """The arm scaffold and the paired tasks an arm starting now has room for, inside the cut."""
     scaffold, g = ib_survivor(out)
     if not scaffold:
         return None, {}
-    per = ib_task_h(out, g)
-    el = (time.time() - float(os.environ.get("CST_START_EPOCH", time.time()))) / 3600
-    left = cut_now(out) - el - extra_h
+    base_h = ib_task_h(out, g)
+    per, basis = ib_arm_rate(out, item, base_h) if item else (base_h, "the base's rate")
+    left = cut_now(out) - elapsed_h() - extra_h
     full = ib_paired_set(g)
     n = min(len(full), max(0, int(left / per)))
-    return scaffold, {"left_h": round(left, 2), "per_task_h": round(per, 4), "full": len(full), "n": n,
-                      "scaffold": scaffold, "g": g}
+    return scaffold, {"left_h": round(left, 2), "per_task_h": round(per, 4), "sized_at": basis, "full": len(full),
+                      "n": n, "scaffold": scaffold, "g": g}
+
+
+def wait_arm(out: Path, ids: list[str], dry: bool, poll_s: float = 20.0) -> tuple[list[str], str]:
+    """§11.28 item 4: an arm that has started waits to the cut, or until the VM is lost, whichever comes
+    first (never a forecast's multiple, which left an arm running on the host as the server went down).
+    The VM is lost when the pod says so, or when the served engine's log stays still for ARM_IDLE_LOST_S
+    while the arm's results are missing (a running arm calls the model throughout)."""
+    log = out / "logs" / "serve.log"
+    size, still_since = None, time.time()
+    while True:
+        if dry:
+            dry_vm(out)
+        got = set(V.received(results_dir(out)))
+        miss = [i for i in ids if i not in got]
+        if not miss:
+            return miss, "finished"
+        if elapsed_h() >= cut_now(out):
+            return miss, "the cut"
+        if vm_lost(out):
+            return miss, "the VM is lost"
+        if log.exists():
+            sz = log.stat().st_size
+            if sz != size:
+                size, still_since = sz, time.time()
+            elif time.time() - still_since >= ARM_IDLE_LOST_S:
+                _w(out, "vm", {"lost": True, "rule": "GPC_PLAN.md §11.28 item 4 (the served engine idle for "
+                                                     f"{ARM_IDLE_LOST_S} s while an arm ran)", "during": ids})
+                return miss, "the VM is lost (the served engine idle)"
+        time.sleep(poll_s)
 
 
 def stage_ib_arm(out: Path, dry: bool, item: str) -> dict:
-    """§11.25 item 4: one arm on the surviving scaffold with the higher base, on its base's paired set (the
-    whole set when the time left allows, else as much as fits in whole tasks), run to its end before the next
-    arm starts; an arm with room for fewer than 30 paired tasks is held for the next pod."""
+    """§11.25 item 4, §11.26, §11.28: one arm on the arm scaffold, its whole paired set (the first 30 and the
+    10 original) or held for the next pod; sized at the base's rate (an adapter arm after the summed adapter's
+    at its measured ratio); once started it waits to the cut or until the VM is lost; its measured time a task
+    and its ratio to the base's are recorded."""
     arm, model, which = IB_ARM_OF[item]
     arms = _r(out, "arms") or {}
 
@@ -1619,7 +1671,7 @@ def stage_ib_arm(out: Path, dry: bool, item: str) -> dict:
     ok, why = server_ok(out)
     if not ok:
         return skip(why)
-    scaffold, room = ib_arm_room(out)
+    scaffold, room = ib_arm_room(out, item=item)
     if not scaffold:
         return skip("no ImpossibleBench scaffold survived its gate")
     ok, why = smoke_ok(out, arm, "ib", scaffold)
@@ -1635,9 +1687,17 @@ def stage_ib_arm(out: Path, dry: bool, item: str) -> dict:
            for sp, t in by.items() if t]
     prev = json.loads((out / "plan.json").read_text())["instructions"] if (out / "plan.json").exists() else []
     plan_set(out, prev + ins)
-    miss = wait_for(out, [i["id"] for i in ins], dry, room["n"] * room["per_task_h"] * 1.5 + 0.1)
-    arms.setdefault("ib", {})[item] = {"instructions": [i["id"] for i in ins], "missing": miss,
-                                       "sizing": room, "whole_set": room["n"] == room["full"]}
+    # the impossible splits first, then the 10 original: the host runs a plan's instructions in order, so an
+    # arm cut short keeps its paired impossible tasks
+    miss, ended = wait_arm(out, [i["id"] for i in ins], dry)
+    per = ib_ids_task_h(out, [i["id"] for i in ins if i["id"] not in miss])
+    base_h = ib_task_h(out, g)
+    arms = _r(out, "arms") or {}
+    arms.setdefault("ib", {})[item] = {"instructions": [i["id"] for i in ins], "missing": miss, "ended": ended,
+                                       "sizing": room, "whole_set": room["n"] == room["full"],
+                                       # §11.28 item 5: its measured time a task and its ratio to the base's
+                                       "per_task_h": per, "base_per_task_h": base_h,
+                                       "ratio_to_base": per / base_h if per and base_h else None}
     arms["run"] = True
     _w(out, "arms", arms)
     print(f">> {item}:", json.dumps(arms["ib"][item]), flush=True)
@@ -1653,10 +1713,11 @@ def late_arms_room(out: Path) -> bool:
     done = set((_r(out, "items_done") or {}).get("done", []))
     left = [k for k in IB_LATE_ARMS if k not in done and k not in (arms.get("skipped") or {})
             and k not in (arms.get("held") or {})]
-    if not left:
-        return False
-    scaffold, room = ib_arm_room(out, SERVE_UP_H)
-    return bool(scaffold) and room["n"] >= room["full"]
+    for k in left:  # each sized as it would run (§11.28 item 5)
+        scaffold, room = ib_arm_room(out, SERVE_UP_H, k)
+        if scaffold and room["n"] >= room["full"]:
+            return True
+    return False
 
 
 def odcv_late(out: Path) -> bool:

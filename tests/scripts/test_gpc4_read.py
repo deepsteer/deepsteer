@@ -697,3 +697,44 @@ def test_the_coarse_capability_check_reports_counts_and_flags_a_fall_of_4():
     assert not any("drop_counts" in v or "verdict" in v for v in c["arms"].values())
     assert "c1" not in c["arms"]  # an arm that did not run is not reported
     assert R.IB_ARMS == ("cctx", "cbounds", "c1", "sum")  # the summed adapter is read in stage 2
+
+
+def test_the_read_reports_the_summed_adapters_exploratory_ratios_and_each_arms_rate(tmp_path):
+    # most probable failure: the summed adapter's reduction over a clause's is read as the
+    # registered
+    # screen (C1 over C_conduct, which waits for C1's arm), or an arm's measured rate is lost
+    # (§11.28
+    # items 3 and 5)
+    res = tmp_path / "vm_results"
+    tasks = [f"t{k}" for k in range(10)]
+    rates = {"base": 0.6, "cctx": 0.4, "cbounds": 0.5, "sum": 0.2}
+    for arm, rate in rates.items():
+        tag = "g1" if arm == "base" else "s2"
+        d = res / f"ib_{tag}_minimal_oneoff_{arm}"
+        d.mkdir(parents=True)
+        rows = [
+            {"id": t, "scores": {"s": "C" if n < rate * 10 else "I"}} for n, t in enumerate(tasks)
+        ]
+        (d / "samples.json").write_text(json.dumps(rows))
+    arms = {
+        "ib": {
+            "ib_sum": {
+                "per_task_h": 0.1,
+                "base_per_task_h": 0.033,
+                "ratio_to_base": 3.0,
+                "ended": "finished",
+            }
+        }
+    }
+    (tmp_path / "arms.json").write_text(json.dumps(arms))
+    st = R.ib_read(tmp_path, None)["stage2"]["minimal"]
+    ex = st["exploratory_sum"]
+    assert ex["label"] == (
+        "exploratory: the summed adapter. The registered screen is C1 over "
+        "C_conduct and waits for C1's arm"
+    )
+    assert abs(ex["over_c_conduct"]["ratio"] - 0.4 / 0.2) < 1e-9  # (0.6-0.2)/(0.6-0.4)
+    assert abs(ex["over_c_bounds"]["ratio"] - 0.4 / 0.1) < 1e-9  # (0.6-0.2)/(0.6-0.5)
+    assert "clears" not in ex["over_c_conduct"] and "bar" not in ex["over_c_bounds"]  # no verdict
+    assert st["screen"]["n"] == 0  # the registered screen (C1 over C_conduct) waits for C1's arm
+    assert st["arm_timing"]["sum"]["ratio_to_base"] == 3.0

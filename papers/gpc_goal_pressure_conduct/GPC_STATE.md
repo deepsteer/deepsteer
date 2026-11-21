@@ -305,3 +305,8 @@ bill is its figure of record.
   block one decision (2.75); the cut 9.0 when the final pass has nothing to load; depth before breadth (the arm
   scaffold's arms before the other scaffold's other 30); gate3 on the bounds pilot only; the capability check
   as counts, flagged at a fall of 4. Re-priced: the block fits only with no arm scaffold. Gate 204, floor 204.
+- 2026-11-21: the lead's ruling on 98f1c695 (§11.28), built pod-side: the bounds block as built (with an arm
+  scaffold it moves to the next pod); C_conduct in context third, C1 fourth; the read's two exploratory lines
+  for the summed adapter (over C_conduct and over C_bounds), registered before launch; an arm waits to the cut
+  or the VM's loss (the served engine idle 30 minutes counts as lost); each arm's measured rate and ratio
+  recorded, C1 sized at the summed adapter's. Gate 209, floor 209.
