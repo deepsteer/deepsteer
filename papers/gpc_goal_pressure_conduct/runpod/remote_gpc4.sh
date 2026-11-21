@@ -170,7 +170,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=197   # the gate's collected count when set (launch 7, §11.26); fewer means a file failed to collect
+GATE_FLOOR=204   # the gate's collected count when set (launch 7, §11.27); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
@@ -259,15 +259,21 @@ item odcv_cbounds
 item ib_gate
 item ib_cbounds
 item ib_sum
+run $GP ib_more --stage ib_more   # §11.27 item 4: a 2-to-5 scaffold's other 30, after the arms, if it fits
 $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
 [ "$JUDGED" = 1 ] || judge_first   # §11.26 item 4: the first server-down point; the decision is written here
-# e. §11.25 item 5: the bounds grid and stage 3 after the second arm, ahead of the third and fourth
-item bounds
-run $GP bounds_cells --stage bounds_cells
-item stage3
-run $GP parity_hf --stage parity_hf    # the bounds adapter's, when stage 3 trained one
-run $GP parity --stage parity
-run $GP stage3_read --stage stage3_read
+# e. §11.25 item 5: the bounds grid and stage 3 after the second arm, ahead of the third and fourth; §11.27
+#    item 2: one decision, the grid starting only if the grid, its cells and stage 3 all end by the cut
+if $PY $GP --out "$OUT" --stage fits --next bounds_block $DRY; then
+  run $GP bounds --stage bounds
+  run $GP bounds_cells --stage bounds_cells
+  run $GP stage3 --stage stage3
+  run $GP parity_hf --stage parity_hf    # the bounds adapter's, when stage 3 trained one
+  run $GP parity --stage parity
+  run $GP stage3_read --stage stage3_read
+else
+  echo ">> cut: the bounds block (the grid, its cells and stage 3 do not all end by the cut)"
+fi
 # f. the third and fourth arms, when one has room for its whole set after the server's start; and ODCV-Bench's
 #    base and arms when the judge ran late and its decision counts (§11.26 item 4; each skips what already ran)
 if $PY $GP --out "$OUT" --stage any_arms --part late $DRY; then

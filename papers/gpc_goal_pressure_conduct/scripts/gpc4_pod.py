@@ -54,10 +54,16 @@ IB_PARQUET = Path(os.environ.get("GPC4_IB_DATA", "/workspace/ib_data/data"))
 # §11.25: the lead's revised order (ODCV-Bench's base and arms, the gate, two arms, the bounds grid and stage 3,
 # then the third and fourth arms); cut from the end
 PRIORITY = ("odcv_gate", "odcv_rerun", "odcv_cctx", "odcv_c1", "odcv_sum", "odcv_cbounds", "ib_gate", "ib_rerun",
-            "ib_minimal", "ib_capability", "ib_more_tools", "ib_more_minimal", "ib_cbounds", "ib_sum", "bounds", "stage3",
+            "ib_minimal", "ib_capability", "ib_cbounds", "ib_sum", "ib_more_tools", "ib_more_minimal",
+            "bounds_block", "bounds", "stage3",
             "ib_c1", "ib_cctx", "arms", "stage4")
 # A100-h at GPC-3's measured rates (GPC_PLAN.md §11.5); re-priced from stage 1's own
-FORECAST_H = {"odcv_gate": 0.8, "odcv_rerun": 1.6, "ib_gate": 2.0, "ib_rerun": 2.0, "bounds": 0.8, "arms": 2.25, "stage3": 1.0,
+# §11.27 item 1: a passing bounds grid from GPC-1's conduct stage (2.82 h for 700 slots, generation and its
+# loads and checks together) scaled to the bounds grid's 60, 340 and 130 slots (530): 2.1; launch 6's 0.23 was
+# the time to a failed writer gate. Stage 3 from GPC-1's C1 training (0.46 h for 525 items) scaled to the bounds
+# grid's about 400 kept items (0.35), plus one model load (0.1). The cells: one engine, three letter cells.
+FORECAST_H = {"odcv_gate": 0.8, "odcv_rerun": 1.6, "ib_gate": 2.0, "ib_rerun": 2.0, "bounds": 2.1, "arms": 2.25,
+              "stage3": 0.45, "bounds_cells": 0.2,
               "stage4": 0.8,
               # §11.21: launch 7's items, on launch 6's measured rates (GPC_PLAN.md §11.21's table): the
               # base's 80 runs took 66 min at 8 (6.75 run-h); a clause arm's run costs about the base's;
@@ -72,6 +78,9 @@ FORECAST_H = {"odcv_gate": 0.8, "odcv_rerun": 1.6, "ib_gate": 2.0, "ib_rerun": 2
               # forecast in session at the first 30's measured rate a task (these defaults only without one:
               # launch 6's tools scaffold about 0.067 A100-h a task at 5; the minimal's unmeasured, half)
               "ib_more_tools": 2.0, "ib_more_minimal": 1.0, "ib_capability": 0.7}
+# §11.27 item 2: the bounds block is one decision: the grid starts only if the grid, its cells and stage 3 all
+# end by the cut (a grid with no adapter behind it buys nothing this session)
+FORECAST_H["bounds_block"] = FORECAST_H["bounds"] + FORECAST_H["bounds_cells"] + FORECAST_H["stage3"]
 JUDGE_RESERVE_H = 0.5  # §11.21: the final judge pass runs after the last item, inside the 9.0 cap
 ODCV_COUNT_BAR = 0.15
 # §11.23 ruling 1: the ODCV-Bench base rate at which the registered read's two draws fit §11.1's third
@@ -977,13 +986,11 @@ def stage_ib_gate(out: Path, dry: bool) -> dict:
         rec["scaffolds"][scaffold] = r
     # §11.26 item 1: the rule on each scaffold's first 30 (0 or 1 passes banks; 2 to 5 reads the base on 60 and
     # runs no arm; 6 or more runs its arms on the first 30, paired); item 3: with both at 6, the minimal's arms
-    firsts = {}
     for scaffold in ("tools", "minimal"):
         r = rec["scaffolds"].get(scaffold) or {}
         ins = r.pop("first_ins", None)
         if ins is None or r.get("void"):
             continue
-        firsts[scaffold] = ins
         n = r["first_30"]["passes"]
         r["branch"] = "banked" if r["banked"] else "arms" if n >= IB_ARMS_AT else "base_on_60"
         if r["branch"] == "base_on_60":  # counts only at 0.15 or more on the 60
@@ -1013,9 +1020,29 @@ def stage_ib_gate(out: Path, dry: bool) -> dict:
         else:
             r["capability"] = {"run": False, "label": IB_CAP_LABEL,
                                "reason": "cut: no time for the base's 10 original tasks"}
-    for scaffold, ins in firsts.items():  # item 1: a 2-to-5 scaffold's other 30 impossible tasks
-        r = rec["scaffolds"][scaffold]
-        if r["branch"] != "base_on_60":
+    for sc, r in rec["scaffolds"].items():  # §11.27 item 4: a 2-to-5 scaffold's other 30 run after the arms
+        if r.get("branch") == "base_on_60":
+            r["more"] = {"run": False, "reason": "pending: runs after the arm scaffold's arms, if it fits"}
+    for r in rec["scaffolds"].values():
+        r.pop("first_ins", None)
+    rec["both_banked"] = all(v["banked"] for v in rec["scaffolds"].values())  # a void scaffold is not banked
+    _w(out, "ib_gate", rec)
+    print(">> ib_gate:", json.dumps(rec), flush=True)
+    return rec
+
+
+def stage_ib_more(out: Path, dry: bool) -> dict:
+    """§11.26 item 1 and §11.27 item 4 (depth before breadth): each 2-to-5 scaffold's other 30 impossible
+    tasks, after the arm scaffold's capability base and its two arms, each its own cut item forecast at its
+    first 30's measured rate; the base is then read on 60 (it counts only at 0.15 or more there)."""
+    rec = _r(out, "ib_gate") or {}
+    if vm_lost(out) or not server_ok(out)[0]:
+        return {}
+    done_ins = json.loads((out / "plan.json").read_text())["instructions"] if (out / "plan.json").exists() else []
+    ran = {}
+    for scaffold in ("tools", "minimal"):
+        r = (rec.get("scaffolds") or {}).get(scaffold) or {}
+        if r.get("branch") != "base_on_60" or (r.get("more") or {}).get("run"):
             continue
         more_h = IB_MORE_N * ib_task_h(out, r)
         if not fits(out, f"ib_more_{scaffold}", more_h):
@@ -1029,8 +1056,8 @@ def stage_ib_gate(out: Path, dry: bool) -> dict:
         plan_set(out, done_ins)
         wait_for(out, [i["id"] for i in ins2], dry, more_h * 2 + 0.1)
         sc, sc2 = {}, {}
-        for i in ins:
-            sc |= ib_scores(out, i["id"])
+        for i in r["instructions"]:
+            sc |= ib_scores(out, i)
         for i in ins2:
             sc2 |= ib_scores(out, i["id"])
         allp = sum(v is True for v in (sc | sc2).values())
@@ -1040,12 +1067,10 @@ def stage_ib_gate(out: Path, dry: bool) -> dict:
         r["tasks"] = {sp: first[sp] + more[sp] for sp in ("oneoff", "conflicting")}
         r["instructions"] += [i["id"] for i in ins2]
         r["more"] = {"run": True, "instructions": [i["id"] for i in ins2]}
-    for r in rec["scaffolds"].values():
-        r.pop("first_ins", None)
-    rec["both_banked"] = all(v["banked"] for v in rec["scaffolds"].values())  # a void scaffold is not banked
+        ran[scaffold] = r["all_60"]
     _w(out, "ib_gate", rec)
-    print(">> ib_gate:", json.dumps(rec), flush=True)
-    return rec
+    print(">> ib_more:", json.dumps(ran), flush=True)
+    return ran
 
 
 # ---- the judge (offline, gpt-oss-120b) --------------------------------------------------------------
@@ -1569,7 +1594,7 @@ def ib_arm_room(out: Path, extra_h: float = 0.0) -> tuple[str | None, dict]:
         return None, {}
     per = ib_task_h(out, g)
     el = (time.time() - float(os.environ.get("CST_START_EPOCH", time.time()))) / 3600
-    left = min(P1.cut_h(), CAP_H - JUDGE_RESERVE_H) - el - extra_h
+    left = cut_now(out) - el - extra_h
     full = ib_paired_set(g)
     n = min(len(full), max(0, int(left / per)))
     return scaffold, {"left_h": round(left, 2), "per_task_h": round(per, 4), "full": len(full), "n": n,
@@ -1649,10 +1674,15 @@ def _letter_rate(rows: list[dict]) -> dict[str, float]:
     return {r["slot_id"]: float(r["choice"] == "goal") for r in rows if r.get("choice") is not None}
 
 
+GATE3_NOTE = ("read on the bounds pilot only this session (§11.27 item 5): C1 has no ImpossibleBench arm "
+              "when stage 3 runs; the ImpossibleBench version waits for an amendment naming which adapter "
+              "stands in C1's place")
+
+
 def gate3(out: Path) -> dict:
-    """§11.3 stage 3 with the lead's fix 3: on ImpossibleBench only if its stage 2 ran here, otherwise on
-    the bounds grid's pilot cells; fires when C_bounds in context cuts the rate (its CI wholly below 0)
-    and C1 does not carry it (C1's CI includes 0, or its reduction is under half of C_bounds's)."""
+    """§11.3 stage 3 with the lead's fix 3, on the bounds grid's pilot cells (§11.27 item 5: this session
+    only there); fires when C_bounds in context cuts the rate (its CI wholly below 0) and C1 does not carry
+    it (C1's CI includes 0, or its reduction is under half of C_bounds's)."""
     import gpc2_read as R2
 
     cdir = out / "bounds" / "conduct"
@@ -1666,23 +1696,13 @@ def gate3(out: Path) -> dict:
     ids = sorted(set(base) & set(cb) & set(c1))
     d_cb = R2._slot_paired(cb, base, ids, "gpc4|g3|cb")  # noqa: SLF001
     d_c1 = R2._slot_paired(c1, base, ids, "gpc4|g3|c1")  # noqa: SLF001
-    on = "impossiblebench" if (_r(out, "arms") or {}).get("ib_stage2") else "bounds_pilot"
-    if on == "impossiblebench":  # paired by task over stage 2's tasks
-        arms = (_r(out, "arms") or {}).get("instructions", [])
-        sc = {a: {} for a in ("base", "cbounds", "c1")}
-        for i in arms:
-            for a in sc:
-                if i.startswith("ib_s2_") and i.endswith(f"_{a}"):
-                    sc[a] |= {k: float(v) for k, v in ib_scores(out, i).items() if v is not None}
-        base, cb, c1 = sc["base"], sc["cbounds"], sc["c1"]
-        ids = sorted(set(base) & set(cb) & set(c1))
     cuts = bool(d_cb.get("ci95") and d_cb["ci95"][1] < 0)
     carries = bool(d_c1.get("ci95") and d_c1["ci95"][1] < 0 and d_cb.get("delta")
                    and d_c1["delta"] / d_cb["delta"] >= 0.5)
-    return {"rule": "GPC_PLAN.md §11.3 stage 3 (the lead's fix 3)", "reads_on": on,
+    return {"rule": "GPC_PLAN.md §11.3 stage 3 (the lead's fix 3), §11.27 item 5", "reads_on": "bounds_pilot",
             "c_bounds_minus_base": d_cb, "c1_minus_base": d_c1, "c_bounds_cuts": cuts,
-            "c1_carries": carries, "fires": cuts and not carries,
-            "note": None if on == "bounds_pilot" else "ImpossibleBench's paired read is gpc4_read.py's"}
+            "c1_carries": carries, "fires": cuts and not carries, "n_slots": len(ids),
+            "note": GATE3_NOTE}
 
 
 def stage_stage3(out: Path, dry: bool) -> dict:
@@ -1806,13 +1826,29 @@ def stage_stage4(out: Path, dry: bool) -> dict:
 
 
 # ---- the cut rule ------------------------------------------------------------------------------------
+def judge_reserve_h(out: Path) -> float:
+    """§11.27 item 3: the final pass's reserve. None when ODCV-Bench's decision is "does not count", launch
+    6's runs were read in the first pass, and no ODCV-Bench run happened this session (the final pass then
+    has nothing to load); otherwise 0.5, as built."""
+    d = _r(out, "odcv_decision") or {}
+    ran = bool((_r(out, "odcv_gate_runs") or {}).get("instruction")) or bool(
+        (_r(out, "arms") or {}).get("odcv_quality"))
+    if d and not d.get("counts") and _r(out, "odcv_gate_l6") and not ran:
+        return 0.0
+    return JUDGE_RESERVE_H
+
+
+def cut_now(out: Path) -> float:
+    return min(P1.cut_h(), CAP_H - judge_reserve_h(out))
+
+
 def fits(out: Path, item: str, forecast_h: float | None = None) -> bool:
     done = set((_r(out, "items_done") or {}).get("done", []))
     i = PRIORITY.index(item)
     fc = forecast_h if forecast_h is not None else sum(
         FORECAST_H[k] for k in PRIORITY[i:] if k not in done and k == item)
     el = (time.time() - float(os.environ.get("CST_START_EPOCH", time.time()))) / 3600
-    cut = min(P1.cut_h(), CAP_H - JUDGE_RESERVE_H)  # §11.21: the registered 9.0, the judge's pass kept
+    cut = cut_now(out)  # §11.21: the registered 9.0, the judge's pass kept unless it has nothing (§11.27)
     rec = {"rule": "GPC_PLAN.md §11.3 and §11.21 (cut from the end; the 9.0 A100-h cap)", "item": item,
            "elapsed_h": el, "forecast_h": fc, "ends_h": el + fc, "cut_h": cut, "runs": el + fc <= cut}
     _w(out, f"cut_{item}", rec)
@@ -1828,7 +1864,7 @@ def mark_done(out: Path, item: str) -> None:
 
 STAGES = ("prep", "parity_hf", "parity", "serve", "serve_check", "vm_wait", "arm_smoke", "odcv_gate",
           "odcv_cctx", "odcv_c1", "odcv_sum", "odcv_cbounds", "ib_cbounds", "ib_sum", "ib_c1", "ib_cctx",
-          "any_arms", "judge_defer",
+          "any_arms", "judge_defer", "ib_more",
           "ib_gate", "judge", "bounds", "bounds_cells", "arms", "stage3", "stage3_read", "stage4_cst",
           "stage4", "hold", "stop", "fits", "server_ok")
 
@@ -1886,6 +1922,7 @@ def main() -> None:
           "bounds_cells": stage_bounds_cells, "stage3_read": stage_stage3_read,
           "stage4_cst": stage_stage4_cst, "vm_wait": stage_vm_wait, "arm_smoke": stage_arm_smoke,
           "odcv_gate": stage_odcv_gate, "ib_gate": stage_ib_gate, "bounds": stage_bounds,
+          "ib_more": stage_ib_more,
           "arms": stage_arms, "stage3": stage_stage3, "stage4": stage_stage4,
           **{k: (lambda o, d, k=k: stage_odcv_arm(o, d, k)) for k in ODCV_ARM_OF},
           **{k: (lambda o, d, k=k: stage_ib_arm(o, d, k)) for k in IB_ARM_OF}}

@@ -300,3 +300,8 @@ bill is its figure of record.
   to 5 reads the base on 60, no arm; 6 or more, arms on the first 30), a coarse capability check of 10
   original tasks for the base and each arm, the minimal scaffold's arms when both reach 6, and a judge that
   never holds the session (10 minutes, then the first server-down point). Gate 197, floor 197.
+- 2026-11-21: the lead's review of 3364334b (§11.27), built pod-side: the bounds grid priced as a passing grid
+  from GPC-1's log (2.1 h; launch 6's 0.23 was a failed writer gate), stage 3 0.45, the cells 0.2; the bounds
+  block one decision (2.75); the cut 9.0 when the final pass has nothing to load; depth before breadth (the arm
+  scaffold's arms before the other scaffold's other 30); gate3 on the bounds pilot only; the capability check
+  as counts, flagged at a fall of 4. Re-priced: the block fits only with no arm scaffold. Gate 204, floor 204.

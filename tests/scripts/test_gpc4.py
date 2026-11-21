@@ -1059,7 +1059,10 @@ def _gate(tmp_path, monkeypatch, passes: dict, wall_s: float = 900.0):
     monkeypatch.setattr(P4, "wait_for", wait)
     monkeypatch.setattr(P4, "ib_tool_quality", lambda out, ids: {"void_tool": False})
     (tmp_path / "vm_results").mkdir(exist_ok=True)
-    return P4.stage_ib_gate(tmp_path, dry=True), calls
+    P4.stage_ib_gate(tmp_path, dry=True)
+    assert not any(c.startswith("ib_g2_") for c in calls)  # §11.27 item 4: never inside the gate
+    P4.stage_ib_more(tmp_path, dry=True)  # after the arms, in the runner
+    return P4._r(tmp_path, "ib_gate"), calls  # noqa: SLF001
 
 
 @pytest.mark.parametrize(
@@ -1111,12 +1114,136 @@ def test_the_first_30_rule_banks_reads_60_or_runs_arms(
 
 
 def test_the_extras_are_forecast_at_the_first_30s_measured_rate(tmp_path, monkeypatch):
-    # most probable failure: the other 30 and the capability check are priced at the defaults
-    # rather than
-    # at the first 30's measured pod time a task
+    # most probable failure: the other 30 and the capability check are priced at the defaults rather
+    # than at the first 30's measured pod time a task
     _gate(tmp_path, monkeypatch, {"tools": 3, "minimal": 8}, wall_s=900.0)  # 60 s a task
     assert P4._r(tmp_path, "cut_ib_more_tools")["forecast_h"] == pytest.approx(30 / 60)  # noqa: SLF001
     assert P4._r(tmp_path, "cut_ib_capability")["forecast_h"] == pytest.approx(10 / 60)  # noqa: SLF001
+
+
+def test_depth_before_breadth_the_arm_scaffold_runs_its_arms_before_the_other_30(
+    tmp_path, monkeypatch
+):
+    # most probable failure: the 2-to-5 scaffold's other 30 run first and take the arm scaffold's
+    # time,
+    # leaving its two arms held (§11.27 item 4)
+    calls = []
+
+    def scores(out, iid):
+        sc, sp = iid.split("_")[2], iid.split("_")[3]
+        n = {"tools": 3, "minimal": 8}[sc] if iid.startswith("ib_g1_") and sp == "oneoff" else 0
+        return {f"{iid}_t{j}": j < n for j in range(15 if sp != "original" else 10)}
+
+    def wait(out, ids, dry, h):
+        calls.extend(ids)
+        for i in ids:
+            t = [f"{i}_t{j}" for j in range(15)]
+            P4._w(P4.results_dir(out) / i, "stage", {"wall_s": 60.0, "args": {"task_ids": t}})  # noqa: SLF001
+        return []
+
+    _ib_arms_ready(tmp_path, monkeypatch)
+    monkeypatch.setattr(P4, "ib_scores", scores)
+    monkeypatch.setattr(P4, "wait_for", wait)
+    monkeypatch.setattr(P4, "ib_tool_quality", lambda out, ids: {"void_tool": False})
+    (tmp_path / "vm_results").mkdir(exist_ok=True)
+    P4.stage_ib_gate(tmp_path, dry=True)
+    for item in (
+        "ib_cbounds",
+        "ib_sum",
+    ):  # the runner's order: the gate, two arms, then the other 30
+        assert P4.stage_ib_arm(tmp_path, True, item)
+    P4.stage_ib_more(tmp_path, dry=True)
+    first = lambda pre: min(n for n, c in enumerate(calls) if c.startswith(pre))  # noqa: E731
+    assert first("ib_cap_minimal") < first("ib_s2_minimal") < first("ib_g2_tools")
+    g = P4._r(tmp_path, "ib_gate")["scaffolds"]["tools"]  # noqa: SLF001
+    assert g["more"]["run"] and g["all_60"]["scored"] == 60
+    pr = P4.PRIORITY
+    assert pr.index("ib_sum") < pr.index("ib_more_tools") < pr.index("bounds_block")
+
+
+def test_the_bounds_block_starts_only_if_the_grid_its_cells_and_stage_3_all_fit(
+    tmp_path, monkeypatch
+):
+    # most probable failure: the grid starts with room for itself alone, and stage 3 is cut after
+    # it,
+    # so the session buys a grid with no adapter behind it (§11.27 item 2); or the grid is priced at
+    # launch 6's 0.23, which was the time to a failed writer gate (item 1)
+    import time as _t
+
+    f = P4.FORECAST_H
+    assert f["bounds"] == 2.1 and f["stage3"] == 0.45 and f["bounds_cells"] == 0.2
+    assert f["bounds_block"] == pytest.approx(2.75)
+    _counts(tmp_path, 0.5)  # ODCV-Bench counts here, so the cut is 8.5
+    monkeypatch.setenv(
+        "CST_START_EPOCH", str(_t.time() - 6.0 * 3600)
+    )  # 2.5 h left: the grid alone fits
+    assert P4.fits(tmp_path, "bounds") and not P4.fits(tmp_path, "bounds_block")
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 5.7 * 3600))  # 2.8 h left: all three fit
+    assert P4.fits(tmp_path, "bounds_block")
+
+
+@pytest.mark.parametrize(
+    "decision,l6,ran,cut",
+    [
+        (0.128, True, False, 9.0),  # does not count, launch 6 read, nothing ran: nothing to load
+        (0.5, True, True, 8.5),  # it counts and ran: the final pass judges it
+        (
+            0.128,
+            False,
+            False,
+            8.5,
+        ),  # launch 6 unread (the first pass failed): the final pass reads it
+        (None, True, False, 8.5),  # pending (the judge deferred): the reserve kept
+    ],
+    ids=["not_counting", "counting", "l6_unread", "pending"],
+)
+def test_the_cut_is_9_only_when_the_final_pass_has_nothing_to_load(
+    tmp_path, monkeypatch, decision, l6, ran, cut
+):
+    # most probable failure: the cut is raised to 9.0 while the final pass still has runs to judge
+    # (it
+    # would start after the cap), or the half hour is reserved for a pass that loads nothing
+    # (§11.27 item 3)
+    import gpc3_pod as P3
+
+    if decision is not None:
+        _counts(tmp_path, decision)
+    if l6:
+        P4._w(tmp_path, "odcv_gate_l6", {"base_rate": 0.13, "n": 78})  # noqa: SLF001
+    if ran:
+        P4._w(tmp_path, "odcv_gate_runs", {"instruction": "odcv_base", "void": False})  # noqa: SLF001
+    assert P4.cut_now(tmp_path) == cut
+    if cut == 9.0:  # confirm the final pass loads nothing in that case
+        loads = []
+        monkeypatch.setattr(
+            P3, "_judge_engine", lambda dry: loads.append(dry) or (None, None, None)
+        )
+        monkeypatch.setattr(P4, "L6_RUNS", tmp_path / "absent.jsonl")
+        rec = P4.stage_judge(tmp_path, "final", dry=True)
+        assert rec["judged"] == 0 and loads == [] and rec["reason"] == "no runs to judge"
+
+
+def test_gate3_reads_on_the_bounds_pilot_even_with_impossiblebench_arms(tmp_path):
+    # most probable failure: gate3 labels its read "impossiblebench" while its cuts and carries are
+    # the
+    # pilot cells' (the old switch: d_cb and d_c1 set before it, the ImpossibleBench scores never
+    # used);
+    # C1 has no ImpossibleBench arm when stage 3 runs (§11.27 item 5)
+    cdir = tmp_path / "bounds" / "conduct"
+    cdir.mkdir(parents=True)
+    ids = [f"S{k}-P1" for k in range(12)]
+    for name, rate in (("pilot_base", 1.0), ("pilot_cbounds", 0.0), ("pilot_c1", 1.0)):
+        rows = [{"slot_id": i, "choice": "goal" if rate else "report"} for i in ids]
+        (cdir / f"{name}.jsonl").write_text("\n".join(json.dumps(r) for r in rows))
+    P4._w(
+        tmp_path,
+        "arms",
+        {"ib_stage2": True, "run": True, "instructions": ["ib_s2_tools_oneoff_c1"]},
+    )  # noqa: SLF001
+    g = P4.gate3(tmp_path)
+    assert g["reads_on"] == "bounds_pilot" and g["n_slots"] == 12
+    assert "waits for an amendment" in g["note"] and "C1's place" in g["note"]
+    assert g["c_bounds_cuts"] and not g["c1_carries"] and g["fires"]
 
 
 def test_bounds_grid_swap_restores_the_conduct_grid():
@@ -1305,11 +1432,16 @@ def test_pod_runner_order_and_inputs():
         "item ib_gate",
         "item ib_cbounds",
         "item ib_sum",
+        "--stage ib_more",  # §11.27 item 4: depth before breadth
         "--part down",
         '[ "$JUDGED" = 1 ] || judge_first',  # the first server-down point
-        # item 5: the bounds grid and stage 3 ahead of the third and fourth arms
-        "item bounds",
-        "item stage3",
+        # item 5: the bounds grid and stage 3 ahead of the third and fourth arms; §11.27 item 2:
+        # one decision for the grid, its cells and stage 3
+        "--stage fits --next bounds_block",
+        "--stage bounds\n",
+        "--stage bounds_cells",
+        "--stage stage3\n",
+        "--stage stage3_read",
         "--stage any_arms --part late",
         "item odcv_gate",  # a late decision that counts: ODCV-Bench in the late server phase
         "item odcv_cbounds",
@@ -1325,6 +1457,8 @@ def test_pod_runner_order_and_inputs():
     assert RUNNER.index("judge_first() {") < RUNNER.index("if judge_ready; then")
     block = RUNNER[at:]  # launch 6's offline stages are read from launch 6, not repeated
     for gone in (
+        "item bounds\n",
+        "item stage3\n",
         "--stage stage4",
         "--part odcv_base",
         "--part gate",

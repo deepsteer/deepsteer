@@ -2729,24 +2729,65 @@ itself after the pod was gone (1,215 s), every result on the receiving side. $0.
    "pending" and run nothing; a late decision that counts runs ODCV-Bench's base and arms in the late server
    phase.
 
-**Re-priced, the three cases** (A100-h on the pod's clock; items start only if they end by 8.5; $1.18 an
-A100-h; ODCV-Bench not counting, the judge on time). Common to all: setup, the judge, the server and the
-smoke, and both first 30s, to **4.27**. A task: tools 0.067, minimal 0.033 (estimates; the first 30's measured
-rate replaces them in session). After the arms: the bounds grid 0.25 (measured; its forecast 0.8), stage 3
-1.0 and its reads 0.5 (unmeasured).
+**Re-priced: corrected in §11.27.** The table first written here priced the bounds grid at launch 6's 0.23 h, which was the time to a failed writer gate, not a passing grid, and stage 3 at an unmeasured 1.0; §11.27 prices both from GPC-1's log and re-prices the seven cases under the order as now built.
+
+**Before launch 7:** the standing step passed (197 collected, floor 197; 196 passed, 1 skipped, once quiet and
+three times under load); the slow dry chain passed; the VM hash unchanged (`433a241d06c1dac1`), so rehearsal
+10's record applies.
+
+### 11.27 The lead's review of `3364334b` (2026-11-21; pod side only)
+
+1. **The bounds grid's price.** Launch 6's 0.23 h was the time to a failed writer gate (`stage_conduct` returned
+   at the gate, `bounds.json` has `slots_kept` 0). A passing grid also runs the pilot base, the allocation, the
+   other 470 slots, the teacher and the base gap. GPC-1's conduct stage took 2.82 h for 700 slots (1.29 to 4.11 h
+   in its session log: about 1.14 h of generation in ten batches, the writer's 90 and 610 with their retries,
+   the pilot base's 174, the teacher's 566, the base gap's 200 and the held-out 200, and 1.68 h of loads and
+   checks). Scaled together to the bounds grid's 60, 340 and 130 slots (530): **2.1 h**, the top of the lead's
+   1.3 to 2.1 (with the loads held fixed instead, 2.5). **Stage 3:** GPC-1's C1 training, 0.46 h for 525 items,
+   scaled to the bounds grid's about 400 kept items (0.35) plus one model load (0.1): **0.45 h**. **The cells:**
+   one engine and three letter cells, **0.2 h**. `FORECAST_H` holds these.
+2. **The bounds block is one decision** (`fits --next bounds_block`, 2.75 h): the grid starts only if the grid,
+   its cells and stage 3 all end by the cut; otherwise none of them runs. Stage 3's parity and its read follow
+   inside the block.
+3. **The judge's reserve.** With ODCV-Bench's decision "does not count", launch 6's runs read in the first pass,
+   and no ODCV-Bench run this session, the final pass has nothing to load (it returns before the GPU check
+   and the load; tested), so the cut is **9.0**. Otherwise 8.5, as built (a decision that counts, launch 6 unread,
+   or a deferred judge).
+4. **Depth before breadth.** A scaffold at 6 runs its capability base and its two arms before the other
+   scaffold's other 30 (`stage_ib_more`, after the second arm), which then runs if it fits.
+5. **gate3's record.** The lead's reading of the code is right: with ImpossibleBench arms run, `gate3` set
+   `reads_on` to "impossiblebench" while `d_cb` and `d_c1`, set before the switch from the pilot cells, gave the
+   cuts and carries, and the ImpossibleBench scores were assigned and never used. One addition: under this
+   order the switch would not have fired, since `ib_stage2` is set only by the old all-arms stage, which the
+   runner no longer calls, and its ImpossibleBench branch read `arms["instructions"]`, which the per-arm stages
+   do not write. The branch is removed: this session `gate3` reads on the bounds pilot only and its record says
+   so; the ImpossibleBench version waits for an amendment naming which adapter stands in C1's place.
+6. **The capability check reports counts only.** This session's ImpossibleBench arms are a screen, so no
+   acting-rate verdict is issued from 10 tasks; the verdict belongs to the registered read, on the fuller check.
+   An arm whose passes fall 4 or more below the base's is flagged.
+
+**Re-priced, the seven cases** (A100-h on the pod's clock; ODCV-Bench not counting and no ODCV-Bench run, so the
+cut is 9.0; the judge on time; $1.18 an A100-h). Common to all: setup, the judge, the server and the smoke, and
+both first 30s, to **4.27**. A task: tools 0.067, minimal 0.033 (estimates; the first 30's measured rate replaces
+them in session); an arm's whole set (30 and 10 original): minimal 1.33, tools 2.67. **The bounds block, 2.75,
+fits only if it starts by 6.25**; its parity and read add 0.25.
 
 | case | runs | the pod |
 |---|---|---|
-| **no scaffold at 6**, both banked | the bounds grid, stage 3 and its reads | about 6.0 h, $7.10 |
-| **no scaffold at 6**, both at 2 to 5 | tools' other 30 (2.0), the minimal's (1.0), to 7.27; the bounds grid; stage 3 cut (8.52 at its forecast) | about 7.55 h, $8.90 |
-| **one at 6: the minimal** (the tools at 2 to 5) | capability base 0.33; tools' other 30 2.0; `C_bounds` whole (40 tasks, 1.33, to 7.93); the summed adapter held; the bounds grid cut (8.73 at its forecast) | about 8.0 h, $9.45 |
-| **one at 6: the minimal** (the tools banked) | capability base; `C_bounds` and the summed adapter whole (to 7.27); the bounds grid; stage 3 cut | about 7.55 h, $8.90 |
-| **one at 6: the tools** (the minimal at 2 to 5) | capability base 0.67; the minimal's other 30 1.0; `C_bounds` needs 2.67 (to 8.61): held; the bounds grid, stage 3 and its reads | about 7.7 h, $9.10 |
-| **one at 6: the tools** (the minimal banked) | capability base; `C_bounds` whole (to 7.61); the summed adapter held; the bounds grid; stage 3 cut | about 7.9 h, $9.30 |
-| **both at 6** | the minimal's capability base, `C_bounds` and the summed adapter whole (to 7.27); the bounds grid; stage 3 cut (8.52); the tools' arms held | about 7.55 h, $8.90 |
+| **1. no scaffold at 6, both banked** | the bounds block (to 7.02) and its reads | about 7.3 h, $8.60 |
+| **2. no scaffold at 6, both at 2 to 5** | the tools' other 30 (to 6.27), the minimal's (to 7.27); the bounds block cut | about 7.3 h, $8.60 |
+| **3. the minimal at 6, the tools at 2 to 5** | capability base, `C_bounds` and the summed adapter whole (to 7.27); the tools' other 30 cut (9.27); the bounds block cut; the late server: C1 whole (to 8.75), `C_conduct` held | about 8.8 h, $10.40 |
+| **4. the minimal at 6, the tools banked** | as 3, without the other 30 | about 8.8 h, $10.40 |
+| **5. the tools at 6, the minimal at 2 to 5** | capability base, `C_bounds` whole (to 7.61); the summed adapter held (2.67); the minimal's other 30 (to 8.61); the bounds block cut | about 8.65 h, $10.20 |
+| **6. the tools at 6, the minimal banked** | capability base, `C_bounds` whole (to 7.61); the summed adapter held; the bounds block cut | about 7.65 h, $9.05 |
+| **7. both at 6** | the minimal's capability base and two arms (to 7.27); the bounds block cut; the late server: C1 (to 8.75); the tools' arms held | about 8.8 h, $10.40 |
 
-A deferred judge adds its 0.3 at the first server-down point, ahead of the bounds grid.
+**What the re-price says.** Priced as a passing grid, the bounds block runs only in case 1. With any arm
+scaffold, the second arm ends past 6.25, so the block is cut. In cases 3, 4 and 7 the time left then goes to a
+third arm (C1) in the late server phase, the opposite of the ranking "a trained bounds adapter is worth more to
+the next pod than a third arm". Putting the block before the second arm, on a minimal scaffold, ends the block
+at 8.68 and holds the second arm.
 
-**Before launch 7:** the standing step passed (197 collected, floor 197; 196 passed, 1 skipped, once quiet and
+**Before launch 7:** the standing step passed (204 collected, floor 204; 203 passed, 1 skipped, once quiet and
 three times under load); the slow dry chain passed; the VM hash unchanged (`433a241d06c1dac1`), so rehearsal
 10's record applies.

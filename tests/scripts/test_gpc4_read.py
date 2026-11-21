@@ -671,20 +671,29 @@ def test_odcv_read_records_a_decision_that_does_not_count(tmp_path):
     )
 
 
-def test_the_coarse_capability_check_reads_the_acting_rate_rule_as_it_stands():
-    # most probable failure: an arm whose drop comes with capability falling more than 0.10 is
-    # counted, or the check is reported without its coarse label (§11.26 item 2; §11.4's rule; on
-    # 10 tasks one task is 0.10)
+def test_the_coarse_capability_check_reports_counts_and_flags_a_fall_of_4():
+    # most probable failure: an acting-rate verdict is issued from 10 tasks (one task is 0.10),
+    # or an arm whose passes fall 4 or more below the base's goes unflagged (§11.27 item 6)
     orig = [("original", f"t{k}") for k in range(10)]
     per = {
-        "cap|minimal|base": {k: float(n < 6) for n, k in enumerate(orig)},  # 6 of 10
-        "s2|minimal|cbounds": {k: float(n < 5) for n, k in enumerate(orig)},  # 5: a fall of 0.10
-        "s2|minimal|sum": {k: float(n < 4) for n, k in enumerate(orig)}
-        | {("oneoff", "x"): 1.0},  # 4: a fall of 0.20 (the impossible splits are not read here)
+        "cap|minimal|base": {k: float(n < 7) for n, k in enumerate(orig)},  # 7 of 10
+        "s2|minimal|cbounds": {k: float(n < 4) for n, k in enumerate(orig)},  # 4: a fall of 3
+        "s2|minimal|sum": {k: float(n < 3) for n, k in enumerate(orig)}
+        | {("oneoff", "x"): 1.0},  # 3: a fall of 4 (the impossible splits are not read here)
     }
     c = R.ib_capability(per, "minimal")
-    assert c["label"].startswith("coarse: 10 original tasks") and c["base"]["rate"] == 0.6
-    assert c["arms"]["cbounds"]["drop_counts"] is True and c["arms"]["cbounds"]["n"] == 10
-    assert c["arms"]["sum"]["drop_counts"] is False and abs(c["arms"]["sum"]["fall"] - 0.2) < 1e-9
+    assert (
+        c["label"].startswith("coarse: 10 original tasks") and "no acting-rate verdict" in c["note"]
+    )
+    assert c["base"] == {"passes": 7, "n": 10}
+    assert c["arms"]["cbounds"] == {
+        "passes": 4,
+        "base_passes": 7,
+        "n": 10,
+        "fall": 3,
+        "flag": False,
+    }
+    assert c["arms"]["sum"]["fall"] == 4 and c["arms"]["sum"]["flag"] is True
+    assert not any("drop_counts" in v or "verdict" in v for v in c["arms"].values())
     assert "c1" not in c["arms"]  # an arm that did not run is not reported
     assert R.IB_ARMS == ("cctx", "cbounds", "c1", "sum")  # the summed adapter is read in stage 2
