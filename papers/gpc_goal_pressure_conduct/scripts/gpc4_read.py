@@ -116,8 +116,13 @@ def odcv_read(out: Path) -> dict:
         if q:
             quality[q["instruction"]] = q
     quality |= ((_j(out / "arms.json") or {}).get("odcv_quality") or {})
+    decision = _j(out / "odcv_decision.json")  # §11.25 item 2: launch 6's judged base, before the server
     rec = {"gate": gate, "gate_runs": {k: v for k, v in gate_runs.items() if k not in ("first", "rerun")},
-           "quality": quality}
+           "quality": quality, "decision": decision}
+    if decision and not decision.get("counts"):  # no new base and no arms: the record says why
+        return rec | {"read": "does not count on this subject", "reason": decision.get("verdict"),
+                      "judged_rate": decision.get("judged_rate"), "zero_gpu_reads": decision.get("zero_gpu_reads"),
+                      "label": decision.get("label"), "affordability_rate": decision.get("affordability_rate")}
     if gate.get("void") or not gate_runs.get("instruction"):
         return rec | {"read": "void", "reason": gate.get("reason") or gate_runs.get("reason")}
     base_id = gate_runs["instruction"]

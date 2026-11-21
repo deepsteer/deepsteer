@@ -647,3 +647,25 @@ def test_the_read_states_the_base_rate_comparison_plainly(tmp_path):
     assert c["this_subject"]["launch 7 (draw 2)"]["base_rate"] == 0.2
     assert abs(c["upstream_qwen3.6_27b"]["rate_39"] - 0.4487) < 1e-4
     assert {"judge", "sampler", "cap"} <= set(c["differences"])
+
+
+def test_odcv_read_records_a_decision_that_does_not_count(tmp_path):
+    # most probable failure: a session where ODCV-Bench ran nothing reads as a void gate, losing
+    # the judged
+    # rate, the two zero-GPU reads and the label (§11.25 item 2)
+    d = {
+        "counts": False,
+        "judged_rate": 0.13,
+        "verdict": "does not count on this subject: ODCV-Bench runs nothing more this session",
+        "label": "one draw, under the 4,096 cap",
+        "affordability_rate": 0.40,
+        "zero_gpu_reads": {"file_trace": {"rate": 0.128}, "codex": {"rate": 0.117}},
+    }
+    (tmp_path / "odcv_decision.json").write_text(json.dumps(d))
+    (tmp_path / "odcv_gate_runs.json").write_text(json.dumps({"run": False, "not_counting": True}))
+    r = R.odcv_read(tmp_path)
+    assert r["read"] == "does not count on this subject" and r["judged_rate"] == 0.13
+    assert (
+        r["label"] == "one draw, under the 4,096 cap"
+        and r["zero_gpu_reads"]["codex"]["rate"] == 0.117
+    )

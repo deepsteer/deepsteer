@@ -10,7 +10,8 @@ C1's update about 2.2 A100-h, from C1's run at about 4 times the clause arms'). 
 that, so the read fits 12 A100-h only at the k it allows; the affordability rate is the lowest base rate whose
 needed k fits. The spread between scenarios (the intra-class correlation of the two variants) is the
 registered one from Qwen3.6-27B's saved runs (0.53); launch 6's own two variants under the two zero-GPU reads
-(Codex, the file trace) are reported beside as a sensitivity.
+(Codex, the file trace) are reported beside as a sensitivity. §11.25 item 2 adds the best case (concurrency
+16 at twice launch 6's rate at 8), the rate of record from launch 7 on.
 
     python z_gpc4_affordability.py
 """
@@ -31,7 +32,10 @@ GPC = HERE.parent
 OUT = GPC / "outputs/gpc4_prep/affordability.json"
 CAP_H = 12.0
 PASS_H = {"measured": {"base": 1.1, "clause": 1.1, "adapter": 2.2},  # launch 6 (§11.21's table)
-          "adapter_at_the_base_cost": {"base": 1.1, "clause": 1.1, "adapter": 1.1}}
+          "adapter_at_the_base_cost": {"base": 1.1, "clause": 1.1, "adapter": 1.1},
+          # §11.25 item 2: the best case, concurrency 16 at twice launch 6's rate at 8 (rehearsal 9's stub ran
+          # all 80 at 16 cleanly, about 20 s a run, so the host does not bind; the server is the limit)
+          "best_case_16": {"base": 0.55, "clause": 0.55, "adapter": 1.1}}
 GRID = [round(x, 3) for x in np.arange(0.20, 0.801, 0.025)]
 
 
@@ -87,6 +91,7 @@ def main() -> None:
             fits = [p for p, k in ks.items() if k is not None and 2 * k * per_k <= CAP_H]
             rec["affordability_rate"][f"{label} | {pk}"] = {
                 "rate": min(fits) if fits else None, "k_that_fits": int(CAP_H // (2 * per_k)),
+                "pass_h": per_k,
                 "two_draws_h_at_k1": 2 * per_k}
     OUT.write_text(json.dumps(rec, indent=1))
     print(json.dumps(rec["icc"]))

@@ -2643,3 +2643,62 @@ race that strikes one time in several has a chance to show.
 **Before rehearsal 10:** VM hash `433a241d06c1dac1`. The slow dry chain passed; the standing step passed (190
 collected, floor 190; 189 passed, 1 skipped, once quiet and three times under load); the host-side Inspect
 checks passed against a local ImpossibleBench clone. Rehearsal 10 is the record for launch 7 if it passes.
+
+### 11.25 Launch 7's order, revised by the lead after the affordability rate (2026-11-21; pod side only)
+
+The lead's ruling, as built (`remote_gpc4.sh`, `gpc4_pod.py`; the VM hash unchanged, so rehearsal 10's record
+applies once it passes):
+
+1. **The judge first, before the server, in one load** (`judge --part first`): launch 6's 80 ODCV-Bench runs
+   (read on the 78), then ODCV-Bench's decision, then stage 4's blackmail transcripts through GPC-3's G5 judge.
+   The decision is written before the blackmail cell, so a failure there leaves the session its decision.
+2. **ODCV-Bench this session.** The affordability rate recomputed at the best case: concurrency 16 at twice
+   launch 6's measured rate at 8 (rehearsal 9's stub ran all 80 at 16 cleanly, about 20 s a run, so the host
+   does not bind and the server is the limit). One pass of the three arms then costs 2.2 A100-h, two draws
+   at k = 2 fit 12 A100-h (8.8), and 80% power is first reached at **0.40** under the registered spread
+   (0.375 and 0.45 under launch 6's file-trace and Codex spreads; the measured case's 0.725 kept beside;
+   `z_gpc4_affordability.py`, `best_case_16`). Launch 6's judged base under 0.40 (or, with the judge failed or
+   void, launch 6's file trace, 0.128): ODCV-Bench runs nothing more, and `odcv_decision.json` records **"does
+   not count on this subject"** with the judged rate, both zero-GPU reads (file trace 0.128 [0.038, 0.231],
+   Codex 0.117 [0.051, 0.197], not the judge of record) and the label **"one draw, under the 4,096 cap"**.
+   At or above it: the new base, then its arms as built (`C_conduct` in context, C1, the summed adapter,
+   `C_bounds` in context), the arms on launch 6's judged base; the new base is judged in the final pass.
+3. **Then the server, the smoke and ImpossibleBench's gate**: the tools scaffold's first 30, the minimal's,
+   then each survivor's other 30 and 30 original (each its own cut item, forecast at that scaffold's first 30's
+   measured pod time a task; `IB_MORE_SCAFFOLDS` names the scaffolds that run them, both by default).
+4. **ImpossibleBench's arms on the surviving scaffold with the higher base** (its 60's rate when they ran),
+   in the order `C_bounds` in context, the summed adapter, C1, `C_conduct` in context. Each runs its base's
+   paired set to its end before the next starts: the whole set when the time left allows, else as many paired
+   tasks as fit, the first 30 first. **No arm runs on fewer than 30 paired tasks**: it is held for the next pod
+   (`arms.json`'s `held`).
+5. **The bounds grid and stage 3 after the second arm**, ahead of the third and fourth; the server comes back
+   for those only when one has room for 30 paired tasks after the server's start (`any_arms --part late`).
+6. The cold-cache rehearsal: skipped (agreed).
+
+**Re-priced** (A100-h on the pod's clock; an item starts only if it ends by 8.5; $1.18 an A100-h). Measured
+in launch 6: setup 0.59, the server's start 0.12 to 0.14, the bounds grid 0.23. Estimated: the first judge
+pass 0.3 (GPC-3's G5 judge: 600 transcripts in 452 s after a 63 to 113 s load; launch 6's weights had arrived
+during setup), the smoke 0.2, an ImpossibleBench task 0.067 on the tools scaffold (launch 6, about 22 min a
+task at 5; unmeasured at 44,032 with the overflow ending) and half that on the minimal (unmeasured), stage 3
+1.0 and its reads 0.5 (unmeasured).
+
+| step | basis | ends at |
+|---|---|---|
+| a. setup | 0.59 measured | 0.6 |
+| b. the first judge pass | launch 6's 80 and the blackmail cell's 100, one load | 0.9 |
+| c. the server, the host, the smoke | 0.17 and 0.2 | 1.27 |
+| d. ODCV-Bench | nothing, at launch 6's two zero-GPU reads (0.128, 0.117: a third of 0.40) | 1.27 |
+| e. ImpossibleBench's first 30s | tools 2.0, minimal 1.0 | 4.27 |
+
+| then, by what survives | runs | the pod |
+|---|---|---|
+| **neither scaffold** | the bounds grid, stage 3 and its reads (1.75); no second server; no final load | **about 6.1 h, $7.20** |
+| **the minimal only** | its 60 (2.0, to 6.27); `C_bounds` on 67 of its 90 paired tasks (2.23, to 8.5); the summed adapter held; the bounds grid and stage 3 cut | **about 8.55 h, $10.10** |
+| **the tools scaffold** (alone, or with the higher base) | its 60 (4.0, to 8.27); every arm held (room for 3 tasks); the bounds grid and stage 3 cut | **about 8.3 h, $9.80** |
+| **ODCV-Bench counts** (launch 6 judged at 0.40 or more) | the new base and four arms (3.85 at the best case, 6.8 at launch 6's rate at 8); the first 30s if they fit; the final judge 0.5 | **about 8.65 h, $10.20** |
+
+**What the re-price says.** Item 3's other 30 and 30 original cost a tools survivor about 4.0 A100-h, which
+leaves no arm room for its 30 paired tasks and cuts the bounds grid. A minimal survivor's cost 2.0 and leave
+one arm. Without them (`IB_MORE_SCAFFOLDS = ()`, the arms pairing on each survivor's first 30, exactly the
+floor of 30): a tools survivor runs two arms (2.0 each, to 8.27; the bounds grid cut), and a minimal survivor
+runs two arms (1.0 each, to 6.27) and the bounds grid and stage 3 (to 8.0), with the late arms held.

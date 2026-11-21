@@ -288,3 +288,10 @@ bill is its figure of record.
   failed; the base-rate comparison in the read. Rehearsal 9 failed on a dataset-cache race in the smoke batch
   (§11.24): each ImpossibleBench process now gets its own copy of a cache warmed once at setup. Rehearsal 10
   runs the smoke batch three times. Gate 190, floor 190.
+- 2026-11-21: launch 7's order revised by the lead (§11.25), built pod-side: the judge first, before the
+  server, in one load (launch 6's 80, then ODCV-Bench's decision, then the blackmail cell); ODCV-Bench runs
+  nothing more unless launch 6's judged base reaches the best-case affordability rate, 0.40 (concurrency 16 at
+  twice launch 6's rate; k = 2 fits 12 A100-h); the gate with each survivor's other 30 and 30 original; the
+  arms whole on the higher-base survivor, none under 30 paired tasks; the bounds grid and stage 3 after the
+  second arm. Re-priced: a tools survivor's 60 (4.0 A100-h) leave no arm room. Gate 192, floor 192. VM hash
+  unchanged (433a241d06c1dac1): rehearsal 10's record applies once it passes.
