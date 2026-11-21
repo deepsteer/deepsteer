@@ -2165,19 +2165,61 @@ def _parser_probe(parser):
     return r, json.loads(r.stdout.strip().splitlines()[-1])
 
 
-def test_the_served_tool_parser_reads_the_subjects_own_tool_call():
-    # most probable failure: the server starts with a parser that cannot read the subject's
-    # tool-call format, so no call in the gates or the arms is parsed (launch 5: hermes, which reads
-    # JSON, on Qwen3.8's XML calls; the serve check parsed 0 of 5 and ended the session)
+def test_the_served_tool_parser_round_trips_every_payload_of_both_harnesses():
+    # most probable failure: the server's parser reads a plain call but loses or retypes a real
+    # payload (a heredoc, a 4,000-character command, text_editor's integers), so the scaffold's
+    # calls come back wrong (launch 5: hermes parsed no Qwen3.8 XML call; the battery, §11.19)
     cmd = P4.serve_cmd("m", {})
     assert cmd[cmd.index("--tool-call-parser") + 1] == P4.TOOL_PARSER
     r, rec = _parser_probe(P4.TOOL_PARSER)
     if r.returncode == 2 and not Path("/workspace/venv_vllm/bin/python").exists():
         pytest.skip(rec["skip"])  # off the pod with no vLLM; the standing step supplies one
-    assert r.returncode == 0 and rec["passes"], rec
-    # the probe's control: launch 5's parser fails on the same call, so a pass is the parser's
+    assert r.returncode == 0 and rec["passes"] and rec["failed"] == [], rec.get("failed")
+    assert rec["cases"] == rec["passed"] == 17
+    # the probe's control: launch 5's parser fails on the same calls, so a pass is the parser's
     r2, rec2 = _parser_probe("hermes")
-    assert r2.returncode == 1 and not rec2["passes"], rec2
+    assert r2.returncode == 1 and rec2["passed"] == 0, rec2.get("passed")
+
+
+def test_the_battery_covers_every_tool_both_harnesses_expose():
+    # most probable failure: a tool the subject is offered is never round-tripped, so its calls are
+    # first read on the GPU (the schemas are the harnesses' own, at their pins)
+    import gpc4_parser_probe as PP
+
+    d = json.loads(PP.SCHEMAS.read_text())
+    offered = {
+        (t["function"]["name"], h)
+        for h in ("odcv_bench", "impossiblebench_tools")
+        for t in d[h]["tools"]
+    }
+    assert offered == {
+        ("bash", "odcv_bench"),
+        ("task_complete", "odcv_bench"),
+        *((n, "impossiblebench_tools") for n in ("bash", "python", "text_editor", "think")),
+        ("submit", "impossiblebench_tools"),
+    }
+    covered = {(k["name"], c["harness"]) for c in PP.cases() for k in c["calls"]}
+    assert covered == offered
+    ids = {c["id"] for c in PP.cases()}
+    for kind in (
+        "heredoc",
+        "lt_gt",
+        "4000",
+        "multiline_quotes",
+        "json_string",
+        "non_ascii",
+        "int_array",
+        "insert_int",
+        "optional_omitted",
+        "two_calls_text_before",
+    ):
+        assert any(kind in i for i in ids), kind
+    assert 3500 <= len(PP.LONG) <= 4500
+    ib = d["impossiblebench_tools"]["tools"]
+    ed = next(t for t in ib if t["function"]["name"] == "text_editor")
+    props = ed["function"]["parameters"]["properties"]
+    assert {"type": "integer"} in props["insert_line"]["anyOf"]  # the typed arguments exercised
+    assert {"items": {"type": "integer"}, "type": "array"} in props["view_range"]["anyOf"]
 
 
 def test_the_subjects_template_writes_the_format_the_server_reads():
@@ -2190,8 +2232,9 @@ def test_the_subjects_template_writes_the_format_the_server_reads():
         snap = PP.snapshot()
     except Exception as e:  # noqa: BLE001  (CI has no model cache)
         pytest.skip(f"the pinned snapshot is not cached here ({e!r})"[:200])
-    turn = PP.rendered_turn(AutoTokenizer.from_pretrained(snap))
-    want = "<tool_call>\n<function=bash>\n<parameter=command>\nls /tmp/dir0\n"
+    case = PP.cases()[0]
+    turn = PP.rendered_turn(AutoTokenizer.from_pretrained(snap), case, PP.tools_of(case["harness"]))
+    want = "<tool_call>\n<function=bash>\n<parameter=command>\ncat data.csv | grep"
     assert turn.startswith(want), turn
     assert P4.TOOL_PARSER in ("qwen3_coder", "qwen3_xml")  # vLLM 0.31's names for the XML format
 

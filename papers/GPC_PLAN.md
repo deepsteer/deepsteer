@@ -2266,3 +2266,51 @@ calls; the served parser reads the subject's own call with the runner's own vLLM
 none; **the gate collects 168 tests, floor 168** (from 165: the probe's test, the template's check and the
 serve check's failure record; the probe's test ran, not skipped); quiet 167 passed, 1 skipped, and 3 of 3
 under load the same.
+
+### 11.19 Launch 6: the parser's round-trip battery; the tool-call error share (the lead, 2026-11-20)
+
+Registered before launch 6 and before any of its data; pod-side and test-side only (the VM-side hash stays
+`54800428559b1fc6`).
+
+1. **The probe is a round-trip battery** (`gpc4_parser_probe.py`): each call is rendered by the pinned chat
+   template and parsed by the server's parser, and its name and arguments must come back exactly, types
+   included (5, 5.0 and "5" differ). **The schemas are every tool both harnesses expose,** taken from the
+   harnesses themselves at their pins (`data/gpc4_tool_schemas_v1.json`, written by
+   `z_gpc4_tool_schemas.py` with Inspect 0.3.291): ODCV-Bench's `bash` and `task_complete` (the literal in
+   `mission_executor/agent_main.py`), and the tools scaffold's `bash`, `python`, `text_editor` and `think`
+   as `swe_bench_style_humaneval_solver` builds them, plus the `submit` tool `basic_agent` adds, each as
+   Inspect's OpenAI provider sends it. Each case's request carries its harness's whole tool list. **The
+   payloads (17 cases):** shell pipes and redirects, a heredoc, `<` and `>` with markup and process
+   substitution; multi-line Python with both quotes, brackets and a triple-quoted string (as `python`'s
+   code and as `text_editor`'s file text); a JSON string, non-ASCII text, a command of about 4,000
+   characters; `text_editor`'s integer (`insert_line`) and integer-array (`view_range`, including `-1`)
+   arguments, which Inspect declares as `anyOf` with null, and a `view` with its optional range omitted; two
+   calls in one turn with text before them (the text must stay the message's content), in each harness.
+   Its control is `hermes`, which must round-trip none. It runs in the pod's gate and in the standing step,
+   as the probe did. A payload that does not round-trip stops the standing step by name.
+   **Result, before launch 6 (the runner's own vLLM 0.31 wheel, `qwen3_coder`): 17 of 17 round-trip,** the
+   integers and the integer array coming back typed and the omitted argument absent; `hermes`, 0 of 17.
+   The battery reads the template's rendering of each call, not the 27B's sampled text; item 2 measures
+   the sampled calls.
+2. **The tool-call error share (registered now, built into `gpc4_read.py` during the session).** The read
+   reports, per arm and instrument (and per ImpossibleBench scaffold-tools instruction), the share of tool
+   calls that came back with an argument or parsing error, from the saved transcripts and logs:
+   - **the calls:** every parsed call, plus every call the server could not parse (a turn whose content
+     still holds `<tool_call>` or `<function=` text with no parsed call counts each such block as one);
+   - **an error, ODCV-Bench:** arguments that are not valid JSON in the run's `messages_record.txt`;
+     upstream's repair or substitute (its docker log's `[Tool]: bash with {'command': "echo 'Parse
+     error'"}`, or a required argument missing); an unknown tool name (`[UNKNOWN TOOL]`); or a call the
+     server did not parse, as above;
+   - **an error, ImpossibleBench:** a call with Inspect's `parse_error` set, a tool result whose error
+     type is `parsing`, or a call the server did not parse.
+   **Over 10% is void in the read**, with the reason "the tool channel is suspect", for that arm or
+   instrument, and **it is never banked on that evidence** (a void gate's rate neither counts nor banks;
+   a void arm is left out of its contrast). This is the read's own rule; the pod's void rules (§11.11,
+   §11.15) are unchanged.
+
+**Before launch 6** (pod-side and test-side; the VM-side hash `54800428559b1fc6`, rehearsal 8's record
+stands): the slow dry chain passed. The standing step: the runner's 2 exported repo paths exist; the summed
+adapter builds through a symlinked repo path, exact; the stage block ran dry to its end in 23 stage calls;
+**the battery, 17 of 17 round-trip** on all 7 tools (ODCV-Bench's 2, the tools scaffold's 5), its control
+0 of 17; **the gate collects 169 tests, floor 169** (from 168: the battery's coverage test); quiet 168
+passed, 1 skipped (the battery's test ran), and 3 of 3 under load the same.

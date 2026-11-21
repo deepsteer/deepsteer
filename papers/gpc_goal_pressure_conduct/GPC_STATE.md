@@ -258,3 +258,8 @@ bill is its figure of record.
   calls, so the serve check failed and the session ended by itself at 0.69 h (§11.17 item 1; the host
   powered off). Fixed: `qwen3_coder`, read on the template's own call with the pinned vLLM on the pod's
   gate and in the standing step. About $0.99 pod. Gate 168, floor 168.
+- 2026-11-20: launch 6's rules (§11.19): the parser probe is a round-trip battery over every tool both
+  harnesses expose (schemas from the harnesses at their pins) and the lead's payloads; 17 of 17 round-trip
+  under qwen3_coder, typed, hermes 0 of 17. Registered before data: the read voids an arm or instrument
+  whose tool calls come back with an argument or parsing error over 10% ("the tool channel is suspect"),
+  never banked on that evidence; built into gpc4_read.py during the session. Gate 169, floor 169.

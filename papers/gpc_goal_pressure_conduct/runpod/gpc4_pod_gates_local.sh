@@ -10,8 +10,8 @@
 # In order: every path the runner exports into the repo exists; prep's CPU part (the summed adapter
 # built from the runner's own paths and GPC-1's C1, exact); the runner's own stage block run dry, start
 # to finish, under its real exports and the real local inputs (the pod-only /workspace paths mapped to
-# local copies at the runner's pins, cached in GPC4_LOCAL_CACHE); the served tool parser read on the
-# subject's own tool call with the runner's own vLLM (§11.18); then the gate, quietly and under load.
+# local copies at the runner's pins, cached in GPC4_LOCAL_CACHE); the served tool parser's round-trip on
+# every tool and payload both harnesses send, with the runner's own vLLM (§11.18, §11.19); then the gate.
 # Reads the runner's own marker expression, floor, TESTS list and `export` lines (those before its gate
 # tests), so they never drift. Leaves out PATH (the local interpreter stays) and HF_TOKEN (never
 # copied). Prints the variables' names only, never their values, the collected count against the floor,
@@ -163,9 +163,12 @@ fi
 export GPC4_VLLM_PY=$VW/venv/bin/python GPC4_VLLM_SRC=$VW/src
 tp=$("$PY" -c "import sys; sys.path.insert(0, 'papers/gpc_goal_pressure_conduct/scripts'); import gpc4_pod as P4; print(P4.TOOL_PARSER)")
 probe() { "$GPC4_VLLM_PY" -I papers/gpc_goal_pressure_conduct/scripts/gpc4_parser_probe.py --parser "$1" --vllm-src "$GPC4_VLLM_SRC" 2>/dev/null | tail -1; }
-p_ok=$(probe "$tp") || { echo "$p_ok"; echo "BAIL: vLLM's $tp parser does not read the subject's own tool call"; exit 1; }
-p_ctl=$(probe hermes) && { echo "$p_ctl"; echo "BAIL: the probe's control (hermes) parsed the XML call: the probe cannot tell"; exit 1; }
-echo ">> the served tool parser ($tp, vLLM at the runner's wheel) reads the subject's own call: $(echo "$p_ok" | "$PY" -c 'import json,sys; print(json.load(sys.stdin)["calls"])'); its control (hermes) parses none"
+# §11.19: a round-trip battery (every tool both harnesses expose; the lead's payloads), each call's name and
+# arguments back exactly, types included; a payload that does not round-trip stops the step and is named
+summ() { "$PY" -c 'import json,sys; d=json.loads(sys.stdin.read()); print("%s of %s cases round-trip; not: %s; tools %s" % (d.get("passed"), d.get("cases"), d.get("failed"), d.get("tools")))'; }
+p_ok=$(probe "$tp") || { echo "$p_ok" | summ; echo "BAIL: vLLM's $tp parser does not round-trip every payload (above); the tools scaffold's reading depends on it"; exit 1; }
+p_ctl=$(probe hermes) && { echo "$p_ctl" | summ; echo "BAIL: the probe's control (hermes) round-tripped the XML calls: the probe cannot tell"; exit 1; }
+echo ">> the served tool parser ($tp, vLLM at the runner's wheel): $(echo "$p_ok" | summ); its control (hermes): $(echo "$p_ctl" | summ | cut -d';' -f1)"
 out=$(run_gate quiet) || { echo "$out"; echo "BAIL: the quiet run failed"; exit 1; }
 echo "$out" | sed '$d'; echo ">> run 1, quiet: $(echo "$out" | tail -1)"
 burners=()
