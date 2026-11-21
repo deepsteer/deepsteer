@@ -237,7 +237,8 @@ D = pathlib.Path(d)
 R = D / "rehearsal_results"
 # delivery, from the downloaded results (the control document answers 503 once the stand-in vanishes)
 got = set(V.received(R))
-want = {i["id"] for i in plan if i["kind"] != "vanish"}
+want = {i["id"] for i in plan if i["kind"] != "vanish"} | {
+    x["id"] for i in plan if i["kind"] == "batch" for x in i["items"]}
 reached = "true" if want <= got else "false"
 # the pod's loss, rehearsed: with a vanish in the plan, the host must have terminated itself on the
 # control document's silence and pushed its record of why (the lead, rehearsal 8)
@@ -261,31 +262,45 @@ def usage(name):
 # result with neither running); rehearsal 6 (the lead): no container error on any of ODCV-Bench's runs,
 # and every ImpossibleBench task scored with no sample error
 checks, stages, runs = {}, {}, []
-for ins in plan:
-    if ins["kind"] == "vanish":
-        continue
+def check(ins):
     k, st = ins["id"], stage(ins["id"])
     stages[k] = {"kind": ins["kind"], **usage(k)}
     # every push during the stage landed (rehearsal 6: 8 parallel runs collided on rrsync's lock and
     # each run's results waited for the stage's end, against the detached rule)
-    pushes_ok = stages[k].get("push_failed") == 0
+    pushes_ok = stages[k].get("push_failed") in (0, None) if ins.get("in_batch") else stages[k].get("push_failed") == 0
     if ins["kind"] == "odcv":
         rr = st.get("runs", [])
-        runs += [{f: r.get(f) for f in ("run_id", "compose_exit", "container_error", "tool_calls",
-                                         "tool_timeouts", "wall_s")} for r in rr]
-        stages[k] |= {"runs": len(rr), "expected": len(ins["runs"]),
+        runs.extend({f: r.get(f) for f in ("run_id", "compose_exit", "container_error", "tool_calls",
+                                           "tool_timeouts", "wall_s")} for r in rr)
+        stages[k] |= {"runs": len(rr), "expected": len(ins["runs"]), "concurrency": ins.get("concurrency"),
                       "container_errors": sum(bool(r.get("container_error")) for r in rr),
                       "tool_timeouts": sum(r.get("tool_timeouts") or 0 for r in rr),
                       "min_tool_calls": min((r.get("tool_calls") or 0 for r in rr), default=0)}
-        checks[k] = (pushes_ok and len(rr) == len(ins["runs"]) and stages[k]["container_errors"] == 0
-                     and stages[k]["min_tool_calls"] >= 1)
+        complete = pushes_ok and len(rr) == len(ins["runs"]) and stages[k]["min_tool_calls"] >= 1
+        if (ins.get("concurrency") or 0) >= 16:
+            # §11.21 ruling 5: the gate at 16 if all 80 run with no container error and the host's peak load
+            # stays under 8; otherwise 8 (recorded, and the rehearsal still passes on a complete stage)
+            stages[k]["concurrency_16_ok"] = bool(complete and stages[k]["container_errors"] == 0
+                                                  and (stages[k].get("peak_load1") or 99) < 8)
+            checks[k] = complete
+        else:
+            checks[k] = complete and stages[k]["container_errors"] == 0
     elif ins["kind"] == "ib":
         stages[k] |= {f: st.get(f) for f in ("exit", "n_logs", "n_samples", "n_scored", "n_errored")}
         stages[k]["expected"] = len(ins["task_ids"])
         checks[k] = (pushes_ok and st.get("exit") == 0 and st.get("n_errored") == 0
                      and st.get("n_samples") == st.get("n_scored") == len(ins["task_ids"]))
+    elif ins["kind"] == "batch":  # §11.21: each item is checked as its own instruction
+        for item in ins["items"]:
+            check(item | {"in_batch": True})
+        checks[k] = pushes_ok and all(checks[i["id"]] for i in ins["items"])
+    elif ins["kind"] == "pause":  # §11.21 ruling 8: the stop was published, and the plan went on
+        checks[k] = k in got
     else:  # the probe: its push landed
         checks[k] = pushes_ok
+for ins in plan:
+    if ins["kind"] != "vanish":
+        check(ins)
 instruments_ran = bool(checks) and all(checks.values())
 instruments = {"stages": stages, "checks": checks}
 rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state,
@@ -293,6 +308,8 @@ rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state,
        "instruments": instruments, "instruments_ran": instruments_ran, "odcv_runs": runs,
        "host_selfterm": selfterm, "selfterm_ok": selfterm_ok,
        "every_result_on_the_receiving_side": reached == "true",
+       "odcv_concurrency_16_ok": next((v.get("concurrency_16_ok") for v in stages.values()
+                                       if "concurrency_16_ok" in v), None),
        "gate_pre": json.loads((D / "gate_pre.json").read_text()),
        "gate_post": json.loads((D / "gate_post.json").read_text()),
        "setup": json.loads((D / "setup_done.json").read_text()),

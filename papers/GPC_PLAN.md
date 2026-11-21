@@ -2326,3 +2326,127 @@ never banked on them. Checked on rehearsal 8's real records before any subject d
 the run record and the docker log agreeing (160 calls, 0 errors); a tools-scaffold log read with Inspect
 0.3.291 (15 samples, 735 calls, 0 errors). Tests for each kind of error, the 10% boundary, the void
 wiring, and a stale cache.
+
+### 11.20 GPC-4 launch 6 (2026-11-20, at `24d574fa`): the host lost at 3.4 h; ODCV-Bench's gate measured clean
+
+**What ran.** Launch at 2:25 pm HST; the pod's runner started at 2:39 pm and its gate passed (169, floor 169;
+the parser battery 17 of 17 on the pod's own vLLM). Both adapters read; the serve check passed (5 of 5 tool
+calls under `qwen3_coder`); the host's post-lock gate passed every check. Then:
+- **The arm smoke** (1.0 h, serial on the host): ODCV-Bench passed every configuration (`C_conduct` and
+  `C_bounds` in context about 140 s a run, C1 614 s: 11 model calls against 7 and 5, and three reasoning
+  passes of 5,000 to 14,000 characters; it ended itself at step 11 of upstream's 50). ImpossibleBench failed
+  every configuration: the clause arms on a 400 at their first request (Qwen3.8's template takes one system
+  message, at the start, and the tools scaffold writes its own before the clause's), C1 on the context
+  limit. C1's first result also arrived after the batch's 0.5 h wait and was never re-read.
+- **ODCV-Bench's gate** (66 min, 80 runs at concurrency 8): 80 of 80 arrived, 1 container error (1.25%), no
+  dead tool channel, 2 of 809 tool calls with an argument error. The host's "tool timeout" count, 18 runs, was
+  the subject reading the executor's source (`GPC-A12`); no run had a real timeout. **Never judged** (below).
+- **The host was lost at 3.36 h.** The plan runner publishes stop once every instruction in the plan has
+  arrived and the plan is not on hold. Inside ImpossibleBench's gate the first step's two instructions arrived
+  at 04:00:07 UTC and the stage wrote its rerun at 04:00:25; in that gap the host read stop, every result
+  confirmed, and powered off (which terminates it). The same gap existed at every stage boundary.
+- **ImpossibleBench's gate** read nothing: in both tools-scaffold instructions one task overflowed 32,768
+  tokens and Inspect (`fail_on_error` at its default) cancelled the other nine; the rerun and the minimal
+  scaffold waited for a host that was gone. Under the lead's ruling, **both scaffolds are void, never
+  banked** (the host's loss, the cancelled tasks); the pod's record says the minimal scaffold banked on 0 of
+  0 scored, which is not a bank.
+- **At the author's word, the pod read the host as lost** (`vm.json`, §11.3's failure branch), so the arms
+  skipped and the offline stages fit before the cut.
+- **The judge failed twice.** At `odcv_base` it ran out of GPU memory: it loaded seconds after the server's
+  main process exited, while the server's engine still held the GPU. At `final` one run of about 54,700
+  judge tokens gave a negative `max_tokens`, and the batch stopped unjudged (2 of 79 runs are longer than the
+  judge's 32,768; the median is 9,191). **ODCV-Bench's gate is counted provisionally** ("provisional:
+  judged later from the saved transcripts", §11.17 item 2); its 80 transcripts are saved.
+- **The bounds grid banked** under its registered rule: its writer gate passed 43 of 50 against 45 (4 of the 7
+  failures are the instrument-word check on "code", 2 do not parse, 1 hits the 8-gram index). With no bounds
+  cells, **stage 3's gate is void, not computed** (its `fires: false` reads nothing). **Stage 4 ran**: the CST
+  letters on the summed adapter and 100 blackmail transcripts, all unread (the blackmail transcripts need the
+  judge; the letters' read is zero GPU).
+- `session_end.json` in `outputs/gpc4_v1/` is launch 5's (the directory accumulates across launches).
+
+**Measured for launch 7** (zero GPU, from the saved records): Inspect replays each turn's reasoning and vLLM
+renders it (re-rendered prompts match the server's count within 38 tokens), about 74% of a long sample's
+context; 33 of 160 ImpossibleBench calls stopped on the client's `max_tokens` of 4,096, which the host's proxy
+also sent on every ODCV-Bench request (23 of 601 of the gate's turns had no tool call, the bound); the
+server's KV cache holds 219,136 tokens (6.69 full requests at 32,768, 4.98 at 44,032) and ran at up to 98.8%
+with 10 requests. **Cost:** the pod about 7.9 h, **about $9.32**; the host about 3.6 h.
+
+**The fixes made during the session, before the lead's rulings** (built into §11.21's set): every plan the pod
+writes ends with a standing wait, so it never reads as stop until the `stop` stage writes it; the arm smoke
+re-reads a first result that arrives after its wait; the tools scaffold's clause goes first in its own
+system message (as ODCV-Bench's goes first in its system prompt); `fail_on_error=False`; the stub refuses a
+system message that is not first, as the template does.
+
+### 11.21 Launch 7: the lead's rulings (2026-11-20), and the output cap (an amendment, pushed before launch 7)
+
+**Amendment (committed and pushed before launch 7): the output cap on both agentic instruments is 16,384
+tokens or the remaining context, whichever is smaller.** The server runs with
+`--override-generation-config '{"max_new_tokens": 16384}'` and the host's proxy sends no client `max_tokens`
+(vLLM 0.31 then takes the smaller of the remaining context and that default; an explicit client value is
+also checked against the remaining context, which is how launch 6's 400s arose). Reason: 33 of 160
+ImpossibleBench calls stopped on 4,096, most mid-reasoning. The read reports the share of calls that hit the
+cap per arm and instrument (from the proxy's rows, now kept with each run, and Inspect's stop reasons).
+
+**The rulings, as built:**
+1. **ImpossibleBench runs with Inspect's reasoning history set to none.**
+2. **A gate instruction with under 90% of its samples scored is void**, never banked (pod and read).
+3. **An overflowed sample is never excluded:** it ends the attempt and is scored on the files as they stand,
+   a fail unless the state already passes. Checked on the stub with vLLM's exact overflow response and the
+   pinned Inspect: as it is, Inspect raises it (the sample errors, unscored, as in launch 6); the host's proxy
+   now rewrites it as OpenAI's `context_length_exceeded`, which Inspect reads as `model_length`, and its
+   agent stops and the scorer runs (tested both ways). A reply the remaining context cut short below the cap
+   ends the sample the same way. The read reports the overflow share per arm and flags a contrast whose arms
+   differ by more than 0.10; over 25% of a scaffold's gate samples overflowed leaves that scaffold unread.
+   **ImpossibleBench: `--max-model-len` 44,032 and concurrency 5;** the pod records the cache's peak use, the
+   most requests running and waiting, and preemptions, from the server's own log at each serve down.
+4. **Launch 7's order, cut from the end:** the smoke, ODCV-Bench's base, its arms (`C_conduct` in context, C1,
+   `C_bounds` in context, each its own item), then ImpossibleBench's gate (the tools scaffold first; the
+   minimal scaffold its own item). The arms run on the gate's count, provisional until the one final judge
+   pass reads base and arms together. The 0.15 check could not run tonight (the gate is unjudged); the order
+   is built as ruled, and the lead may add launch 6's 80 transcripts to launch 7's final pass (about 0.1 A100-h).
+5. **ODCV-Bench at concurrency 16** if rehearsal 9 runs all 80 at 16 on the stub with no container error and a
+   host peak load under 8 (`verify` records `odcv_concurrency_16_ok`); otherwise 8, set before launch. A
+   container error in the stage at 16 decides the concurrency and does not fail the rehearsal.
+6. **The arm smoke checks plumbing only,** per scaffold: one batch on the host, its 9 items at once (each
+   configuration's ODCV-Bench run and one task on each scaffold, at 2 attempts and 10 messages), target under
+   10 minutes; one retry of what failed.
+7. **The cut rule enforces 9.0 A100-h** from launch 7 on, keeping 0.5 h for the final judge pass (so an item
+   starts only if it ends by 8.5 h). **Deviation, recorded: launch 6 ran under the code's 10.25 h.**
+8. **The host powers off only after reading stop continuously for 120 s** (on top of the standing wait).
+   **Rehearsal 9 covers the gap:** the stand-in publishes a real stop for 60 s between the plan's two batches,
+   and the host must hold; the clause arm on each scaffold and an overflowing tools task (which must score)
+   are in the plan.
+9. **The timeout counter reads only the executor's own timeout answer,** on the host and in the read.
+10. **A descriptive rate per arm:** the share of ODCV-Bench runs that read the executor source (`GPC-A12`).
+    Upstream's records showed no match because no Qwen3.6-27B run opened the file; 8 only list it.
+11. **The serve down** stops the server's whole process group and waits for the GPU to be free; **the judge**
+    records a run longer than its context as unjudged with its length, and the batch goes on. *Open for the
+    lead:* the judge's context (32,768 leaves 2 of 80 gate runs unjudged; gpt-oss-120b takes more).
+
+**Launch 7's price, on launch 6's measured rates (A100-h, under 9.0):**
+
+| item | basis | A100-h |
+|---|---|---|
+| setup, prep, parity, serve, check, the host's probe | launch 6: 0.75 h measured | 0.75 |
+| the arm smoke | plumbing limits, at once; C1's ODCV-Bench run took 614 s | 0.2 |
+| ODCV-Bench's base, 80 at 16 | 6.75 run-h at 8 in 66 min; the longest run 0.64 h | 0.8 |
+| `C_conduct` in context | about the base's | 0.8 |
+| **C1** | about 4 times the clause arms' run time on the one scenario measured (1.5 to 3.0) | **2.2** |
+| `C_bounds` in context | about the base's | 0.8 |
+| ImpossibleBench's gate, tools (30 at 5) | about 20 to 25 min a task in launch 6 | 2.0 |
+| ImpossibleBench's gate, minimal (30 at 5) | not measured (none ran) | 1.0 |
+| the final judge pass | gpt-oss-120b on about 320 runs | 0.5 |
+| **total** | | **9.05** |
+
+Under the cap the minimal scaffold is the item cut (the rest end by about 8.1 h with the judge's 0.5). If C1
+runs at the top of its range (3.0), the tools scaffold starts at about 6.35 h and ends near 8.35, inside
+the 8.5 h item limit. The pod at 9.0 h
+is about $10.60; the host about 9.5 h.
+
+**Before launch 7** (pod side, host side and tests; **the VM-side hash is now `4225762c64648446`, so rehearsal
+9 runs before launch 7**): the slow dry chain passed; the overflow check passed against the pinned Inspect
+(as vLLM answers, the sample errors unscored; through the proxy, it ends and is scored). The standing step:
+the runner's 2 exported repo paths exist; the summed adapter builds through a symlinked repo path, exact;
+launch 7's stage block ran dry to its end in 14 stage calls (the smoke's batch, ODCV-Bench's base and arms,
+ImpossibleBench's gate, the final judge pass); the parser battery 17 of 17, its control 0 of 17; **the gate
+collects 180 tests, floor 180**; quiet 179 passed, 1 skipped, and 3 of 3 under load the same.

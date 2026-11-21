@@ -143,8 +143,9 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | 11-19 | GPC-4 launch 3 on Thunder (A100 80GB, $1.18; gate passed; prep stopped at 0.37 h on a doubled path to P-ctx; every path ended by itself; no result; §11.12) | 0.37 | 0.45 | 0.53 | 18.86 | 26.44 |
 | 11-20 | GPC-4 launch 4 on Thunder (A100 80GB, $1.18; gate passed; prep lost both adapters (parity's two loads in one process, an unresolved path); the server failed with no adapter; stages ran against no server until stopped; no result; §11.16) | 2.6 | 2.7 | 3.20 | 21.56 | 29.64 |
 | 11-20 | GPC-4 launch 5 on Thunder (A100 80GB, $1.18; gate passed; both adapters read; the server came up and failed its serve check, 0 of 5 tool calls parsed (`hermes` on Qwen3.8's XML calls); the session ended by itself at 0.69 h; no result; §11.18) | 0.69 | 0.84 | 0.99 | 22.40 | 30.63 |
+| 11-20 | GPC-4 launch 6 on Thunder (A100 80GB, $1.18; gate passed; served and checked; the host powered off at 3.36 h on a stop published inside a stage; ODCV-Bench's gate measured, never judged; ImpossibleBench void; the bounds grid banked; stage 4 ran; §11.20) | 7.81 | 7.90 | 9.32 | 30.30 | 39.95 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: **$142.37 remain** ($173.00 − $30.63). The EC2 host's spend to
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: $142.37 remain. After launch 6: **$133.05 remain** ($173.00 − $39.95). The EC2 host's spend to
 date (rehearsals 1 to 7 and launch 1's host, about $4 at the records' upper bounds) is not in it; the AWS
 bill is its figure of record.
 
@@ -263,3 +264,13 @@ bill is its figure of record.
   under qwen3_coder, typed, hermes 0 of 17. Registered before data: the read voids an arm or instrument
   whose tool calls come back with an argument or parsing error over 10% ("the tool channel is suspect"),
   never banked on that evidence; built into gpc4_read.py during the session. Gate 169, floor 169.
+- 2026-11-20: GPC-4 launch 6 (§11.20): the host powered off at 3.36 h on a stop published inside a stage
+  (fixed: a standing wait in every plan, a stop that must persist 120 s); ODCV-Bench's gate measured clean
+  (80 of 80, 1 container error) but never judged (an OOM at the first pass, an over-long run at the final),
+  so it counts provisionally; ImpossibleBench's gate void on both scaffolds (context overflow cancelled the
+  tasks; the host's loss); the bounds grid banked (writer gate 43 of 50); stage 3 void (no cells); stage 4
+  ran, unread. About $9.32 pod. Ledger: GPC-A12, GPC-A13.
+- 2026-11-20: launch 7's rulings and the output-cap amendment (§11.21), built: reasoning history none, 44,032
+  context, concurrency 5 (ImpossibleBench) and 16 (ODCV-Bench, gated on rehearsal 9), the overflow ending
+  the sample and scored, the plumbing-only smoke per scaffold, the 9.0 cap, the arms as items in the ruled
+  order. Gate 180, floor 180. The VM side changed: rehearsal 9 before launch 7.

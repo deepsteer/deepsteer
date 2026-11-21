@@ -130,11 +130,13 @@ from pathlib import Path
 o = Path(sys.argv[1])
 r = lambda n: json.loads((o / f"{n}.json").read_text()) if (o / f"{n}.json").exists() else {}
 stages = sum(1 for _ in open(o.parent.parent / "run.log") if _.startswith(">> stage done"))
+ib = r('ib_gate').get('scaffolds', {})
 print(f">> the runner's stage block ran dry to its end ({stages} stage calls): adapters usable "
-      f"{r('prep').get('usable')}; arm smoke " + json.dumps({a: [k for k in ('odcv', 'ib') if v[k]]
-      for a, v in r('arm_smoke').get('arms', {}).items()}) + f"; arms skipped "
-      f"{sorted(r('arms').get('skipped', {}))}; stage 3 {r('gate3').get('skipped') or 'ran'}; "
-      f"stage 4 {r('stage4').get('reason') or 'ran'}")
+      f"{r('prep').get('usable')}; arm smoke " + json.dumps({a: [k for k in ('odcv', 'ib_tools', 'ib_minimal')
+      if v.get(k)] for a, v in r('arm_smoke').get('arms', {}).items()}) + "; ODCV-Bench's arms run "
+      f"{sorted(r('arms').get('odcv_quality', {}))}, skipped {sorted(r('arms').get('skipped', {}))}; "
+      "ImpossibleBench's gate " + json.dumps({k: ('void' if v.get('void') else 'banked' if v.get('banked')
+      else 'counts') for k, v in ib.items()}) + f"; the final judge pass {'ran' if r('odcv/judge_final') else 'did not run'}")
 PYEOF
 echo ">>   (dry, the stand-in model cannot load the real 27B adapters, so C1's and the sum's parity fail and"
 echo ">>   their consumers take the skip path; the slow dry chain runs those paths with dry adapters)"

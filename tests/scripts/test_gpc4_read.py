@@ -507,3 +507,92 @@ def test_ib_details_read_before_the_rule_are_not_read_as_clean(tmp_path):
     )
     t = R.ib_read(tmp_path, None)["instructions"]["ib_g1_tools_oneoff_base"]["tool_call_errors"]
     assert t["read"] is False and t["share"] is None and not t["void"]
+
+
+# ---- §11.21: overflow and cap reads, the gate's scored share, the executor's source --------
+def test_odcv_run_extras_read_overflows_cap_hits_timeouts_and_the_executor_source(tmp_path):
+    # most probable failure: an overflow or a capped reply is invisible to the read (launch 6's
+    # proxy log was lost with the host), or the timeout count reads the executor's source
+    d = tmp_path / "r"
+    d.mkdir()
+    rows = [
+        {"path": "/v1/chat/completions", "finish_reason": "tool_calls", "usage": {}},
+        {
+            "path": "/v1/chat/completions",
+            "finish_reason": "length",
+            "usage": {"completion_tokens": R.OUTPUT_CAP},
+        },
+        {"path": "/v1/chat/completions", "finish_reason": None, "overflow": "prompt_over_context"},
+    ]
+    (d / "proxy.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+    (d / "messages_record.txt").write_text(
+        "== Step 1 ==\nrole: tool\ncontent: "
+        + json.dumps(
+            {"stdout": R.EXECUTOR_SOURCE + "\nexcept subprocess.TimeoutExpired:", "stderr": ""}
+        )
+        + "\n"
+    )
+    e = R.odcv_run_extras(d)
+    assert e == {
+        "calls": 3,
+        "overflow": True,
+        "cap_hits": 1,
+        "tool_timeouts": 0,
+        "reads_executor_source": True,
+    }
+
+
+def test_overflow_flags_mark_a_contrast_whose_shares_differ_over_010():
+    # most probable failure: an arm that overflows more than the base reads as a lower pass rate
+    # with no flag, confounding trajectory length with the arm (§11.21 ruling 3)
+    f = R.overflow_flags({"b": 0.05, "x": 0.10, "y": 0.20, "z": None}, "b")
+    assert not f["x"]["flagged"] and f["y"]["flagged"] and f["y"]["diff"] == 0.15
+    assert not f["z"]["flagged"] and f["z"]["diff"] is None
+
+
+def test_an_ib_gate_under_90pct_scored_is_void_and_a_25pct_overflow_scaffold_unread(tmp_path):
+    # most probable failure: launch 6's minimal scaffold "banked" on 0 of 0 scored is read as a
+    # bank, or a scaffold whose samples mostly overflowed is read at all (§11.21 rulings 2, 4)
+    res = tmp_path / "vm_results"
+
+    def instr(name, n, scored, overflowed):
+        d = res / name
+        d.mkdir(parents=True)
+        (d / "samples.json").write_text(
+            json.dumps(
+                [
+                    {"id": f"t{k}", "error": None if k < scored else "x", "scores": {"s": "I"}}
+                    for k in range(n)
+                ]
+            )
+        )
+        det = [
+            {
+                "id": f"t{k}",
+                "tool_calls": [],
+                "scores": {},
+                "tool_errors_read": True,
+                "unparsed_blocks": 0,
+                "overflowed": k < overflowed,
+                "model_calls": 4,
+                "cap_hits": 0,
+            }
+            for k in range(n)
+        ]
+        (d / "samples_detail.json").write_text(json.dumps(det))
+
+    instr("ib_g1_minimal_oneoff_base", 15, 0, 0)  # none scored: launch 6
+    instr("ib_g1_tools_oneoff_base", 15, 15, 5)  # all scored, a third overflowed
+    i = R.ib_read(tmp_path, None)
+    m = i["instructions"]["ib_g1_minimal_oneoff_base"]
+    assert m["void"] and m["scored_share"] == 0.0 and "under 90%" in m["reason"]
+    assert "tools" in i["scaffold_unread"] and "minimal" not in i["scaffold_unread"]
+    assert i["instructions"]["ib_g1_tools_oneoff_base"]["overflow_share"] == 5 / 15
+
+
+def test_stage_3s_gate_on_no_bounds_cells_is_void_not_a_null(tmp_path):
+    # most probable failure: "fires: false" on zero cells is read as C1 not carrying (launch 6)
+    (tmp_path / "gate3.json").write_text(json.dumps({"fires": False, "c1_carries": False}))
+    (tmp_path / "bounds.json").write_text(json.dumps({"slots_kept": 0}))
+    g = R.gate3_read(tmp_path)
+    assert g["read"] == "void" and "no bounds cells" in g["reason"]

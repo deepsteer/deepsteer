@@ -170,7 +170,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=169   # the gate's collected count when set (launch 6, §11.19); fewer means a file failed to collect
+GATE_FLOOR=180   # the gate's collected count when set (launch 7, §11.21); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
@@ -231,29 +231,19 @@ run $GP serve_check --stage serve_check
 $PY $GP --out "$OUT" --stage server_ok $DRY || end_session "the subject's server is dead: the session ends (GPC_PLAN.md §11.17 item 1)"
 run $GP vm_wait --stage vm_wait
 run $GP arm_smoke --stage arm_smoke
+# GPC_PLAN.md §11.21 (launch 7, the lead's order under the 9.0 A100-h cap, cut from the end): ODCV-Bench's
+# base, then its arms in the order C_conduct in context, C1, C_bounds in context, then ImpossibleBench's gate
+# (the tools scaffold first). The arms run on the gate's count (provisional until the judge reads it,
+# §11.17 item 2), so the server stays up through them. Launch 6's offline stages (the bounds grid, stage 3,
+# stage 4) are read from launch 6 and not repeated.
 item odcv_gate
+item odcv_cctx
+item odcv_c1
+item odcv_cbounds
 item ib_gate
 $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
-# c. offline: the judge on ODCV-Bench's base runs (the gate), the bounds grid
-wait $JDL; tail -1 "$OUT/logs/judge_download.log"   # the judge's weights (downloaded behind setup)
-run $GP judge --stage judge --part odcv_base
-item bounds
-run $GP bounds_cells --stage bounds_cells
-# d. the server phase again: the arms on each counting instrument
-run $GP serve --stage serve --part up
-item arms
-$PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
-# e. offline: stage 3's gate and the bounds adapter, stage 4 (the summed adapter), the final judge pass
-item stage3
-run $GP parity_hf --stage parity_hf    # the bounds adapter's, when stage 3 trained one
-run $GP parity --stage parity
-run $GP stage3_read --stage stage3_read
-if $PY $GP --out "$OUT" --stage fits --next stage4 $DRY; then
-  run $GP stage4_cst --stage stage4_cst
-  run $GP stage4 --stage stage4
-else
-  echo ">> cut: stage4"
-fi
+# c. offline: the judge on ODCV-Bench's base and arms together (its weights downloaded behind setup)
+wait $JDL; tail -1 "$OUT/logs/judge_download.log"
 run $GP judge --stage judge --part final
 # f. the host: stop (it powers off, which terminates it, once every result is confirmed here)
 $PY $GP --out "$OUT" --stage stop $DRY

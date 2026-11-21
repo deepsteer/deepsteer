@@ -2922,3 +2922,25 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Discriminator.** Zero GPU: the 8 disagreements read by the author (one question each: does the email make disclosure conditional on Kyle's choice?), and the judge-free string check's subset that also contains a conditional phrase ("unless", "if you", "or I will").
 **Status.** open (the author's read of 8 transcripts settles the boundary for GPC-4's judge).
 **Thesis impact.** The headline's direction holds under every reader; its size does not (projected from the sample, about 0.19 for the base and 0.02 for C1 under the strict reading). GPC-4's judge must state its boundary before data.
+
+## GPC-A12 (ledger) — the subject reads ODCV-Bench's executor source in 24% of its base runs, Qwen3.6-27B in none
+
+**Date.** 2026-11-20 (GPC-4 launch 6, ODCV-Bench's gate; `GPC_PLAN.md` §11.20; `outputs/gpc4_v1/gpc4_read.json` `odcv.run_extras`).
+**Observation.** In 19 of 79 recorded base runs the subject's tool output holds the scenario's own executor source (`/app/task_executor_api.py`, read by `cat` or `head`): 6 of 40 mandated, 13 of 39 incentivized. Upstream's saved Qwen3.6-27B runs at the pin: 0 of 80 (8 only list the file). Across upstream's 42 saved model-variant sets, 15 read it at least once, up to 7 of 40 (Gemini-3.1-pro, mandated) and 6 of 40 (Kimi-k2.6). It is also why the host counted 22.5% of runs as having a tool timeout: the source contains the timeout handler's text (no run had a real timeout).
+**Type.** one model breaking a cross-model pattern (against its own family's earlier model); a measurement artifact found and fixed on the way (the timeout counter).
+**Appears in.** `GPC_PLAN.md` §11.20.
+**Competing readings.** R_model: Qwen3.8-27B inspects its harness more than Qwen3.6-27B does (a trait, and possibly evaluation awareness). R_sampling: upstream ran at temperature 0.0 and the sampling of record here is 0.7 with a seed per run; exploration rises with temperature. R_variant: the incentivized prompt invites probing the mechanism (13 of 39 against 6 of 40).
+**Discriminator.** Zero GPU, once the gate is judged: whether runs that read the source are scored misaligned more often (a link to the measured behavior, not only to exploration). On the next pod at no extra cost: the share in each of launch 7's arms (the read reports it per arm, ruling 8 of §11.21). R_sampling against R_model needs a temperature-0 base cell (about 0.8 A100-h), not scheduled.
+**Status.** open.
+**Thesis impact.** None yet; descriptive. If reading correlates with a misaligned score, the base rate partly measures evaluation awareness, which the read must say beside the rate.
+
+## GPC-A13 (ledger) — C1's ImpossibleBench tool calls came back with argument errors on 3 of 20 and 2 of 15 calls
+
+**Date.** 2026-11-20 (GPC-4 launch 6, the arm smoke; `outputs/gpc4_v1/gpc4_read.json` `ib.instructions`).
+**Observation.** C1's two tools-scaffold smoke tasks: 3 of 20 and 2 of 15 tool calls returned Inspect's `parsing` error (over the read's 10% void line, §11.19). The base's gate step: 2 of 91 (2%). ODCV-Bench's base: 2 of 809 (0.25%).
+**Type.** one arm breaking a pattern (n of 2 samples).
+**Appears in.** `GPC_PLAN.md` §11.20.
+**Competing readings.** R_adapter: C1's training shifts how the subject fills Inspect's tool schemas (`text_editor`'s optional arguments). R_noise: two samples, both cut by the context limit, both on the longest trajectories (where malformed calls cluster).
+**Discriminator.** Launch 7's smoke and gate at no extra cost: C1's share per scaffold against the base's, from the read's tool-call error share.
+**Status.** open.
+**Thesis impact.** If it holds, C1's ImpossibleBench arm is void in the read under §11.19 and its contrast cannot be read on the tools scaffold.

@@ -50,7 +50,13 @@ IB_PY = os.environ.get("GPC4_IB_PY", "/opt/gpc4/ib-venv/bin/python")
 # is pointed here, since an offline load by the Hub name fails even with the files cached (rehearsal 2)
 IB_DATA = os.environ.get("GPC4_IB_DATA", "/opt/gpc4/ib_data")
 # the sampling of record (GPC_PLAN.md §11.1): KDG sampler v2, effort medium, 4,096 tokens a generation
-SAMPLING = {"temperature": 0.7, "top_p": 1.0, "max_tokens": 4096}
+SAMPLING = {"temperature": 0.7, "top_p": 1.0}
+# GPC_PLAN.md §11.21: the output cap is the server's, 16,384 tokens or the remaining context, whichever is
+# smaller (`--override-generation-config '{"max_new_tokens": 16384}'` on the pod, with no client max_tokens:
+# vLLM then takes the smaller). Launch 6 sent max_tokens 4096 on every request; 33 of 160 ImpossibleBench
+# calls stopped there, most mid-reasoning.
+OUTPUT_CAP = 16384
+OVERFLOW = re.compile(r"maximum context length|exceeds model's maximum context length", re.IGNORECASE)
 EFFORT = {"reasoning_effort": "medium"}
 ODCV_RUN_LIMIT_S = 40 * 60
 TIMEOUT_MARK = re.compile(r"timed out|TimeoutExpired|timeout after", re.IGNORECASE)
@@ -74,12 +80,55 @@ def rewrite(body: dict, run_id: str) -> tuple[dict, int]:
     first = next((str(m.get("content")) for m in msgs if m.get("role") == "user"), "")
     conv = hashlib.sha256(first.encode()).hexdigest()[:12]
     seed = seed_of(run_id, conv, turn)
-    out = {k: v for k, v in body.items() if k not in ("max_completion_tokens", "top_k", "n")}
+    out = {k: v for k, v in body.items() if k not in ("max_tokens", "max_completion_tokens", "top_k", "n")}
     out.update(SAMPLING)
     out["seed"] = seed
     out["stream"] = False
     out["chat_template_kwargs"] = {**(body.get("chat_template_kwargs") or {}), **EFFORT}
     return out, seed
+
+
+def overflow_response(data: bytes, code: int, j: dict, usage: dict, finish) -> tuple[bytes, int, str | None]:
+    """§11.21 (the lead's ruling 3): a context overflow ends the sample cleanly. vLLM answers an overflow
+    with a 400 whose code is the number 400, which Inspect raises as an error (launch 6: one sample's error
+    cancelled the rest); OpenAI's `context_length_exceeded` Inspect reads as `model_length`, and its agent
+    then stops and the scorer reads the files as they stand. A reply the remaining context cut short (it
+    stopped on length below the cap) leaves too little for a useful reply, and ends the sample the same
+    way. Returns the body, status and the overflow's kind (None when there is none)."""
+    kind = None
+    if code == 400 and OVERFLOW.search(data.decode(errors="ignore")):
+        kind = "prompt_over_context"
+        err = j.get("error")
+        msg = (err.get("message") if isinstance(err, dict) else None) or j.get("message") or \
+            data.decode(errors="ignore")
+    elif code == 200 and finish == "length" and (usage.get("completion_tokens") or 0) < OUTPUT_CAP:
+        kind = "reply_cut_by_context"
+        msg = (f"the reply stopped at {usage.get('completion_tokens')} tokens, below the cap of "
+               f"{OUTPUT_CAP}: too little context left for a useful reply (maximum context length)")
+    if not kind:
+        return data, code, None
+    body = {"error": {"message": msg, "type": "invalid_request_error", "param": "messages",
+                      "code": "context_length_exceeded"}}
+    return json.dumps(body).encode(), 400, kind
+
+
+def proxy_rows(run_ids: set[str]) -> list[dict]:
+    """The proxy's rows for these runs (their usage, finish reasons and overflows), kept with the results
+    so they reach the pod (launch 6's proxy log was lost with the host)."""
+    rows = []
+    if Proxy.logf.exists():
+        for line in Proxy.logf.read_text(errors="ignore").splitlines():
+            try:
+                r = json.loads(line)
+            except ValueError:
+                continue
+            if r.get("run") in run_ids:
+                rows.append(r)
+    return rows
+
+
+def _write_rows(f: Path, rows: list[dict]) -> None:
+    f.write_text("".join(json.dumps(r) + "\n" for r in rows))
 
 
 def _run_of(path: str) -> tuple[str, str]:
@@ -112,14 +161,18 @@ class Proxy(BaseHTTPRequestHandler):
             data, code = e.read(), e.code
         except Exception as e:  # noqa: BLE001  (the upstream is down: report, do not crash)
             data, code = json.dumps({"error": str(e)}).encode(), 502
-        usage = {}
+        usage, finish = {}, None
         try:
-            usage = json.loads(data).get("usage") or {}
+            j = json.loads(data)
+            usage = j.get("usage") or {}
+            finish = ((j.get("choices") or [{}])[0] or {}).get("finish_reason")
         except Exception:  # noqa: BLE001
-            pass
+            j = {}
+        data, code, overflow = overflow_response(data, code, j if isinstance(j, dict) else {}, usage, finish)
         with self.lock, open(self.logf, "a") as f:
             f.write(json.dumps({"t": t0, "run": run_id, "path": path, "seed": seed, "status": code,
-                                "latency_s": round(time.time() - t0, 3), "usage": usage}) + "\n")
+                                "latency_s": round(time.time() - t0, 3), "usage": usage,
+                                "finish_reason": finish, "overflow": overflow}) + "\n")
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(data)))
@@ -212,6 +265,17 @@ def run_plan(plan_f: Path, doc: Path, results: Path, poll_s: int = 10) -> None:
         ins = next_instruction(plan.get("instructions", []), received(results))
         if plan.get("hold"):
             ins = {"kind": "wait", "id": "hold"}
+        if ins.get("kind") == "pause":  # §11.21: the rehearsal's gap, a real stop published for its seconds
+            tmp = doc.with_suffix(".tmp")
+            tmp.write_text(json.dumps({"session": plan.get("session"),
+                                       "instruction": {"kind": "stop", "id": "stop"}}))
+            tmp.replace(doc)
+            log(f"plan: {ins['id']}: stop published for {ins.get('seconds', 60)} s (the host must hold)")
+            time.sleep(float(ins.get("seconds", 60)))
+            d = results / ins["id"]
+            d.mkdir(parents=True, exist_ok=True)
+            done_marker(d, ins)
+            continue
         if ins.get("kind") == "vanish":  # the rehearsal's stand-in plays the pod's loss
             gone_marker(doc).write_text(f"{ins['id']} {time.time()}\n")
             log(f"plan: {ins['id']}: the control document no longer answers (the pod's loss, rehearsed)")
@@ -231,7 +295,8 @@ def serve_control(port: int, doc: Path, results: Path) -> None:
 
 # ---- the rehearsal's stub model ------------------------------------------------------------------
 class Stub(BaseHTTPRequestHandler):
-    models = ["base", "c1", "cctx_stub"]
+    models = ["base", "c1", "cctx_stub", "overflow_stub"]
+    OVERFLOW_AT_TURN = 2  # §11.21: `overflow_stub` answers its third request with vLLM's overflow
 
     def log_message(self, *a):
         pass
@@ -250,8 +315,34 @@ class Stub(BaseHTTPRequestHandler):
     def do_POST(self):
         body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)))
         msgs, tools = body.get("messages") or [], body.get("tools") or []
+        # §11.20: the subject's template refuses a system message anywhere but first, and so does the stub
+        # (launch 6's clause arms on the tools scaffold sent two; the rehearsal's stub had taken them)
+        if any(m.get("role") == "system" for m in msgs[1:]):
+            data = json.dumps({"object": "error", "message": "System message must be at the beginning.",
+                               "type": "BadRequestError", "code": 400}).encode()
+            self.send_response(400)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
         turn = sum(1 for m in msgs if m.get("role") == "assistant")
         names = [t["function"]["name"] for t in tools if t.get("function")]
+        if body.get("model") == "overflow_stub" and turn >= self.OVERFLOW_AT_TURN:
+            # vLLM 0.31's own answer (renderers/params.py `_token_len_check`, as launch 6 logged it)
+            n = 44033
+            msg = (f"This model's maximum context length is 44032 tokens. However, you requested 0 output "
+                   f"tokens and your prompt contains at least {n} input tokens, for a total of at least "
+                   f"{n} tokens. Please reduce the length of the input prompt or the number of requested "
+                   f"output tokens. (parameter=input_tokens, value={n})")
+            data = json.dumps({"error": {"message": msg, "type": "BadRequestError",
+                                         "param": "input_tokens", "code": 400}}).encode()
+            self.send_response(400)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
         if names:  # a tool loop: list the data, then finish
             name = "bash" if turn == 0 and "bash" in names else (
                 "task_complete" if "task_complete" in names else names[0])
@@ -417,6 +508,9 @@ class Usage:
 # powers off. The pod's control server runs from its runner's setup to its end, through every server
 # swap (the judge runs offline in the pod's own process), so only the pod's loss stops it answering.
 POD_GONE_S = float(os.environ.get("GPC4_POD_GONE_S", 20 * 60))
+# §11.21 (the lead's item 7): the driver powers off only after reading stop continuously for 120 s (launch
+# 6's host powered off on a stop published for 18 s between a stage's steps)
+STOP_PERSIST_S = float(os.environ.get("GPC4_STOP_PERSIST_S", 120))
 
 
 def self_terminate(done: set, since: float, reason: str) -> None:
@@ -438,7 +532,7 @@ def driver(poll_s: int = 20) -> None:
     while not POD_ENV.exists():
         time.sleep(poll_s)
     log("driver: pod.env present; polling the control document")
-    first_read, down_since = False, None
+    first_read, down_since, stop_since = False, None, None
     while True:
         doc = control_doc()
         if not doc:
@@ -453,7 +547,13 @@ def driver(poll_s: int = 20) -> None:
         first_read, down_since = True, None
         ins = doc.get("instruction") or {"kind": "wait"}
         iid = ins.get("id", "")
+        if ins.get("kind") != "stop":
+            stop_since = None
         if ins.get("kind") == "stop":
+            stop_since = stop_since or time.time()
+            if time.time() - stop_since < STOP_PERSIST_S:
+                time.sleep(min(poll_s, STOP_PERSIST_S))
+                continue
             pending = [i for i in done if i not in set(doc.get("received", []))]
             if pending:
                 log(f"driver: stop, waiting on delivery of {pending}")
@@ -479,6 +579,8 @@ def driver(poll_s: int = 20) -> None:
                     odcv_stage(ins, out)
                 elif ins["kind"] == "ib":
                     ib_stage(ins, out)
+                elif ins["kind"] == "batch":  # §11.21: the arm smoke's items at once, each its own result
+                    batch_stage(ins, out, done)
                 elif ins["kind"] == "probe":
                     (out / "probe.txt").write_text(f"probe {time.time()}\n")
                     push(out, iid)
@@ -493,6 +595,29 @@ def driver(poll_s: int = 20) -> None:
         push(out, iid)
         done.add(iid)
         done_f.write_text(json.dumps(sorted(done)))
+
+
+def batch_stage(ins: dict, out: Path, done: set) -> None:
+    """Run a batch's items (ODCV-Bench or ImpossibleBench instructions) at the same time, each into its own
+    directory with its own done-marker and push, as if each were its own instruction."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    def one(item: dict) -> str:
+        o = STATE / "out" / item["id"]
+        o.mkdir(parents=True, exist_ok=True)
+        try:
+            (odcv_stage if item["kind"] == "odcv" else ib_stage)(item, o)
+        except Exception as e:  # noqa: BLE001
+            (o / "stage_error.json").write_text(json.dumps({"error": repr(e)}))
+        done_marker(o, item)
+        push(o, item["id"])
+        done.add(item["id"])
+        return item["id"]
+
+    with ThreadPoolExecutor(max_workers=max(1, len(ins["items"]))) as ex:
+        ids = list(ex.map(one, ins["items"]))
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "stage.json").write_text(json.dumps({"items": ids}, indent=1))
 
 
 # ---- ODCV-Bench: one run in its own Compose project ------------------------------------------------
@@ -593,6 +718,24 @@ def odcv_run(scenario: str, variant: str, arm: str, model: str, clause: str | No
     return rec
 
 
+def tool_timeouts(record: str) -> int:
+    """§11.21 (the lead's item 7): the tool results that are the executor's own timeout answer
+    (`{"stdout": "", "stderr": "Command timed out", ...}`). Launch 6 counted the words anywhere in the
+    record, and every match was the subject reading the executor's source."""
+    n = 0
+    for st in re.split(r"(?m)^== Step \d+ ==\n", record):
+        if not st.startswith("role: tool"):
+            continue
+        body = st.split("content: ", 1)[1] if "content: " in st else ""
+        body = re.split(r"(?m)^(?:reason|call): ", body, maxsplit=1)[0].strip()
+        try:
+            r = json.loads(body)
+        except ValueError:
+            continue
+        n += isinstance(r, dict) and str(r.get("stderr", "")).startswith("Command timed out")
+    return n
+
+
 def run_evidence(out: Path, rec: dict) -> dict:
     """A run's evidence, from its own files. Upstream's executor writes no result.json at the pin (its
     own logs fall back on every run; rehearsal 2 flagged a good run on it), so a run errs on a timeout,
@@ -602,7 +745,7 @@ def run_evidence(out: Path, rec: dict) -> dict:
         return f.read_text(errors="ignore") if f.exists() else ""
 
     msgs = text("messages_record.txt")
-    rec["tool_timeouts"] = len(TIMEOUT_MARK.findall(msgs))
+    rec["tool_timeouts"] = tool_timeouts(msgs)
     rec["tool_calls"] = len(TOOL_MARK.findall(text("docker_output.log")))
     rec["messages_record"] = bool(msgs.strip())
     rec["container_error"] = (bool(rec.get("run_timeout")) or rec.get("compose_exit") != 0
@@ -621,6 +764,7 @@ def odcv_stage(ins: dict, out: Path) -> None:
         o = out / run_id
         o.mkdir(parents=True, exist_ok=True)
         rec = odcv_run(scenario, variant, ins["arm"], ins["model"], clause, run_id, o)
+        _write_rows(o / "proxy.jsonl", proxy_rows({run_id}))  # §11.21: usage and finish reasons
         push(o, f"{ins['id']}/{run_id}")  # results never sit only on the VM
         return rec
 
@@ -651,9 +795,23 @@ task = fn(split=a["split"], agent_type=a["scaffold"], sandbox="docker", **a.get(
 ids = set(a["task_ids"])
 task.dataset = task.dataset.filter(lambda s: s.id in ids)
 if a.get("clause_text"):  # the in-context arm: the clause first, upstream's prompt otherwise unchanged
-    task.solver = chain(system_message(a["clause_text"]), task.solver)
+    # GPC_PLAN.md §11.20: Qwen3.8's template takes one system message, at the start. The tools scaffold
+    # writes its own (`ChatMessageSystem` in its init), so the clause goes first in that message, as
+    # ODCV-Bench's clause goes first in its system prompt; the minimal scaffold writes none, so the clause
+    # is its only system message (launch 6: a second system message got a 400 on every request)
+    if a["scaffold"] == "tools":
+        import livecodebench_agent_full as F
+        from inspect_ai.model import ChatMessageSystem as _System
+        _clause = a["clause_text"].strip()
+        F.ChatMessageSystem = lambda content, **kw: _System(content=f"{_clause}\n\n{content}", **kw)
+    else:
+        task.solver = chain(system_message(a["clause_text"]), task.solver)
+# §11.20: one sample's error (launch 6: a context overflow) must not cancel the samples still running;
+# Inspect's default fails the eval on the first sample error and cancels the rest
 logs = inspect_eval(task, model=f"openai-api/gpc4/{a['model']}", log_dir=a["log_dir"],
-                    max_sandboxes=a.get("concurrency", 10), max_connections=a.get("concurrency", 10))
+                    max_sandboxes=a.get("concurrency", 10), max_connections=a.get("concurrency", 10),
+                    fail_on_error=False, reasoning_history="none")
+# §11.21: the replayed reasoning was about 74% of a long sample's context in launch 6
 # each sample's id, error and scores, read with Inspect's own reader: a .eval log is zstd-compressed,
 # which the standard library's zipfile cannot read without inspect_ai's patch (rehearsal 3)
 from pathlib import Path
@@ -683,6 +841,7 @@ def ib_stage(ins: dict, out: Path) -> None:
     p = subprocess.run([IB_PY, "-c", IB_TASK, json.dumps(arg), IB_SRC, IB_DATA], capture_output=True,
                        text=True, env=env)
     (out / "inspect_stdout.txt").write_text(p.stdout[-20000:] + "\n---\n" + p.stderr[-20000:])
+    _write_rows(out / "proxy.jsonl", proxy_rows({ins["id"]}))  # §11.21: usage, finish reasons, overflows
     (out / "stage.json").write_text(json.dumps({"exit": p.returncode, "wall_s": round(time.time() - t0, 1),
                                                 **eval_counts(out),
                                                 "args": {k: v for k, v in arg.items()
