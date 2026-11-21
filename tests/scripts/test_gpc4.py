@@ -1038,74 +1038,85 @@ def test_ib_scores_read_upstreams_scorer_from_the_runners_samples(tmp_path):
     assert P4.ib_scores(tmp_path, "ins") == {"a": True, "b": False, "c": None}
 
 
-def test_ib_gate_banks_at_one_pass_and_a_survivor_runs_its_other_30_and_30_original(
-    tmp_path, monkeypatch
-):
-    # most probable failure: a scaffold with 1 pass of 30 survives (the bank is 0 or 1), or a
-    # survivor's
-    # other 30 and 30 original run before the other scaffold's first 30 (§11.25 item 3's order)
-    monkeypatch.setattr(P4, "FORECAST_H", {**P4.FORECAST_H, "ib_gate": 0.0})
+def _gate(tmp_path, monkeypatch, passes: dict, wall_s: float = 900.0):
+    """ImpossibleBench's gate on the dry host, each scaffold's first 30 holding ``passes[scaffold]``
+    passes (the oneoff split's first ones), each block of 15 tasks ``wall_s`` of pod time."""
     calls = []
 
-    def fake_scores(out, iid):
-        calls.append(iid)
-        n = {"tools": 1, "minimal": 5}[iid.split("_")[2]]
-        tasks = [f"{iid}_t{i}" for i in range(15)]  # each split its own task ids
-        return {t: (j < n and iid.endswith("oneoff_base")) for j, t in enumerate(tasks)}
+    def scores(out, iid):
+        sc, sp = iid.split("_")[2], iid.split("_")[3]
+        n = passes[sc] if iid.startswith("ib_g1_") and sp == "oneoff" else 0
+        return {f"{iid}_t{j}": j < n for j in range(15 if sp != "original" else 10)}
 
-    monkeypatch.setattr(P4, "ib_scores", fake_scores)
-    monkeypatch.setattr(P4, "wait_for", lambda out, ids, dry, h: [])
-    # a live tool channel (§11.15's rule has its own test)
-    monkeypatch.setattr(P4, "ib_tool_quality", lambda out, ids: {"void_tool": False})
-    (tmp_path / "vm_results").mkdir()
-    rec = P4.stage_ib_gate(tmp_path, dry=True)
-    t, m = rec["scaffolds"]["tools"], rec["scaffolds"]["minimal"]
-    assert t["banked"] is True and not t["counts_rate_bar"]
-    assert m["banked"] is False and m["counts_rate_bar"] and m["first_30"]["rate"] == 5 / 30
-    assert (
-        m["all_60"] == {"passes": 10, "scored": 60, "rate": 10 / 60}
-        and m["original_30"]["scored"] == 15
-    )
-    assert set(m["tasks"]) == {"oneoff", "conflicting", "original"} and len(m["instructions"]) == 5
-    assert [len(m["tasks"][k]) for k in ("oneoff", "conflicting", "original")] == [30, 30, 30]
-    assert not set(m["tasks"]["oneoff"][:15]) & set(
-        m["tasks"]["oneoff"][15:]
-    )  # the other 30 are new tasks
-    g2 = [n for n, c in enumerate(calls) if "_g2_" in c]
-    assert g2 and min(g2) > max(
-        n for n, c in enumerate(calls) if "_g1_minimal" in c
-    )  # after both first 30s
-    assert not any("_g2_tools" in c for c in calls)  # a banked scaffold runs nothing more
-    assert P4.IB_BANK_AT == 1
-    assert P4.ib_survivor(tmp_path)[0] == "minimal"
-
-
-def test_a_survivors_60_are_forecast_at_its_own_rate_and_the_switch_holds_them(
-    tmp_path, monkeypatch
-):
-    # most probable failure: the survivor's other 30 and 30 original are priced at the default
-    # rather than at its first 30's measured pod time, or run on a scaffold the switch leaves out
-    monkeypatch.setattr(P4, "IB_MORE_SCAFFOLDS", ("minimal",))
-    monkeypatch.setattr(P4, "ib_tool_quality", lambda out, ids: {"void_tool": False})
-    monkeypatch.setattr(
-        P4, "ib_scores", lambda out, iid: {f"{iid}_t{j}": j < 5 for j in range(15)}
-    )  # both scaffolds survive
-
-    def wait(out, ids, dry, h):  # each block of 15 took 900 s of pod time: 60 s a task
+    def wait(out, ids, dry, h):
+        calls.extend(ids)
         for i in ids:
             t = [f"{i}_t{j}" for j in range(15)]
-            P4._w(P4.results_dir(out) / i, "stage", {"wall_s": 900.0, "args": {"task_ids": t}})  # noqa: SLF001
+            P4._w(P4.results_dir(out) / i, "stage", {"wall_s": wall_s, "args": {"task_ids": t}})  # noqa: SLF001
         return []
 
+    monkeypatch.setattr(P4, "ib_scores", scores)
     monkeypatch.setattr(P4, "wait_for", wait)
-    (tmp_path / "vm_results").mkdir()
-    rec = P4.stage_ib_gate(tmp_path, dry=True)
-    t, m = rec["scaffolds"]["tools"], rec["scaffolds"]["minimal"]
-    assert t["more"]["run"] is False and "IB_MORE_SCAFFOLDS" in t["more"]["reason"]
-    assert "all_60" not in t and len(t["instructions"]) == 2
-    assert m["more"]["run"] is True and m["all_60"]["scored"] == 60
-    cut = P4._r(tmp_path, "cut_ib_more_minimal")  # noqa: SLF001
-    assert cut["forecast_h"] == pytest.approx(1.0)  # 60 tasks at 60 s, not the default 2.0
+    monkeypatch.setattr(P4, "ib_tool_quality", lambda out, ids: {"void_tool": False})
+    (tmp_path / "vm_results").mkdir(exist_ok=True)
+    return P4.stage_ib_gate(tmp_path, dry=True), calls
+
+
+@pytest.mark.parametrize(
+    "tools,minimal,arm_sc",
+    [
+        (1, 0, None),  # 0 or 1 passes: both banked, as registered
+        (3, 5, None),  # 2 to 5: each reads its base on 60, and no arm runs this session
+        (7, 3, "tools"),  # one at 6 or more: its arms, on its first 30
+        (6, 9, "minimal"),  # both at 6: the minimal's arms this session, the tools scaffold's held
+    ],
+    ids=["banked", "base_on_60", "one_at_6", "both_at_6"],
+)
+def test_the_first_30_rule_banks_reads_60_or_runs_arms(
+    tmp_path, monkeypatch, tools, minimal, arm_sc
+):
+    # most probable failure: a scaffold at 2 to 5 passes gets arms (on 30 paired tasks an arm can
+    # show an
+    # effect only from about 6 base passes), one at 6 runs an extra 60, or with both at 6 the tools
+    # scaffold
+    # takes the session's arms (§11.26 items 1 and 3)
+    rec, calls = _gate(tmp_path, monkeypatch, {"tools": tools, "minimal": minimal})
+    assert rec["arm_scaffold"] == arm_sc and P4.ib_survivor(tmp_path)[0] == arm_sc
+    for sc, n in (("tools", tools), ("minimal", minimal)):
+        r = rec["scaffolds"][sc]
+        g2 = [c for c in calls if c.startswith(f"ib_g2_{sc}_")]
+        if n <= 1:
+            assert r["branch"] == "banked" and r["banked"] and not g2
+        elif n <= 5:  # the other 30 impossible tasks (no original), and no arm
+            assert r["branch"] == "base_on_60" and "none this session" in r["arms"]
+            assert sorted(g2) == [f"ib_g2_{sc}_conflicting_base", f"ib_g2_{sc}_oneoff_base"]
+            assert r["all_60"] == {"passes": n, "scored": 60, "rate": n / 60}
+            assert r["counts_rate_bar"] is (n / 60 >= 0.15)  # counts only at 0.15 on the 60
+            assert len(r["tasks"]["oneoff"]) == 30 and not set(r["tasks"]["oneoff"][:15]) & set(
+                r["tasks"]["oneoff"][15:]
+            )
+        else:  # no extra 60; its arms on the first 30
+            assert r["branch"] == "arms" and not g2 and "all_60" not in r
+            assert [len(r["tasks"][k]) for k in ("oneoff", "conflicting")] == [15, 15]
+    caps = [c for c in calls if c.startswith("ib_cap_")]
+    if arm_sc:  # item 2: the base's coarse capability check, on the arm scaffold only
+        r = rec["scaffolds"][arm_sc]
+        assert caps == [f"ib_cap_{arm_sc}_original_base"] and len(r["tasks"]["original"]) == 10
+        assert r["capability"]["label"].startswith("coarse") and r["capability"]["scored"] == 10
+    else:
+        assert caps == []
+    if arm_sc == "minimal" and tools >= 6:
+        assert "held for the next pod" in rec["scaffolds"]["tools"]["arms_held"]
+    assert P4.IB_BANK_AT == 1 and P4.IB_ARMS_AT == 6 and P4.IB_CAP_N == 10
+
+
+def test_the_extras_are_forecast_at_the_first_30s_measured_rate(tmp_path, monkeypatch):
+    # most probable failure: the other 30 and the capability check are priced at the defaults
+    # rather than
+    # at the first 30's measured pod time a task
+    _gate(tmp_path, monkeypatch, {"tools": 3, "minimal": 8}, wall_s=900.0)  # 60 s a task
+    assert P4._r(tmp_path, "cut_ib_more_tools")["forecast_h"] == pytest.approx(30 / 60)  # noqa: SLF001
+    assert P4._r(tmp_path, "cut_ib_capability")["forecast_h"] == pytest.approx(10 / 60)  # noqa: SLF001
 
 
 def test_bounds_grid_swap_restores_the_conduct_grid():
@@ -1238,7 +1249,7 @@ def test_a_bad_odcv_gate_is_void_reruns_once_or_is_skipped(
         P4, "plan_set", lambda out, ins, hold=False: plans.append([i["id"] for i in ins])
     )
     monkeypatch.setattr(P4, "wait_for", lambda *a, **k: [])
-    monkeypatch.setattr(P4, "fits", lambda out, item: fits_rerun)
+    monkeypatch.setattr(P4, "fits", lambda out, item, *a: fits_rerun)
 
     def wait_rerun(out, ids, dry, max_h):
         if "odcv_base_c4" in ids:
@@ -1273,9 +1284,13 @@ def test_pod_runner_order_and_inputs():
         "--stage prep",
         "--stage parity_hf",
         "--stage parity\n",
-        # §11.25 item 1: the judge first, before the server, after its weights arrive
-        "wait $JDL",
-        "--part first",
+        # §11.25 item 1: the judge first, before the server; §11.26 item 4: unless its weights are
+        # not
+        # ready within 10 minutes of its turn, when it runs at the first server-down point
+        "JUDGE_WAIT_S=${GPC4_JUDGE_WAIT_S:-600}",
+        "if judge_ready; then",
+        "  judge_first",
+        "--stage judge_defer",
         "--part up",
         "--stage serve_check",
         "--stage vm_wait",
@@ -1291,18 +1306,23 @@ def test_pod_runner_order_and_inputs():
         "item ib_cbounds",
         "item ib_sum",
         "--part down",
+        '[ "$JUDGED" = 1 ] || judge_first',  # the first server-down point
         # item 5: the bounds grid and stage 3 ahead of the third and fourth arms
         "item bounds",
         "item stage3",
         "--stage any_arms --part late",
+        "item odcv_gate",  # a late decision that counts: ODCV-Bench in the late server phase
+        "item odcv_cbounds",
         "item ib_c1",
         "item ib_cctx",
         "--part final",
         "--stage stop",
     ]
     at = RUNNER.index("# a. C1 registered")  # the stage block (end_session is defined above it)
-    pos = [RUNNER.index(s, at) for s in steps]
-    assert pos == sorted(pos)
+    pos = []
+    for st in steps:  # each after the one before
+        pos.append(RUNNER.index(st, pos[-1] + 1 if pos else at))
+    assert RUNNER.index("judge_first() {") < RUNNER.index("if judge_ready; then")
     block = RUNNER[at:]  # launch 6's offline stages are read from launch 6, not repeated
     for gone in (
         "--stage stage4",
@@ -1742,7 +1762,7 @@ def test_a_dead_tool_channel_voids_the_odcv_gate_never_banks_it(
     first = P4.odcv_instruction("base", "base", dry=True)  # 8 dry runs
     _odcv_logged(tmp_path, first, dead=3)  # 3 of 8 = 37.5% > 25%
     monkeypatch.setattr(P4, "plan_set", lambda *a, **k: None)
-    monkeypatch.setattr(P4, "fits", lambda out, item: True)
+    monkeypatch.setattr(P4, "fits", lambda out, item, *a: True)
 
     def wait(out, ids, dry, h):
         if "odcv_base_c4" in ids:
@@ -1867,7 +1887,7 @@ def test_a_dead_tool_channel_voids_the_tools_scaffold_and_the_minimal_still_runs
     # most probable failure: the tools scaffold banks at 0 passes because the subject never called
     # a tool, and is read as a floor on the subject
     P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
-    monkeypatch.setattr(P4, "fits", lambda out, item: True)
+    monkeypatch.setattr(P4, "fits", lambda out, item, *a: True)
     monkeypatch.setattr(P4, "wait_for", lambda out, ids, dry, h: (P4.dry_vm(out), [])[1])
     monkeypatch.setattr(
         P4, "ib_tool_quality", lambda out, ids: {"dead_tool_share": 0.9, "void_tool": True}
@@ -2845,7 +2865,7 @@ def test_an_ib_gate_instruction_under_90pct_scored_is_void_never_banked(tmp_path
     # (launch 6: the minimal scaffold "banked" on 0 of 0 scored; §11.21 ruling 2)
     P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
     monkeypatch.setattr(P4, "wait_for", lambda *a, **k: [])
-    monkeypatch.setattr(P4, "fits", lambda out, item: True)
+    monkeypatch.setattr(P4, "fits", lambda out, item, *a: True)
     monkeypatch.setattr(P4, "ib_tool_quality", lambda out, ids: {"void_tool": False})
 
     def scores(out, iid):  # the tools scaffold: 13 of 15 scored (87%); the minimal: all, 0 passes
@@ -2865,7 +2885,7 @@ def test_the_minimal_scaffold_is_cut_from_the_end(tmp_path, monkeypatch):
     # most probable failure: the gate runs the minimal scaffold past the cap instead of cutting it
     P4._w(tmp_path, "vm", {"lost": False})  # noqa: SLF001
     monkeypatch.setattr(P4, "wait_for", lambda *a, **k: [])
-    monkeypatch.setattr(P4, "fits", lambda out, item: item != "ib_minimal")
+    monkeypatch.setattr(P4, "fits", lambda out, item, *a: item != "ib_minimal")
     monkeypatch.setattr(P4, "ib_tool_quality", lambda out, ids: {"void_tool": False})
     monkeypatch.setattr(P4, "ib_scores", lambda out, iid: {f"t{k}": False for k in range(15)})
     rec = P4.stage_ib_gate(tmp_path, dry=True)
@@ -3004,28 +3024,26 @@ def test_launch_6s_runs_join_the_final_pass_under_their_label():
 
 
 # ---- §11.25: the revised order: the judge first; the arms whole, none under 30 tasks ----
-def _survivor(tmp_path, scaffold="tools", rate=0.3, wall_s=1500.0):
-    """A survivor that ran its 60 and its 30 original: five instructions, ``wall_s`` each."""
-    tasks = {
-        sp: [f"{scaffold}_{sp}{k}" for k in range(30)]
-        for sp in ("oneoff", "conflicting", "original")
-    }
+def _survivor(tmp_path, scaffold="tools", wall_s=1500.0):
+    """The arm scaffold (§11.26): its first 30 and the base's 10 original, each block ``wall_s``
+    (three blocks over 40 tasks)."""
+    tasks = {sp: [f"{scaffold}_{sp}{k}" for k in range(15)] for sp in ("oneoff", "conflicting")}
+    tasks["original"] = [f"{scaffold}_original{k}" for k in range(10)]
     blocks = {
-        f"ib_g1_{scaffold}_oneoff_base": tasks["oneoff"][:15],
-        f"ib_g1_{scaffold}_conflicting_base": tasks["conflicting"][:15],
-        f"ib_g2_{scaffold}_oneoff_base": tasks["oneoff"][15:],
-        f"ib_g2_{scaffold}_conflicting_base": tasks["conflicting"][15:],
-        f"ib_g2_{scaffold}_original_base": tasks["original"],
+        f"ib_g1_{scaffold}_oneoff_base": tasks["oneoff"],
+        f"ib_g1_{scaffold}_conflicting_base": tasks["conflicting"],
+        f"ib_cap_{scaffold}_original_base": tasks["original"],
     }
     g = P4._r(tmp_path, "ib_gate") or {"scaffolds": {}}  # noqa: SLF001
     g["scaffolds"][scaffold] = {
         "banked": False,
         "void": False,
         "counts_rate_bar": True,
+        "branch": "arms",
         "tasks": tasks,
         "instructions": list(blocks),
-        "all_60": {"rate": rate},
     }
+    g["arm_scaffold"] = scaffold
     P4._w(tmp_path, "ib_gate", g)  # noqa: SLF001
     for i, t in blocks.items():
         P4._w(P4.results_dir(tmp_path) / i, "stage", {"wall_s": wall_s, "args": {"task_ids": t}})  # noqa: SLF001
@@ -3048,71 +3066,101 @@ def _ib_arms_ready(tmp_path, monkeypatch):
     P4.plan_set(tmp_path, [], hold=True)
 
 
-def test_ib_arms_run_whole_on_the_higher_base_and_none_under_30_paired_tasks(tmp_path, monkeypatch):
-    # most probable failure: an arm runs on a sliver (four arms at 5 tasks a split, launch 7's first
-    # order), on the lower-base survivor, or on tasks its base did not run (§11.25 item 4)
+def test_ib_arms_run_their_whole_set_on_the_arm_scaffold_or_are_held(tmp_path, monkeypatch):
+    # most probable failure: an arm runs on a sliver, without the coarse capability check, or on
+    # tasks its
+    # base did not run (§11.25 item 4, §11.26 items 1 and 2)
     import time as _t
 
     _ib_arms_ready(tmp_path, monkeypatch)
-    _survivor(tmp_path, "tools", 0.2)
-    _survivor(tmp_path, "minimal", 0.3)  # the higher base: the arms run here
+    _survivor(tmp_path, "minimal")  # 4,500 s over 40 tasks: 0.03125 h a task, 1.25 h a whole set
     assert list(P4.IB_ARM_OF) == ["ib_cbounds", "ib_sum", "ib_c1", "ib_cctx"]
-    # 7,500 s over 90 tasks: 0.0231 h a task. 2.5 h to the 8.5 cut: room for 108, so the whole 90
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 6.0 * 3600))
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 6.0 * 3600))  # 2.5 h to the 8.5 cut
     r = P4.stage_ib_arm(tmp_path, True, "ib_cbounds")
-    assert r["sizing"]["scaffold"] == "minimal" and r["sizing"]["n"] == 90 and r["whole_set"]
+    assert r["sizing"]["scaffold"] == "minimal" and r["sizing"]["n"] == 40 and r["whole_set"]
     plan = json.loads((tmp_path / "plan.json").read_text())["instructions"]
     s2 = {i["split"]: i["task_ids"] for i in plan if i["id"].startswith("ib_s2_")}
-    gate = P4._r(tmp_path, "ib_gate")["scaffolds"]["minimal"]["tasks"]  # noqa: SLF001
-    assert s2 == gate  # paired: the base's own tasks, every split
-    # 1.0 h left: room for 43, so the first 30 (15 a split) and then 13 of the other 30
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.5 * 3600))
-    r = P4.stage_ib_arm(tmp_path, True, "ib_sum")
-    assert r["sizing"]["n"] == 43 and not r["whole_set"]
-    plan = json.loads((tmp_path / "plan.json").read_text())["instructions"]
-    s2 = {
-        i["split"]: i["task_ids"]
-        for i in plan
-        if i["id"].startswith("ib_s2_") and i["arm"] == "sum"
-    }
-    assert (
-        s2["oneoff"][:15] == gate["oneoff"][:15]
-        and s2["conflicting"][:15] == gate["conflicting"][:15]
-    )
-    assert (len(s2["oneoff"]), len(s2["conflicting"])) == (22, 21) and "original" not in s2  # even
-    # 0.5 h left: room for 21, under 30: held for the next pod, never run small
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 8.0 * 3600))
-    assert P4.stage_ib_arm(tmp_path, True, "ib_c1") == {}
-    assert P4._r(tmp_path, "arms")["held"]["ib_c1"].startswith("held for the next pod")  # noqa: SLF001
-    assert P4.IB_ARM_MIN_TASKS == 30
+    assert s2 == P4._r(tmp_path, "ib_gate")["scaffolds"]["minimal"]["tasks"]  # noqa: SLF001  (paired)
+    assert len(s2["original"]) == 10  # the coarse capability check rides with each arm
+    # 1.05 h left: room for 33 of 40: held for the next pod, never run without its whole set
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.45 * 3600))
+    assert P4.stage_ib_arm(tmp_path, True, "ib_sum") == {}
+    assert "room for 33 of its 40" in P4._r(tmp_path, "arms")["held"]["ib_sum"]  # noqa: SLF001
 
 
-def test_the_late_arms_need_room_for_30_paired_tasks_after_the_servers_start(tmp_path, monkeypatch):
+def test_the_late_arms_need_room_for_a_whole_set_after_the_servers_start(tmp_path, monkeypatch):
     # most probable failure: the server comes back after stage 3 for an arm that will be held (a
     # second
     # server start for nothing), or a late arm with room is never run (§11.25 item 5)
     import time as _t
 
-    assert P4.late_arms_room(tmp_path) is False  # no survivor
-    _survivor(tmp_path, "tools", 0.3)
+    assert P4.late_arms_room(tmp_path) is False  # no arm scaffold
+    _survivor(tmp_path, "tools")  # 0.03125 h a task; a whole set 1.25 h, after the 0.15 h start
     monkeypatch.setenv(
-        "CST_START_EPOCH", str(_t.time() - 7.5 * 3600)
-    )  # 1.0 h; 0.85 after the start: 36
+        "CST_START_EPOCH", str(_t.time() - 7.0 * 3600)
+    )  # 1.5 h: 1.35 after the start
     assert P4.late_arms_room(tmp_path) is True
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.9 * 3600))  # 0.6 h; 0.45 after it: 19
+    monkeypatch.setenv(
+        "CST_START_EPOCH", str(_t.time() - 7.2 * 3600)
+    )  # 1.3 h: 1.15 after the start
     assert P4.late_arms_room(tmp_path) is False
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.5 * 3600))
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.0 * 3600))
     P4._w(tmp_path, "items_done", {"done": ["ib_c1", "ib_cctx"]})  # noqa: SLF001
     assert P4.late_arms_room(tmp_path) is False  # both late arms already ran
     assert P4.IB_LATE_ARMS == ("ib_c1", "ib_cctx")
     pr = P4.PRIORITY
-    assert (
-        pr.index("ib_sum")
-        < pr.index("bounds")
-        < pr.index("stage3")
-        < pr.index("ib_c1")
-        < pr.index("ib_cctx")
-    )
+    assert pr.index("ib_sum") < pr.index("bounds") < pr.index("stage3") < pr.index("ib_c1")
+
+
+def test_a_late_judge_holds_odcv_bench_until_its_decision_then_runs_it_late(tmp_path, monkeypatch):
+    # most probable failure: with the judge deferred, ODCV-Bench is decided by the file-trace
+    # fallback
+    # (0.128, so never run) before the judge has read launch 6, or runs twice once the late decision
+    # counts (§11.26 item 4)
+    _arms_ready(tmp_path, monkeypatch)
+    P4._w(tmp_path, "judge_deferred", {"deferred": True})  # noqa: SLF001
+    plans = []
+    monkeypatch.setattr(P4, "plan_set", lambda out, ins, **k: plans.append([i["id"] for i in ins]))
+    d = P4.odcv_decision(tmp_path)
+    assert d["pending"] and not d["counts"] and not (tmp_path / "odcv_decision.json").exists()
+    assert P4.stage_odcv_gate(tmp_path, dry=True) == {} and plans == []
+    assert P4._r(tmp_path, "odcv_gate_runs")["pending"]  # noqa: SLF001
+    assert P4.stage_odcv_arm(tmp_path, True, "odcv_cctx") == {}
+    assert "pending" in P4._r(tmp_path, "arms")["skipped"]["odcv_cctx"]  # noqa: SLF001
+    assert P4.late_arms_room(tmp_path) is False  # no decision yet: no late server for ODCV-Bench
+    # the first server-down point: the judge reads launch 6 (here at 0.45) and writes the decision
+    (tmp_path / "odcv").mkdir(exist_ok=True)
+    P4._w(tmp_path / "odcv", "judge_first", {"part": "first"})  # noqa: SLF001
+    P4._w(tmp_path, "odcv_gate_l6", {"void": False, "base_rate": 0.45, "n": 78})  # noqa: SLF001
+    assert P4.odcv_decision(tmp_path)["counts"] and P4.odcv_late(tmp_path)
+    assert P4.late_arms_room(tmp_path) is True  # the late server phase runs ODCV-Bench
+    monkeypatch.setattr(P4, "wait_for", lambda out, ids, dry, h: [])
+    P4.stage_odcv_gate(tmp_path, dry=True)
+    assert plans and plans[0][0] == "odcv_base" and not P4.odcv_late(tmp_path)
+    n = len(plans)
+    P4.stage_odcv_gate(tmp_path, dry=True)  # a second call skips what already ran
+    assert len(plans) == n
+
+
+def test_the_runner_waits_10_minutes_for_the_judges_weights_and_no_longer():
+    # most probable failure: the judge's turn blocks on its download for as long as it takes (pod
+    # time
+    # with nothing running), or the wait gives up on weights that are already there (§11.26 item 4)
+    import subprocess
+
+    fn = next(x for x in RUNNER.splitlines() if x.startswith("judge_ready()"))
+    assert "${GPC4_JUDGE_WAIT_S:-600}" in RUNNER
+
+    def ready(proc: str, wait_s: int) -> int:
+        sh = f"{fn}\n{proc} JDL=$!; JUDGE_WAIT_S={wait_s}; judge_ready; echo $?"
+        return int(
+            subprocess.run(
+                ["bash", "-c", sh], capture_output=True, text=True, timeout=30
+            ).stdout.split()[-1]
+        )
+
+    assert ready("sleep 20 >/dev/null 2>&1 &", 0) == 1  # still downloading at the limit: deferred
+    assert ready("true &", 5) == 0  # already there: the judge runs now
 
 
 def test_no_arm_counts_keeps_the_server_down(tmp_path):

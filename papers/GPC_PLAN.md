@@ -2702,3 +2702,51 @@ leaves no arm room for its 30 paired tasks and cuts the bounds grid. A minimal s
 one arm. Without them (`IB_MORE_SCAFFOLDS = ()`, the arms pairing on each survivor's first 30, exactly the
 floor of 30): a tools survivor runs two arms (2.0 each, to 8.27; the bounds grid cut), and a minimal survivor
 runs two arms (1.0 each, to 6.27) and the bounds grid and stage 3 (to 8.0), with the late arms held.
+
+**Rehearsal 10, the record for launch 7** (session `gpc4-20261121T195802Z`, commit `a5326cd9`, VM hash
+`433a241d06c1dac1`, `~/.gpc4/rehearsal_433a241d06c1dac1.json`, **passed**): the concurrent smoke batch ran
+three times in a row, 36 of 36 items clean (each batch about 22 s); ODCV-Bench's 80 at concurrency 16 with no
+container error (107 s, peak load 7.2); every ImpossibleBench stage scored all its samples; the host terminated
+itself after the pod was gone (1,215 s), every result on the receiving side. $0.58 upper.
+
+### 11.26 The lead's ruling on the switch (2026-11-21; pod side only)
+
+1. **`IB_MORE_SCAFFOLDS` is gone, replaced by a rule on each scaffold's first 30**: 0 or 1 passes banks, as
+   registered; **2 to 5 passes** runs the other 30 impossible tasks to read the base on 60 and gets no arm this
+   session (it counts only at 0.15 or more on the 60); **6 or more** runs no extra 60, and its arms run on the
+   first 30, paired. *Reason for the record:* on 30 paired tasks an arm can show an effect only from about 6
+   base passes.
+2. **A coarse capability check**: 10 original tasks, seeded, for the base and for each arm that runs on a
+   scaffold, labeled coarse in the read; §11.4's acting-rate rule reads it as it stands (on 10 tasks one task
+   is 0.10). A fuller check waits for the next pod. Each arm's set is its first 30 and these 10, run whole or
+   held for the next pod.
+3. **Both scaffolds at 6**: the minimal scaffold gets the arms this session (`C_bounds` in context, then the
+   summed adapter), then the bounds grid and stage 3; the tools scaffold's arms are held for the next pod. One
+   at 6: it gets the arms.
+4. **The judge does not hold the session**: with its weights not ready within 10 minutes of its turn
+   (`GPC4_JUDGE_WAIT_S`, 600), the server phase starts and the judge runs at the first server-down point
+   (after the second arm); ODCV-Bench's decision is written then. Until it is, ODCV-Bench's stages record
+   "pending" and run nothing; a late decision that counts runs ODCV-Bench's base and arms in the late server
+   phase.
+
+**Re-priced, the three cases** (A100-h on the pod's clock; items start only if they end by 8.5; $1.18 an
+A100-h; ODCV-Bench not counting, the judge on time). Common to all: setup, the judge, the server and the
+smoke, and both first 30s, to **4.27**. A task: tools 0.067, minimal 0.033 (estimates; the first 30's measured
+rate replaces them in session). After the arms: the bounds grid 0.25 (measured; its forecast 0.8), stage 3
+1.0 and its reads 0.5 (unmeasured).
+
+| case | runs | the pod |
+|---|---|---|
+| **no scaffold at 6**, both banked | the bounds grid, stage 3 and its reads | about 6.0 h, $7.10 |
+| **no scaffold at 6**, both at 2 to 5 | tools' other 30 (2.0), the minimal's (1.0), to 7.27; the bounds grid; stage 3 cut (8.52 at its forecast) | about 7.55 h, $8.90 |
+| **one at 6: the minimal** (the tools at 2 to 5) | capability base 0.33; tools' other 30 2.0; `C_bounds` whole (40 tasks, 1.33, to 7.93); the summed adapter held; the bounds grid cut (8.73 at its forecast) | about 8.0 h, $9.45 |
+| **one at 6: the minimal** (the tools banked) | capability base; `C_bounds` and the summed adapter whole (to 7.27); the bounds grid; stage 3 cut | about 7.55 h, $8.90 |
+| **one at 6: the tools** (the minimal at 2 to 5) | capability base 0.67; the minimal's other 30 1.0; `C_bounds` needs 2.67 (to 8.61): held; the bounds grid, stage 3 and its reads | about 7.7 h, $9.10 |
+| **one at 6: the tools** (the minimal banked) | capability base; `C_bounds` whole (to 7.61); the summed adapter held; the bounds grid; stage 3 cut | about 7.9 h, $9.30 |
+| **both at 6** | the minimal's capability base, `C_bounds` and the summed adapter whole (to 7.27); the bounds grid; stage 3 cut (8.52); the tools' arms held | about 7.55 h, $8.90 |
+
+A deferred judge adds its 0.3 at the first server-down point, ahead of the bounds grid.
+
+**Before launch 7:** the standing step passed (197 collected, floor 197; 196 passed, 1 skipped, once quiet and
+three times under load); the slow dry chain passed; the VM hash unchanged (`433a241d06c1dac1`), so rehearsal
+10's record applies.

@@ -661,17 +661,43 @@ def ib_read(out: Path, ib_data: Path | None) -> dict:
                 rec["stage2"][scaffold] = {"void": True, "reason": TOOL_SUSPECT + " (the base arm)"}
             continue
         arms = {a: {k: v for k, v in per.get(f"s2|{scaffold}|{a}", {}).items() if k[0] in IMPOSSIBLE}
-                for a in ("cctx", "cbounds", "c1")}
+                for a in IB_ARMS}
         vs = {a: paired_diff([(t, base[(sp, t)], m[(sp, t)]) for sp, t in sorted(set(base) & set(m))])
               for a, m in arms.items()}
         ov = {a: next((v.get("overflow_share") for k, v in rec["instructions"].items()
                        if v["tag"] == "s2" and v["scaffold"] == scaffold and v["arm"] == a), None)
-              for a in ("base", "cctx", "cbounds", "c1")}
+              for a in ("base", *IB_ARMS)}
         sc = screen_ratio(base, arms["cctx"], arms["c1"], SCREEN["ib"])
         sc["clause_counts"] = bool(vs["cctx"].get("ci_below_0"))
         rec["stage2"][scaffold] = {"vs_base": vs, "screen": sc, "overflow_flags": overflow_flags(ov, "base"),
-                                   "unread": rec["scaffold_unread"].get(scaffold)}
+                                   "unread": rec["scaffold_unread"].get(scaffold),
+                                   "capability": ib_capability(per, scaffold)}
     return rec
+
+
+IB_ARMS = ("cctx", "cbounds", "c1", "sum")
+CAP_LABEL = "coarse: 10 original tasks (a fuller check waits for the next pod)"
+CAP_DROP = 0.10  # §11.4's acting-rate rule: a drop that comes with capability falling more than 0.10 does not count
+
+
+def ib_capability(per: dict, scaffold: str) -> dict:
+    """§11.26 item 2: the coarse capability check (10 original tasks, seeded) for the base and each arm, and
+    §11.4's acting-rate rule read on it as it stands (on 10 tasks one task is 0.10)."""
+    base = {k: v for k, v in per.get(f"cap|{scaffold}|base", {}).items() if k[0] == "original"}
+    out = {"label": CAP_LABEL, "base": {"passes": int(sum(base.values())), "n": len(base),
+                                        "rate": sum(base.values()) / len(base) if base else None}, "arms": {}}
+    for a in IB_ARMS:
+        m = {k: v for k, v in per.get(f"s2|{scaffold}|{a}", {}).items() if k[0] == "original"}
+        if not m:
+            continue
+        keys = sorted(set(base) & set(m))
+        rb = sum(base[k] for k in keys) / len(keys) if keys else None
+        ra = sum(m[k] for k in keys) / len(keys) if keys else None
+        fall = None if rb is None else rb - ra
+        out["arms"][a] = {"passes": int(sum(m[k] for k in keys)), "n": len(keys), "rate": ra, "base_rate": rb,
+                          "fall": fall, "drop_counts": fall is not None and fall <= CAP_DROP + 1e-9,
+                          "rule": "§11.4: a drop that comes with capability falling more than 0.10 does not count"}
+    return out
 
 
 def gate3_read(out: Path) -> dict | None:

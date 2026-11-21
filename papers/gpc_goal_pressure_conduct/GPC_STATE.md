@@ -295,3 +295,8 @@ bill is its figure of record.
   arms whole on the higher-base survivor, none under 30 paired tasks; the bounds grid and stage 3 after the
   second arm. Re-priced: a tools survivor's 60 (4.0 A100-h) leave no arm room. Gate 192, floor 192. VM hash
   unchanged (433a241d06c1dac1): rehearsal 10's record applies once it passes.
+- 2026-11-21: rehearsal 10 passed (433a241d06c1dac1; the smoke batch three times, 36 of 36 clean), the record
+  for launch 7. The lead's ruling on the switch (§11.26), built pod-side: the first 30's rule (0 or 1 banks; 2
+  to 5 reads the base on 60, no arm; 6 or more, arms on the first 30), a coarse capability check of 10
+  original tasks for the base and each arm, the minimal scaffold's arms when both reach 6, and a judge that
+  never holds the session (10 minutes, then the first server-down point). Gate 197, floor 197.

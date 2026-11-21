@@ -170,7 +170,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=192   # the gate's collected count when set (launch 7, §11.25); fewer means a file failed to collect
+GATE_FLOOR=197   # the gate's collected count when set (launch 7, §11.26); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
@@ -226,8 +226,19 @@ run $GP parity --stage parity
 # b. GPC_PLAN.md §11.25 item 1 (the lead's revised order): the judge first, before the server, in one load:
 #    launch 6's 80 ODCV-Bench runs (read on the 78), ODCV-Bench's decision (item 2: launch 6's judged base
 #    against the best-case affordability rate), stage 4's blackmail transcripts
-wait $JDL; tail -1 "$OUT/logs/judge_download.log"   # the judge's weights (downloaded behind setup)
-run $GP judge --stage judge --part first
+# §11.26 item 4: the judge does not hold the session. Its weights ready within 10 minutes of its turn: it
+# runs now; otherwise the server phase starts, and the judge (and ODCV-Bench's decision) runs at the first
+# server-down point
+JUDGE_WAIT_S=${GPC4_JUDGE_WAIT_S:-600}
+judge_ready() { local t=0; while kill -0 "$JDL" 2>/dev/null; do [ "$t" -ge "$JUDGE_WAIT_S" ] && return 1; sleep 5; t=$((t + 5)); done; return 0; }
+judge_first() { wait "$JDL"; tail -1 "$OUT/logs/judge_download.log"; run $GP judge --stage judge --part first; JUDGED=1; }
+JUDGED=0
+if judge_ready; then
+  judge_first
+else
+  echo ">> the judge's weights are not ready after $JUDGE_WAIT_S s: the server phase starts; the judge runs at the first server-down point"
+  $PY $GP --out "$OUT" --stage judge_defer $DRY
+fi
 # c. the server phase: the host's gate probe, the arm smoke
 run $GP serve --stage serve --part up
 run $GP serve_check --stage serve_check
@@ -249,6 +260,7 @@ item ib_gate
 item ib_cbounds
 item ib_sum
 $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
+[ "$JUDGED" = 1 ] || judge_first   # §11.26 item 4: the first server-down point; the decision is written here
 # e. §11.25 item 5: the bounds grid and stage 3 after the second arm, ahead of the third and fourth
 item bounds
 run $GP bounds_cells --stage bounds_cells
@@ -256,14 +268,20 @@ item stage3
 run $GP parity_hf --stage parity_hf    # the bounds adapter's, when stage 3 trained one
 run $GP parity --stage parity
 run $GP stage3_read --stage stage3_read
-# f. the third and fourth arms, when one has room for 30 paired tasks after the server's start
+# f. the third and fourth arms, when one has room for its whole set after the server's start; and ODCV-Bench's
+#    base and arms when the judge ran late and its decision counts (§11.26 item 4; each skips what already ran)
 if $PY $GP --out "$OUT" --stage any_arms --part late $DRY; then
   run $GP serve --stage serve --part up
+  item odcv_gate
+  item odcv_cctx
+  item odcv_c1
+  item odcv_sum
+  item odcv_cbounds
   item ib_c1
   item ib_cctx
   $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
 else
-  echo ">> no late arm: no survivor, or no room for 30 paired tasks"
+  echo ">> no late arm: no arm scaffold, or no room for an arm's whole set, and no late ODCV-Bench"
 fi
 # g. the final judge pass: ODCV-Bench's new base and arms, when they ran (no load otherwise)
 run $GP judge --stage judge --part final
