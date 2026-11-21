@@ -2,7 +2,7 @@
 # Remote runner for GPC-4 (GPC_PLAN.md §11.3 to §11.3c), on Thunder: the subject's vLLM server for the
 # EC2 host's stages, the offline stages and the judge between them, the control document for the host on
 # 127.0.0.1:8001, the host's results arriving through a write-only restricted key. Cut from the end under
-# the 9 A100-h cap (stages stop at 10.25 h unless moved; watchdog ceiling 14.0 h). Writes
+# the 10 A100-h cap for launch 7 (§11.29) (stages stop at 10.25 h unless moved; watchdog ceiling 14.0 h). Writes
 # papers/gpc_goal_pressure_conduct/outputs/gpc4_v1.
 set -uo pipefail
 

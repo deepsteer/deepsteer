@@ -1177,34 +1177,34 @@ def test_the_bounds_block_starts_only_if_the_grid_its_cells_and_stage_3_all_fit(
     f = P4.FORECAST_H
     assert f["bounds"] == 2.1 and f["stage3"] == 0.45 and f["bounds_cells"] == 0.2
     assert f["bounds_block"] == pytest.approx(2.75)
-    _counts(tmp_path, 0.5)  # ODCV-Bench counts here, so the cut is 8.5
+    _counts(tmp_path, 0.5)  # ODCV-Bench counts here, so the cut is 9.5
     monkeypatch.setenv(
-        "CST_START_EPOCH", str(_t.time() - 6.0 * 3600)
+        "CST_START_EPOCH", str(_t.time() - 7.0 * 3600)
     )  # 2.5 h left: the grid alone fits
     assert P4.fits(tmp_path, "bounds") and not P4.fits(tmp_path, "bounds_block")
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 5.7 * 3600))  # 2.8 h left: all three fit
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 6.7 * 3600))  # 2.8 h left: all three fit
     assert P4.fits(tmp_path, "bounds_block")
 
 
 @pytest.mark.parametrize(
     "decision,l6,ran,cut",
     [
-        (0.128, True, False, 9.0),  # does not count, launch 6 read, nothing ran: nothing to load
-        (0.5, True, True, 8.5),  # it counts and ran: the final pass judges it
+        (0.128, True, False, 10.0),  # does not count, launch 6 read, nothing ran: nothing to load
+        (0.5, True, True, 9.5),  # it counts and ran: the final pass judges it
         (
             0.128,
             False,
             False,
-            8.5,
+            9.5,
         ),  # launch 6 unread (the first pass failed): the final pass reads it
-        (None, True, False, 8.5),  # pending (the judge deferred): the reserve kept
+        (None, True, False, 9.5),  # pending (the judge deferred): the reserve kept
     ],
     ids=["not_counting", "counting", "l6_unread", "pending"],
 )
-def test_the_cut_is_9_only_when_the_final_pass_has_nothing_to_load(
+def test_the_cut_is_10_only_when_the_final_pass_has_nothing_to_load(
     tmp_path, monkeypatch, decision, l6, ran, cut
 ):
-    # most probable failure: the cut is raised to 9.0 while the final pass still has runs to judge
+    # most probable failure: the cut is raised to 10.0 while the final pass still has runs to judge
     # (it
     # would start after the cap), or the half hour is reserved for a pass that loads nothing
     # (§11.27 item 3)
@@ -1217,7 +1217,7 @@ def test_the_cut_is_9_only_when_the_final_pass_has_nothing_to_load(
     if ran:
         P4._w(tmp_path, "odcv_gate_runs", {"instruction": "odcv_base", "void": False})  # noqa: SLF001
     assert P4.cut_now(tmp_path) == cut
-    if cut == 9.0:  # confirm the final pass loads nothing in that case
+    if cut == 10.0:  # confirm the final pass loads nothing in that case
         loads = []
         monkeypatch.setattr(
             P3, "_judge_engine", lambda dry: loads.append(dry) or (None, None, None)
@@ -2986,16 +2986,17 @@ def test_the_server_takes_44032_tokens_and_caps_replies_at_16384_or_the_rest():
     assert ib["concurrency"] == 5 and P4.odcv_instruction("base", "base", True)["concurrency"] == 16
 
 
-def test_the_cut_rule_enforces_9h_and_keeps_the_judges_pass(tmp_path, monkeypatch):
+def test_the_cut_rule_enforces_10h_and_keeps_the_judges_pass(tmp_path, monkeypatch):
     # most probable failure: the cut rule reads the session's 10.25 h stop, as launch 6 did, against
-    # the registered 9.0 A100-h cap (§11.21 ruling 6)
+    # launch 7's 10.0 A100-h cap (§11.21 ruling 6; §11.29 item 2), or drops the judge's 0.5
     import time as _t
 
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.8 * 3600))
-    assert P4.fits(tmp_path, "odcv_cbounds") is False  # 7.8 + 0.8 > 9.0 - 0.5
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.6 * 3600))
+    assert P4.CAP_H == 10.0
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 8.8 * 3600))
+    assert P4.fits(tmp_path, "odcv_cbounds") is False  # 8.8 + 0.8 > 10.0 - 0.5
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 8.6 * 3600))
     assert P4.fits(tmp_path, "odcv_cbounds") is True
-    assert P4._r(tmp_path, "cut_odcv_cbounds")["cut_h"] == 8.5  # noqa: SLF001
+    assert P4._r(tmp_path, "cut_odcv_cbounds")["cut_h"] == 9.5  # noqa: SLF001
 
 
 def test_an_ib_gate_instruction_under_90pct_scored_is_void_never_banked(tmp_path, monkeypatch):
@@ -3213,7 +3214,7 @@ def test_ib_arms_run_their_whole_set_on_the_arm_scaffold_or_are_held(tmp_path, m
 
     _ib_arms_ready(tmp_path, monkeypatch)
     _survivor(tmp_path, "minimal")  # 4,500 s over 40 tasks: 0.03125 h a task, 1.25 h a whole set
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 6.0 * 3600))  # 2.5 h to the 8.5 cut
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.0 * 3600))  # 2.5 h to the 9.5 cut
     r = P4.stage_ib_arm(tmp_path, True, "ib_cbounds")
     assert r["sizing"]["scaffold"] == "minimal" and r["sizing"]["n"] == 40 and r["whole_set"]
     plan = json.loads((tmp_path / "plan.json").read_text())["instructions"]
@@ -3221,7 +3222,7 @@ def test_ib_arms_run_their_whole_set_on_the_arm_scaffold_or_are_held(tmp_path, m
     assert s2 == P4._r(tmp_path, "ib_gate")["scaffolds"]["minimal"]["tasks"]  # noqa: SLF001  (paired)
     assert len(s2["original"]) == 10  # the coarse capability check rides with each arm
     # 1.05 h left: room for 33 of 40: held for the next pod, never run without its whole set
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.45 * 3600))
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 8.45 * 3600))
     assert P4.stage_ib_arm(tmp_path, True, "ib_sum") == {}
     assert "room for 33 of its 40" in P4._r(tmp_path, "arms")["held"]["ib_sum"]  # noqa: SLF001
 
@@ -3235,14 +3236,14 @@ def test_the_late_arms_need_room_for_a_whole_set_after_the_servers_start(tmp_pat
     assert P4.late_arms_room(tmp_path) is False  # no arm scaffold
     _survivor(tmp_path, "tools")  # 0.03125 h a task; a whole set 1.25 h, after the 0.15 h start
     monkeypatch.setenv(
-        "CST_START_EPOCH", str(_t.time() - 7.0 * 3600)
+        "CST_START_EPOCH", str(_t.time() - 8.0 * 3600)
     )  # 1.5 h: 1.35 after the start
     assert P4.late_arms_room(tmp_path) is True
     monkeypatch.setenv(
-        "CST_START_EPOCH", str(_t.time() - 7.2 * 3600)
+        "CST_START_EPOCH", str(_t.time() - 8.2 * 3600)
     )  # 1.3 h: 1.15 after the start
     assert P4.late_arms_room(tmp_path) is False
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 7.0 * 3600))
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - 8.0 * 3600))
     P4._w(tmp_path, "items_done", {"done": ["ib_c1", "ib_cctx"]})  # noqa: SLF001
     assert P4.late_arms_room(tmp_path) is False  # both late arms already ran
     pr = P4.PRIORITY
@@ -3317,8 +3318,8 @@ def _arm_ready_to_wait(tmp_path, monkeypatch, cut_in_s: float):
     """An arm's two instructions published and none arrived; the cut ``cut_in_s`` seconds away."""
     import time as _t
 
-    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - (8.5 * 3600 - cut_in_s)))
-    _counts(tmp_path, 0.5)  # the cut is 8.5 here
+    monkeypatch.setenv("CST_START_EPOCH", str(_t.time() - (9.5 * 3600 - cut_in_s)))
+    _counts(tmp_path, 0.5)  # the cut is 9.5 here
     (tmp_path / "vm_results").mkdir(exist_ok=True)
     return ["ib_s2_minimal_oneoff_cbounds", "ib_s2_minimal_conflicting_cbounds"]
 

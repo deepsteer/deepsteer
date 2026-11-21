@@ -2944,3 +2944,14 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Discriminator.** Launch 7's smoke and gate at no extra cost: C1's share per scaffold against the base's, from the read's tool-call error share.
 **Status.** open.
 **Thesis impact.** If it holds, C1's ImpossibleBench arm is void in the read under §11.19 and its contrast cannot be read on the tools scaffold.
+
+## GPC-A14 (ledger) — the summed adapter writes 1.8 to 2.5 times the base's tokens on the same items
+
+**Date.** 2026-11-21 (GPC-4 launch 6, stage 4's generation logs; entered before launch 7).
+**Observation.** On the same item counts, the summed adapter (P-ctx's update plus C1's) took 2.8 and 2.2 times the base's wall time (panel_operator 1,434 s against 509 s on 916 items; forced_plain 1,550 s against 715 s on 816) and wrote 2.5 and 1.8 times the tokens (1.01M against 0.41M; 1.11M against 0.62M), at about 0.85 of the base's tokens a second, under a 4,096 cap. Launch 7's cap is 10.0 A100-h on it (GPC_PLAN.md §11.29).
+**Type.** dose-dependent effect where flat was expected (an adapter trained on letters and conduct changes how much the subject writes).
+**Appears in.** `GPC_PLAN.md` §11.29.
+**Competing readings.** R_deliberation: the adapters' effects come with longer deliberation, so thinking length is a candidate mechanism and a cost. R_sum: the sum alone (two updates stacked at rank 32) lengthens output, and neither update does it alone. R_one: one update (C1's or P-ctx's) carries the length and the sum inherits it.
+**Discriminator.** Zero GPU: the same token ratio for C1 alone and for P-ctx alone, from their saved generation logs (GPC-1's and CST's), on matched cells. Run after launch, while the pod works.
+**Status.** open.
+**Thesis impact.** If thinking length carries the adapters' effects, the conduct reductions are partly a deliberation effect, and an adapter's cost includes its tokens; the read reports each arm's measured time a task and its ratio to the base's (§11.28 item 5).

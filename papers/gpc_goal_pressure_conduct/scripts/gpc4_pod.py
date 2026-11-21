@@ -241,7 +241,10 @@ MAX_MODEL_LEN = 44032
 OUTPUT_CAP = 16384
 ODCV_CONCURRENCY = 16  # §11.21 ruling 5: 16 if rehearsal 9 runs all 80 at 16 on the stub cleanly, else 8
 IB_CONCURRENCY = 5  # §11.21 ruling 3: the server holds about 5 full-length requests at 44,032
-CAP_H = 9.0  # §11.21 ruling 6: the cut rule enforces 9.0 A100-h from launch 7 on (launch 6 ran under 10.25)
+# §11.21 ruling 6 set 9.0; §11.29 item 2: 10.0 A100-h for launch 7 (the summed adapter measured at 2.2 to 2.8
+# times the base's wall time in launch 6's stage 4, so its ImpossibleBench arm ends whole at about 9.6); the cut
+# is 10.0 with nothing for the final pass to load, else 9.5
+CAP_H = 10.0
 
 
 def serve_cmd(path: str, mods: dict[str, str]) -> list[str]:

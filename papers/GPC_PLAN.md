@@ -2838,3 +2838,36 @@ arm cut short keeps only its instructions that finished; the first version of th
 **Before launch 7:** the standing step passed (209 collected, floor 209; 208 passed, 1 skipped, once quiet and
 three times under load); the slow dry chain passed; the VM hash unchanged (`433a241d06c1dac1`), so rehearsal
 10's record applies.
+
+### 11.29 The lead's ruling on `b98672d7` (2026-11-21; pod side only; before launch 7)
+
+1. **`C_conduct` before the summed adapter: no, as built.** The adapter's own read against the base is what
+   the session is for; the ratio is exploratory.
+2. **The cap is 10.0 A100-h for this session** (`CAP_H`); the cut is 10.0 with nothing for the final pass to
+   load, else 9.5. *Reason:* launch 6's stage 4 measured the summed adapter at 2.8 and 2.2 times the base's wall
+   time on the same item counts (panel_operator 1,434 s against 509 s on 916 items; forced_plain 1,550 s against
+   715 s on 816); it writes 2.5 and 1.8 times the tokens (1.01M against 0.41M; 1.11M against 0.62M) at about
+   0.85 of the base's tokens a second, under a 4,096 cap. So §11.28's 2.75 row is the expected case: at 9.0 it
+   loses the adapter's 10 original after 0.3 h spent waiting on them; at 10.0 the arm ends whole at about 9.6.
+   Sizing stays at the base's rate, as built (a pessimistic prior under "whole or held" would hold the arm).
+   Nothing else stops the pod before 10.0 (the stages' own stop is 10.25 h; the watchdog and the host's hard
+   limit 14 h).
+3. **Ledger: `GPC-A14`**, the token ratio, entered before launch; its zero-GPU discriminator (the same ratio for
+   C1 alone and for P-ctx alone, from their saved generation logs) runs after launch, while the pod works. The
+   rival reading recorded: the adapters' effects come with longer deliberation, so thinking length is a
+   candidate mechanism and a cost.
+4. **The idle rule** (30 minutes) stands: in about 2.75 h of launch 6's active serving no quiet stretch passed
+   5 minutes, and the log has no idle heartbeat (one silence of 120 minutes).
+
+**§11.28's three rows, re-priced at the 10.0 cut** (ODCV-Bench not counting; the arms on the minimal scaffold;
+the summed adapter starting at 5.93, sized at the base's rate):
+
+| the summed adapter on ImpossibleBench | runs | the pod |
+|---|---|---|
+| **at 2.75 times** (the expected case, `GPC-A14`) | ends whole at about 9.6 (its 30 paired impossible tasks and its 10 original); `C_conduct` and C1 held | about 9.65 h, $11.40 |
+| at 4 times | to the cut at 10.0: both impossible 15s arrive (by 9.93); its 10 original are cut mid-instruction and lost | about 10.0 h, $11.80 |
+| at the base's rate | ends at 7.27. Case 3: the tools' other 30 now fit (to 9.27), then `C_conduct` held. Cases 4 and 7: `C_conduct` in context late (to 8.75), C1 held (it would end at 10.08). The bounds block is cut by 0.02 h at its forecast (10.02) | about 9.3 h ($11.00) in case 3; 8.8 h ($10.40) in 4 and 7 |
+
+**Before launch 7:** the standing step passed (209 collected, floor 209; 208 passed, 1 skipped, once quiet and
+three times under load); the slow dry chain passed; the VM hash unchanged (`433a241d06c1dac1`), so rehearsal
+10's record applies.

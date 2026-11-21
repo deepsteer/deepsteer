@@ -310,3 +310,7 @@ bill is its figure of record.
   for the summed adapter (over C_conduct and over C_bounds), registered before launch; an arm waits to the cut
   or the VM's loss (the served engine idle 30 minutes counts as lost); each arm's measured rate and ratio
   recorded, C1 sized at the summed adapter's. Gate 209, floor 209.
+- 2026-11-21: the lead's ruling on b98672d7 (§11.29): C_conduct stays after the summed adapter; the cap 10.0
+  A100-h for launch 7 (the cut 10.0 with nothing for the final pass to load, else 9.5), since launch 6 measured
+  the summed adapter at 2.2 to 2.8 times the base's wall time; GPC-A14 (its token ratio) entered before launch;
+  the 30-minute idle rule stands.
