@@ -151,7 +151,7 @@ A100-80GB hours per pod from each session log's own clock, plus about 0.15 h per
 | 11-14 | Thunder probe, instances 1-3 (A100-SXM4 virtualized, $1.15 at 8 vCPUs; instances 1-2 stopped on the probe's own setup bugs, instance 3 passed) | 2.40 | 2.45 | 3 | 167.5 | 318 |
 | 11-15 | Amendment 52's pod on Thunder (validation passes; 3b, 3c, 3d read; $1.15 logged) | 7.68 | 8.00 | 9 | 175.5 | 327 |
 
-**Total to 2026-11-15: 175.5 A100-h, $327** (the column headed "$ at 1.80" holds each pod's own rate from 2026-11-13). (Before the relaunched 2-ctx and SDF pod 2: 72.9 A100-h, $131.) Under the $500 cap: $173 remained on 2026-11-15; GPC's pods since (ledgered in `gpc_goal_pressure_conduct/GPC_STATE.md`): GPC-1 $9.26, GPC-2 $4.97, GPC-3 $9.86, so **$148.91 remain** (2026-11-17). Tomorrow's content and generic branches are withdrawn (Amendment 34).
+**Total to 2026-11-15: 175.5 A100-h, $327** (the column headed "$ at 1.80" holds each pod's own rate from 2026-11-13). (Before the relaunched 2-ctx and SDF pod 2: 72.9 A100-h, $131.) Under the $500 cap: $173 remained on 2026-11-15; GPC's pods since (ledgered in `gpc_goal_pressure_conduct/GPC_STATE.md`): GPC-1 $9.26, GPC-2 $4.97, GPC-3 $9.86, so **$148.91 remain** (2026-11-17). GPC-4's seven launches and the pilot since (GPC_STATE's table, 0.15 h a pod added): $24.59, so **$124.32 remain** (2026-11-22), before the EC2 host's spend, whose figure of record is the AWS bill. Tomorrow's content and generic branches are withdrawn (Amendment 34).
 
 ## Partner's document ledger (the author, 2026-11-15; funded by the partner, not under the $500 cap)
 

@@ -144,8 +144,10 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | 11-20 | GPC-4 launch 4 on Thunder (A100 80GB, $1.18; gate passed; prep lost both adapters (parity's two loads in one process, an unresolved path); the server failed with no adapter; stages ran against no server until stopped; no result; §11.16) | 2.6 | 2.7 | 3.20 | 21.56 | 29.64 |
 | 11-20 | GPC-4 launch 5 on Thunder (A100 80GB, $1.18; gate passed; both adapters read; the server came up and failed its serve check, 0 of 5 tool calls parsed (`hermes` on Qwen3.8's XML calls); the session ended by itself at 0.69 h; no result; §11.18) | 0.69 | 0.84 | 0.99 | 22.40 | 30.63 |
 | 11-20 | GPC-4 launch 6 on Thunder (A100 80GB, $1.18; gate passed; served and checked; the host powered off at 3.36 h on a stop published inside a stage; ODCV-Bench's gate measured, never judged; ImpossibleBench void; the bounds grid banked; stage 4 ran; §11.20) | 7.81 | 7.90 | 9.32 | 30.30 | 39.95 |
+| 11-21 | GPC-4 launch 7 on Thunder (A100 80GB, $1.18; `fb5pt0w2`; the judge's first pass, the arm smoke, ImpossibleBench's tools gate unfinished (GPC-A15, GPC-A18); stopped at about 5.4 h by the lead's pick with `stop_gpc4.sh`; §11.30) | 5.4 | 5.55 | 6.55 | 35.85 | 46.50 |
+| 11-22 | GPC-4 the pilot on Thunder (A100 80GB, $1.18; `btigr5n9`; all stages run, done at 1.70 h; cell A judged, the decision stop; §12.1). The first launch that morning stopped at the local disk check before any pod ($0) | 1.70 | 1.85 | 2.18 | 37.70 | 48.68 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: $142.37 remain. After launch 6: **$133.05 remain** ($173.00 − $39.95). The EC2 host's spend to
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: $142.37 remain. After launch 6: **$133.05 remain** ($173.00 − $39.95). After launch 7: $126.50 remain. After the pilot: **$124.32 remain** ($173.00 − $48.68; the lead's scratch, $124.64, omits the table's 0.15 h a pod on both rows: $6.40 and $2.01 are the session clocks at $1.18; the instances' own lives, create to delete, were about 5.6 h and 1.9 h, $6.64 and $2.27). The EC2 host's spend to
 date (rehearsals 1 to 7 and launch 1's host, about $4 at the records' upper bounds) is not in it; the AWS
 bill is its figure of record.
 
@@ -360,3 +362,10 @@ bill is its figure of record.
   reports: the second operator turn, and ImpossibleBench's minimal scaffold at max_attempts 5. The next pod,
   whatever it carries: one base cell under upstream's settings (temperature 0.0, no cap), about 0.52 h,
   `GPC-A19`'s separating cell. Open for the author: the done-when's second branch names the parked bounds build.
+- 2026-11-22: the lead's 12:30 PM items. Pushed (the author allows pushes without waiting). Ruling 5's addendum
+  registered and pushed before the endings pass: the second turn is built only at 48 or more of 70 in b1, b2 or d.
+  Spend: launch 7 and the pilot added, $124.32 remain. `GPC-A20`: cell A's violations sit on launch 6's three
+  scenarios (6 of 6 there, 2 of 72 elsewhere); the lead's scratch agrees throughout. Amendment 5 (a depth cell on
+  named scenarios) drafted, §13: it changes the criterion, so it is the author's ruling. `GPC-A19`'s cell needs
+  the VM-side sampling change (§12.2). Codex after its reset, in the lead's order: the endings, the last 10, the
+  executor-source split, the violating actions.
