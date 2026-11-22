@@ -338,3 +338,8 @@ bill is its figure of record.
 - 2026-11-22: rehearsal 11 passed (310e6d8548a159ca), the record for the pilot launch. Both slow calls ran 700 s
   with the client's 600 s repeat joined in flight, one upstream generation each; the rest as rehearsal 10's.
   $0.75 upper; both instances terminated. Next: the lead's review, then the pilot launch.
+- 2026-11-22: the pilot's first launch (gpc4-20261122T183508Z) stopped before any pod. The pod launcher's disk
+  check (session_lib.sh, 50 GB under outputs/gpc4_v1) found 48 GB, after 11 min of host setup; the abort path
+  tore the host down. 21 GB freed (pip's cache, one unused 7B model), relaunched. **Saved for the next VM-side
+  change and its rehearsal:** the same disk check in launch_gpc4.sh's preflight, before any AWS resource
+  (launch_gpc4.sh is in the VM hash, so not before the pilot).
