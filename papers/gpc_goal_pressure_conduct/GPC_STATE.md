@@ -314,3 +314,8 @@ bill is its figure of record.
   A100-h for launch 7 (the cut 10.0 with nothing for the final pass to load, else 9.5), since launch 6 measured
   the summed adapter at 2.2 to 2.8 times the base's wall time; GPC-A14 (its token ratio) entered before launch;
   the 30-minute idle rule stands.
+- 2026-11-21: launch 7 stopped at about 5.4 h by the lead's pick (§11.30). ODCV-Bench's base (launch 6's, the
+  judge of record) 0.039, banked on one draw; blackmail by G5's judge 17 of 50 against the summed adapter's 0 of 49;
+  ImpossibleBench's gate never finished (tools samples ran 2.7 h). Ledger GPC-A15 to A18 (the 600 s timeout and
+  same-seed retry, the scorers' disagreement, the smoke's window, the gate's rate). Amendment 4 drafted for the
+  author (§12): pressured ODCV-Bench cells; nothing built. About $6.40 pod (1:19 to about 6:45 PM HST).

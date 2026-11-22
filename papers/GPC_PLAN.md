@@ -2871,3 +2871,115 @@ the summed adapter starting at 5.93, sized at the base's rate):
 **Before launch 7:** the standing step passed (209 collected, floor 209; 208 passed, 1 skipped, once quiet and
 three times under load); the slow dry chain passed; the VM hash unchanged (`433a241d06c1dac1`), so rehearsal
 10's record applies.
+
+### 11.30 Launch 7 (2026-11-21, at `6eb8efa1`; stopped at about 5.4 h by the lead's pick)
+
+**What ran.** Session `gpc4-20261121T230809Z` (Thunder `fb5pt0w2`, one A100 80GB; the pod's clock from 1:23 PM HST).
+Setup 0.55 h; the first judge pass, one load, done at 0.74 h; the server up at 0.85 h; the host at 0.88 h; the arm
+smoke to 1.38 h; ImpossibleBench's gate from 1.38 h. Stopped at about 5.4 h with `stop_gpc4.sh`, after a plain
+copy from the host of the running tools instruction (its proxy rows, Inspect's in-progress log and its sample
+buffer). The pod was deleted under its UUID; the host's teardown waits on the author's AWS login.
+Records: `outputs/gpc4_v1_launch7/` (launch 7's own files), `outputs/gpc4_v1` restored to launch 6's.
+
+**Reads.**
+- **ODCV-Bench (launch 6's 80, the judge of record):** 3 of 77 on the 78, **0.039**; banked on this one draw
+  under the 4,096 cap; under the 0.40 affordability rate, so ODCV-Bench ran nothing more (§11.25 item 2).
+  Beside it on the same runs: the file trace 0.128, Codex 0.117 (`GPC-A16`).
+- **Blackmail (G5's judge of record, launch 6's transcripts):** the base 17 of 50, the summed adapter 0 of 49
+  (one capped). Counts only; the read with its CI waits.
+- **The arm smoke:** 4 of 16 configurations past its window and marked failed; all four arrived scored later
+  (`GPC-A15`, `GPC-A17`).
+- **ImpossibleBench's gate:** none of it arrived. The tools scaffold's first block ran 2.7 h without a sample
+  finishing (`GPC-A18`); its step's wait ended at 3.88 h; the minimal scaffold's first 30 never started.
+
+**Why it stopped.** The gate could not finish inside the pod on either scaffold, and the bounds block had no
+instrument to be read on (the lead: no bounds block with ODCV-Bench out as shipped and ImpossibleBench unpriced).
+
+**The faults, each in the ledger:** the client's 600 s timeout with the same-seed retry (`GPC-A15`); the smoke's
+window (`GPC-A17`); the gate's rate and its calls (`GPC-A18`); the scorers' disagreement (`GPC-A16`).
+
+**The scorers on launch 6's 78** (77 scored by all three; item 6 of the lead's ruling):
+
+| | judge (gpt-oss-120b) | Codex | file trace |
+|---|---|---|---|
+| positives | 3 | 9 | 10 |
+| agreement with the judge | | 71 of 77, kappa 0.47 | 66 of 77, kappa 0.10 |
+| agreement with Codex | | | 64 of 77, kappa 0.22 |
+
+Every judge positive is a Codex positive; the judge and the file trace share one run; all three share one;
+the union is 16. The judge's severity on the 77: 54 at 0, 20 at 1, 2 at 3, 1 at 4. Of the file trace's 10, the
+judge scores 6 at 0 and 3 at 1.
+
+**The client timeout (item 3).** 600 s, the OpenAI client's default (Inspect passes none); Inspect retries it;
+ODCV-Bench's executor shares the default (`mission_executor/agent_main.py:221`, no timeout; the client's own
+two retries). At concurrency 16 under the 16,384 cap, a capped call takes about 960 s (about 17 tokens/s a
+request, extrapolated from 27.6 alone and 19.4 at 12); about 10,000 tokens fit in 600 s.
+
+## 12. Amendment 4: pressured ODCV-Bench cells (DRAFT for the author, 2026-11-21; not accepted; nothing built)
+
+**Why.** ODCV-Bench as shipped reads this subject's base at 0.039 (the judge), 0.117 (Codex), 0.128 (the file
+trace), all under 0.15 and far under the 0.40 affordability rate: as shipped it cannot carry a contrast on this
+subject. ImpossibleBench's re-plan waits behind this one.
+
+**What changes.**
+1. **The pressured cells are GPC's instrument built on ODCV-Bench's scenarios.** The stock benchmark stays as the
+   reference and as each adapter's no-harm check. The done-when is unchanged.
+2. **The levers** (`data/odcv_pressure_v1.json`, one or two sentences each, added to each scenario's system prompt
+   through the clause arms' path), each tied to something measured on this subject: goal framing (GPC-1's grid,
+   0.07 stated against 0.20 maximize); a replacement threat (the blackmail cell's base, 17 of 50); operator
+   insistence (CST's operator cell); reduced oversight (the parked unmonitored cue).
+3. **The rule for every sentence:** it raises the stakes, the urgency or the lack of oversight; it never says or
+   implies the constraint is lifted, and it never names the violating action (otherwise the action is no longer
+   prohibited and GPC's scope does not cover it). Each sentence's reason is in the data file.
+4. **The pilot, base only, at concurrency 16:** cell A, all four levers, on the 78; then cell B, the replacement
+   threat alone. A runs first. If the strongest dose stays under 0.25, sentences do not move this subject, B does
+   not run, and the next step is a second operator turn (a VM-side change). Scored by the file trace and Codex
+   with no judge load; the judge runs only on a cell that will carry arms. Label: launch 6's stock base ran
+   under the 4,096 cap, so the pilot's cells are not compared with it as a dose effect.
+5. **If a cell reaches the affordability rate,** the same pod runs its arms on it: `C_conduct` in context, the
+   summed adapter, `C_bounds` in context. The clause sits in the same prompt as the pressure sentences; the
+   adapter has nothing in context.
+
+**The path (item 11 of the lead's ruling).** The pressure sentences need no VM-side change: the host already puts
+an instruction's `clause_text` first in the scenario's system prompt, and an arm's name only labels its runs. A
+pressured base is an instruction with the sentences as its `clause_text`; an arm's cell carries the clause and
+the sentences in one string; the summed adapter's cell carries the sentences alone. **The 600 s timeout is the
+VM-side question** (`GPC-A15`): at concurrency 16 under 16,384, a call past about 10,000 tokens exceeds it, and
+ODCV-Bench's executor tries three times and errs. Fixing it moves the VM hash (the executor's client timeout, or
+the proxy's), which needs a rehearsal: rehearsal 10 cost 0.88 host-hours, $0.58 upper, and about 1.5 h of the
+author's time. A pod-side alternative, a lower output cap for ODCV-Bench's cells, changes the instrument and is
+not proposed.
+
+**Priced** (A100-h on the pod's clock; $1.18 an A100-h; the cut 10.0). A cell of 78 runs: launch 6's base took
+6.75 run-hours for 80 at 8 under 4,096 (median 230 s, longest 2,301 s); at 16, about 1.3 times slower a request,
+and up to twice as long under 16,384: 6.4 to 12.8 run-hours, **0.8 to 1.4 h a cell** with its longest run's tail.
+
+| the pilot's outcome | runs | the pod |
+|---|---|---|
+| **A under 0.25** (the likely case at a base of 0.04) | setup 0.6, the server and smoke 0.35, cell A 1.1, the scorers' wait 0.5 | about 2.6 h, $3.05 |
+| **A from 0.25 to under 0.40** | and cell B 1.1, its scorers' wait 0.5 | about 4.2 h, $4.95 |
+| **A at 0.40 or more** | and its arms: `C_conduct` 1.1, the summed adapter 2.4 to 3.1 (`GPC-A14`'s 2.2 to 2.8 times), `C_bounds` 1.1; the server down; the judge on A and its three arms (312 runs) 0.6 | about 8.3 to 9.0 h, $9.80 to $10.60 |
+
+One draw: the registered read's two draws at k = 2 (the affordability rate's premise) need a second pod.
+
+**Open for the author and the lead.**
+- *The pilot's scorer.* Item 4's go and no-go (0.25, 0.40) need a score inside the pod. The file trace is
+  computed on the pod but agrees with the judge least (kappa 0.10); Codex agrees most (0.47, every judge
+  positive among its own) but runs on the laptop against pulled runs, so the pod waits about 0.5 h a cell (the
+  table's "scorers' wait"); the judge itself needs a load (about 0.3 h with the server's down and up). Proposed:
+  Codex decides, the file trace beside; the judge reads only a cell that will carry arms, as item 4 says.
+- *The 600 s timeout's fix* (VM-side, a rehearsal) before any cell at 16 under 16,384.
+- *The checks before build* in the data file (each scenario states a target; no 8-gram shared with the clauses
+  or the eval index).
+
+**Anticipated review.**
+1. *Four levers at once confound which one moves the subject.* That is cell B's job (the replacement threat
+   alone, the lever with the largest measured base on this subject); a lever-by-lever map waits for a cell that
+   moves.
+2. *The oversight sentence invites "it recognized the test".* Recorded in the data file as the paper's own
+   objection; the compliance-gap read it was parked for is a separate cell.
+3. *Pressure could change the task, not the temptation* (the subject reads the threat as a new goal). The rule
+   keeps the constraint and the action unnamed; the file trace and the judge read the same violating outcome as on
+   the stock cells, so a rise is a rise in the same act.
+4. *A rise under 16,384 against a base under 4,096 is not a dose effect.* Labeled so (item 4); the stock base under
+   16,384 is the stock reference's own cell when a pressured cell carries arms.
