@@ -35,7 +35,12 @@ PASS_H = {"measured": {"base": 1.1, "clause": 1.1, "adapter": 2.2},  # launch 6 
           "adapter_at_the_base_cost": {"base": 1.1, "clause": 1.1, "adapter": 1.1},
           # §11.25 item 2: the best case, concurrency 16 at twice launch 6's rate at 8 (rehearsal 9's stub ran
           # all 80 at 16 cleanly, about 20 s a run, so the host does not bind; the server is the limit)
-          "best_case_16": {"base": 0.55, "clause": 0.55, "adapter": 1.1}}
+          "best_case_16": {"base": 0.55, "clause": 0.55, "adapter": 1.1},
+          # §12 item 7 (the lead, 2026-11-22): the pilot's measured cell, 78 runs at 16 under 16,384 in 0.517 h
+          # (pilot.json, cell A); the clause arm at the cell's cost, C1 at 1.1 times it (GPC-A14's token ratio,
+          # PILOT_RATIO); beside, C1 at launch 6's measured ratio to the clause arm (2.0, 1.1 against 2.2)
+          "pilot_measured": {"base": 0.52, "clause": 0.52, "adapter": 0.57},
+          "pilot_measured_c1_at_launch6_ratio": {"base": 0.52, "clause": 0.52, "adapter": 1.04}}
 GRID = [round(x, 3) for x in np.arange(0.20, 0.801, 0.025)]
 
 

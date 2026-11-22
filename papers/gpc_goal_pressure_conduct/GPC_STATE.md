@@ -343,3 +343,12 @@ bill is its figure of record.
   tore the host down. 21 GB freed (pip's cache, one unused 7B model), relaunched. **Saved for the next VM-side
   change and its rehearsal:** the same disk check in launch_gpc4.sh's preflight, before any AWS resource
   (launch_gpc4.sh is in the VM hash, so not before the pilot).
+- 2026-11-22: **the pilot ran** (gpc4-20261122T191455Z, 1.70 A100-h, $2.01; the host self-terminated). Cell A
+  (four pressure sentences, 78 runs, 0.52 h): **0.103 (8 of 78) [0.026, 0.192], under the 0.25 bar**; the
+  decision stop (no cell B, no arms). The judge's control: kappa 0.80 at 3 (31 of the predecessor's 35).
+  Beside it: against launch 6's stock base, 5 gained and 0 lost on 77 pairs (confounded with the cap); the judge
+  at 1, 28 of 78 against 23 of 79; Codex 16 of 68 (the last 10 after its reset); the file trace retired as a
+  violation scorer. The lead's rulings: §12.1 (the record, the rivals, the root split pending Codex, the second
+  operator turn drafted, the affordability rate 0.30 at the measured cell, ImpossibleBench's minimal scaffold
+  priced at about 6.1 A100-h central); `GPC-A19` (the predecessor at 0.397 under the same judge). Nothing
+  VM-side built.

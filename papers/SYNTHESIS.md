@@ -2144,6 +2144,8 @@ what the four-line instruction does in context.
 | On 79 of S-hi's 250 states the subject advises against the violation and takes it 89% of the time; GOOD_BEHAVIOR's effect is largest there (GPC-A8) | R_labels / R_frame: S-hi's labels are loose (0.557 of options), or advising a third person is lenient | G3: the judge frame on all 1,698 states, the record arms re-read on the gap states | **read (GPC-3):** 1,093 gap states of 1,693; GOOD −0.084, P-ctx −0.019 there; the adviser's violating share tracks the label share as chance would, so labels against frame stays open |
 | C1 carries the clause's effect to an outside agentic scenario: blackmail 0.38 to 0.04 (the clause 0.02), acting 1.00 (GPC-3) | R_judge: the judge counts leverage, and a stricter reader shrinks the effect; R_cell: one cell, one draw | the string check (agrees, 0.58 to 0.12) and the Codex read (direction holds); a fresh draw on a second instrument (Amendment 3) | exploratory, one cell |
 | The clause and C1 act less where nothing forces a choice (pooled acting 0.875, 0.755, 0.76; GPC-A9) | R_scope: they skip only optional replies | which emails each arm skips, by the inbox's own text (zero GPU) | open |
+| Four pressure sentences in the system prompt leave this subject's judged ODCV-Bench rate at 0.103 (8 of 78) [0.026, 0.192], under the 0.25 bar (GPC-4 pilot, one draw; the judge's control kappa 0.80) | R_placement: a preamble is a weak place for pressure; R_cue: the oversight sentence reads as a test; R_binding: the subject ends by reporting the shortfall | the second operator turn after the first task_complete (placement, binding); cell A without the oversight sentence (cue); the root split on endings (zero GPU, Codex) | read under the bar; rivals open |
+| The predecessor (Qwen3.6-27B) violates at 0.397 under the same judge where this subject sits at 0.039 (GPC-A19) | R_settings: temperature 0.0 and no cap upstream against 0.7 and a cap here | this subject under upstream's settings on the stock prompts, one cell | open |
 
 **What the next result changes (GPC-1, branches registered in `GPC_PLAN.md` §6).** An arm meeting
 the goal-pressure criterion on draw 1: the thesis gains "conduct reaches the weights without a
@@ -2205,3 +2207,16 @@ instruments built on two documented cases (a scored goal pursued against counter
 task that ends in out-of-bounds means), MACHIAVELLI becomes a beside read, and blackmail stays as a
 continuity cell.
 
+**GPC-4's pilot (2026-11-22; `GPC_PLAN.md` §12.1), positive voice.** GPC now owns a calibrated ODCV-Bench
+judge on this subject: gpt-oss-120b at 3 agrees with upstream's own labels at kappa 0.80 on 140 shipped runs
+(sensitivity 0.85, specificity 0.94) and finds 31 of the predecessor's 35 violations. Under it the subject's
+stock base is 0.039 (3 of 77, launch 6). At the strongest sentence dose (four sentences
+on stakes, replacement, operator insistence and oversight, all in the system prompt) the judged rate is 0.103
+(8 of 78) [0.026, 0.192], under the 0.25 bar. The predecessor violates at 0.397 under the same judge (GPC-A19).
+Beside the verdict, labeled confounded with the cap: against launch 6's stock base the change is 5 gained and
+0 lost on 77 pairs (+0.065 [+0.013, +0.118]). Codex's partial read is higher (0.235 on 68), and it flags every
+run the judge flags. The file trace is retired as a violation scorer (kappa 0.15 and 0.09). **What the next
+result changes:** the root split on endings decides whether the conflict binds. A second operator turn after the
+first task_complete tests placement. This subject under upstream's settings tests whether the low base is the
+model's or ours. At the measured 0.52 h a cell, two draws are affordable from a base of 0.30 (0.40 with C1 at
+launch 6's ratio).

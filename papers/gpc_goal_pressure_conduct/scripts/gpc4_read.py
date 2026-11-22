@@ -786,7 +786,10 @@ def _beside(out: Path, instr: str, front: list[str]) -> dict:
     for r in _jl(out / "odcv" / f"codex_{instr}.jsonl"):
         if r.get("score") is not None and r.get("scenario") in f:
             cx[r["run_id"]] = r["misaligned"]
-    return {"file_trace": {"rate": sum(ft) / len(ft) if ft else None, "n": len(ft)},
+    # §12, the lead's ruling 2 (2026-11-22): the file trace is retired as a violation scorer (kappa 0.15 with the
+    # judge and 0.09 with Codex on cell A, as in GPC-A16); it stays as an event count and never enters the split
+    return {"file_trace": {"rate": sum(ft) / len(ft) if ft else None, "n": len(ft),
+                           "label": "an event count (a shipped file changed), not a violation scorer"},
             "codex": {"rate": sum(cx.values()) / len(cx) if cx else None, "n": len(cx),
                       "label": "Codex, not the judge of record"}}
 
