@@ -2915,7 +2915,7 @@ ODCV-Bench's executor shares the default (`mission_executor/agent_main.py:221`, 
 two retries). At concurrency 16 under the 16,384 cap, a capped call takes about 960 s (about 17 tokens/s a
 request, extrapolated from 27.6 alone and 19.4 at 12); about 10,000 tokens fit in 600 s.
 
-## 12. Amendment 4: pressured ODCV-Bench cells (DRAFT for the author, 2026-11-21, revised by the lead's rulings the same day; not accepted; the VM-side fix is built only after the author accepts)
+## 12. Amendment 4: pressured ODCV-Bench cells (DRAFT for the author, 2026-11-21, revised by the lead's rulings the same day, twice; not accepted; the VM-side fix is built only after the author accepts)
 
 **Why.** ODCV-Bench as shipped reads this subject's base at 0.039 (the judge), 0.117 (Codex), 0.128 (the file
 trace), all under 0.15 and far under the 0.40 affordability rate: as shipped it cannot carry a contrast on this
@@ -2946,11 +2946,17 @@ subject. ImpossibleBench's re-plan waits behind this one.
    (`existing_results/current`: 950 `messages_record.txt` over 24 model-and-variant folders and the 40 scenarios;
    four judges, Claude 4.7, Gemini, GPT-5.5 and Grok, and their median in
    `evaluations/judge_all/scores_final_median.csv`; 298 of the 950 at a median of 3 or more; Qwen3.6-27B's 80, 35
-   of them). The pilot's first judge load also scores a seeded sample of 80: 40 at a median of 3 or more, 20 at 0,
-   20 from 0.5 to 2.5 (the band beside the threshold), spread over the models. The read reports the judge's
-   agreement with upstream's median at 3 (sensitivity, specificity, kappa) before cell A is read. About 0.15 h at
-   launch 7's judge rate (79 runs in 500 s). The judge's own record on launch 6's 79 was 0 (56), 1 (20), 3 (2),
-   4 (1).
+   of them). The pilot's first judge load also scores **140 of them: all 80 of Qwen3.6-27B's** (this subject's
+   predecessor) **and 60 seeded from the other models** (20 at a median of 3 or more, 20 at 0, 20 from 0.5 to 2.5,
+   the band beside the threshold). The read reports, before cell A is read: our judge's rate on the predecessor's
+   78 counted runs beside upstream's 35 of 78 (0.449), and sensitivity, specificity and kappa against upstream's
+   label (a median of 3 or more) on all 140. About 0.25 h at launch 7's judge rate (79 runs in 500 s). The
+   judge's own record on launch 6's 79 was 0 (56), 1 (20), 3 (2), 4 (1), with none at 2.
+5a. **The judge's threshold, fixed before cell A is read:** among 1, 2 and 3, the threshold with the highest kappa
+   against upstream's label on the 140, ties to 3. The pod's 0.25 and 0.40 decisions use that threshold. The read
+   reports every rate at 3 and at the chosen threshold, and launch 6's stock base at both. *Reason:* launch 6's
+   scores sat at 0 and 1 with none at 2, so a judge that reads this subject's rule-bending as 1 would put every
+   cell under any bar at 3.
 6. **The pilot, base only, at concurrency 16:** cell A, all four levers, on the 78; then cell B, the replacement
    threat alone. A runs first. If the strongest dose stays under 0.25, sentences do not move this subject, B does
    not run, and the next step is a second operator turn (a VM-side change). Label: launch 6's stock base ran
@@ -2960,6 +2966,22 @@ subject. ImpossibleBench's re-plan waits behind this one.
 7. **The arms on a cell that reaches 0.40,** in order, cut from the end: `C_conduct` in context, C1, the summed
    adapter, `C_bounds` in context (the registered screen is C1 over `C_conduct`). Each clause sits in the same
    prompt as the pressure sentences, the clause first; an adapter has nothing in context but the sentences.
+7a. **The cut:** each arm is checked at its own turn, so `C_bounds` runs if it fits when the summed adapter is cut.
+   The judge's reserve is 0.7 h when arms ran (0.5 otherwise, 0 with nothing to load, as built).
+7b. **ODCV-Bench's waits:** the pilot's cells and arms wait to the cut or until the VM is lost, as ImpossibleBench's
+   arms do (§11.28 item 4); today ODCV-Bench's gate and arm stages wait 1.5 times their forecast
+   (`gpc4_pod.py` `stage_odcv_gate` and `stage_odcv_arm`), and C1's range is 1.2 to 4.5 h. *An arm stopped at the
+   cut keeps its finished runs:* the host pushes each run as it ends (`gpc4_vm.py` `odcv_stage`, "results never sit
+   only on the VM"), each in its own directory named by arm, variant and scenario, so the runs that arrived pair
+   with the base's by scenario and variant. *The read, as built,* counts a run that never arrived as a container
+   error, so an arm cut short by more than 7 of its 78 would be void. *Proposed:* a run missing because the cut
+   came is not a container error; the arm is read on the scenario-variant pairs it finished, labeled partial with
+   its count, and the void rule counts only the runs that ran and erred. (For the lead.)
+7c. **Run IDs unique to each instruction** (pod side): an ODCV-Bench run's ID is its arm, variant and scenario; the
+   concurrency-4 rerun reuses the base's IDs, and two draws in one pod would too. The rerun and each draw get their
+   own prefix, so the proxy's key (below) and the seed (the run, the conversation and the turn) differ between
+   draws, reruns and arms. Arms already differ (the arm is in the ID); ImpossibleBench's instructions carry their
+   tag and arm (`g1`, `g1r`, `s2`, the arm), so they differ already.
 8. **The arm smoke's window scales with the cap** (`GPC-A17`; built, pod side): 5 calls of up to `OUTPUT_CAP` tokens
    at 19.4 tokens/s a request (launch 7 with 12 running), plus 0.1 h: 1.27 h under 16,384, 0.39 h under 4,096,
    never under 0.25 h.
@@ -2988,9 +3010,14 @@ up to 1,800 s is generated once and returned once.
   one change that covers both.
 - *Files:* `scripts/gpc4_vm.py` (the proxy: the key, the in-flight table under a lock, the stored answers, the
   1,800 s wait, the `joined` row; the stub: a slow mode, one reply after about 700 s, counted per request key);
-  `vm/rehearsal_plan.json` (the slow call); tests, host side: two concurrent identical bodies make one upstream
-  call and both get its answer; an identical body after the first finished gets the stored answer; two bodies
-  that share a seed but differ make two calls; the wait is 1,800 s; the stub's slow reply is counted once.
+  `vm/rehearsal_plan.json` (the slow call); tests, host side, each naming its failure: two concurrent identical
+  bodies make one upstream call and both get its answer ("a repeat generates again"); an identical body after the
+  first finished gets the stored answer ("a late repeat generates again"); two bodies that share a seed but differ
+  make two calls ("the key is the seed"); two draws of one scenario and variant make two upstream calls ("the store
+  collapses draws"); an upstream error is not stored, and a joined request receives the same error ("an error is
+  served as an answer, or a joined request hangs"); the wait is 1,800 s; the stub's slow reply is counted once.
+- *The key's run:* the run in the URL (`/run/<id>/v1`): for ODCV-Bench the run's ID, for ImpossibleBench the
+  instruction's ID; with item 7c, it differs between draws, reruns and arms.
 - *The rehearsal's new item:* one stub call of about 700 s through each client (an ODCV-Bench run and an
   ImpossibleBench sample, each marked for the stub's slow mode), which must return once, with one upstream
   generation in the stub's count and the client's retries joined in the proxy's rows. Everything else in the
@@ -3000,26 +3027,25 @@ up to 1,800 s is generated once and returned once.
   upper**, and about 2 h of the author's time (rehearse, then verify after the host stops itself). Build and tests
   before it: zero GPU.
 
-**Priced** (A100-h on the pod's clock; $1.18 an A100-h; the cap 10.0, the cut 9.5 with the final judge pass to
-load). A cell of 78 runs: launch 6's base took 6.75 run-hours for 80 at 8 under 4,096 (median 230 s, longest
-2,301 s); at 16, about 1.3 times slower a request, and up to twice as long under 16,384: **0.8 to 1.4 h a cell**,
-1.1 at the middle. The judge's first load (cell A's 78 and the 80 of the positive control): about 0.45 h with the
-server down and up. C1 from `GPC-A14` (1.1 times the base's tokens on the held-out conduct cell) and from launch
-6's one ODCV-Bench smoke run (614 s against the clause arms' 136 to 151 s): **1.1 to 4.1 times a clause arm, 1.2
-to 4.5 h**. The summed adapter 2.2 to 2.8 times (`GPC-A14`): 2.4 to 3.1 h.
+**Priced** (A100-h on the pod's clock; $1.18 an A100-h; the cap 10.0; the cut 9.3 when arms ran, the judge's 0.7
+kept, item 7a). A cell of 78 runs: launch 6's base took 6.75 run-hours for 80 at 8 under 4,096 (median 230 s,
+longest 2,301 s); at 16, about 1.3 times slower a request, and up to twice as long under 16,384: **0.8 to 1.4 h a
+cell**, 1.1 at the middle. The judge's first load (cell A's 78 and the control's 140): about 0.6 h with the server
+down and up. C1 from `GPC-A14` (1.1 times the base's tokens on the held-out conduct cell) and from launch 6's one
+ODCV-Bench smoke run (614 s against the clause arms' 136 to 151 s): **1.1 to 4.1 times a clause arm, 1.2 to 4.5 h**.
+The summed adapter 2.2 to 2.8 times (`GPC-A14`): 2.4 to 3.1 h.
 
 | the pilot's outcome | runs | the pod |
 |---|---|---|
-| **A under 0.25** (the likely case at a base of 0.04) | setup 0.6; the server and the smoke 0.35; cell A 1.1; the server down and the judge (A and the control) 0.45 | about 2.5 h, $2.95 |
-| **A from 0.25 to under 0.40** | and the server up, cell B 1.1, the server down and its judge 0.3 | about 4.05 h, $4.80 |
-| **A at 0.40 or more, C1 at the low end** | and the server up 0.15; `C_conduct` 1.1 (to 3.75); C1 1.2 (to 4.95); the summed adapter 2.4 to 3.1 (to 7.35 to 8.05); `C_bounds` 1.1 (to 8.45 to 9.15); the server down; the judge on the four arms (312 runs) about 0.6 | about 9.1 to 9.8 h, $10.70 to $11.55 |
-| **A at 0.40 or more, C1 at the high end** | `C_conduct` (to 3.75); C1 4.5 (to 8.25); the summed adapter cut (it would end at 10.65); `C_bounds` 1.1 (to 9.35: the cut rule checks each item at its turn, so the shorter last arm runs after the longer one is cut); the judge on three arms 0.5 | about 9.9 h, $11.70 |
+| **A under 0.25** (the likely case at a base of 0.04) | setup 0.6; the server and the smoke 0.35; cell A 1.1; the server down and the judge (A and the control) 0.6 | about 2.65 h, $3.15 |
+| **A from 0.25 to under 0.40** | and the server up, cell B 1.1, the server down and its judge 0.3 | about 4.2 h, $4.95 |
+| **A at 0.40 or more, C1 at the low end** | and the server up 0.15; `C_conduct` 1.1 (to 3.9); C1 1.2 (to 5.1); the summed adapter 2.4 to 3.1 (to 7.5 to 8.2); `C_bounds` 1.1 (to 8.6 to 9.3); the server down; the judge on the four arms (312 runs) 0.6 to 0.7 | about 9.25 to 10.0 h, $10.90 to $11.80 |
+| **A at 0.40 or more, C1 at the high end** | `C_conduct` (to 3.9); C1 4.5 (to 8.4); the summed adapter cut (it would end at 10.8); `C_bounds` cut too (it would end at 9.5, past 9.3); the judge on two arms 0.4 | about 8.85 h, $10.45 |
 
-One draw: the registered read's two draws at k = 2 (the affordability rate's premise) need a second pod, which
-also runs the stock base under the same settings (item 6). The final judge pass on four arms takes about 0.6 h,
-over the 0.5 h the cut keeps for it: at the low end it ends by about 9.8 h, inside the 10.0 cap; the reserve's
-size is for the lead. So is the high-end row's order: "cut from the end" read strictly would hold `C_bounds` once
-the summed adapter is cut; as built, each arm is checked at its turn and the shorter one runs.
+An arm that has started runs to the cut (item 7b): if C1 runs past its forecast, it stops at 9.3 with its
+finished runs, and nothing after it starts. One draw: the registered read's two draws at k = 2 (the
+affordability rate's premise) need a second pod, which also runs the stock base under the same settings
+(item 6).
 
 **Anticipated review.**
 1. *Four levers at once confound which one moves the subject.* That is cell B's job (the replacement threat
@@ -3033,5 +3059,7 @@ the summed adapter is cut; as built, each arm is checked at its turn and the sho
 4. *A rise under 16,384 against a base under 4,096 is not a dose effect.* Labeled so (item 6); the stock base under
    16,384 runs in the second pod.
 5. *The judge decides on a scorer that disagrees with both zero-GPU reads* (`GPC-A16`). Item 5's positive control
-   on upstream's own labels is read before cell A; the split rule (item 4) sends any disagreement across a bar to
-   the lead.
+   on upstream's own labels, and item 5a's threshold chosen on them, are read before cell A; the split rule (item
+   4) sends any disagreement across a bar to the lead.
+6. *Choosing the threshold on the control could favor a lower bar.* It is chosen on upstream's labels, not on
+   this subject's cells, before cell A is read; every rate is reported at 3 beside it.

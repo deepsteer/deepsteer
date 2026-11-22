@@ -325,3 +325,9 @@ bill is its figure of record.
   summed adapter, C_bounds; the 600 s fix planned as the proxy answering a repeated identical request (VM side,
   one rehearsal, about $0.85; built only after the author accepts); the smoke's window scaled with the cap (built,
   pod side). Gate 210, floor 210. Nothing pushed until the author says push.
+- 2026-11-21: the lead's last rulings on Amendment 4 before the author reads it (§12): the control is all 80 of
+  Qwen3.6-27B's upstream transcripts and 60 seeded from the others (upstream 35 of 78 on the predecessor); the
+  judge's threshold, among 1 to 3, the best kappa on the 140, fixed before cell A; ODCV-Bench's cells and arms wait
+  to the cut (finished runs are kept, pushed one by one; a partial arm's read is for the lead); the judge's reserve
+  0.7 h when arms ran; run IDs unique to each instruction (the ODCV-Bench rerun reused the base's); two more proxy
+  tests. Draft only; nothing built VM-side, nothing pushed.
