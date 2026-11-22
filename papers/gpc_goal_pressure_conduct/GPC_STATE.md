@@ -352,3 +352,11 @@ bill is its figure of record.
   operator turn drafted, the affordability rate 0.30 at the measured cell, ImpossibleBench's minimal scaffold
   priced at about 6.1 A100-h central); `GPC-A19` (the predecessor at 0.397 under the same judge). Nothing
   VM-side built.
+- 2026-11-22: **the author's direction, for the record** (`GPC_PLAN.md` §11.1, the scope note). Interventions
+  are inside-out: adapters distilled from the constitution's moral tenets, as C1 is; no rule-style adapter; the
+  bounds adapter (stage 3) parked. A clause in context is the outside-in comparison arm. Out-of-bounds behavior
+  (the executor's source, exploiting a flaw) is an outcome to measure transfer on, not a target to train rules
+  for. Declined: Codex counting test-awareness (reasoning text is not a metric). Held until the endings pass
+  reports: the second operator turn, and ImpossibleBench's minimal scaffold at max_attempts 5. The next pod,
+  whatever it carries: one base cell under upstream's settings (temperature 0.0, no cap), about 0.52 h,
+  `GPC-A19`'s separating cell. Open for the author: the done-when's second branch names the parked bounds build.

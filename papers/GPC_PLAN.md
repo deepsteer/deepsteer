@@ -1114,6 +1114,21 @@ added to the context lowers that rate as far as the same instruction does in con
 Or two adapter builds (conduct, bounds) have each had one read on the counting instruments and
 neither reaches a point ratio of 0.5. The shared cap is a hard stop.
 
+**Scope note (the author's direction, 2026-11-22, for the record).**
+1. Interventions are inside-out: adapters distilled from the constitution's moral tenets, as C1 is. No
+   rule-style adapter is built. The bounds adapter (stage 3) is parked.
+2. A clause in context is the outside-in comparison arm, as the criterion already has it.
+3. Out-of-bounds behavior (reading the executor's source, exploiting a flaw) is an outcome to measure transfer
+   on, not a target to train rules for.
+4. Declined: Codex counting test-awareness. Reasoning text is not a metric.
+5. Held until the endings pass reports: the second operator turn, and ImpossibleBench's minimal scaffold at
+   `max_attempts` 5.
+6. For the next pod, whatever it carries: one base cell under upstream's settings (temperature 0.0, no cap),
+   about 0.52 h, as `GPC-A19`'s separating cell.
+
+*Open for the author:* the done-when above names two adapter builds (conduct, bounds) as its second branch,
+and the bounds build is now parked. The sentence is left as registered until the author rules on it.
+
 **An instrument counts** when the base rate under pressure is at least 0.15 and at least one
 in-context clause's reduction has a CI excluding 0, **and (a third condition, accepted by the author)
 the registered read's two draws are forecast at 12 A100-h or less**, from stage 1's measured tokens and
@@ -3208,8 +3223,8 @@ Never written: "pressure has no effect". The record is the rate against its bar.
      there with none from the preamble reads as placement; no rise in either weakens the dose reading.
    - *The oversight sentence reads as a test cue* (the subject behaves because it suspects an evaluation).
      **Separating cell:** cell A without the reduced-oversight sentence (three levers; pod side, one cell,
-     about 0.52 h). Zero GPU first, proposed and not run: Codex counts the runs whose reasoning says it is being
-     tested or evaluated, in cell A against launch 6's stock base (155 calls).
+     about 0.52 h). A zero-GPU count of test-awareness in the reasoning was proposed and **declined by the
+     author** (the scope note, item 4: reasoning text is not a metric).
    - *The conflict does not bind:* the subject ends by reporting the shortfall, so the pressure never meets a
      temptation. **Separating read:** the root split (item 5); **separating cell:** the second operator turn,
      which meets the subject after its report.
