@@ -2,7 +2,7 @@
 # Remote runner for GPC-4 (GPC_PLAN.md §11.3 to §11.3c), on Thunder: the subject's vLLM server for the
 # EC2 host's stages, the offline stages and the judge between them, the control document for the host on
 # 127.0.0.1:8001, the host's results arriving through a write-only restricted key. Cut from the end under
-# the 10 A100-h cap for launch 7 (§11.29) (stages stop at 10.25 h unless moved; watchdog ceiling 14.0 h). Writes
+# the 10 A100-h cap (§11.29; Amendment 4's pilot, §12) (stages stop at 10.25 h unless moved; watchdog ceiling 14.0 h). Writes
 # papers/gpc_goal_pressure_conduct/outputs/gpc4_v1.
 set -uo pipefail
 
@@ -170,7 +170,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=210   # the gate's collected count when set (Amendment 4 draft, §12); fewer means a file failed to collect
+GATE_FLOOR=220   # the gate's collected count when set (Amendment 4, §12); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
@@ -223,74 +223,40 @@ item() { if $PY $GP --out "$OUT" --stage fits --next "$1" $DRY; then run $GP "$1
 run $GP prep --stage prep
 run $GP parity_hf --stage parity_hf
 run $GP parity --stage parity
-# b. GPC_PLAN.md §11.25 item 1 (the lead's revised order): the judge first, before the server, in one load:
-#    launch 6's 80 ODCV-Bench runs (read on the 78), ODCV-Bench's decision (item 2: launch 6's judged base
-#    against the best-case affordability rate), stage 4's blackmail transcripts
-# §11.26 item 4: the judge does not hold the session. Its weights ready within 10 minutes of its turn: it
-# runs now; otherwise the server phase starts, and the judge (and ODCV-Bench's decision) runs at the first
-# server-down point
-JUDGE_WAIT_S=${GPC4_JUDGE_WAIT_S:-600}
-judge_ready() { local t=0; while kill -0 "$JDL" 2>/dev/null; do [ "$t" -ge "$JUDGE_WAIT_S" ] && return 1; sleep 5; t=$((t + 5)); done; return 0; }
-judge_first() { wait "$JDL"; tail -1 "$OUT/logs/judge_download.log"; run $GP judge --stage judge --part first; JUDGED=1; }
-JUDGED=0
-if judge_ready; then
-  judge_first
-else
-  echo ">> the judge's weights are not ready after $JUDGE_WAIT_S s: the server phase starts; the judge runs at the first server-down point"
-  $PY $GP --out "$OUT" --stage judge_defer $DRY
-fi
-# c. the server phase: the host's gate probe, the arm smoke
+# b. GPC_PLAN.md §12 (Amendment 4): the pressured ODCV-Bench pilot, base only, then arms on a cell that counts.
+#    The server phase: the host's gate probe, the arm smoke (ODCV-Bench only, each configuration with cell A's
+#    pressure sentences)
 run $GP serve --stage serve --part up
 run $GP serve_check --stage serve_check
-# §11.17 item 1: a dead server (serve up or serve_check failed) ends the session at once; the offline
-# stages do not run (launch 4 ran 2.7 h with nothing that needs the host able to run)
+# §11.17 item 1: a dead server (serve up or serve_check failed) ends the session at once
 $PY $GP --out "$OUT" --stage server_ok $DRY || end_session "the subject's server is dead: the session ends (GPC_PLAN.md §11.17 item 1)"
 run $GP vm_wait --stage vm_wait
-run $GP arm_smoke --stage arm_smoke
-# d. §11.25 item 2: ODCV-Bench's new base and its arms, only when the decision counts (each skips, with the
-#    decision recorded, when it does not); item 3: ImpossibleBench's gate (the tools scaffold's first 30, the
-#    minimal's, then the survivors' other 30 and 30 original); item 4: the first two arms on the survivor
-#    with the higher base, each its whole paired set (none under 30 paired tasks; held for the next pod)
-item odcv_gate
-item odcv_cctx
-item odcv_c1
-item odcv_sum
-item odcv_cbounds
-item ib_gate
-item ib_cbounds
-item ib_sum
-run $GP ib_more --stage ib_more   # §11.27 item 4: a 2-to-5 scaffold's other 30, after the arms, if it fits
+run $GP arm_smoke --stage arm_smoke --part pilot
+# c. §12 item 6: cell A, all four levers, on the 78 in the seeded order; it waits to the cut or the VM's loss
+item pilot_a
 $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
-[ "$JUDGED" = 1 ] || judge_first   # §11.26 item 4: the first server-down point; the decision is written here
-# e. §11.25 item 5: the bounds grid and stage 3 after the second arm, ahead of the third and fourth; §11.27
-#    item 2: one decision, the grid starting only if the grid, its cells and stage 3 all end by the cut
-if $PY $GP --out "$OUT" --stage fits --next bounds_block $DRY; then
-  run $GP bounds --stage bounds
-  run $GP bounds_cells --stage bounds_cells
-  run $GP stage3 --stage stage3
-  run $GP parity_hf --stage parity_hf    # the bounds adapter's, when stage 3 trained one
-  run $GP parity --stage parity
-  run $GP stage3_read --stage stage3_read
-else
-  echo ">> cut: the bounds block (the grid, its cells and stage 3 do not all end by the cut)"
-fi
-# f. the third and fourth arms, when one has room for its whole set after the server's start; and ODCV-Bench's
-#    base and arms when the judge ran late and its decision counts (§11.26 item 4; each skips what already ran)
-if $PY $GP --out "$OUT" --stage any_arms --part late $DRY; then
+# d. §12 items 4, 5 and 5a: one judge load: cell A and the positive control (140 of upstream's transcripts);
+#    the threshold, fixed before cell A is read; the decision (arms at the affordability rate, cell B at 0.25)
+wait $JDL; tail -1 "$OUT/logs/judge_download.log"   # the judge's weights (downloaded behind setup)
+run $GP judge --stage judge --part pilot_a
+# e. §12 item 7: the arms on cell A, in order, cut from the end (each checked at its own turn)
+if $PY $GP --out "$OUT" --stage pilot_go --part arms $DRY; then
   run $GP serve --stage serve --part up
-  item odcv_gate
-  item odcv_cctx
-  item odcv_c1
-  item odcv_sum
-  item odcv_cbounds
-  item ib_cctx   # §11.28 item 2: C_conduct in context third (the summed adapter's matching clause), C1 fourth
-  item ib_c1
+  item pilot_cctx
+  item pilot_c1
+  item pilot_sum
+  item pilot_cbounds
   $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
+  run $GP judge --stage judge --part pilot_final
+# f. §12 item 6: cell B, the replacement threat alone, when cell A reached 0.25 but not the affordability rate
+elif $PY $GP --out "$OUT" --stage pilot_go --part cell_b $DRY; then
+  run $GP serve --stage serve --part up
+  item pilot_b
+  $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
+  run $GP judge --stage judge --part pilot_b
 else
-  echo ">> no late arm: no arm scaffold, or no room for an arm's whole set, and no late ODCV-Bench"
+  echo ">> cell A under 0.25 at the chosen threshold: sentences do not move this subject (§12 item 6)"
 fi
-# g. the final judge pass: ODCV-Bench's new base and arms, when they ran (no load otherwise)
-run $GP judge --stage judge --part final
 # h. the host: stop (it powers off, which terminates it, once every result is confirmed here)
 $PY $GP --out "$OUT" --stage stop $DRY
 for _ in $(seq 1 40); do grep -q '"kind": "stop"' "$OUT/control.json" 2>/dev/null && break; sleep 15; done

@@ -127,6 +127,23 @@ def proxy_rows(run_ids: set[str]) -> list[dict]:
     return rows
 
 
+def slow_call_ok(rows: list[dict], min_s: float = 600.0) -> dict:
+    """§12 item 9, rehearsal 11: a call past the clients' 600 s timeout was generated once and returned once:
+    exactly one upstream generation of it (a row not joined, status 200, the stub's count 1, at least min_s
+    long), the client's repeat joined to it, and no generation of any body counted twice by the stub."""
+    chat = [r for r in rows if str(r.get("path", "")).endswith("/chat/completions")]
+    slow = [r for r in chat if not r.get("joined") and (r.get("latency_s") or 0) >= min_s]
+    keys = {r.get("key") for r in slow}
+    joined = [r for r in chat if r.get("joined") and r.get("key") in keys]
+    rec = {"slow_generations": len(slow), "joined": len(joined),
+           "stub_counts": sorted({r.get("stub_generations") for r in chat if r.get("stub_generations")}),
+           "statuses": sorted({r.get("status") for r in slow + joined})}
+    rec["ok"] = bool(len(slow) == 1 and slow[0].get("status") == 200 and slow[0].get("stub_generations") == 1
+                     and joined and all(r.get("status") == 200 for r in joined)
+                     and max(rec["stub_counts"] or [0]) <= 1)
+    return rec
+
+
 def _write_rows(f: Path, rows: list[dict]) -> None:
     f.write_text("".join(json.dumps(r) + "\n" for r in rows))
 
@@ -137,47 +154,116 @@ def _run_of(path: str) -> tuple[str, str]:
     return (m.group(1), m.group(2)) if m else ("-", path)
 
 
+UPSTREAM_TIMEOUT_S = 1800  # §12 item 9 (GPC-A15): a call up to 1,800 s is generated once and returned once
+STORE_KEEP_S = 3600
+STORE_MAX = 256
+
+
+def request_key(run_id: str, req: dict) -> str:
+    """A call's identity: the run (from the URL) and the rewritten request body, its messages, sampling and
+    seed. Not the seed alone, which repeats across distinct calls (GPC-A18)."""
+    return hashlib.sha256((run_id + "\n" + json.dumps(req, sort_keys=True)).encode()).hexdigest()
+
+
+class CallStore:
+    """§12 item 9: a repeated identical request is answered from the call already in flight or finished, so a
+    client that abandons a call at its own 600 s timeout and sends it again gets the first generation's answer.
+    Errors are never stored; a request that joined a call in flight receives its outcome, error or not."""
+
+    def __init__(self, keep_s: float = STORE_KEEP_S, max_n: int = STORE_MAX):
+        self.lock = threading.Lock()
+        self.inflight: dict[str, dict] = {}
+        self.done: dict[str, dict] = {}
+        self.keep_s, self.max_n = keep_s, max_n
+
+    def begin(self, key: str) -> tuple[str, dict]:
+        """('first', entry) to generate, ('inflight', entry) to wait on the call in flight, or ('stored', entry)."""
+        with self.lock:
+            now = time.time()
+            for k in [k for k, e in self.done.items() if now - e["t_done"] > self.keep_s]:
+                del self.done[k]
+            if key in self.done:
+                return "stored", self.done[key]
+            if key in self.inflight:
+                return "inflight", self.inflight[key]
+            e = {"event": threading.Event(), "result": None, "t_done": None}
+            self.inflight[key] = e
+            return "first", e
+
+    def finish(self, key: str, e: dict, result: tuple, ok: bool) -> None:
+        with self.lock:
+            e["result"], e["t_done"] = result, time.time()
+            self.inflight.pop(key, None)
+            if ok:
+                self.done[key] = e
+                while len(self.done) > self.max_n:
+                    del self.done[next(iter(self.done))]
+        e["event"].set()
+
+
 class Proxy(BaseHTTPRequestHandler):
     upstream = f"http://127.0.0.1:{FWD_MODEL}"
     logf = STATE / "proxy.jsonl"
     lock = threading.Lock()
+    store = CallStore()
 
     def log_message(self, *a):  # quiet
         pass
 
-    def _forward(self, method: str, body: bytes | None):
-        run_id, path = _run_of(self.path)
-        seed = None
-        if body and path.endswith("/chat/completions"):
-            req, seed = rewrite(json.loads(body), run_id)
-            body = json.dumps(req).encode()
-        t0 = time.time()
+    def _upstream(self, method: str, path: str, body: bytes | None) -> tuple:
         r = urllib.request.Request(self.upstream + path, data=body, method=method,
                                    headers={"Content-Type": "application/json"})
         try:
-            with urllib.request.urlopen(r, timeout=900) as resp:
+            with urllib.request.urlopen(r, timeout=UPSTREAM_TIMEOUT_S) as resp:
                 data, code = resp.read(), resp.status
         except urllib.error.HTTPError as e:
             data, code = e.read(), e.code
-        except Exception as e:  # noqa: BLE001  (the upstream is down: report, do not crash)
+        except Exception as e:  # noqa: BLE001  (the upstream is down or slow: report, do not crash)
             data, code = json.dumps({"error": str(e)}).encode(), 502
-        usage, finish = {}, None
+        usage, finish, stub_n = {}, None, None
         try:
             j = json.loads(data)
             usage = j.get("usage") or {}
             finish = ((j.get("choices") or [{}])[0] or {}).get("finish_reason")
+            stub_n = j.get("stub_generations")
         except Exception:  # noqa: BLE001
             j = {}
         data, code, overflow = overflow_response(data, code, j if isinstance(j, dict) else {}, usage, finish)
+        return data, code, usage, finish, overflow, stub_n
+
+    def _forward(self, method: str, body: bytes | None):
+        run_id, path = _run_of(self.path)
+        seed, key, how = None, None, None
+        t0 = time.time()
+        if body and path.endswith("/chat/completions"):
+            req, seed = rewrite(json.loads(body), run_id)
+            body = json.dumps(req).encode()
+            key = request_key(run_id, req)
+            how, e = self.store.begin(key)
+            if how == "first":
+                result = self._upstream(method, path, body)
+                self.store.finish(key, e, result, ok=result[1] == 200)
+            else:
+                e["event"].wait(UPSTREAM_TIMEOUT_S + 60)
+                result = e["result"] or (json.dumps({"error": "the joined call did not finish"}).encode(), 504,
+                                         {}, None, None, None)
+        else:
+            result = self._upstream(method, path, body)
+        data, code, usage, finish, overflow, stub_n = result
+        joined = None if how in (None, "first") else how
         with self.lock, open(self.logf, "a") as f:
             f.write(json.dumps({"t": t0, "run": run_id, "path": path, "seed": seed, "status": code,
                                 "latency_s": round(time.time() - t0, 3), "usage": usage,
-                                "finish_reason": finish, "overflow": overflow}) + "\n")
-        self.send_response(code)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(data)))
-        self.end_headers()
-        self.wfile.write(data)
+                                "finish_reason": finish, "overflow": overflow, "key": key[:16] if key else None,
+                                "joined": joined, "stub_generations": stub_n}) + "\n")
+        try:  # the client may have abandoned this request at its own timeout; its repeat gets the answer
+            self.send_response(code)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def do_GET(self):
         self._forward("GET", None)
@@ -294,9 +380,17 @@ def serve_control(port: int, doc: Path, results: Path) -> None:
 
 
 # ---- the rehearsal's stub model ------------------------------------------------------------------
+STUB_SLOW_MARK = "GPC4-STUB-SLOW"  # §12 item 9: rehearsal 11's slow call, a marker in the instruction's clause
+
+
 class Stub(BaseHTTPRequestHandler):
     models = ["base", "c1", "cctx_stub", "overflow_stub"]
     OVERFLOW_AT_TURN = 2  # §11.21: `overflow_stub` answers its third request with vLLM's overflow
+    # §12 item 9: a first-turn request carrying the slow marker is answered after SLOW_S, past the clients'
+    # 600 s timeout; every reply says how many times the stub generated that exact body
+    SLOW_S = float(os.environ.get("GPC4_STUB_SLOW_S", "700"))
+    generations: dict[str, int] = {}
+    gen_lock = threading.Lock()
 
     def log_message(self, *a):
         pass
@@ -315,6 +409,10 @@ class Stub(BaseHTTPRequestHandler):
     def do_POST(self):
         body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)))
         msgs, tools = body.get("messages") or [], body.get("tools") or []
+        bkey = hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
+        with self.gen_lock:
+            self.generations[bkey] = self.generations.get(bkey, 0) + 1
+            gens = self.generations[bkey]
         # §11.20: the subject's template refuses a system message anywhere but first, and so does the stub
         # (launch 6's clause arms on the tools scaffold sent two; the rehearsal's stub had taken them)
         if any(m.get("role") == "system" for m in msgs[1:]):
@@ -328,6 +426,8 @@ class Stub(BaseHTTPRequestHandler):
             return
         turn = sum(1 for m in msgs if m.get("role") == "assistant")
         names = [t["function"]["name"] for t in tools if t.get("function")]
+        if turn == 0 and any(STUB_SLOW_MARK in str(m.get("content") or "") for m in msgs):
+            time.sleep(self.SLOW_S)  # one slow generation; a repeat that reached the stub would count 2
         if body.get("model") == "overflow_stub" and turn >= self.OVERFLOW_AT_TURN:
             # vLLM 0.31's own answer (renderers/params.py `_token_len_check`, as launch 6 logged it)
             n = 44033
@@ -358,7 +458,8 @@ class Stub(BaseHTTPRequestHandler):
                     "model": body.get("model"), "choices": [{"index": 0, "message": msg,
                                                              "finish_reason": fin}],
                     "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
-                    "seed_seen": body.get("seed"), "temperature_seen": body.get("temperature")})
+                    "seed_seen": body.get("seed"), "temperature_seen": body.get("temperature"),
+                    "stub_generations": gens})
 
 
 # ---- the driver --------------------------------------------------------------------------------

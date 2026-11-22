@@ -301,6 +301,15 @@ def check(ins):
 for ins in plan:
     if ins["kind"] != "vanish":
         check(ins)
+# §12 item 9 (rehearsal 11): each slow call was generated once and returned once, the client's repeat joined
+for ins in plan:
+    if ins.get("slow"):
+        k = ins["id"]
+        files = (sorted((R / k).glob("*/proxy.jsonl")) if ins["kind"] == "odcv" else [R / k / "proxy.jsonl"])
+        rows = [json.loads(x) for f in files if f.exists() for x in f.read_text().splitlines() if x.strip()]
+        sc = V.slow_call_ok(rows)
+        stages[k]["slow_call"] = sc
+        checks[k] = checks.get(k, False) and sc["ok"]
 instruments_ran = bool(checks) and all(checks.values())
 instruments = {"stages": stages, "checks": checks}
 rec = {"commit": commit, "vm_hash": vm_hash, "host_state": state,

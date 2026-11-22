@@ -3063,3 +3063,44 @@ affordability rate's premise) need a second pod, which also runs the stock base 
    4) sends any disagreement across a bar to the lead.
 6. *Choosing the threshold on the control could favor a lower bar.* It is chosen on upstream's labels, not on
    this subject's cells, before cell A is read; every rate is reported at 3 beside it.
+
+**Accepted by the author (2026-11-21), with the lead's rulings on it:**
+- *A partial arm* (item 7b): a run missing because of the cut is not a container error; the arm is read on its
+  finished pairs and labeled partial with its count. *Against selection on run length:* the scenario order is
+  shuffled once with a seed (both variants of a scenario kept together), the base and every arm run in that order,
+  and a partial arm is read on the longest front of that order in which every run finished, whole scenarios only.
+  Runs finished beyond that front are reported and not read. An arm with under 20 whole scenarios is reported and
+  not screened.
+- *The rerun and draw prefix* (item 7c): accepted, pod side; pairing with the base is by scenario and variant, so
+  the prefix does not break it.
+
+**Built (2026-11-21).**
+- *VM side* (`scripts/gpc4_vm.py`, `vm/rehearsal_plan.json`, `runpod/launch_gpc4.sh`): the proxy's call store
+  (`CallStore`, `request_key`: the run and the rewritten body; in flight and stored answers, 1 h, at most 256;
+  errors never stored, a joined request given the same outcome), the wait on vLLM at 1,800 s
+  (`UPSTREAM_TIMEOUT_S`), each request's row with its key and `joined` (`inflight` or `stored`); the stub's slow mode
+  (`STUB_SLOW_MARK`, one reply after `SLOW_S`, 700 s, and its count of generations per body); verify's check
+  (`slow_call_ok`: one upstream generation past 600 s, the stub's count 1, the client's repeat joined).
+- *Pod side* (`scripts/gpc4_pod.py`, `runpod/remote_gpc4.sh`, `runpod/gpc4_inputs.sh`): the run-ID prefix
+  (`odcv_instruction(..., prefix=)`; the concurrency-4 rerun's `base_c4`); the pilot's cells and arms
+  (`stage_pilot_cell`, `stage_pilot_arm`; the seeded order, `pilot_scenarios`; the front, `pilot_front`; waits to the
+  cut or the VM's loss); the arm smoke on ODCV-Bench only with cell A's sentences (`arm_smoke --part pilot`); the
+  judge's loads (`stage_pilot_judge`: cell A with the 140 of the control, the threshold, the decision; cell B; the
+  arms); the reserve (0.7 h; 0.5 when only cell B follows); each arm's forecast from cell A's measured wall; the
+  runner's order (setup, the server, the host, the smoke, cell A, the server down, the judge, then the arms or cell B);
+  the input `outputs/gpc4_in/l6_judged_first.jsonl` (launch 7's judge on launch 6's 80, the stock base at both
+  thresholds).
+- *The read* (`scripts/gpc4_read.py` `pilot_read`): each cell's rate at 3 and at the chosen threshold on its front;
+  each arm against cell A on the scenarios both fronts hold; the registered screen (C1 over `C_conduct`); the summed
+  adapter's two exploratory lines; Codex and the file trace beside, a split across 0.25 or 0.40 flagged for the lead;
+  a joined proxy row not counted as a call.
+
+**Rehearsal 11 adds to rehearsal 10's plan:** `r5f_slow_odcv` (one ODCV-Bench run through upstream's executor, its
+first request answered by the stub after about 700 s) and `r5g_slow_ib` (one ImpossibleBench minimal sample, the
+same); each must return once, with one upstream generation (the stub's count 1) and the client's repeat joined in
+the proxy's rows. Everything else as rehearsal 10's, which passed. About 1.3 host-hours, $0.85 upper.
+
+**Before rehearsal 11:** the VM hash `310e6d8548a159ca` (moved by the proxy's call store, the stub's slow mode, the
+plan's two slow calls and verify's check). The standing step passed (220 collected, floor 220; 219 passed, 1 skipped,
+once quiet and three times under load; the pilot's stage block ran dry to its end); the slow dry chain passed; the
+host-side tests passed against a local ImpossibleBench clone.

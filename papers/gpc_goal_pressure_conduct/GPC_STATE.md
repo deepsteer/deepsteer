@@ -331,3 +331,7 @@ bill is its figure of record.
   to the cut (finished runs are kept, pushed one by one; a partial arm's read is for the lead); the judge's reserve
   0.7 h when arms ran; run IDs unique to each instruction (the ODCV-Bench rerun reused the base's); two more proxy
   tests. Draft only; nothing built VM-side, nothing pushed.
+- 2026-11-21: Amendment 4 accepted by the author, with the lead's rulings (a partial arm read on its whole front of
+  a seeded scenario order; under 20 whole scenarios not screened; the run-ID prefix). Built: the 600 s fix (the
+  proxy's call store, the 1,800 s wait; VM side, so rehearsal 11 before the pilot), the pilot's pod-side stages and
+  read. Rehearsal 11 adds two slow calls to rehearsal 10's plan. VM hash 310e6d8548a159ca; gate 220, floor 220.
