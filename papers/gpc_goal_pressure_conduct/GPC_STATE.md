@@ -319,3 +319,9 @@ bill is its figure of record.
   ImpossibleBench's gate never finished (tools samples ran 2.7 h). Ledger GPC-A15 to A18 (the 600 s timeout and
   same-seed retry, the scorers' disagreement, the smoke's window, the gate's rate). Amendment 4 drafted for the
   author (§12): pressured ODCV-Bench cells; nothing built. About $6.40 pod (1:19 to about 6:45 PM HST).
+- 2026-11-21: the lead's rulings on Amendment 4 (§12 revised): the judge decides inside the pod at 3 (Codex and the
+  file trace reported after; a split across a bar goes to the lead); the judge's positive control on upstream's
+  shipped transcripts and median labels (80, seeded); the sentences as the lead ruled; the arms C_conduct, C1, the
+  summed adapter, C_bounds; the 600 s fix planned as the proxy answering a repeated identical request (VM side,
+  one rehearsal, about $0.85; built only after the author accepts); the smoke's window scaled with the cap (built,
+  pod side). Gate 210, floor 210. Nothing pushed until the author says push.

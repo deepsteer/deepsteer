@@ -616,7 +616,17 @@ SMOKE_ARMS = (("cctx", "base", "conduct"), ("cbounds", "base", "bounds"), ("c1",
 SMOKE_SCAFFOLDS = ("tools", "minimal")
 # §11.21 ruling 6: the smoke checks plumbing only, at the rehearsal's limits, its configurations at once
 SMOKE_KWARGS = {"max_attempts": 2, "message_limit": 10}
-SMOKE_WAIT_H = 0.25
+# GPC-A17 (the lead's ruling on Amendment 4, item 6): the smoke's window scales with the cap, so a slow but sound
+# configuration is not marked failed. An item makes at most SMOKE_CALLS model calls (the 10-message limit holds at
+# most 4 model turns, one spare), each up to OUTPUT_CAP tokens at SMOKE_TOKS_PER_S a request (launch 7's measured
+# rate with 12 requests running, the smoke's 12 items at once); 0.1 h beside, never under the old 0.25 h.
+SMOKE_CALLS = 5
+SMOKE_TOKS_PER_S = 19.4
+
+
+def smoke_wait_h(cap: int | None = None) -> float:
+    cap = OUTPUT_CAP if cap is None else cap
+    return max(0.25, SMOKE_CALLS * cap / SMOKE_TOKS_PER_S / 3600 + 0.1)
 
 
 def smoke_items(out: Path, dry: bool, tag: str = "") -> tuple[dict, list[tuple[str, str, dict]]]:
@@ -680,7 +690,7 @@ def stage_arm_smoke(out: Path, dry: bool) -> dict:
     def run(b: dict) -> list[str]:
         prev = json.loads((out / "plan.json").read_text())["instructions"] if (out / "plan.json").exists() else []
         plan_set(out, prev + [b])
-        return wait_for(out, [i["id"] for i in b["items"]], dry, SMOKE_WAIT_H)
+        return wait_for(out, [i["id"] for i in b["items"]], dry, smoke_wait_h())
 
     first = {}
     if batch["items"]:

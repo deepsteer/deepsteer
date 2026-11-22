@@ -3538,3 +3538,18 @@ def test_an_ib_process_gets_its_own_state_outside_the_push(tmp_path, monkeypatch
     assert all(e1[k] != e2[k] for k in keys) and all("/iso/" in e1[k] for k in keys)
     assert e1["HF_HUB_OFFLINE"] == "1" and not any("AWS_" in k or "TOKEN" in k for k in e1)
     assert "exec(sys.argv[4])" in V.IB_TASK and "warm_ib_cache()" in inspect_source(V.driver)
+
+
+def test_the_smokes_window_scales_with_the_cap():
+    # most probable failure: the window stays 0.25 h under the 16,384 cap, and a slow but sound arm
+    # is marked failed (launch 7: four configurations past it, all four scored later; GPC-A17)
+    assert P4.OUTPUT_CAP == 16384
+    w = P4.smoke_wait_h()
+    four_capped_calls_h = (
+        4 * P4.OUTPUT_CAP / P4.SMOKE_TOKS_PER_S / 3600
+    )  # the 10-message limit's 4 turns
+    assert w >= four_capped_calls_h + 0.1 and w == pytest.approx(1.27, abs=0.01)
+    assert P4.smoke_wait_h(4096) == pytest.approx(0.39, abs=0.01)  # launch 6's cap
+    assert P4.smoke_wait_h(1024) == 0.25  # never under the old window
+    src = inspect.getsource(P4.stage_arm_smoke)
+    assert "smoke_wait_h()" in src and "SMOKE_WAIT_H" not in src
