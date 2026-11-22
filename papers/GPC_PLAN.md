@@ -3104,3 +3104,15 @@ the proxy's rows. Everything else as rehearsal 10's, which passed. About 1.3 hos
 plan's two slow calls and verify's check). The standing step passed (220 collected, floor 220; 219 passed, 1 skipped,
 once quiet and three times under load; the pilot's stage block ran dry to its end); the slow dry chain passed; the
 host-side tests passed against a local ImpossibleBench clone.
+
+**Rehearsal 11, the record for the pilot launch** (session `gpc4-20261122T171018Z`, commit `3236d724`, VM hash
+`310e6d8548a159ca`, `~/.gpc4/rehearsal_310e6d8548a159ca.json`, **passed**): both slow calls did what the 600 s fix
+is for. In `r5f_slow_odcv` (719 s) and `r5g_slow_ib` (707 s) the stub answered the first request after 700 s.
+The client gave up at 600 s and sent the same request again. The proxy joined the repeat to the call in flight, so
+there was one upstream generation (the stub's count 1), one joined row with the same key, and status 200 on both;
+the ODCV-Bench run finished with no container error and the ImpossibleBench sample was scored. Everything else as
+rehearsal 10's: 36 of 36 smoke items clean over three batches, ODCV-Bench's 80 at concurrency 16 with no container
+error (108 s), every ImpossibleBench stage scored all its samples, the gate's checks passed before and after. The host
+terminated itself after the pod was gone (1,215 s), every result on the receiving side; both instances terminated
+at teardown. 1.15 host-hours, $0.75 upper. (An ImpossibleBench stage's push count reads 0 because it pushes once,
+after its resource file is written; rehearsal 10's read the same.)

@@ -335,3 +335,6 @@ bill is its figure of record.
   a seeded scenario order; under 20 whole scenarios not screened; the run-ID prefix). Built: the 600 s fix (the
   proxy's call store, the 1,800 s wait; VM side, so rehearsal 11 before the pilot), the pilot's pod-side stages and
   read. Rehearsal 11 adds two slow calls to rehearsal 10's plan. VM hash 310e6d8548a159ca; gate 220, floor 220.
+- 2026-11-22: rehearsal 11 passed (310e6d8548a159ca), the record for the pilot launch. Both slow calls ran 700 s
+  with the client's 600 s repeat joined in flight, one upstream generation each; the rest as rehearsal 10's.
+  $0.75 upper; both instances terminated. Next: the lead's review, then the pilot launch.
