@@ -4230,7 +4230,8 @@ sentences lower the base on the renders (0.042 against 0.125), the opposite of t
    Codex gate checked that each render's act is the scorer's, not that it tempts. The rewrite the bail calls for is
    where the writer question returns (the subject at the grid's brief was the priced alternative).
 
-**The lead's ruling (2026-11-23 12:20 PM), for the author's accept: the renders are not rewritten.** Softening the
+**The lead's ruling (2026-11-23 12:20 PM), accepted by the author the same day: the renders are not rewritten; a new
+rung takes their place (Amendment 7, §15, sent to the lead for review before it is accepted or built).** Softening the
 act's wording until the base picks it would change the question. This replaces §14's registered "the renders are
 rewritten before any build". The bail stands as the record.
 
@@ -4279,7 +4280,7 @@ letter read's calibration against GPC-1's held-out cell (base 0.57, the clause 0
 
 `GPC-A22` and `GPC-A23` are updated; A23's resolution is accepted (the clause's reference stands).
 
-## 15. Amendment 7: judgment at the brink (DRAFT for the author, 2026-11-23; not accepted, not built)
+## 15. Amendment 7: judgment at the brink (DRAFT, 2026-11-23; the author sends it to the lead for review first; not accepted, not built)
 
 **The question.** On the three scenarios this subject refuses the act when it is named (0 to 34%) and takes it in
 the loop (31 to 81%). At the moment it is about to act, does it still judge the act as it does cold? One root,

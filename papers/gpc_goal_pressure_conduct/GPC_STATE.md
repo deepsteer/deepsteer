@@ -428,3 +428,4 @@ bill is its figure of record.
   +0.031); the judgment-action gap 0.31 to 0.81; 8 renders carry all 16 base picks; no held-out control ran (24
   held-out slots now ride every letter-read pod). `GPC-A23` resolved and accepted. Amendment 7 (judgment at the
   brink; 48 states, about 1.35 A100-h) drafted, §15.
+- 2026-11-23: the author accepts the lead's ruling (the renders not rewritten; a new rung instead) and sends Amendment 7 to the lead for review first.
