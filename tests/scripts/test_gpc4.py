@@ -1716,7 +1716,7 @@ def test_dry_session_chains_gpc1_into_every_gpc4_stage(tmp_path):
         assert dr["runs"]["a19_cell"]["cap"] is None and dr["runs"]["a19_cell"]["sampling"] == {
             "temperature": 0.0
         }
-        assert dr["runs"]["depth_c1"]["cap"] == 16384 and dr["runs"]["depth_c1"]["runs"] == 14
+        assert dr["runs"]["depth_c1"]["cap"] == 16384 and dr["runs"]["depth_c1"]["runs"] == 12
         assert "stop_rule" in json.loads((o4 / "depth_read.json").read_text())
     finally:
         subprocess.run(
@@ -4152,16 +4152,14 @@ def test_depth_instruction_is_the_named_set_with_fresh_ids_interleaved():
     for item, (arm, model, which) in P4.DEPTH_ARMS.items():
         ins = P4.depth_instruction(item, dry=False)
         runs = ins["runs"]
-        assert len(runs) == 3 * 2 * P4.DEPTH_K + 2 * 2 * P4.DEPTH_SENS_K == 112
+        assert len(runs) == 3 * 2 * P4.DEPTH_K == 96 and P4.DEPTH_SENS_K == 0  # §13.3: draw 1
         assert len({r[2] for r in runs}) == len(runs) and all(
             r[2].startswith(f"d5d1_{arm}_k") for r in runs
         )
         assert [r[0] for r in runs[:6]] == [
             s for s in P4.DEPTH_PRIMARY for _ in (0, 1)
         ]  # draw 1 of each first
-        assert {r[0] for r in runs[:96]} == set(P4.DEPTH_PRIMARY) and {
-            r[0] for r in runs[96:]
-        } == set(P4.DEPTH_SENS)
+        assert {r[0] for r in runs} == set(P4.DEPTH_PRIMARY)  # no sensitivity draws in draw 1
         assert ins["model"] == model and ins["concurrency"] == 16 and "sampling" not in ins
         press = P4.pressure_text("A")
         assert ins["clause_text"] == (f"{P4.clause(which).strip()}\n\n{press}" if which else press)

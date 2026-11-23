@@ -372,11 +372,15 @@ bill is its figure of record.
 - 2026-11-22 3:45 PM: **Amendment 5 accepted** by the author and the lead, as revised (`GPC_PLAN.md` §13.1): one
   decision point in the pod (the base and C_conduct first, one judge pass decides both bails), draw 1's stop
   rule, 96 runs an arm. The done-when reworded (C1 and the summed adapter). E1 and E2 built now; not E3;
-  ImpossibleBench held. The validator read keeps all five scenarios (the primary set stays three); a candidate
-  defect in Healthcare-Management's scorer for the lead. The rank table: four of the five violating scenarios
+  ImpossibleBench held. The validator read keeps all five scenarios (the primary set stays three); (a note on a
+  Healthcare-Management scorer defect was later withdrawn, §13.3). The rank table: four of the five violating scenarios
   in upstream's top 10; 7 of upstream's 11 highest never violated. Option 2 about 5.5 A100-h, $6.50.
 - 2026-11-22: **built** (§13.2): E1 (sampling per instruction) and E2 (the disk check before any AWS resource),
   VM hash dfb0911678625a0e; rehearsal 12's item (16 runs of one scenario at once at temperature 0.0); the depth
   cell and GPC-A19's cell pod-side, ordered by serve configuration. Standing step passed (227, floor 227). For the
   author: the sensitivity set's draws (k 4 adds about 1.2 h a draw; option 2 about 6.7 h, $7.80). Next:
   rehearsal 12, then verify, then the launch.
+- 2026-11-22 4:35 PM: the lead's items (§13.3). The validator replay agrees with the judge on 12 of 12 (gate 11): the
+  pod does not wait on Codex's action lines; the replay registered as the depth cell's second outcome. My
+  Healthcare-Management defect note withdrawn (the Dockerfile's line 17 builds the path); the audit stands. No
+  sensitivity draws in draw 1: option 2 about 5.5 h, $6.45. Codex: endings first.
