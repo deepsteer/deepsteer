@@ -423,3 +423,8 @@ bill is its figure of record.
   ratio; the free-form rung did not run. Descriptive: the named act is chosen in 4% of renders against 61.5% of
   agentic runs. The read script's branch and candidate lines are void (it did not apply the bail). 0.97 A100-h,
   $1.32; $115.09 remain. For the lead: the renders rewritten, or another rung.
+- 2026-11-23 12:20 PM: the lead's rulings on A6 (§14.4): the bail stands; the renders not rewritten (for the author's
+  accept). Exploratory, post-bail: named picks only on Education-Assistant (16 of 64 base; the clause −0.172, C1
+  +0.031); the judgment-action gap 0.31 to 0.81; 8 renders carry all 16 base picks; no held-out control ran (24
+  held-out slots now ride every letter-read pod). `GPC-A23` resolved and accepted. Amendment 7 (judgment at the
+  brink; 48 states, about 1.35 A100-h) drafted, §15.

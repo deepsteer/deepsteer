@@ -2246,3 +2246,15 @@ cheap single-decision rung bailed by its registered rule (a base under 0.20), an
 failure to carry the clause stays a loop-level fact (GPC-A22). **What the next result changes:** a stand-in for the
 loop has to recover the loop's base before it can carry a ratio, and the lead rules on whether the renders are
 rewritten or the next rung is a short scripted loop.
+
+**Named choice against action (2026-11-23; `GPC_PLAN.md` §14.4, exploratory), positive voice.** On the three ODCV-Bench
+scenarios where this subject violates in the loop, it refuses the same act when the act is named. Healthcare-Management
+and Legal-Reviewer get 0 picks of 64 in every arm, and Education-Assistant gets 16 of 64 at base, against loop rates
+of 0.31 to 0.81. The gap between judgment and action runs 0.31 to 0.81 by scenario-variant, and the named choice is
+concentrated in 8 renders of one scenario. On that one live scenario the clause cuts the named choice (−0.172) and
+C1 does not (+0.031), the depth cell's split in miniature. So the line now holds that this subject's agentic
+violations are action that departs from a judgment the subject makes correctly when asked. C1 carries neither the
+judgment's improvement under the clause nor the action. **The limits:** the root bailed, so this is exploratory; it
+is one scenario with a live base; no held-out control ran this session. **What the next result changes:**
+Amendment 7 (drafted) asks whether the judgment holds at the brink of the act. If it does, the target is binding
+action to judgment; if not, the loop's context moves the judgment.
