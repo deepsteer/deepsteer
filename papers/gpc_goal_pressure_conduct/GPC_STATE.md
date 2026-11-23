@@ -429,3 +429,6 @@ bill is its figure of record.
   held-out slots now ride every letter-read pod). `GPC-A23` resolved and accepted. Amendment 7 (judgment at the
   brink; 48 states, about 1.35 A100-h) drafted, §15.
 - 2026-11-23: the author accepts the lead's ruling (the renders not rewritten; a new rung instead) and sends Amendment 7 to the lead for review first.
+- 2026-11-23 1:25 PM: **Amendment 7 accepted** as revised (§15.1): probe B (the subject's own next step, p_own);
+  the root as a shift from the cold rate (Δ; edges 0.15 and 0.40, and D_own's the same); the brink after the
+  scorer's output; tags on every state; the author's scope question with the A7 read. Built after this push.
