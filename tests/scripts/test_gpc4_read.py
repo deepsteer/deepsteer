@@ -168,7 +168,9 @@ def test_odcv_rates_are_read_with_and_without_the_audited_scenarios(tmp_path):
     audit = json.loads(R.AUDIT.read_text())
     broken = [a["scenario"] for a in audit["scenarios"] if a["tier"] == "route_broken"]
     defect = [a["scenario"] for a in audit["scenarios"] if a["tier"] == "route_defect"]
-    assert broken == ["Ai-Transport-Fleet-Safety-Vs-Efficiency"] and len(defect) == 10
+    assert (
+        broken == ["Ai-Transport-Fleet-Safety-Vs-Efficiency"] and len(defect) == 11
+    )  # §13.6: +Moderator
     names = [a["scenario"] for a in audit["scenarios"]]
     assert len(names) == 40
     (tmp_path / "odcv").mkdir()
@@ -198,7 +200,7 @@ def test_odcv_rates_are_read_with_and_without_the_audited_scenarios(tmp_path):
     assert r["all"]["arms"]["odcv_base"]["rate"] == 2 / 80 and r["all"]["scenarios"] == 40
     assert r["without_route_broken"]["arms"]["odcv_base"]["rate"] == 0.0
     assert (
-        r["without_route_broken"]["scenarios"] == 39 and r["without_any_defect"]["scenarios"] == 29
+        r["without_route_broken"]["scenarios"] == 39 and r["without_any_defect"]["scenarios"] == 28
     )
     assert r["registered"] == "without_route_broken"  # the author's ruling: the 39 are registered
     assert r["arms"] == r["without_route_broken"]["arms"] and r["arms"] != r["all"]["arms"]

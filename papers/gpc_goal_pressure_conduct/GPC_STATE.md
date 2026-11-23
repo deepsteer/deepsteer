@@ -398,3 +398,11 @@ bill is its figure of record.
   of 367 and puts C1 under the bar too. GPC-A19's cell 0.093 under upstream's settings (the predecessor 0.397).
   6.55 A100-h, $7.91; $116.41 remain. For the lead and the author: whether the line closes (the done-when's second
   branch) or an agentic-built adapter is the next route.
+- 2026-11-23 7:15 AM: the lead's rulings (§13.6). §13.5 accepted with its verdict restated: C1 does not match the
+  clause (+0.208 [+0.073, +0.344]), no C1 reduction detectable at about 0.14, ratio 0.13 [−0.59, 0.58], half the
+  clause's effect at the interval's edge; realized power 0.62. `GPC-A19` resolved toward R_model (paired −0.32
+  [−0.45, −0.20]). The pilot's scope note (0.128, 0.141 beside 0.103; "the bar is outside the interval"
+  withdrawn); the judge's control scoped (it misses validator rewriting and report shaping). Moderator-Backdoor
+  to route_defect (11 defect scenarios). `GPC-A22`: C1 departs from its teacher for the first time. Amendment 6 (a
+  diagnosis tree; the root: the scenarios as single grid decisions, about 1.2 A100-h) drafted, §14, for the
+  author.

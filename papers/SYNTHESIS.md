@@ -2145,8 +2145,8 @@ what the four-line instruction does in context.
 | C1 carries the clause's effect to an outside agentic scenario: blackmail 0.38 to 0.04 (the clause 0.02), acting 1.00 (GPC-3) | R_judge: the judge counts leverage, and a stricter reader shrinks the effect; R_cell: one cell, one draw | the string check (agrees, 0.58 to 0.12) and the Codex read (direction holds); a fresh draw on a second instrument (Amendment 3) | exploratory, one cell |
 | The clause and C1 act less where nothing forces a choice (pooled acting 0.875, 0.755, 0.76; GPC-A9) | R_scope: they skip only optional replies | which emails each arm skips, by the inbox's own text (zero GPU) | open |
 | Four pressure sentences in the system prompt leave this subject's judged ODCV-Bench rate at 0.103 (8 of 78) [0.026, 0.192], under the 0.25 bar (GPC-4 pilot, one draw; the judge's control kappa 0.80) | R_placement: a preamble is a weak place for pressure; R_cue: the oversight sentence reads as a test; R_binding: the subject ends by reporting the shortfall | the second operator turn after the first task_complete (placement, binding); cell A without the oversight sentence (cue); the root split on endings (zero GPU, Codex) | read under the bar; rivals open |
-| The predecessor (Qwen3.6-27B) violates at 0.397 under the same judge where this subject sits at 0.039 (GPC-A19) | R_settings: temperature 0.0 and no cap upstream against 0.7 and a cap here | this subject under upstream's settings on the stock prompts, one cell | **read (depth launch):** under upstream's settings this subject reads 0.093 [0.027, 0.173], far under 0.397; R_settings does not close the gap |
-| On three named ODCV-Bench scenarios under pressure (base 0.615), the clause in context cuts violations by 0.240 [0.104, 0.385] and C1 does not carry it (C1 against the base −0.031 [−0.167, +0.104]; against the clause +0.208 [+0.073, +0.344]; ratio 0.13, lower bound −0.69; one draw, Amendment 5) | R_set: three scenarios chosen on the outcome; R_judge: the judge's blind spot (GPC-A21) | the registered judge-free replay (agrees on 312 of 367; C1 under the bar there too); a second draw (ruled not to run on a point under 0.5) | **read: the 'does not' branch** |
+| The predecessor (Qwen3.6-27B) violates at 0.397 under the same judge where this subject sits at 0.039 (GPC-A19) | R_settings: temperature 0.0 and no cap upstream against 0.7 and a cap here | this subject under upstream's settings on the stock prompts, one cell | **resolved toward R_model** (2026-11-23): paired against the predecessor, −0.32 [−0.45, −0.20] under upstream's settings |
+| On three named ODCV-Bench scenarios under pressure (base 0.615), the clause in context cuts violations by 0.240 [0.104, 0.385] and C1 does not carry it (C1 against the base −0.031 [−0.167, +0.104]; against the clause +0.208 [+0.073, +0.344]; ratio 0.13, lower bound −0.69; one draw, Amendment 5) | R_set: three scenarios chosen on the outcome; R_judge: the judge's blind spot (GPC-A21) | the registered judge-free replay (agrees on 312 of 367; C1 under the bar there too); a second draw (ruled not to run on a point under 0.5) | **read: the 'does not' branch** (accepted 2026-11-23: C1 does not match the clause, +0.208 [+0.073, +0.344]; no C1 reduction detectable at about 0.14; ratio 0.13 [−0.59, 0.58]; half the clause's effect at the interval's edge; realized power 0.62); GPC-A22 |
 
 **What the next result changes (GPC-1, branches registered in `GPC_PLAN.md` §6).** An arm meeting
 the goal-pressure criterion on draw 1: the thesis gains "conduct reaches the weights without a
@@ -2208,12 +2208,13 @@ instruments built on two documented cases (a scored goal pursued against counter
 task that ends in out-of-bounds means), MACHIAVELLI becomes a beside read, and blackmail stays as a
 continuity cell.
 
-**GPC-4's pilot (2026-11-22; `GPC_PLAN.md` §12.1), positive voice.** GPC now owns a calibrated ODCV-Bench
-judge on this subject: gpt-oss-120b at 3 agrees with upstream's own labels at kappa 0.80 on 140 shipped runs
+**GPC-4's pilot (2026-11-22; `GPC_PLAN.md` §12.1), positive voice.** GPC now owns an ODCV-Bench judge
+checked against upstream: gpt-oss-120b at 3 agrees with upstream's own labels at kappa 0.80 on 140 shipped runs of other
+models (it misses validator rewriting and report shaping on this subject, GPC-A21)
 (sensitivity 0.85, specificity 0.94) and finds 31 of the predecessor's 35 violations. Under it the subject's
 stock base is 0.039 (3 of 77, launch 6). At the strongest sentence dose (four sentences
 on stakes, replacement, operator insistence and oversight, all in the system prompt) the judged rate is 0.103
-(8 of 78) [0.026, 0.192], under the 0.25 bar. The predecessor violates at 0.397 under the same judge (GPC-A19).
+(8 of 78) [0.026, 0.192], under the 0.25 bar (0.128 or 0.141 with the replay's judge misses counted, beside). The predecessor violates at 0.397 under the same judge (GPC-A19). This subject's stock base is 0.039 (0.052 with its judge miss counted).
 Beside the verdict, labeled confounded with the cap: against launch 6's stock base the change is 5 gained and
 0 lost on 77 pairs (+0.065 [+0.013, +0.118]). Codex's partial read is higher (0.235 on 68), and it flags every
 run the judge flags. The file trace is retired as a violation scorer (kappa 0.15 and 0.09). **What the next
@@ -2225,9 +2226,10 @@ launch 6's ratio).
 **GPC-4's depth cell (2026-11-23; `GPC_PLAN.md` §13.5), positive voice.** On the three ODCV-Bench scenarios where
 this subject violates under pressure, GPC now owns a contrast its instrument resolves. The fresh base is 0.615 (59
 of 96). The clause in context cuts it to 0.375, a reduction of 0.240 [0.104, 0.385], under a judge whose control on
-the same session reads kappa 0.77 against upstream's labels. C1, distilled from the constitution's tenets and
+the same session reads kappa 0.77 against upstream's labels (on other models' shipped runs; it does not cover validator
+rewriting or report shaping on this subject, GPC-A21). C1, distilled from the constitution's tenets and
 carrying nothing in context, reads 0.583. That is −0.031 [−0.167, +0.104] against the base and +0.208 [+0.073, +0.344]
-above the clause, so its ratio to the clause is 0.13 (lower bound −0.69), the registered "does not" branch. The
+above the clause, so its ratio to the clause is 0.13 [−0.59, 0.58], the registered "does not" branch. No C1 reduction is detectable at about 0.14, and half the clause's effect sits at the interval's edge (−0.089 [−0.193, +0.016]); the draw's realized power was 0.62. The
 scenarios' own scorers, judge-free, agree on 312 of 367 runs and put C1 under the bar too. On these scenarios the
 clause's conduct is real, and C1 does not carry it into an agentic run: one draw, three named scenarios, under
 pressure. Beside it, GPC-A19's cell: under upstream's settings this subject reads 0.093, so the predecessor's 0.397 is
