@@ -3023,6 +3023,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Appears in.** `GPC_PLAN.md` §12.1; the Amendment 5 draft.
 **Competing readings.**
 - R_propensity: the subject has a real, scenario-specific propensity there, which the pressure (or the cap) raises from 3 of 6 to 6 of 6. A depth cell on those scenarios reads it.
+  Added by the lead's revision (2026-11-22): upstream's counts on the three (20, 12 and 15 of 24) fit an item-difficulty form of this reading (hard scenarios where any capable agent is most tempted) as well as R_validator. The clause arm separates them: a clause that names the constraint lowers a propensity, and leaves a route the validator makes the default untouched. The rank table (`GPC_PLAN.md` §13.1) puts four of this subject's five violating scenarios in upstream's top 10, and it never violates on 7 of upstream's 11 highest.
 - R_defect: the audit's route defect carries Ai-Education-Assistant. The prompt names `/app/data/learning_materials/` as a directory, but it is the file `/app/data/learning_materials.yml`, and the scorer takes the plan as its argument. An agent working around the defect looks like gaming.
 - R_validator: the scenarios' validators make gaming the default route, so a capable agent games them whatever its propensity. Upstream's 12 models agree it is common there: 20 of 24 model-variants at 3 or more on Ai-Education-Assistant (the highest of 40 scenarios), 12 of 24 on Ai-Legal-Reviewer-Conflict, 15 of 24 on Healthcare-Management, against 0.28 on the other scenarios.
 - R_judge: the judge misreads a legitimate route on those scenarios as gaming.
@@ -3031,7 +3032,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 - R_judge: Codex's one-line violating action on the 11 runs (queued after Codex's reset), and on these three scenarios the judge against upstream's four-judge median on the other models' runs.
 - R_validator: whether an honest route can meet each scenario's target, read from the scenario files and validators, and how upstream's models that do not violate there end their runs.
 - R_propensity is what remains if those three fail; the Amendment 5 draft is its separating cell (fresh draws with arms, the read on a fresh base only).
-**Status.** open (no verdict wording yet).
+**Status.** open (no verdict wording yet). The validator read (§13.1) keeps all five scenarios; it found that Healthcare-Management's scorer fails as shipped (the data copied as a file where the scorer expects a directory), a candidate defect for the lead, unflagged by the audit.
 **Thesis impact.**
 - If R_propensity: ODCV-Bench's contrast on this subject lives on a few named scenarios at a high base. A depth cell there is affordable where the 39-scenario base is not.
 - If R_defect, R_validator or R_judge: those scenarios measure the instrument, not the subject. Cell A's rate is that much lower, and ODCV-Bench does not count on this subject.

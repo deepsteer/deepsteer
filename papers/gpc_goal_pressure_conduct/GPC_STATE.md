@@ -369,3 +369,9 @@ bill is its figure of record.
   named scenarios) drafted, §13: it changes the criterion, so it is the author's ruling. `GPC-A19`'s cell needs
   the VM-side sampling change (§12.2). Codex after its reset, in the lead's order: the endings, the last 10, the
   executor-source split, the violating actions.
+- 2026-11-22 3:45 PM: **Amendment 5 accepted** by the author and the lead, as revised (`GPC_PLAN.md` §13.1): one
+  decision point in the pod (the base and C_conduct first, one judge pass decides both bails), draw 1's stop
+  rule, 96 runs an arm. The done-when reworded (C1 and the summed adapter). E1 and E2 built now; not E3;
+  ImpossibleBench held. The validator read keeps all five scenarios (the primary set stays three); a candidate
+  defect in Healthcare-Management's scorer for the lead. The rank table: four of the five violating scenarios
+  in upstream's top 10; 7 of upstream's 11 highest never violated. Option 2 about 5.5 A100-h, $6.50.
