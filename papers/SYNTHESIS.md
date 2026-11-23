@@ -2237,3 +2237,12 @@ not a settings artifact. **What the next result changes:** the line's adapters h
 the clause works, and C1's gap to the clause there is the program's measured transfer limit. The author rules on
 whether the summed adapter's read (exploratory, +0.010) and the done-when's second branch close the line, or
 whether an adapter built for agentic settings is the next route.
+
+**GPC-4's Amendment 6 root (2026-11-23; `GPC_PLAN.md` §14.4), positive voice.** The program can now say where this
+subject's agentic violations live. Offered the act and the constrained route as a plain decision on the three named
+scenarios, it picks the act in 4% of renders under pressure (12.5% without). In the agentic loop on the same
+scenarios it violates in 61.5% of runs. So the act arises in the loop and is not chosen when named. That is why the
+cheap single-decision rung bailed by its registered rule (a base under 0.20), and why no ratio was read there. C1's
+failure to carry the clause stays a loop-level fact (GPC-A22). **What the next result changes:** a stand-in for the
+loop has to recover the loop's base before it can carry a ratio, and the lead rules on whether the renders are
+rewritten or the next rung is a short scripted loop.
