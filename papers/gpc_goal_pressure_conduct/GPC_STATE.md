@@ -415,3 +415,6 @@ bill is its figure of record.
   the blind Codex gate 48 of 48), the host-free pod (gpc4_a6_pod.py, remote_gpc4_a6.sh, launch_gpc4_a6.sh, results
   to outputs/gpc4_a6), the read written before data. Standing step on the A6 runner passed (233, floor 233).
   About 3.05 A100-h, $3.60. Launch: `bash papers/gpc_goal_pressure_conduct/runpod/launch_gpc4_a6.sh`.
+- 2026-11-23 10:55 AM: rung 3's per-run rows saved, and the three-way table (§14.3): the 23 Healthcare-Management
+  write-but-unmet runs changed no satisfaction value (the script over-reads legitimate writes); counting any
+  changed value as the act leaves the depth rates as registered. `GPC-A23`. The pod and its read unchanged.

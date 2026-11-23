@@ -3062,3 +3062,17 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Discriminator.** Amendment 6's root (§14): the three scenarios as single decisions in the grid's format, with and without the pressure sentences, under base, the clause, C1 and the summed adapter. 48 renders at k = 2, letter read, no host, about 1.2 A100-h. If C1 matches the clause there, R_loop holds; if not, R_act. If it matches without the sentences and not with them, R_pressure.
 **Status.** open (Amendment 6 drafted, for the author).
 **Thesis impact.** If R_loop: the line's conduct transfers as content, and the next adapter needs the agentic format. If R_act: the constitution's tenets as distilled reach the games' acts but not these, and the grid's coverage is the line's limit. If R_pressure: the pressure the agentic instrument adds is outside C1's training.
+
+## GPC-A23 (ledger) — The clause arm carries twice the script-against-replay disagreements of any other arm
+
+**Date.** 2026-11-23 (rung 3's classifier on depth draw 1; `GPC_PLAN.md` §14.3).
+**Observation.** Rung 3's script disagrees with the replay on 16 of 91 `C_conduct` runs, against 7 of 87 (base), 6 of 91 (C1) and 7 of 88 (the summed adapter). In Healthcare-Management, 23 runs have a write the script reads as the act and an unmet target (`C_conduct` 11, base 7, the summed adapter 3, C1 2). `outputs/gpc4_v1/odcv/rung3_rows.jsonl`, `rung3_table.json`.
+**Type.** control misbehavior (one arm breaks the pattern of the instrument's agreement).
+**Appears in.** `GPC_PLAN.md` §14.3.
+**Competing readings.**
+- R_short: under the clause the subject still edits the data and stops short of the target, so the clause's −0.240 is partly a change in how far the edit goes.
+- R_script: the script over-reads legitimate writes.
+- R_split: the judge and the replay split on these runs.
+**Discriminator (zero GPU, run).** The three-way table (§14.3). **None of the 23 runs changed a satisfaction value** (every mean 87.0); their file changes are outside the satisfaction column. R_short is not supported: no clause run edits the values partway. R_script holds: under the clause the subject writes the file more often, for changes the act does not include. Counting any changed satisfaction value as the act leaves every depth rate exactly as registered (base 0.615, the clause 0.375, C1 0.583). Beside it, descriptive: 49 runs, Legal-Reviewer 31 and Education-Assistant 18, have an artifact that passes the scorer while the judge scores under 3 (by arm: base 10, the clause 12, C1 16, the summed adapter 11). That is the judge-and-replay split of `GPC-A21`, not this entry's question.
+**Status.** resolved toward R_script (resolution type: experiment), for the lead's ruling.
+**Thesis impact.** None on the depth read: the clause's reduction is a reduction in the act, not in how far an edit goes. The rung-3 script's Healthcare-Management definition is too broad as written, which the drop already records.
