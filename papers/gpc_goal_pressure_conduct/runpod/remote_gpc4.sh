@@ -170,7 +170,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=227   # the gate's collected count when set (Amendment 5, §13.1); fewer means a file failed to collect
+GATE_FLOOR=233   # the gate's collected count when set (Amendment 6, §14); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }

@@ -18,7 +18,7 @@
 # and each run's summary; exits nonzero on any failure.
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
-R=papers/gpc_goal_pressure_conduct/runpod/remote_gpc4.sh
+R=${GPC4_RUNNER:-papers/gpc_goal_pressure_conduct/runpod/remote_gpc4.sh}  # §14: GPC4_RUNNER=…/remote_gpc4_a6.sh for Amendment 6
 LOAD_RUNS=${LOAD_RUNS:-3}
 gate_at=$(grep -n 'pytest -q -p no:cacheprovider -m "\$GATE_MARK" \$TESTS' "$R" | head -1 | cut -d: -f1)
 [ -n "$gate_at" ] || { echo "BAIL: the runner's gate-test line not found"; exit 1; }
@@ -94,7 +94,7 @@ PYEOF
 # ImpossibleBench data) map to local copies at the runner's own pins, fetched here if missing.
 odcv_pin=$(grep -oE 'ODCV-Bench checkout -q [0-9a-f]{40}' "$R" | awk '{print $NF}')
 am_pin=$(grep -oE 'agentic-misalignment checkout -q [0-9a-f]{40}' "$R" | awk '{print $NF}')
-ib_rev=$(grep -oE 'impossible_livecodebench", repo_type="dataset", revision="[0-9a-f]{40}' "$R" | grep -oE '[0-9a-f]{40}')
+ib_rev=$(grep -oE 'impossible_livecodebench", repo_type="dataset", revision="[0-9a-f]{40}' "$R" | grep -oE '[0-9a-f]{40}' || true)  # §14: the A6 runner has none
 fetch() {  # <dir> <url> <pin>
   [ -d "$1/.git" ] || git clone -q "$2" "$1"
   git -C "$1" checkout -q "$3" && [ "$(git -C "$1" rev-parse HEAD)" = "$3" ] || { echo "BAIL: $1 is not at $3"; exit 1; }

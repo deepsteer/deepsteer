@@ -411,3 +411,7 @@ bill is its figure of record.
   C1 not, with teeth; the depth base's order); rung 3 dropped by its own gate (classifier agreement 0.899 under
   0.90; Healthcare-Management's writes that miss the target). Pod: the root cell, then the free-form rung (cut
   first); about 3.05 A100-h, $3.60; no host.
+- 2026-11-23: **Amendment 6 built** (§14.2): 48 renders (Claude from the scenario files; the script check passes;
+  the blind Codex gate 48 of 48), the host-free pod (gpc4_a6_pod.py, remote_gpc4_a6.sh, launch_gpc4_a6.sh, results
+  to outputs/gpc4_a6), the read written before data. Standing step on the A6 runner passed (233, floor 233).
+  About 3.05 A100-h, $3.60. Launch: `bash papers/gpc_goal_pressure_conduct/runpod/launch_gpc4_a6.sh`.

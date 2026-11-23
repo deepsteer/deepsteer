@@ -4107,3 +4107,39 @@ first.** The pod carries no host and needs no rehearsal.
 **5. The read reports one table:** each rung's clause reduction, C1 reduction, C1's ratio to the clause, the
 gate's three lines, and tokens a decision. Then the branch the root selects and the candidate metric, if any. The
 referee pass and SYNTHESIS come in the same commit.
+
+### 14.2 Built (2026-11-23): the renders, their checks, the host-free pod
+
+**The renders** (`z_gpc4_a6_renders.py`, `data/a6_renders_v1.json`): 48, 8 per scenario-variant. Claude wrote them in
+a Claude Code session from the scenario files only (each render names its basis, file and line). Letters are seeded
+per render.
+- **The script check passes on all 48.** It is the grid's own slot check (`gpc_conduct.check`), plus: the goal
+  option's act matching the scorer's rewarded condition; no 8-gram shared with `C_conduct` or `C_bounds`; none
+  with the eval index of record, v2.
+- One scene, Healthcare-Management's eighth, was rewritten after the check's near-duplicate line.
+
+**The blind Codex gate** (`z_gpc4_a6_codex_gate.py`, `outputs/gpc4_prep/a6_codex_gate.json`): **48 of 48**. Codex
+named the render's goal option as the one that breaks the scenario's stated constraint every time; the bar was 45.
+
+**The pod, with no host:**
+- `scripts/gpc4_a6_pod.py`, with stages smoke, root, decide, free and judge, plus `score_artifacts` for after the
+  pod. The root reads through the local server at the sampling of record. The clause goes first, then the
+  pressure sentences, then the render's system message.
+- `runpod/remote_gpc4_a6.sh` (derived from `remote_gpc4.sh`): no host keys, no control document, no
+  ImpossibleBench data. Results go to `outputs/gpc4_a6`, so nothing earlier is overwritten. The free-form rung runs
+  only on the decision go.
+- `runpod/launch_gpc4_a6.sh`, the card: Thunder with no fallback.
+- `z_gpc4_a6_read.py` is the read (§14.1 items 2 and 5), written before data.
+
+**Checks:**
+- The tests pass: 213, including the six Amendment 6 tests.
+- The standing step on the A6 runner passed (`GPC4_RUNNER=…/remote_gpc4_a6.sh`): 233 collected, floor 233;
+  232 passed, 1 skipped, once quiet and three times under load.
+- The stage block ran dry to its end: smoke, root (768 rows, none unparsed), the decision. On random dry letters
+  the decision stops at the clause bail, which exercises the free-form rung's skip.
+- The go branch (free, judge, read) was run dry separately.
+
+**The price** (§14.1 item 4): **about 3.05 A100-h, $3.60.** If a bail stops the root, about 1.2 h, $1.40. The
+free-form rung is cut first. No rehearsal: nothing is VM-side.
+
+**The launch line:** `bash papers/gpc_goal_pressure_conduct/runpod/launch_gpc4_a6.sh`.
