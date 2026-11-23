@@ -146,8 +146,9 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | 11-20 | GPC-4 launch 6 on Thunder (A100 80GB, $1.18; gate passed; served and checked; the host powered off at 3.36 h on a stop published inside a stage; ODCV-Bench's gate measured, never judged; ImpossibleBench void; the bounds grid banked; stage 4 ran; §11.20) | 7.81 | 7.90 | 9.32 | 30.30 | 39.95 |
 | 11-21 | GPC-4 launch 7 on Thunder (A100 80GB, $1.18; `fb5pt0w2`; the judge's first pass, the arm smoke, ImpossibleBench's tools gate unfinished (GPC-A15, GPC-A18); stopped at about 5.4 h by the lead's pick with `stop_gpc4.sh`; §11.30) | 5.4 | 5.55 | 6.55 | 35.85 | 46.50 |
 | 11-22 | GPC-4 the pilot on Thunder (A100 80GB, $1.18; `btigr5n9`; all stages run, done at 1.70 h; cell A judged, the decision stop; §12.1). The first launch that morning stopped at the local disk check before any pod ($0) | 1.70 | 1.85 | 2.18 | 37.70 | 48.68 |
+| 11-22/23 | GPC-4 the depth launch on Thunder (A100 80GB, $1.18; `atu6f822`; all stages run, done at 6.55 h; GPC-A19's cell and depth draw 1, the decision go, the read the 'does not' branch; §13.5) | 6.55 | 6.70 | 7.91 | 44.40 | 56.59 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: $142.37 remain. After launch 6: **$133.05 remain** ($173.00 − $39.95). After launch 7: $126.50 remain. After the pilot: **$124.32 remain** ($173.00 − $48.68; the lead's scratch, $124.64, omits the table's 0.15 h a pod on both rows: $6.40 and $2.01 are the session clocks at $1.18; the instances' own lives, create to delete, were about 5.6 h and 1.9 h, $6.64 and $2.27). The EC2 host's spend to
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: $142.37 remain. After launch 6: **$133.05 remain** ($173.00 − $39.95). After launch 7: $126.50 remain. After the pilot: $124.32 remain ($173.00 − $48.68; the lead's scratch, $124.64, omits the table's 0.15 h a pod on both rows: $6.40 and $2.01 are the session clocks at $1.18; the instances' own lives, create to delete, were about 5.6 h and 1.9 h, $6.64 and $2.27). After the depth launch: **$116.41 remain** ($173.00 − $56.59). The EC2 host's spend to
 date (rehearsals 1 to 7 and launch 1's host, about $4 at the records' upper bounds) is not in it; the AWS
 bill is its figure of record.
 
@@ -391,3 +392,9 @@ bill is its figure of record.
   Moderator-Backdoor's shipped scorer cannot pass (a jq `||`): for the lead.
 - 2026-11-22: rehearsal 12 passed (dfb0911678625a0e; 16 runs of one scenario at temperature 0.0, every item at its
   own temperature). Option 2 launched 6:27 PM HST (gpc4-20261123T042734Z): GPC-A19's cell, then depth draw 1.
+- 2026-11-23: **depth draw 1 read** (§13.5): the fresh base 0.615 on the three, `C_conduct` 0.375 (reduction 0.240
+  [0.104, 0.385]), C1 0.583 (−0.031 against the base, +0.208 against the clause), the summed adapter 0.625; C1's
+  ratio 0.13, lower bound −0.69: the stop rule's "does not" branch; no draw 2. The judge-free replay agrees on 312
+  of 367 and puts C1 under the bar too. GPC-A19's cell 0.093 under upstream's settings (the predecessor 0.397).
+  6.55 A100-h, $7.91; $116.41 remain. For the lead and the author: whether the line closes (the done-when's second
+  branch) or an agentic-built adapter is the next route.
