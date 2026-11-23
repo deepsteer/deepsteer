@@ -406,3 +406,8 @@ bill is its figure of record.
   to route_defect (11 defect scenarios). `GPC-A22`: C1 departs from its teacher for the first time. Amendment 6 (a
   diagnosis tree; the root: the scenarios as single grid decisions, about 1.2 A100-h) drafted, §14, for the
   author.
+- 2026-11-23 10:15 AM: **Amendment 6 accepted** as revised (§14.1): the coverage control (blackmail as rare in
+  the grid, so coverage alone does not predict where C1 carries); one gate for every rung (the clause detected,
+  C1 not, with teeth; the depth base's order); rung 3 dropped by its own gate (classifier agreement 0.899 under
+  0.90; Healthcare-Management's writes that miss the target). Pod: the root cell, then the free-form rung (cut
+  first); about 3.05 A100-h, $3.60; no host.

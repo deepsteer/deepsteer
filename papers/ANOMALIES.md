@@ -3057,7 +3057,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Appears in.** `GPC_PLAN.md` §13.5, §13.6, §14.
 **Competing readings.**
 - R_loop: the tool loop's format or depth gates. C1 learned single decisions in prose, and a multi-turn tool loop is outside that format.
-- R_act: the kind of act gates. C1's grid covers data falsification, report suppression and content exclusion in under 1% of its pressure slots (keyword count, unvalidated), and none in these frames.
+- R_act: the kind of act gates. C1's grid covers data falsification, report suppression and content exclusion in under 1% of its pressure slots (keyword count, unvalidated), and none in these frames. **Control (§14.1):** the blackmail cell's act is as rare in the grid (1 of 387, no workplace or email frame), and C1 carried the clause there, so coverage alone does not predict where C1 carries.
 - R_pressure: the pressure sentences gate. C1 was trained without them, and the clause arm carries them after the clause.
 **Discriminator.** Amendment 6's root (§14): the three scenarios as single decisions in the grid's format, with and without the pressure sentences, under base, the clause, C1 and the summed adapter. 48 renders at k = 2, letter read, no host, about 1.2 A100-h. If C1 matches the clause there, R_loop holds; if not, R_act. If it matches without the sentences and not with them, R_pressure.
 **Status.** open (Amendment 6 drafted, for the author).
