@@ -432,3 +432,8 @@ bill is its figure of record.
 - 2026-11-23 1:25 PM: **Amendment 7 accepted** as revised (§15.1): probe B (the subject's own next step, p_own);
   the root as a shift from the cold rate (Δ; edges 0.15 and 0.40, and D_own's the same); the brink after the
   scorer's output; tags on every state; the author's scope question with the A7 read. Built after this push.
+- 2026-11-23: **Amendment 7 built** (§15.2), zero GPU. 48 states (32 act + 16 not; the draft's "36 + 12" total
+  corrected to its rows), 92 of 92 pass fidelity at a ratio of 1.000, and every act state follows the scorer
+  with the shortfall in view. The pod has the fidelity, control (bail), cold, early, named and own stages. The
+  read is written before the pod. Training exclusion: 27,108 hashes. The standing step passed at floor 239.
+  Central price 1.86 h, $2.14. The order check's noise is flagged to the lead.

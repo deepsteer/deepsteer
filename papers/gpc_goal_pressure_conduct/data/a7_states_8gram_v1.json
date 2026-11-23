@@ -1,0 +1,10 @@
+{
+ "file": "outputs/_sync/a7_states_8gram_hashes_v1.npy",
+ "sha256": "fe35f1b066eab18a11ff6ab9b8537c27355dd72d32900e1c647608b4223a5e48",
+ "states": 48,
+ "states_sha256": "0b6b5fbe98c987bf09ea7c6e69325d40a5810515bdbeca3a8d6495bf1d9d177e",
+ "n_hashes": 27108,
+ "already_in_v2": 0,
+ "hash": "blake2b-64 of the space-joined word 8-gram (overlap_hashes)",
+ "rule": "GPC_PLAN.md \u00a715.2: unioned into the eval index by any later corpus build; no training stage reads outputs/gpc4_in/a7 or outputs/gpc4_a7"
+}
