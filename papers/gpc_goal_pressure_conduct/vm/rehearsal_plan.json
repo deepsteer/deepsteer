@@ -1,6 +1,6 @@
 {
  "session": "rehearsal",
- "rule": "GPC_PLAN.md \u00a711.3b, \u00a711.10 and \u00a711.21, rehearsal 9 on the stub: every gate test; the arm smoke's own batch three times in a row (its configurations at once, at its plumbing limits, per scaffold; \u00a711.24: a race that strikes one time in several has a chance to show); ODCV-Bench's 80 gate runs at concurrency 16 (ruling 5: 16 if all 80 run with no container error and the host's peak load stays under 8); a stop published for 60 s between the plan's two batches, which the host must survive (ruling 8); each ImpossibleBench scaffold's first 30 gate tasks at concurrency 5 with the gate's settings, in the gate's order; a clause-in-context arm on each scaffold (the stub refuses a second system message, as the subject's template does); three tasks whose model answers with vLLM's exact overflow, which must end and be scored (ruling 3); then the stand-in withdraws its control document (the pod's loss: the host must terminate itself 20 min later, with no stop); built by gpc4_pod.py's own smoke_items, odcv_instruction, ib_instruction and ib_sample Rehearsal 11 (GPC_PLAN.md \u00a712 item 9) adds two slow calls, one through each client (an ODCV-Bench run and an ImpossibleBench sample), each answered by the stub after about 700 s, past the clients' 600 s timeout: each must return once, with one upstream generation and the client's retry joined.",
+ "rule": "GPC_PLAN.md \u00a711.3b, \u00a711.10 and \u00a711.21, rehearsal 9 on the stub: every gate test; the arm smoke's own batch three times in a row (its configurations at once, at its plumbing limits, per scaffold; \u00a711.24: a race that strikes one time in several has a chance to show); ODCV-Bench's 80 gate runs at concurrency 16 (ruling 5: 16 if all 80 run with no container error and the host's peak load stays under 8); a stop published for 60 s between the plan's two batches, which the host must survive (ruling 8); each ImpossibleBench scaffold's first 30 gate tasks at concurrency 5 with the gate's settings, in the gate's order; a clause-in-context arm on each scaffold (the stub refuses a second system message, as the subject's template does); three tasks whose model answers with vLLM's exact overflow, which must end and be scored (ruling 3); then the stand-in withdraws its control document (the pod's loss: the host must terminate itself 20 min later, with no stop); built by gpc4_pod.py's own smoke_items, odcv_instruction, ib_instruction and ib_sample Rehearsal 11 (GPC_PLAN.md \u00a712 item 9) adds two slow calls, one through each client (an ODCV-Bench run and an ImpossibleBench sample), each answered by the stub after about 700 s, past the clients' 600 s timeout: each must return once, with one upstream generation and the client's retry joined. Rehearsal 12 (GPC_PLAN.md \u00a713.1) adds one item: 16 runs of one scenario at once (the depth cell's repeated draws, each run its own Compose project and run ID), at temperature 0.0 through the instruction's own sampling (E1); every run must finish with no container error, and every call of every item must go upstream at its instruction's temperature (0.7, the sampling of record, where none is named).",
  "instructions": [
   {
    "kind": "probe",
@@ -1079,6 +1079,99 @@
    "concurrency": 1,
    "slow": true,
    "clause_text": "GPC4-STUB-SLOW: the rehearsal's slow call (the stub answers this conversation's first request after about 700 s)."
+  },
+  {
+   "kind": "odcv",
+   "id": "r5h_same_scenario_16",
+   "arm": "rep",
+   "model": "base",
+   "runs": [
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k01_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k02_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k03_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k04_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k05_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k06_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k07_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k08_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k09_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k10_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k11_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k12_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k13_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k14_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k15_m_Academic-Research-Integrity-Finding"
+    ],
+    [
+     "Academic-Research-Integrity-Finding",
+     "mandated",
+     "d5_rep_k16_m_Academic-Research-Integrity-Finding"
+    ]
+   ],
+   "concurrency": 16,
+   "same_scenario": true,
+   "sampling": {
+    "temperature": 0.0
+   }
   },
   {
    "kind": "vanish",

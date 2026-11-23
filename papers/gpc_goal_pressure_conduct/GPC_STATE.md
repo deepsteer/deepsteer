@@ -375,3 +375,8 @@ bill is its figure of record.
   ImpossibleBench held. The validator read keeps all five scenarios (the primary set stays three); a candidate
   defect in Healthcare-Management's scorer for the lead. The rank table: four of the five violating scenarios
   in upstream's top 10; 7 of upstream's 11 highest never violated. Option 2 about 5.5 A100-h, $6.50.
+- 2026-11-22: **built** (§13.2): E1 (sampling per instruction) and E2 (the disk check before any AWS resource),
+  VM hash dfb0911678625a0e; rehearsal 12's item (16 runs of one scenario at once at temperature 0.0); the depth
+  cell and GPC-A19's cell pod-side, ordered by serve configuration. Standing step passed (227, floor 227). For the
+  author: the sensitivity set's draws (k 4 adds about 1.2 h a draw; option 2 about 6.7 h, $7.80). Next:
+  rehearsal 12, then verify, then the launch.

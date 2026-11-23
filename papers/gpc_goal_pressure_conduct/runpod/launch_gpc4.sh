@@ -277,7 +277,13 @@ def check(ins):
                       "tool_timeouts": sum(r.get("tool_timeouts") or 0 for r in rr),
                       "min_tool_calls": min((r.get("tool_calls") or 0 for r in rr), default=0)}
         complete = pushes_ok and len(rr) == len(ins["runs"]) and stages[k]["min_tool_calls"] >= 1
-        if (ins.get("concurrency") or 0) >= 16:
+        if ins.get("same_scenario"):
+            # rehearsal 12 (the lead, 2026-11-22): one scenario many times at once (the depth cell's draws),
+            # every run its own Compose project; all must finish with no container error
+            stages[k]["scenarios"] = sorted({r[0] for r in ins["runs"]})
+            checks[k] = (complete and stages[k]["container_errors"] == 0 and len(stages[k]["scenarios"]) == 1
+                         and len({r[2] for r in ins["runs"]}) == len(ins["runs"]))
+        elif (ins.get("concurrency") or 0) >= 16:
             # §11.21 ruling 5: the gate at 16 if all 80 run with no container error and the host's peak load
             # stays under 8; otherwise 8 (recorded, and the rehearsal still passes on a complete stage)
             stages[k]["concurrency_16_ok"] = bool(complete and stages[k]["container_errors"] == 0
@@ -309,6 +315,20 @@ for ins in plan:
         rows = [json.loads(x) for f in files if f.exists() for x in f.read_text().splitlines() if x.strip()]
         sc = V.slow_call_ok(rows)
         stages[k]["slow_call"] = sc
+        checks[k] = checks.get(k, False) and sc["ok"]
+# §13.1 E1 (rehearsal 12): every chat call went upstream at its instruction's temperature, the sampling of record
+# where the instruction names none
+def rows_of(ins):
+    k = ins["id"]
+    files = (sorted((R / k).glob("*/proxy.jsonl")) if ins["kind"] == "odcv" else [R / k / "proxy.jsonl"])
+    return [json.loads(x) for f in files if f.exists() for x in f.read_text().splitlines() if x.strip()]
+flat = [x for i in plan for x in ([i] + (i["items"] if i["kind"] == "batch" else []))]
+for ins in flat:
+    if ins["kind"] in ("odcv", "ib"):
+        k = ins["id"]
+        want_t = float((ins.get("sampling") or {}).get("temperature", V.SAMPLING["temperature"]))
+        sc = V.sampling_ok(rows_of(ins), want_t)
+        stages.setdefault(k, {})["sampling"] = sc
         checks[k] = checks.get(k, False) and sc["ok"]
 instruments_ran = bool(checks) and all(checks.values())
 instruments = {"stages": stages, "checks": checks}
@@ -395,6 +415,13 @@ cmd_launch() {
   [ -z "${TNR_FALLBACK:-}" ] || die "GPC-4 runs on Thunder with no fallback"
   preflight "$VCPUS_NEEDED"
   [ -f "$G/runpod/remote_gpc4.sh" ] || die "the pod's runner (remote_gpc4.sh) is not built yet"
+  # §13.1 E2 (the pilot's first launch, 2026-11-22: the pod card's own check found 48 GB after 11 min of the
+  # host's setup): the same rule as session_lib.sh's rp_require_disk, here before any AWS resource
+  local res="$G/outputs/gpc4_v1" free; mkdir -p "$res"
+  free=$(df -Pk "$res" | awk 'NR==2 {print int($4 / 1048576)}')
+  [ "${free:-0}" -ge "${MIN_FREE_GB:-50}" ] \
+    || die "only ${free} GB free under $res (need >= ${MIN_FREE_GB:-50} GB for results); free space first (nothing was created)"
+  say "local disk: ${free} GB free under $res (min ${MIN_FREE_GB:-50})"
   thunder_capacity   # before any AWS resource: with no capacity nothing is created
   new_session
   trap abort_before_handoff EXIT

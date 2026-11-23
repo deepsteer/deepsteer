@@ -63,6 +63,54 @@ TIMEOUT_MARK = re.compile(r"timed out|TimeoutExpired|timeout after", re.IGNORECA
 TOOL_MARK = re.compile(r"executor-1\s+\|\s+\[Tool\]:")  # one line per tool call (no anchor: ANSI codes)
 
 
+# §13.1 E1 (the author, 2026-11-22): the sampling per instruction. An instruction may carry ``sampling`` (only
+# these keys, in range); the plan runner records it per run ID where the proxy reads it, and every other run keeps
+# the sampling of record. GPC-A19's separating cell runs at temperature 0.0.
+SAMPLING_KEYS = {"temperature": (0.0, 2.0), "top_p": (0.01, 1.0)}
+SAMPLING_DIR = STATE / "sampling"
+
+
+def sampling_of(ins: dict) -> dict:
+    """The instruction's sampling over the sampling of record; an unknown key or a value out of range is an
+    error (the instruction fails, never runs at a sampling it did not ask for)."""
+    extra = ins.get("sampling") or {}
+    if not isinstance(extra, dict):
+        raise ValueError(f"sampling must be an object, not {extra!r}")
+    for k, v in extra.items():
+        lo_hi = SAMPLING_KEYS.get(k)
+        if lo_hi is None or isinstance(v, bool) or not isinstance(v, (int, float)) or not lo_hi[0] <= v <= lo_hi[1]:
+            raise ValueError(f"sampling {k}={v!r} is not allowed (keys {sorted(SAMPLING_KEYS)}, in range)")
+    return {**SAMPLING, **{k: float(v) for k, v in extra.items()}}
+
+
+def set_sampling(run_ids: list[str], ins: dict) -> dict:
+    """Record the instruction's sampling for each of its run IDs (or clear a stale record) before any run."""
+    samp = sampling_of(ins)
+    SAMPLING_DIR.mkdir(parents=True, exist_ok=True)
+    for rid in run_ids:
+        f = SAMPLING_DIR / f"{rid}.json"
+        if ins.get("sampling"):
+            f.write_text(json.dumps(samp))
+        else:
+            f.unlink(missing_ok=True)
+    return samp
+
+
+def sampling_for(run_id: str) -> dict:
+    """The proxy's lookup: the run's recorded sampling, else the sampling of record."""
+    f = SAMPLING_DIR / f"{run_id}.json"
+    if re.fullmatch(r"[A-Za-z0-9_.:-]+", run_id) and f.exists():
+        return {**SAMPLING, **json.loads(f.read_text())}
+    return dict(SAMPLING)
+
+
+def sampling_ok(rows: list[dict], temperature: float) -> dict:
+    """Rehearsal 12: every chat call of the item went upstream at the instruction's temperature."""
+    chat = [r for r in rows if str(r.get("path", "")).endswith("/chat/completions")]
+    seen = sorted({r.get("temperature") for r in chat}, key=str)
+    return {"calls": len(chat), "temperatures": seen, "ok": bool(chat) and seen == [temperature]}
+
+
 def log(msg: str) -> None:
     print(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), msg, flush=True)
 
@@ -81,7 +129,7 @@ def rewrite(body: dict, run_id: str) -> tuple[dict, int]:
     conv = hashlib.sha256(first.encode()).hexdigest()[:12]
     seed = seed_of(run_id, conv, turn)
     out = {k: v for k, v in body.items() if k not in ("max_tokens", "max_completion_tokens", "top_k", "n")}
-    out.update(SAMPLING)
+    out.update(sampling_for(run_id))
     out["seed"] = seed
     out["stream"] = False
     out["chat_template_kwargs"] = {**(body.get("chat_template_kwargs") or {}), **EFFORT}
@@ -233,10 +281,11 @@ class Proxy(BaseHTTPRequestHandler):
 
     def _forward(self, method: str, body: bytes | None):
         run_id, path = _run_of(self.path)
-        seed, key, how = None, None, None
+        seed, key, how, temp = None, None, None, None
         t0 = time.time()
         if body and path.endswith("/chat/completions"):
             req, seed = rewrite(json.loads(body), run_id)
+            temp = req.get("temperature")
             body = json.dumps(req).encode()
             key = request_key(run_id, req)
             how, e = self.store.begin(key)
@@ -255,7 +304,8 @@ class Proxy(BaseHTTPRequestHandler):
             f.write(json.dumps({"t": t0, "run": run_id, "path": path, "seed": seed, "status": code,
                                 "latency_s": round(time.time() - t0, 3), "usage": usage,
                                 "finish_reason": finish, "overflow": overflow, "key": key[:16] if key else None,
-                                "joined": joined, "stub_generations": stub_n}) + "\n")
+                                "joined": joined, "stub_generations": stub_n,
+                                "temperature": temp}) + "\n")
         try:  # the client may have abandoned this request at its own timeout; its repeat gets the answer
             self.send_response(code)
             self.send_header("Content-Type", "application/json")
@@ -723,7 +773,8 @@ def batch_stage(ins: dict, out: Path, done: set) -> None:
 
 
 # ---- ODCV-Bench: one run in its own Compose project ------------------------------------------------
-def compose_for(run_id: str, run_dir: Path, scenario_image: str, model: str) -> str:
+def compose_for(run_id: str, run_dir: Path, scenario_image: str, model: str,
+                sampling: dict | None = None) -> str:
     """A per-run Compose project from upstream's file: prebuilt images, no fixed names, no host port,
     the executor on the `odcv` bridge (it reaches only the proxy) and the scenario's internal net, the
     scenario container on the internal net only, one bind mount (the run's own prompt.json, read-only)."""
@@ -745,7 +796,7 @@ services:
       - OPENAI_API_KEY=dummy
       - OPENAI_BASE_URL=http://{GATEWAY}:{PROXY_PORT}/run/{run_id}/v1
       - OPENAI_MODEL={model}
-      - OPENAI_TEMPERATURE={SAMPLING['temperature']}
+      - OPENAI_TEMPERATURE={(sampling or SAMPLING)['temperature']}
     depends_on:
       orchestrator_api:
         condition: service_healthy
@@ -772,7 +823,7 @@ def scenario_image(variant: str, scenario: str) -> str:
 
 
 def odcv_run(scenario: str, variant: str, arm: str, model: str, clause: str | None, run_id: str,
-             out: Path) -> dict:
+             out: Path, sampling: dict | None = None) -> dict:
     src = ODCV_DIR / f"{variant}_scenarios" / scenario
     rd = STATE / "runs" / run_id
     shutil.rmtree(rd, ignore_errors=True)
@@ -781,7 +832,7 @@ def odcv_run(scenario: str, variant: str, arm: str, model: str, clause: str | No
     if clause:  # the in-context arm: the clause first in the system message, the rest unchanged
         prompt["system_prompt"] = f"{clause.strip()}\n\n{prompt['system_prompt']}"
     (rd / "prompt.json").write_text(json.dumps(prompt))
-    (rd / "compose.yaml").write_text(compose_for(run_id, rd, scenario_image(variant, scenario), model))
+    (rd / "compose.yaml").write_text(compose_for(run_id, rd, scenario_image(variant, scenario), model, sampling))
     proj = ["docker", "compose", "-f", str(rd / "compose.yaml")]
     t0, rec = time.time(), {"run_id": run_id, "scenario": scenario, "variant": variant, "arm": arm,
                             "model": model, "clause": bool(clause)}
@@ -860,12 +911,13 @@ def odcv_stage(ins: dict, out: Path) -> None:
     from concurrent.futures import ThreadPoolExecutor
 
     clause = ins.get("clause_text")
+    samp = set_sampling([it[2] for it in ins["runs"]], ins)  # §13.1 E1, before any run starts
 
     def one(item):
         scenario, variant, run_id = item
         o = out / run_id
         o.mkdir(parents=True, exist_ok=True)
-        rec = odcv_run(scenario, variant, ins["arm"], ins["model"], clause, run_id, o)
+        rec = odcv_run(scenario, variant, ins["arm"], ins["model"], clause, run_id, o, samp)
         _write_rows(o / "proxy.jsonl", proxy_rows({run_id}))  # §11.21: usage and finish reasons
         push(o, f"{ins['id']}/{run_id}")  # results never sit only on the VM
         return rec
@@ -994,6 +1046,7 @@ def warm_ib_cache() -> bool:
 
 
 def ib_stage(ins: dict, out: Path) -> None:
+    set_sampling([ins["id"]], ins)  # §13.1 E1: the proxy reads it by the instruction's run ID
     log_dir = out / "inspect_logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     # §11.24: this process's own state, outside what is pushed, from a copy of the warm master

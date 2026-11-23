@@ -3591,3 +3591,48 @@ subject's judged counts beside:
 5. On go, **the server under 16,384 again:** C1, then the summed adapter; down; the second judge pass on 192.
 
 **Cut first:** the summed adapter, then C1. `GPC-A19`'s cell runs first, so nothing cuts it.
+
+### 13.2 Built (2026-11-22): E1, E2, rehearsal 12's item, the depth cell and GPC-A19's cell
+
+**VM side (the author's accept of E1 and E2), VM hash `dfb0911678625a0e`.**
+- **E1:** `gpc4_vm.py` `sampling_of`, `set_sampling` and `sampling_for`. An instruction's `sampling` (temperature
+  and top_p only, in range; anything else fails the instruction) is recorded by run ID before any run. The proxy's
+  `rewrite` applies it, and `compose_for` passes it to the executor. Every other run keeps the sampling of record
+  (0.7), and a stale record is cleared. Each proxy row now records the temperature sent upstream.
+- **E2:** `launch_gpc4.sh` `cmd_launch` checks the local disk before any AWS resource: the pod card's rule, 50 GB
+  under `outputs/gpc4_v1`.
+- **Rehearsal 12** is rehearsal 11's plan plus `r5h_same_scenario_16`: 16 runs of one scenario at once, each its own
+  run ID, at temperature 0.0. Verify requires all 16 with no container error. It also checks every ODCV-Bench and
+  ImpossibleBench item's calls against its instruction's temperature (0.7 where none is named).
+- Not built: E3.
+
+**Pod side.**
+- `gpc4_pod.py`: `depth_instruction` (the named set; `d5d<draw>_<arm>_k<NN>_<v>_<scenario>`; draws interleaved,
+  primary before sensitivity) and `a19_instruction`.
+- The stages `a19_cell` and `depth_base` / `depth_cctx` / `depth_c1` / `depth_sum`. Each checks the server's cap:
+  GPC-A19's cell needs none, the arms need 16,384.
+- `judge --part depth_a` decides (`depth_decision.json`), with this session's control choosing the threshold by the
+  registered rule. `judge --part depth_final` writes the read and draw 1's stop rule (`depth_read.json`).
+- `serve --part up_nocap`.
+- `remote_gpc4.sh` is ordered by serve configuration as in §13.1. Its gate floor is 227.
+- Per-run saves as the pilot's (`run.json`, `messages_record.txt`, `proxy.jsonl`, `docker_diff.txt`, the hash
+  files), plus `depth.json` (each arm's runs, errors, sampling and cap).
+
+**Checks.** The tests pass: 202 of GPC-4's before the depth tests, then the depth cell's own, including 16 runs of
+one scenario through the dry host. The slow dry chain runs GPC-A19's cell, the depth cell to its decision, the go
+branch and the final read. The standing step passed: 227 collected, floor 227; 226 passed, 1 skipped, once quiet
+and three times under load; the stage block ran dry to its end in 21 stage calls.
+
+**A price the acceptance left out: the sensitivity set's runs.** The sensitivity read needs runs on its two extra
+scenarios, and §13's price counted the primary three only. Built at `DEPTH_SENS_K = 4`: 16 runs an arm on the
+two, a descriptive line. Those scenarios are the slow ones, about 580 run-seconds a run against 252 on the three.
+- *At k = 4:* +0.21 h on the base arm and +1.2 h over the four arms. **A draw is about 6.0 A100-h ($7.00), and
+  option 2 about 6.7 h ($7.80).** If the bail stops the arms, the pod ends at about 3.4 h ($4.00).
+- *At k = 0:* the §13.1 price. The sensitivity line is then unread, and the with-and-without line on the primary
+  set stays.
+
+The author's ruling: k = 4 or k = 0 (one constant, pod side; no rehearsal either way).
+
+**Rehearsal 12:** `bash papers/gpc_goal_pressure_conduct/runpod/launch_gpc4.sh rehearse`. When the host has
+terminated itself, about 80 minutes later, run `bash papers/gpc_goal_pressure_conduct/runpod/launch_gpc4.sh
+verify`. The launch line follows once its record has passed.
