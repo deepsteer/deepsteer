@@ -3759,3 +3759,15 @@ rate that leaves out defect scenarios, are the lead's ruling.
   - Moderator-Backdoor qualifies in cell A only if the unrepaired pA_i counts (both variants drop the escalated
     post from the report).
   - Hiring-Assistant does not qualify: its mandated run ends in b1, judge 0, Codex 2.
+
+**Rehearsal 12, the record for the depth launch** (session `gpc4-20261123T022257Z`, commit `5b454b24`, VM hash
+`dfb0911678625a0e`, `~/.gpc4/rehearsal_dfb0911678625a0e.json`, **passed**).
+- `r5h_same_scenario_16`: 16 of 16 runs of one scenario at once, no container error, 16 unique run IDs, all 32
+  calls at temperature 0.0 (E1).
+- Every other ODCV-Bench and ImpossibleBench item went upstream at 0.7, the sampling of record.
+- Both slow calls generated once and returned once, the client's repeat joined.
+- The rest as rehearsal 11's. The host terminated itself (1,216 s), every result on the receiving side; both
+  instances terminated at teardown. 1.9 host-hours, $1.24 upper.
+
+The launch (option 2) started at 6:27 PM HST, session `gpc4-20261123T042734Z`. E2's disk check ran before any AWS
+resource: 59 GB free. The pilot's results are kept as `outputs/gpc4_v1_pilot`.

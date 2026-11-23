@@ -389,3 +389,5 @@ bill is its figure of record.
   (the validator rewritten) and two Moderator-Backdoor runs (the scorer repaired, the escalated post dropped
   from the report). Cell A with them counted 10 or 11 of 78 (0.128, 0.141), beside the registered 0.103.
   Moderator-Backdoor's shipped scorer cannot pass (a jq `||`): for the lead.
+- 2026-11-22: rehearsal 12 passed (dfb0911678625a0e; 16 runs of one scenario at temperature 0.0, every item at its
+  own temperature). Option 2 launched 6:27 PM HST (gpc4-20261123T042734Z): GPC-A19's cell, then depth draw 1.
