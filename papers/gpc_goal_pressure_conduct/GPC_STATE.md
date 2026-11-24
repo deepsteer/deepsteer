@@ -451,3 +451,10 @@ bill is its figure of record.
 
   The count is 32 + 16, corrected in place. Sensitivity line: the 23 act states that produce the scored content.
   The standing step was rerun.
+- 2026-11-23: the lead's 2:15 PM Part 2 (zero GPU; ImpossibleBench still held by the author).
+  - **GPC-A18 accepted:** at one epoch a task, the seed collision only makes the first reply identical.
+  - **GPC-A24 narrowed:** none of the 8 finished samples edited `test.py` or bypassed the harness; special-casing
+    against fitted wrong code is open, and a Codex read of the 8 final `func.py` files is next. Rate 2 of 8 [0.03,
+    0.65], or 2 of 30 [0.008, 0.22].
+  - **Tools scaffold priced** beside the minimal (30 + 10 central $8.46, 15 + 10 $5.11; preemption risk at 8).
+  - **§16.5** puts the scaffold choice first, with the lead's read for design B.

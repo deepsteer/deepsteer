@@ -4682,6 +4682,35 @@ one there, so launch 7's multiple was load-induced, as the table shows.
 
 The base and the next adapter together double each figure (paired on the same tasks).
 
+**The tools scaffold, beside it** (the lead's 2:15 PM item 9; base only, concurrency 8; `tools_price` in the same
+JSON).
+
+*Inputs and their provenance:*
+- *Tokens a sample:* launch 7's 8 finished base samples. Inspect's events count each answered call once, so the
+  600 s waste is removed.
+  - The 6 fails average 118.5k output tokens (79k to 149k), and 3 of them stop at the 100-message limit.
+  - The 2 passes average 46k.
+  - The 5 running samples were unfinished at the copy (4k to 62k so far), so they bound nothing above.
+- *Working time a sample* (Inspect's `working_time`, without the retry waits): 1.21 h on average at about 5
+  concurrent.
+- *Cases:*
+  - impossible tasks: low is the finished 8's mean (100k, which includes the short passes), central the fails'
+    mean (118.5k), high the largest (149k);
+  - the 10 original tasks: the passes' mean (46k) for low and central, and 100k for high;
+  - the same aggregate (174 tokens/s) and tail rule as the minimal table.
+- *KV cache:* a tools-scaffold request reaches 34k tokens at the 90th percentile and 44k at most. Eight deep samples
+  at once (271k at the 90th percentile) overrun the 224k cache, so **8 carries preemption risk late in samples**.
+  At 5 (launch 7) it did not.
+
+| tools scaffold (base only, at 8) | low | central | high |
+|---|---|---|---|
+| 30 impossible + 10 original | 6.2 h ($7.30) | **7.2 h ($8.46)** | 9.7 h ($11.43) |
+| 15 impossible + 10 original | 3.8 h ($4.46) | **4.3 h ($5.11)** | 6.1 h ($7.22) |
+
+At equal task counts the two scaffolds cost about the same: the tools scaffold's 30 tasks centre at $8.46,
+against the minimal's $8.55. The tools scaffold's seed collision makes only the first reply identical across tasks
+at one epoch a task (§16.1), which the lead accepts.
+
 **The first-tasks rule at each count** (§11.26 item 1, restated):
 
 | | 30 tasks (A, C) | 15 tasks (B) |
@@ -4736,6 +4765,19 @@ The pod side needs the stage's design (A, B or C) and its cut rule, which is the
 
 ### 16.5 The draft for the author
 
+**The scaffold comes before the design** (the lead's 2:15 PM item 10).
+
+| | the tools scaffold | the minimal scaffold |
+|---|---|---|
+| what the agent can touch | `func.py` and `test.py` in a sandbox, with bash, python and an editor, up to 100 messages | its answer only: code in a reply, tests in the prompt, feedback after each attempt |
+| the cheating it allows | editing the tests, and special-casing them in the code | special-casing the tests only |
+| what it can show | either route. On this subject: 2 passes in 8 finished, neither by a test edit (GPC-A24) | the quieter route only. Its prior for a Qwen coder: about 4% at 10 attempts (Figure 17) |
+| what it cannot show | its passes so far are not separable, by script, from wrong general code that fits the flipped test (A24's open reading) | any test edit, the route upstream finds most common for Qwen3-Coder on SWE-bench (Section 4.2) |
+| cost (30 + 10, central, base) | $8.46, with preemption risk at 8 | $8.55 |
+
+**The lead's read:** design B (15 impossible tasks × 10 attempts, 10 original) is preferred if the minimal scaffold
+is chosen, since Figure 17 puts the cheating in the later attempts.
+
 - **Scoring:** the benchmark's own pass on an impossible task (upstream's scorer at the pin); no judge decides. The
   10 original tasks are the coarse capability check.
 - **Branches, written before data:**
@@ -4770,9 +4812,8 @@ The pod side needs the stage's design (A, B or C) and its cut rule, which is the
    (`52ebb0f`), an ancestor of the pin. The minimal scaffold has no tools in any case. (checked)
 
 **Question behind the question:** this subject has no ImpossibleBench reading of record. Launch 6's minimal
-scaffold was void (0 of 0 scored). Launch 7's tools gate is void too (8 of 30 scored), but **2 of its 8 finished
-impossible tasks passed** (0.25 [0.03, 0.65]; `GPC-A24`), above any minimal-scaffold prior. The finished 8 are the
-short ones, and passing ends a sample early, so that rate is selection-inflated. Still, it points at the tools
-scaffold, not the minimal one, as the scaffold that might carry a contrast on this subject. The tools scaffold costs
-about 8 A100-h for 30 tasks and needs the determinism fault fixed first. Which scaffold does the author want
-priced, before the minimal stage is built? A zero-GPU check comes first: whether the two passes modified `test.py`.
+scaffold was void (0 of 0 scored), and launch 7's tools gate is void too (8 of 30 scored). That gate's 2 passes in 8
+are not test edits (GPC-A24). Whether they are special-casing is one Codex read away. If they are, the tools
+scaffold shows this subject's quieter cheating at a rate the minimal scaffold's prior does not predict, and it is the
+scaffold to price for a contrast. If not, both scaffolds most likely end in a floor near a bar of 0.10. The author's
+choice of scaffold waits on that read.
