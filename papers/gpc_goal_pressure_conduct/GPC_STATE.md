@@ -149,8 +149,9 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | 11-22/23 | GPC-4 the depth launch on Thunder (A100 80GB, $1.18; `atu6f822`; all stages run, done at 6.55 h; GPC-A19's cell and depth draw 1, the decision go, the read the 'does not' branch; §13.5) | 6.55 | 6.70 | 7.91 | 44.40 | 56.59 |
 | 11-23 | GPC-4 Amendment 6's root on Thunder (A100 80GB, $1.18; `djqu6n4b`; no host; the root bailed, `stop_base`, at 0.97 h; §14.4) | 0.97 | 1.12 | 1.32 | 45.52 | 57.91 |
 | 11-23 | GPC-4 Amendment 7 on Thunder (A100 80GB, $1.18; `xo08x0qg`; no host; all stages run at 1.93 h; C1's and the sum's rows void, GPC-A25; §15.4) | 1.93 | 2.08 | 2.45 | 47.60 | 60.36 |
+| 11-24 | GPC-4 §18 launch 1 on Thunder (A100 80GB, $1.18; `440a7egr`; session `gpc4-20261124T070532Z`; the server's engine died in its startup profiling, "Triton Error [CUDA]: an illegal memory access", profiling at 193 s against 100 to 106 s in every earlier session; the registered end at the first server phase, 0.73 h; nothing read) | 0.73 | 0.88 | 1.04 | 48.48 | 61.40 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: $142.37 remain. After launch 6: **$133.05 remain** ($173.00 − $39.95). After launch 7: $126.50 remain. After the pilot: $124.32 remain ($173.00 − $48.68; the lead's scratch, $124.64, omits the table's 0.15 h a pod on both rows: $6.40 and $2.01 are the session clocks at $1.18; the instances' own lives, create to delete, were about 5.6 h and 1.9 h, $6.64 and $2.27). After the depth launch: $116.41 remain. After A6's root: $115.09 remain. After A7: **$112.64 remain** ($173.00 − $60.36). The EC2 host's spend to
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: $142.37 remain. After launch 6: **$133.05 remain** ($173.00 − $39.95). After launch 7: $126.50 remain. After the pilot: $124.32 remain ($173.00 − $48.68; the lead's scratch, $124.64, omits the table's 0.15 h a pod on both rows: $6.40 and $2.01 are the session clocks at $1.18; the instances' own lives, create to delete, were about 5.6 h and 1.9 h, $6.64 and $2.27). After the depth launch: $116.41 remain. After A6's root: $115.09 remain. After A7: $112.64 remain. After §18's launch 1: **$111.60 remain** ($173.00 − $61.40). The EC2 host's spend to
 date (rehearsals 1 to 7 and launch 1's host, about $4 at the records' upper bounds) is not in it; the AWS
 bill is its figure of record.
 
@@ -494,3 +495,10 @@ bill is its figure of record.
   self-termination was unobserved, because verify ran before the host's end. The host's code is identical to
   rehearsal 12's. §18's launch runs tonight. **Pending, after the session:** a shorter rehearsal that verifies
   itself (a launcher change, so a new VM hash).
+- 2026-11-24 10:25 PM HST (11-23 local): **§18 launch 1 ended at its first server phase**, by the registered rule
+  (§11.17 item 1). The server was on the renamed copies (its log names `served_adapters/c1`, so the fix is live).
+  Its engine died in vLLM's startup profiling, before any LoRA module loaded, with "Triton Error [CUDA]: an illegal
+  memory access". Profiling took 193 s against 100 to 106 s in every earlier session, which points at this
+  instance's GPU. No ECC errors showed. Nothing ran past the server, the pod was deleted, and the host was told to
+  stop. The cost was 0.88 A100-h ($1.04). Relaunch as is (a fresh instance), at the author's word.
+
