@@ -5139,3 +5139,27 @@ The live endpoint passes the new check.
 `4f91622dfc7d0508`, and rehearsal 12 no longer vouches for the launch. **Rehearsal 13** (rehearsal 12's plan,
 unchanged, zero GPU; rehearsal 12 took 1.9 host-hours, $1.24 upper) and its verify come before §18's launch.
 Nothing pod side changes, and §18 and §18.1 stand as registered.
+
+### 18.3 Rehearsal 13 accepted by the author's ruling (2026-11-23 evening)
+
+**Rehearsal 13** (session `gpc4-20261124T055013Z`, commit `27fc3ac7`, VM hash `4f91622dfc7d0508`; 1.12 host-hours,
+$0.73 upper) **passed every instrument**:
+- all 44 checks: the probe, the three smoke batches, ODCV-Bench's 80 runs at 16, both scaffolds, the clause items,
+  the overflow, both slow calls generated once and joined, and 16 runs of one scenario at once;
+- every result on the receiving side.
+
+**Its record reads `passed: false` on one check only.** The host's self-termination was not observed: `verify` ran
+1.1 host-hours in, before the host's end, and its teardown terminated both instances.
+
+**The author's ruling:** the rehearsal is accepted, and the launch runs tonight without another rehearsal. *Reason
+for the record:* the host's code is byte-identical to rehearsal 12's, which observed self-termination:
+- `gpc4_vm.py`, both cloud-inits, the rehearsal plan and the IAM policy have no diff from `5b454b24` to `27fc3ac7`;
+- the VM side differs only in `launch_gpc4.sh`'s capacity check (§18.2), which runs on the author's machine before
+  any resource exists.
+
+The record `~/.gpc4/rehearsal_4f91622dfc7d0508.json` now carries `passed: true`, `verify_passed: false` and the
+ruling. Verify's own output is kept beside it, unchanged, as `rehearsal_4f91622dfc7d0508.verify.json`.
+
+**Held for after this session (the author's direction).** The rehearsal is to be shorter and to verify itself, with
+no separate run by the author. That is a change to `launch_gpc4.sh`, which would move the VM hash, so it is built
+after the launch, not before.

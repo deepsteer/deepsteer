@@ -490,3 +490,7 @@ bill is its figure of record.
   `gpu_type` key, and the capacity check needed it. Fixed so that `specs` decides (§18.2). The VM hash is now
   `4f91622dfc7d0508`, so rehearsal 13 runs before the launch. Disk freed to 85 GB at the author's word (the two
   zephyr-7b models, the A7 pull, session scratch).
+- 2026-11-23 evening: **rehearsal 13 accepted by the author's ruling** (§18.3). Every instrument passed; only
+  self-termination was unobserved, because verify ran before the host's end. The host's code is identical to
+  rehearsal 12's. §18's launch runs tonight. **Pending, after the session:** a shorter rehearsal that verifies
+  itself (a launcher change, so a new VM hash).
