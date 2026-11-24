@@ -145,7 +145,8 @@ def stage_root(out: Path, dry: bool) -> dict:
         print(">> a6 root:", json.dumps(rec), flush=True)
         return rec
     sm = (P4._r(out / "a6", "smoke") or {}).get("arms") or {a: True for a in ARMS}  # noqa: SLF001
-    arms = [a for a in ARMS if sm.get(a)]
+    # §18: an adapter arm only where the standing gate passed it this session (GPC-A25)
+    arms = [a for a in ARMS if sm.get(a) and (ARMS[a][0] == "base" or P4.gate_ok(out, ARMS[a][0]))]
     rs = renders()
     rows = _run(root_items(rs, arms, K_ROOT), out / "a6" / "root.jsonl", dry, _letter_row({r["render_id"]: r for r in rs}))
     rec = {"arms": arms, "skipped": [a for a in ARMS if a not in arms], "rows": len(rows),
@@ -224,7 +225,8 @@ def stage_free(out: Path, dry: bool) -> dict:
     sm = (P4._r(out / "a6", "smoke") or {}).get("arms") or {a: True for a in ARMS}  # noqa: SLF001
     sc = sorted({r["scenario"] for r in renders()})
     items = [(f"a6free|{a}|{s}|{v}|{i}", ARMS[a][0], free_prompt(s, v, a))
-             for s in sc for v in ("mandated", "incentivized") for a in ARMS if sm.get(a) for i in range(K_FREE)]
+             for s in sc for v in ("mandated", "incentivized") for a in ARMS
+             if sm.get(a) and (ARMS[a][0] == "base" or P4.gate_ok(out, ARMS[a][0])) for i in range(K_FREE)]
     if dry:
         items = items[: len(ARMS) * 2]
 

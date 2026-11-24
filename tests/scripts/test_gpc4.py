@@ -31,6 +31,9 @@ def _server_up(tmp_path):
     server-phase stages otherwise; that rule has its own tests, which remove these records)."""
     (tmp_path / "serve_up.json").write_text(json.dumps({"up": True}))
     (tmp_path / "serve_check.json").write_text(json.dumps({"passes": True}))
+    # §18: and its standing gate passed both adapters (the gate's own tests remove this record)
+    gate = {"gate_ok": True, "adapters": {"c1": {"passes": True}, "sum": {"passes": True}}}
+    (tmp_path / "gate.json").write_text(json.dumps(gate))
 
 
 POLICY = json.loads((GPC / "vm/gpc4_iam_policy.json").read_text())
@@ -1497,20 +1500,18 @@ def test_the_failure_branch_skips_the_vm_stages(tmp_path):
 
 
 def test_pod_runner_order_and_inputs():
-    # most probable failure: the host gets a stage while the server is down, the judge loads while
-    # the server holds the GPU, an adapter arm runs before the decision, GPC-A19's cell runs on the
-    # capped server, or the host is never told to stop (§13.1)
+    # most probable failure: an adapter arm runs before the standing gate, or after it failed; the
+    # host gets a stage while the server is down; the judge loads while the server holds the GPU; an
+    # adapter arm runs before the decision; or the host is never told to stop (§13.1, §18)
     steps = [
         "--stage prep",
         "--stage parity_hf",
         "--stage parity\n",
-        "--part up_nocap",  # GPC-A19's cell first, uncapped, so nothing cuts it
+        "--part up\n",  # cell A's settings, under 16,384, on the renamed copies (§18)
         "--stage serve_check",
         "--stage vm_wait",
-        "item a19_cell",
-        "--part down",
-        "--part up\n",  # cell A's settings, under 16,384
-        "--stage serve_check",
+        "gate --stage gate",  # §18: before any arm
+        "ok gate.json gate_ok || end_session",
         "--stage arm_smoke --part pilot",
         "item depth_base",
         "item depth_cctx",
@@ -1523,8 +1524,14 @@ def test_pod_runner_order_and_inputs():
         "item depth_sum",  # cut first: the last item
         "--part down",
         "--part depth_final",
+        "fits late_a6",  # §18's late block, last and cut first
+        "smoke --stage smoke",
+        "root --stage root",
+        "named --stage named",
+        "own --stage own",
         "--stage stop",
     ]
+    assert "item a19_cell" not in RUNNER and "up_nocap" not in RUNNER  # GPC-A19's cell is done
     at = RUNNER.index("# a. C1 registered")  # the stage block (end_session is defined above it)
     pos = []
     for st in steps:  # each after the one before
@@ -1551,6 +1558,7 @@ def test_pod_runner_order_and_inputs():
         "vm_keys/results_key.pub",
         "eval_8gram_hashes_v2.npy",
         "adapters/c1/612732",
+        "gpc4_in/a7/states.jsonl",  # §18's late block reads A7's states
     ):
         assert f in inp, f
     card = (GPC / "runpod/launch_gpc4_pod.sh").read_text()
@@ -1957,7 +1965,7 @@ def test_row_runner_follows_the_table(tmp_path):
             "--stage prep",
             "--stage serve_check",
             "--stage vm_wait",
-            "item a19_cell",
+            "gate --stage gate",
             "--stage arm_smoke --part pilot",
             "item depth_base",
             "--part depth_a",
@@ -2287,10 +2295,11 @@ def test_stage3s_read_and_stage4s_cst_read_skip_with_their_reasons(tmp_path):
 
 
 # ---- §11.17: a dead server ends the session; the ODCV-Bench arms do not wait on the judge -------
-def _run_stage_block(tmp_path, server_ok: bool):
+def _run_stage_block(tmp_path, server_ok: bool, gate_ok: bool = True):
     """The runner's stage block, from its dry flag to its end, with every Python call a stub that
     logs its arguments: ``--stage server_ok`` answers ``server_ok``, ``--stage stop`` writes the
-    stop document as the plan runner does. The runner's own exit trap is set first."""
+    stop document as the plan runner does, and the standing gate's record says ``gate_ok`` (§18).
+    The runner's own exit trap is set first."""
     import subprocess
 
     runner = (GPC / "runpod/remote_gpc4.sh").read_text()
@@ -2298,6 +2307,7 @@ def _run_stage_block(tmp_path, server_ok: bool):
     block = runner[runner.index("DRY=${GPC4_DRY:+--dry-run}") :]
     out = tmp_path / "out"
     (out / "logs").mkdir(parents=True)
+    (out / "gate.json").write_text(json.dumps({"gate_ok": gate_ok}))
     calls = tmp_path / "calls.txt"
     py = tmp_path / "py"
     py.write_text(
@@ -2354,14 +2364,27 @@ def test_a_live_server_runs_the_rest_of_the_block(tmp_path):
     assert "the session ends" not in r.stdout
     for stage in (
         "--stage vm_wait",
+        "--stage gate",
         "--stage arm_smoke",
-        "--stage a19_cell",
         "--part depth_a",
         "--part depth_final",
         "--stage stop",
     ):
         assert any(stage in c for c in calls), stage
     assert not any("--part now" in c for c in calls)
+
+
+def test_a_failed_standing_gate_ends_the_session_before_any_arm(tmp_path):
+    # most probable failure: an adapter arm runs after the gate failed, so a served base is read
+    # as the adapter again (GPC-A25; §18: a failed gate ends the session and nothing else runs)
+    r, calls = _run_stage_block(tmp_path, server_ok=True, gate_ok=False)
+    assert r.returncode == 0 and (tmp_path / ".session_done").exists(), r.stderr
+    assert "the standing gate failed" in r.stdout
+    at = next(n for n, c in enumerate(calls) if "--stage gate" in c)
+    after = calls[at + 1 :]
+    assert any("--stage stop --part now" in c for c in after)
+    for stage in ("arm_smoke", "depth", "judge", "--stage root", "--stage named", "--stage own"):
+        assert not any(stage in c for c in after if "serve" not in c), stage
 
 
 def test_the_pods_server_check_records_why_the_session_ended(tmp_path, monkeypatch):
@@ -3410,7 +3433,7 @@ def test_a_late_judge_holds_odcv_bench_until_its_decision_then_runs_it_late(tmp_
 def test_the_depth_cells_judge_loads_only_at_a_server_down_point():
     # most probable failure: the judge loads while the subject's server still holds the GPU (launch
     # 6's first judge pass ran out of memory that way), or before its weights arrived (§13.1)
-    block = RUNNER[RUNNER.index("# b. GPC_PLAN.md §13.1 (Amendment 5") :]
+    block = RUNNER[RUNNER.index("# b. GPC_PLAN.md §18") :]
     for part in ("depth_a", "depth_final"):
         j = block.index(f"--part {part}")
         assert block.rindex("--part down", 0, j) > block.rindex("--part up", 0, j), part
@@ -4147,14 +4170,16 @@ def test_launch_checks_the_local_disk_before_any_aws_resource():
 # ---- §13.1 (Amendment 5): the depth cell and GPC-A19's cell -------------------------------------
 def test_depth_instruction_is_the_named_set_with_fresh_ids_interleaved():
     # most probable failure: a draw repeats a run ID (one seed, one Compose project for two runs),
-    # the set drifts from the one named before any arm ran, or a cut takes a whole scenario's draws
-    # instead of the last draws
+    # reuses draw 1's IDs (so its seeds), the set drifts from the one named before any arm ran, a
+    # size drifts from §18's (192 an arm, the summed adapter 48), or a cut takes a whole scenario's
+    # draws instead of the last draws
+    size = {"depth_base": 192, "depth_cctx": 192, "depth_c1": 192, "depth_sum": 48}
     for item, (arm, model, which) in P4.DEPTH_ARMS.items():
         ins = P4.depth_instruction(item, dry=False)
         runs = ins["runs"]
-        assert len(runs) == 3 * 2 * P4.DEPTH_K == 96 and P4.DEPTH_SENS_K == 0  # §13.3: draw 1
+        assert len(runs) == 3 * 2 * P4.DEPTH_K_ARM[item] == size[item] and P4.DEPTH_SENS_K == 0
         assert len({r[2] for r in runs}) == len(runs) and all(
-            r[2].startswith(f"d5d1_{arm}_k") for r in runs
+            r[2].startswith(f"d5d1b_{arm}_k") for r in runs
         )
         assert [r[0] for r in runs[:6]] == [
             s for s in P4.DEPTH_PRIMARY for _ in (0, 1)
@@ -4643,3 +4668,102 @@ def test_a7_runner_bails_on_the_control_before_any_read_and_syncs_the_states():
         "RESULTS_SUBPATH=outputs/gpc4_a7" in c and "REMOTE_SCRIPT=$G/runpod/remote_gpc4_a7.sh" in c
     )
     assert 'SYNC="$SYNC,$A7_STATES"' in c and "A7_STATES=outputs/gpc4_in/a7/states.jsonl" in c
+
+
+# ---- §18 (GPC-A25): the server on the renamed copies; the standing gate -------------------------
+def _trainer_adapter(d: Path) -> Path:
+    """A tiny adapter saved as the trainer saves C1: its keys under the trainer's decoder path."""
+    import torch
+    from safetensors.torch import save_file
+
+    d.mkdir(parents=True, exist_ok=True)
+    k = "base_model.model.model.layers.0.self_attn.q_proj"
+    save_file(
+        {f"{k}.lora_A.weight": torch.zeros(2, 4), f"{k}.lora_B.weight": torch.zeros(4, 2)},
+        str(d / "adapter_model.safetensors"),
+    )
+    (d / "adapter_config.json").write_text(json.dumps({"r": 2}))
+    return d
+
+
+def test_the_servers_lora_modules_carry_the_served_prefix(tmp_path, monkeypatch):
+    # most probable failure (GPC-A25): assert the server's --lora-modules paths carry the served
+    # prefix (model.language_model.layers). A trained directory loads on vLLM 0.31 without an error
+    # and applies none of its weights, so the adapter's name is answered by the base
+    import pilot_pod_lib as PL
+
+    rec = PL.served_paths()
+    (tmp_path / "parity").mkdir()
+    (tmp_path / "parity" / "prefixes.json").write_text(
+        json.dumps({"trainer": rec["trainer"], "served": rec["served"]})
+    )
+    for t in ("c1", "sum"):
+        d = _trainer_adapter(tmp_path / "adapters" / t)
+        assert PL.key_prefix(d) == rec["trainer"]
+        P4._w(tmp_path, f"train_{t}", {"trained": True, "adapters": {"1": str(d)}})  # noqa: SLF001
+        P4._w(tmp_path / "parity", t, {"passes": True, "read": True})  # noqa: SLF001
+    mods = P4.served_modules(tmp_path, dry=True)
+    assert set(mods) == {"c1", "sum"}
+    for t, path in mods.items():
+        assert PL.key_prefix(path) == rec["served"], t
+        assert "served_adapters" in path and path != P4.trained(tmp_path, t)
+    cmd = P4.serve_cmd("model", mods)
+    lm = cmd[cmd.index("--lora-modules") + 1 : cmd.index("--lora-modules") + 3]
+    assert all(PL.key_prefix(x.split("=", 1)[1]) == rec["served"] for x in lm)
+    src = inspect.getsource(P4.serve)
+    assert "served_modules(out, False)" in src and "adapters(out), cap" not in src
+
+
+def _gate_rows(rates: dict[str, float]) -> list[dict]:
+    import random
+
+    rows = []
+    for s in range(24):
+        for i in range(2):
+            for arm, p in rates.items():
+                hit = random.Random(f"{s}|{i}|{arm}").random() < p
+                rows.append({"arm": arm, "slot_id": f"s{s}", "accepts": hit})
+    return rows
+
+
+def test_the_gate_passes_an_adapter_with_the_clauses_effect_and_not_the_base_under_its_name():
+    # most probable failure: the gate passes an adapter that reads at the base (the served base
+    # under the adapter's name, GPC-A25), or fails one at the clause's effect
+    import gpc4_gate_pod as G
+
+    live = G.control_rule(_gate_rows({"base": 0.5, "cctx": 0.05, "c1": 0.05}), "c1")
+    assert live["passes"] and live["reduction_ci"][1] < 0
+    dead = G.control_rule(_gate_rows({"base": 0.5, "cctx": 0.05, "c1": 0.45}), "c1")
+    assert not dead["passes"]
+    weak = G.control_rule(_gate_rows({"base": 0.6, "cctx": 0.0, "c1": 0.45}), "c1")
+    assert not weak["passes"] and weak["reduction"] > weak["half_clause"]  # under half the clause's
+
+
+def test_the_gate_stage_runs_dry_and_admits_adapters_only_past_it(tmp_path, monkeypatch):
+    # most probable failure: an adapter arm runs with no gate record, or the gate's record omits the
+    # adapter's two checks (§18)
+    import gpc4_a7_pod as A7
+    import gpc4_gate_pod as G
+
+    (tmp_path / "gate.json").unlink()
+    assert not P4.gate_ok(tmp_path, "c1")
+    assert A7.arms_read(tmp_path) == ["base", "cctx"]
+    for t in ("c1", "sum"):
+        P4._w(tmp_path, f"train_{t}", {"trained": True, "adapters": {"1": str(tmp_path)}})  # noqa: SLF001
+        P4._w(tmp_path / "parity", t, {"passes": True, "read": True})  # noqa: SLF001
+    ok, why = P4.smoke_ok(tmp_path, "c1", "odcv")
+    assert not ok and "standing gate" in why
+    if not (GPC / "outputs/gpc1_v1/conduct/slots.json").exists():
+        pytest.skip("the control slots are synced, not committed")
+    (tmp_path / "parity" / "hf_base.json").write_text(json.dumps({"base": [[0.0] * 5] * 32}))
+    for t in ("c1", "sum"):
+        (tmp_path / "parity" / f"hf_{t}.json").write_text(
+            json.dumps({"attached": [[-5.0, 0.0, -5.0, -5.0, -5.0]] * 32})
+        )
+    rec = G.stage_gate(tmp_path, dry=True)
+    assert rec["gate_ok"] is True and P4.gate_ok(tmp_path, "c1") and P4.gate_ok(tmp_path, "sum")
+    for t in ("c1", "sum"):
+        a = rec["adapters"][t]
+        assert a["control_rule"]["passes"] and a["server_parity"]["passes"], t
+        assert a["server_parity"]["path"].startswith("the server")
+    assert A7.arms_read(tmp_path) == list(A7.ARMS)

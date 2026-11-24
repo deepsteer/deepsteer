@@ -34,6 +34,7 @@ GPC_INPUTS=(
   outputs/gpc4_in/l6_odcv_base.jsonl  # launch 6's gate runs for the final pass (z_gpc4_l6_transcripts.py)
   outputs/gpc4_v1/g5/blackmail.jsonl  # launch 6's stage 4 transcripts, judged in launch 7 (§11.23 ruling 2d)
   outputs/gpc4_in/l6_judged_first.jsonl  # launch 7's judge on launch 6's 80: the stock base at both thresholds (§12)
+  outputs/gpc4_in/a7/states.jsonl  # §18's late block: A7's 48 states (gitignored; z_gpc4_a7_states.py)
 )
 I="$G/outputs/gpc4_in/cst"
 rm -rf "$I" && mkdir -p "$I"

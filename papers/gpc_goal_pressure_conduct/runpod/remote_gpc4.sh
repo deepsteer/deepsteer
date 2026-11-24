@@ -3,7 +3,8 @@
 # EC2 host's stages, the offline stages and the judge between them, the control document for the host on
 # 127.0.0.1:8001, the host's results arriving through a write-only restricted key. Cut from the end under
 # the 10 A100-h cap (§11.29; Amendment 4's pilot, §12) (stages stop at 10.25 h unless moved; watchdog ceiling 14.0 h). Writes
-# papers/gpc_goal_pressure_conduct/outputs/gpc4_v1.
+# papers/gpc_goal_pressure_conduct/outputs/gpc4_v1. §18 (GPC-A25): the server loads the adapters' renamed copies,
+# and the standing gate reads each adapter's known effect through it before any arm.
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
@@ -100,7 +101,7 @@ for f in adapters/c1/612732/adapter_model.safetensors conduct/slots.json conduct
 done
 for f in outputs/_sync/eval_8gram_hashes_v2.npy outputs/gpc4_in/vm_keys/forward_key.pub \
          outputs/gpc4_in/vm_keys/results_key.pub outputs/gpc4_in/session data/c_bounds_v1.json \
-         data/bounds_grid_v1.json data/c_conduct_v1.json; do
+         data/bounds_grid_v1.json data/c_conduct_v1.json data/a6_renders_v1.json outputs/gpc4_in/a7/states.jsonl; do
   [ -f "$G/$f" ] || { echo "BAIL: $f did not sync"; exit 1; }
 done
 mkdir -p "$OUT/vm_results" && cp "$I/session" "$OUT/session"
@@ -170,7 +171,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=233   # the gate's collected count when set (Amendment 6, §14); fewer means a file failed to collect
+GATE_FLOOR=243   # the gate's collected count when set (§18); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
@@ -213,40 +214,34 @@ item() { if $PY $GP --out "$OUT" --stage fits --next "$1" $DRY; then run $GP "$1
 
 # The stages follow GPC_PLAN.md §11.14's dependency table: no stage's failure stops the session unless
 # nothing downstream can run; each stage skips, with its reason recorded, what it cannot do.
-# One model load per process (§11.16): every stage that loads a model is its own run, as GPC-1 to
-# GPC-3's were (launch 4's prep loaded the HF letters model and then vLLM in one process and ran out
-# of memory).
-# The one exception (§11.17 item 1): a dead server at the first server phase ends the session.
-# a. C1 registered, the summed adapter built (exact); each adapter's letters on HF, then its served
-#    parity, each its own process. A failed adapter is not served: C1's failure skips C1's arms and
-#    stage 3; the sum's failure skips stage 4.
+# One model load per process (§11.16): every stage that loads a model is its own run.
+# The exceptions: a dead server at the first server phase (§11.17 item 1), and a failed standing gate (§18),
+# end the session.
+GATE=papers/gpc_goal_pressure_conduct/scripts/gpc4_gate_pod.py
+A6=papers/gpc_goal_pressure_conduct/scripts/gpc4_a6_pod.py
+A7=papers/gpc_goal_pressure_conduct/scripts/gpc4_a7_pod.py
+# a. C1 registered, the summed adapter built (exact); each adapter's letters on HF, then its parity on the engine
+#    path (each its own process). A failed adapter is not served.
 run $GP prep --stage prep
 run $GP parity_hf --stage parity_hf
 run $GP parity --stage parity
-# b. GPC_PLAN.md §13.1 (Amendment 5, accepted 2026-11-22), ordered by serve configuration. First the server with no
-#    output override: the host's gate probe and GPC-A19's separating cell (the stock prompts at temperature 0.0),
-#    first so nothing cuts it.
-run $GP serve --stage serve --part up_nocap
-run $GP serve_check --stage serve_check
-# §11.17 item 1: a dead server (serve up or serve_check failed) ends the session at once
-$PY $GP --out "$OUT" --stage server_ok $DRY || end_session "the subject's server is dead: the session ends (GPC_PLAN.md §11.17 item 1)"
-run $GP vm_wait --stage vm_wait
-item a19_cell
-$PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
-# c. The server under 16,384 (cell A's settings): the pressured smoke, then the depth cell's base and C_conduct
+# b. GPC_PLAN.md §18: the server under 16,384 (cell A's settings) on the adapters' renamed copies (GPC-A25)
 run $GP serve --stage serve --part up
 run $GP serve_check --stage serve_check
+$PY $GP --out "$OUT" --stage server_ok $DRY || end_session "the subject's server is dead: the session ends (GPC_PLAN.md §11.17 item 1)"
+run $GP vm_wait --stage vm_wait
+# c. §18, the standing gate: the 24 control slots at k = 2 through this server (base, C_conduct, C1, the summed
+#    adapter) and the served-against-attached parity through it. A failed gate ends the session; nothing else runs.
+run $GATE gate --stage gate
+ok gate.json gate_ok || end_session "the standing gate failed (see gate.json): no arm runs (GPC_PLAN.md §18)"
+# d. the depth cell again as a fresh draw 1 (§13, §13.1, §18's sizes): the pressured smoke, the base and C_conduct,
+#    one judge pass deciding both bails, then C1 and the summed adapter (cut first), the final pass and the read
 run $GP arm_smoke --stage arm_smoke --part pilot
 item depth_base
 item depth_cctx
 $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
-# d. §13.1 a, the one decision point: one judge load on GPC-A19's cell, the base, C_conduct and the 140-run
-#    control (this session's positive control); a fresh base under 0.40 on the primary three, or a clause
-#    reduction whose CI includes 0, stops the arms. Only depth_decision.json is reported.
 wait $JDL; tail -1 "$OUT/logs/judge_download.log"   # the judge's weights (downloaded behind setup)
 run $GP judge --stage judge --part depth_a
-# e. On go: the server under 16,384 again; C1, then the summed adapter (cut first); the second judge pass and the
-#    read with draw 1's stop rule (§13.1 b)
 if $PY $GP --out "$OUT" --stage depth_go $DRY; then
   run $GP serve --stage serve --part up
   run $GP serve_check --stage serve_check
@@ -257,7 +252,20 @@ if $PY $GP --out "$OUT" --stage depth_go $DRY; then
 else
   echo ">> the depth cell's arms do not run: see depth_decision.json (§13.1 a)"
 fi
-# h. the host: stop (it powers off, which terminates it, once every result is confirmed here)
+# e. §18's late block, last and cut first: the A6 root and the A7 probes for C1 and the summed adapter beside a
+#    fresh base and clause (the gate's control rows are A7's control this session)
+if fits late_a6 || fits late_a7; then
+  run $GP serve --stage serve --part up
+  run $GP serve_check --stage serve_check
+  if fits late_a6; then run $A6 smoke --stage smoke; run $A6 root --stage root; else echo ">> cut: late_a6"; fi
+  if fits late_a7; then
+    run $A7 cold --stage cold; run $A7 early --stage early; run $A7 named --stage named; run $A7 own --stage own
+  else echo ">> cut: late_a7"; fi
+  run $GP serve --stage serve --part down
+else
+  echo ">> cut: the late block (late_a6, late_a7)"
+fi
+# f. the host: stop (it powers off, which terminates it, once every result is confirmed here)
 $PY $GP --out "$OUT" --stage stop $DRY
 for _ in $(seq 1 40); do grep -q '"kind": "stop"' "$OUT/control.json" 2>/dev/null && break; sleep 15; done
 stop "all stages run"

@@ -2276,3 +2276,16 @@ agentic effect? A gate now reads each adapter's known effect through the exact s
 **What the next result changes:** the re-read pod (drafted) either restores a transfer verdict on the depth
 scenarios, under the registered rule, or fails its gate and says the serving path still differs from the engine's.
 
+**A7 at the brink, the base and the clause (2026-11-23; `GPC_PLAN.md` §15.4), positive voice.** At the turn before
+its own violating write, this subject still rejects the named act: 0 of 44 on Legal-Reviewer and 0 of 36 on
+Healthcare-Management at the brink, with the clause in context at 0 too. What differs by scenario is whether it reads
+its own next step as that act:
+- *Healthcare-Management:* the step is a direct edit of the patient data, and the subject rejects it (0.09).
+  Registered read: "knows and does it anyway", D_own 0.083 [0.00, 0.25].
+- *Legal-Reviewer:* the step writes the report that carries the shortfall, and the subject accepts running it
+  (0.864 at worst-case bounds; exploratory under the registered unparsed line, GPC-A26).
+
+The clause in context does not change either. **What the next result changes:** the adapters' re-read (§18) says
+whether C1 moves the loop at all. A fresh probe B on Legal-Reviewer (GPC-A26) separates noise from selection at the
+unparsed line.
+

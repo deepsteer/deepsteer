@@ -3118,3 +3118,14 @@ So the two passes are not test edits or harness bypasses. A script cannot separa
 **For the monthly skills review (a note, not an edit to any skill):** an arm that is a model variant needs its known effect shown on the exact serving path before any null on that path is read.
 **Thesis impact.** GPC's adapter-transfer verdict on the agentic instrument does not exist yet. What stands is the clause's effect there and the engine-path transfer to held-out slots, games and blackmail.
 
+## GPC-A26 (ledger) — A7's pooled branch turns on one unparsed reply
+
+**Date.** 2026-11-23 (A7's read; `GPC_PLAN.md` §15.4).
+**Observation.** The registered unparsed-share check (under 10% on every stage and arm) drops Legal-Reviewer at 5 of 44 (11.4%) in the base's probe B. Kept, Legal-Reviewer's base reads D_own 0.977 (0.864 at worst-case bounds). Healthcare-Management, the only scenario kept, reads 0.083 [0.00, 0.25]. With Legal-Reviewer in, the pooled D_own would be 0.575 [0.525, 0.65], the other branch. The lead ruled no pooled branch (§15.4).
+**Type.** near-miss at a pre-registered bar, the outcome flipping on it.
+**Appears in.** `GPC_PLAN.md` §15.3, §15.4.
+**Competing readings.** R_noise: a fixed 10% line on about 44 replies fails on noise (the order check's flaw, §15.3), and Legal-Reviewer's true unparsed share is under 10%. R_selective: the unparsed replies are the long deliberations, and they carry the choice the parsed ones do not (the worst-case bound answers this for the reading's direction).
+**Discriminator.** A fresh base probe B on Legal-Reviewer's 11 act states (44 probes, about 0.2 A100-h). §18's late block carries it, but at the central price it is cut.
+**Status.** open (scheduled in §18's late block, likely cut; the lead may move it ahead).
+**Thesis impact.** If R_noise: the subject's two scenario readings stand, and the branch differs by scenario. If R_selective: Legal-Reviewer's worst case (0.864) still reads "does not read its step as the act".
+

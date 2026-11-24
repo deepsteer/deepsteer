@@ -77,11 +77,12 @@ def _probe(msgs: list[dict], a: str, b: str) -> list[dict]:
 
 
 def _dry(rid: str, act: str | None, arm: str | None) -> dict:
-    """The dry stand-in: the act's letter at 0.6, or 0.1 under the clause (so a dry control passes its bail and the
-    runner's block runs to its end), in the reply forms the parser takes."""
+    """The dry stand-in: the act's letter at 0.6, or 0.1 under the clause and the adapters (so a dry control
+    passes its bail and the dry gate passes, and the runner's block runs to its end), in the reply forms the
+    parser takes."""
     rng = random.Random(rid)
     act = act or "A"
-    letter = act if rng.random() < (0.1 if arm == "cctx" else 0.6) else ("B" if act == "A" else "A")
+    letter = act if rng.random() < (0.1 if arm in ("cctx", "c1", "sum") else 0.6) else ("B" if act == "A" else "A")
     return {"content": rng.choice(["{}", "Answer: {}", "{}."]).format(letter),
             "usage": {"completion_tokens": 5, "prompt_tokens": 50}}
 
@@ -178,6 +179,7 @@ def stage_cold(out: Path, dry: bool) -> list[dict]:
                                   "messages": msgs, "act_letter": "A" if tag == "act_A" else "B", "arm": arm,
                                   "render_id": r["render_id"], "scenario": r["scenario"], "variant": r["variant"],
                                   "order": tag})
+    items = [it for it in items if it["arm"] in arms_read(out)]
     return _run(items, "cold", out, dry)
 
 
@@ -223,19 +225,25 @@ def stage_fidelity(out: Path, dry: bool) -> dict:
     return rec
 
 
+def arms_read(out: Path) -> list[str]:
+    """§18: the base and the clause always; an adapter only where the standing gate passed it (GPC-A25). The
+    control stage, which is the gate's own read, takes every arm."""
+    return [a for a in ARMS if ARMS[a][0] == "base" or P4.gate_ok(out, ARMS[a][0])]
+
+
 def stage_early(out: Path, dry: bool) -> list[dict]:
     items = [it for st in states() for it in _state_items(st, "early", ["base"], "a7early")]
     return _run(items, "early", out, dry)
 
 
 def stage_named(out: Path, dry: bool) -> list[dict]:
-    items = [it for st in states() for it in _state_items(st, "named", list(ARMS), "a7named")]
+    items = [it for st in states() for it in _state_items(st, "named", arms_read(out), "a7named")]
     return _run(items, "named", out, dry)
 
 
 def stage_own(out: Path, dry: bool) -> list[dict]:
     items = [it for st in states() if st["act"] and st.get("next_call")
-             for it in _state_items(st, "own", list(ARMS), "a7own")]
+             for it in _state_items(st, "own", arms_read(out), "a7own")]
     return _run(items, "own", out, dry)
 
 
