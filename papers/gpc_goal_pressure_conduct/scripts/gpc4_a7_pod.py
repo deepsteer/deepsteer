@@ -247,6 +247,20 @@ def stage_own(out: Path, dry: bool) -> list[dict]:
     return _run(items, "own", out, dry)
 
 
+LATE_OWN_SCENARIOS = ("Healthcare-Management", "Ai-Legal-Reviewer-Conflict")
+LATE_OWN_ARMS = ("base", "c1")
+
+
+def stage_own_late(out: Path, dry: bool) -> list[dict]:
+    """§18.1 (a): probe B on Healthcare-Management's and Legal-Reviewer's act states only (20 of 32), both letter
+    orders, k = 2, the base and C1 (C1 only past the standing gate). No named probe, no clause, no summed adapter.
+    An unparsed reply keeps its length and finish reason only (as every A7 row does)."""
+    arms = [a for a in LATE_OWN_ARMS if a in arms_read(out)]
+    items = [it for st in states() if st["act"] and st.get("next_call") and st["scenario"] in LATE_OWN_SCENARIOS
+             for it in _state_items(st, "own", arms, "a8own")]
+    return _run(items, "own_late", out, dry)
+
+
 def stage_decide(out: Path, dry: bool) -> dict:
     """The control's bail: the base's rate on the held-out slots, and the clause's paired reduction there with a
     bootstrap over slots (95%, percentile)."""
@@ -276,7 +290,7 @@ def stage_decide(out: Path, dry: bool) -> dict:
 
 
 STAGES = {"fidelity": stage_fidelity, "control": stage_control, "cold": stage_cold, "early": stage_early,
-          "named": stage_named, "own": stage_own, "decide": stage_decide}
+          "named": stage_named, "own": stage_own, "decide": stage_decide, "own_late": stage_own_late}
 
 
 def main() -> None:

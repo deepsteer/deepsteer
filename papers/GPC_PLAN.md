@@ -5072,3 +5072,49 @@ number of waves changes.
 4. *The A7 probes are likely cut, so GPC-A26's discriminator (a fresh base probe B on Legal-Reviewer) may not run.*
    → It is priced as 0.2 h on its own if the lead wants it moved ahead of the A6 root. (0.2 h)
 
+### 18.1 Amendment to §18's late block (the lead's ruling, 2026-11-23 7:30 PM HST; pod side only; registered before data and pushed before the launch)
+
+The depth read and the gate are untouched. §18's late block (the A6 root on four arms, then the A7 probes) is
+replaced, in this order, cut from the end:
+
+**(a) Probe B** on Healthcare-Management's and Legal-Reviewer's act states only (20 of the 32), both letter orders,
+k = 2, for the base and C1: 160 probes. C1 runs only past the gate. There is no named probe, no clause arm and no
+summed adapter. *Reason for the record:* on these two scenarios the base's named-act rate is 0 of 64 in A6 and in A7,
+so no arm can lower it, and Education-Assistant failed the earliest-state check. The base's fresh probe B on
+Legal-Reviewer is GPC-A26's discriminator; there is no separate step.
+
+**(b) The A6 root** on Education-Assistant's 16 renders only, with and without the pressure sentences, k = 2, for the
+base, `C_conduct` and C1: 192 decisions. *Reason:* the other two scenarios' renders read 0 for every arm.
+
+**Unparsed replies in this session** (registered before data):
+- There is no fixed 10% line. Each rate is reported with worst-case bounds that count every unparsed reply against
+  the reading, both ways.
+- A scenario is not read only if its bounds straddle a branch edge.
+- Each unparsed reply keeps its length and finish reason, and nothing of its text.
+
+**The reads** (`z_gpc4_a8_late_read.py`, written before data):
+- *(a)* is paired by state: C1's own-step acceptance minus the base's, per scenario, with its interval (a bootstrap
+  over states, 95%), its minimum detectable difference (2.8 bootstrap standard errors) and its worst-case bounds. No
+  branch is decided by it; it is the second split under whichever branch the depth read selects.
+- *(b)* is descriptive on one scenario, as A6's exploratory read was: each arm's pick rate with its bounds, and each
+  arm against the base, paired by render.
+
+**The forecast:**
+- the server's start and check: 0.13 h;
+- (a) at A7's measured pace (512 own-step probes in 0.47 h), with C1 at 1.1 times the base's tokens: 0.15 h;
+- (b) at A6's (768 decisions in 0.28 h): 0.07 h;
+- the server down: 0.01 h.
+
+**0.36 A100-h**, against the lead's rough 0.44 and the 0.52 budgeted. The cut rule's forecasts are 0.3 h for (a),
+including the server's start, and 0.1 h for (b).
+
+**The total.** 8.87 h to the depth read, 0.36 for the late block and 0.15 for the pod come to **9.38 A100-h,
+$11.07**.
+
+**What the 10.0 cap cuts.** Items stop at 9.6 h. At the central price nothing is cut: (a) starts by about 8.9 h and
+ends by about 9.2, and (b) follows. The late block runs only if the depth read ends by about 9.3 h. In the high case
+(the depth arms 20% slower), the summed adapter's arm is cut first and then the late block, (b) before (a).
+
+**Built:** `stage_own_late` (A7), `stage_root_late` (A6), the late read, the runner's late block, and 1 new pod-gate
+test (floor 244) plus the late read's test in CI.
+

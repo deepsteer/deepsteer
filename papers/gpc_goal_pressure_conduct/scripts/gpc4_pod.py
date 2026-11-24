@@ -61,8 +61,8 @@ PRIORITY = ("odcv_gate", "odcv_rerun", "odcv_cctx", "odcv_c1", "odcv_sum", "odcv
             "pilot_a", "pilot_b", "pilot_cctx", "pilot_c1", "pilot_sum", "pilot_cbounds",
             # §13.1: GPC-A19's cell, then the depth cell's arms, cut from the end (the summed adapter first)
             "a19_cell", "depth_base", "depth_cctx", "depth_c1", "depth_sum",
-            # §18: the late block, after the depth read, cut first
-            "late_a6", "late_a7")
+            # §18.1: the late block, after the depth read, cut from the end
+            "late_own", "late_root")
 # A100-h at GPC-3's measured rates (GPC_PLAN.md §11.5); re-priced from stage 1's own
 # §11.27 item 1: a passing bounds grid from GPC-1's conduct stage (2.82 h for 700 slots, generation and its
 # loads and checks together) scaled to the bounds grid's 60, 340 and 130 slots (530): 2.1; launch 6's 0.23 was
@@ -95,9 +95,11 @@ FORECAST_H |= {"pilot_a": 1.1, "pilot_b": 1.1, "pilot_cctx": 1.1, "pilot_c1": 1.
 FORECAST_H |= {"a19_cell": 0.6, "depth_base": 0.6, "depth_cctx": 0.6, "depth_c1": 0.65, "depth_sum": 1.45}
 # §18: draw 1's measured walls (0.873 and 0.937 h for 96 runs), doubled for 192; C1 at 1.1 times the base's
 # (GPC-A14's engine measure); the summed adapter's 48 at 2.5 times (GPC-A14: 2.2 to 2.8 times the base's wall on
-# the engine path). The late block (cut first): the A6 root, and the A7 probes beside a fresh base and clause.
+# the engine path). §18.1's late block, cut from the end: probe B on two scenarios for the base and C1 (160
+# probes at A7's measured 512 in 0.47 h, C1 at 1.1 times, with the server's start, 0.13), then the A6 root on
+# Education-Assistant (192 decisions at A6's 768 in 0.28 h)
 FORECAST_H |= {"depth_base": 1.75, "depth_cctx": 1.87, "depth_c1": 1.92, "depth_sum": 1.09,
-               "late_a6": 0.6, "late_a7": 1.7}
+               "late_own": 0.3, "late_root": 0.1}
 JUDGE_RESERVE_H = 0.5  # §11.21: the final judge pass runs after the last item, inside the 9.0 cap
 ODCV_COUNT_BAR = 0.15
 # §11.23 ruling 1: the ODCV-Bench base rate at which the registered read's two draws fit §11.1's third

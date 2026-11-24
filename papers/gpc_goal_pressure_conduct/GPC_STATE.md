@@ -478,3 +478,11 @@ bill is its figure of record.
   - **§15.4:** A7's base and clause record (Healthcare-Management "knows and does it anyway", D_own 0.083 [0,
     0.25]; Legal-Reviewer exploratory, at worst 0.864, "does not read its step"; Education-Assistant not read).
   - New: GPC-A26 (the unparsed near-miss).
+- 2026-11-23 7:30 PM: **§18.1**, the late block amended before the launch (the lead):
+  - (a) probe B on Healthcare-Management's and Legal-Reviewer's 20 act states for the base and C1 (160; GPC-A26's
+    discriminator);
+  - (b) the A6 root on Education-Assistant's renders for the base, the clause and C1 (192);
+  - no fixed unparsed line, with worst-case bounds instead; the reads registered.
+
+  The forecast is 0.36 h, and the total 9.38 h ($11.07), with nothing cut at the central price.
+

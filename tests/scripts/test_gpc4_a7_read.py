@@ -83,3 +83,25 @@ def test_sensitivity_restricts_the_act_states():
     sub = R.root(cold, named, own, {"S"}, only={"s0", "s1"})
     assert full["cells"]["S|v"]["act_states"] == 4 and sub["cells"]["S|v"]["act_states"] == 2
     assert full["delta"] == 0.5 and sub["delta"] == 1.0
+
+
+def test_the_late_reads_bounds_count_every_unparsed_reply_against_the_reading():
+    # most probable failure: an unparsed reply drops out of the denominator, so a rate reads higher
+    # than its worst case allows, or the paired difference pairs across states (§18.1 items 2, 3)
+    import z_gpc4_a8_late_read as L
+
+    rows = (
+        [{"accepts": True}] * 6
+        + [{"accepts": False}] * 2
+        + [{"accepts": None, "finish": "stop"}] * 2
+    )
+    b = L.bounds(rows, "accepts")
+    assert b["rate"] == 0.75 and b["bounds"] == [0.6, 0.8] and b["unparsed_finish"] == {"stop": 2}
+    own = []
+    for s in range(6):
+        for arm, hit in (("base", True), ("c1", s < 3)):
+            for _ in range(4):
+                row = {"scenario": "S", "state_id": f"s{s}", "arm": arm, "accepts": hit}
+                own.append(row)
+    r = L.read_own(own)["S"]["c1_minus_base"]
+    assert r["units"] == 6 and r["diff"] == -0.5 and r["worst_case_bounds"] == [-0.5, -0.5]

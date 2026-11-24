@@ -1524,11 +1524,10 @@ def test_pod_runner_order_and_inputs():
         "item depth_sum",  # cut first: the last item
         "--part down",
         "--part depth_final",
-        "fits late_a6",  # §18's late block, last and cut first
-        "smoke --stage smoke",
-        "root --stage root",
-        "named --stage named",
-        "own --stage own",
+        "fits late_own",  # §18.1's late block, last, cut from the end
+        "own_late --stage own_late",
+        "fits late_root",
+        "root_late --stage root_late",
         "--stage stop",
     ]
     assert "item a19_cell" not in RUNNER and "up_nocap" not in RUNNER  # GPC-A19's cell is done
@@ -2383,7 +2382,7 @@ def test_a_failed_standing_gate_ends_the_session_before_any_arm(tmp_path):
     at = next(n for n, c in enumerate(calls) if "--stage gate" in c)
     after = calls[at + 1 :]
     assert any("--stage stop --part now" in c for c in after)
-    for stage in ("arm_smoke", "depth", "judge", "--stage root", "--stage named", "--stage own"):
+    for stage in ("arm_smoke", "depth", "judge", "--stage root_late", "--stage own_late"):
         assert not any(stage in c for c in after if "serve" not in c), stage
 
 
@@ -4767,3 +4766,31 @@ def test_the_gate_stage_runs_dry_and_admits_adapters_only_past_it(tmp_path, monk
         assert a["control_rule"]["passes"] and a["server_parity"]["passes"], t
         assert a["server_parity"]["path"].startswith("the server")
     assert A7.arms_read(tmp_path) == list(A7.ARMS)
+
+
+def test_the_late_block_reads_its_registered_items_and_c1_only_past_the_gate(tmp_path):
+    # most probable failure: the late block reads an arm or scenario §18.1 does not register
+    # (probe B on Healthcare-Management and Legal-Reviewer for the base and C1: 160; the A6 root on
+    # Education-Assistant for the base, C_conduct and C1: 192), or reads C1 with no gate record
+    import gpc4_a6_pod as A6
+    import gpc4_a7_pod as A7
+
+    sts = [_a7_state(i, True, "Healthcare-Management") for i in range(9)]
+    sts += [_a7_state(9 + i, True, "Ai-Legal-Reviewer-Conflict") for i in range(11)]
+    sts += [_a7_state(20 + i, i < 12) for i in range(28)]
+    f = tmp_path / "states.jsonl"
+    f.write_text("".join(json.dumps(s) + "\n" for s in sts))
+    A7.STATES, keep = f, A7.STATES
+    try:
+        (tmp_path / "a6").mkdir()
+        rows = A7.stage_own_late(tmp_path, True)
+        assert len(rows) == 160 and {r["arm"] for r in rows} == {"base", "c1"}
+        assert {r["scenario"] for r in rows} == set(A7.LATE_OWN_SCENARIOS)
+        assert not any("content" in r for r in rows) and all("content_chars" in r for r in rows)
+        rec = A6.stage_root_late(tmp_path, True)
+        assert rec["rows"] == 192 and rec["arms"] == ["base", "cctx", "c1"] and rec["renders"] == 16
+        (tmp_path / "gate.json").unlink()
+        (tmp_path / "a7" / "own_late.jsonl").unlink()
+        assert {r["arm"] for r in A7.stage_own_late(tmp_path, True)} == {"base"}
+    finally:
+        A7.STATES = keep

@@ -171,7 +171,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=243   # the gate's collected count when set (§18); fewer means a file failed to collect
+GATE_FLOOR=244   # the gate's collected count when set (§18); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
@@ -252,18 +252,17 @@ if $PY $GP --out "$OUT" --stage depth_go $DRY; then
 else
   echo ">> the depth cell's arms do not run: see depth_decision.json (§13.1 a)"
 fi
-# e. §18's late block, last and cut first: the A6 root and the A7 probes for C1 and the summed adapter beside a
-#    fresh base and clause (the gate's control rows are A7's control this session)
-if fits late_a6 || fits late_a7; then
+# e. §18.1's late block, after the depth read, cut from the end: (a) probe B on Healthcare-Management's and
+#    Legal-Reviewer's act states for the base and C1 (GPC-A26's discriminator is its base on Legal-Reviewer), then
+#    (b) the A6 root on Education-Assistant's renders for the base, C_conduct and C1
+if fits late_own; then
   run $GP serve --stage serve --part up
   run $GP serve_check --stage serve_check
-  if fits late_a6; then run $A6 smoke --stage smoke; run $A6 root --stage root; else echo ">> cut: late_a6"; fi
-  if fits late_a7; then
-    run $A7 cold --stage cold; run $A7 early --stage early; run $A7 named --stage named; run $A7 own --stage own
-  else echo ">> cut: late_a7"; fi
+  run $A7 own_late --stage own_late
+  if fits late_root; then run $A6 root_late --stage root_late; else echo ">> cut: late_root"; fi
   run $GP serve --stage serve --part down
 else
-  echo ">> cut: the late block (late_a6, late_a7)"
+  echo ">> cut: the late block (late_own, late_root)"
 fi
 # f. the host: stop (it powers off, which terminates it, once every result is confirmed here)
 $PY $GP --out "$OUT" --stage stop $DRY

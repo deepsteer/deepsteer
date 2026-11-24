@@ -307,7 +307,39 @@ def score_artifacts(scenario: str, content: str) -> bool | None:
     return None
 
 
-STAGES = {"smoke": stage_smoke, "root": stage_root, "decide": stage_decide, "free": stage_free, "judge": stage_judge}
+LATE_SCENARIO = "Ai-Education-Assistant"
+LATE_ARMS = ("base", "cctx", "c1")
+
+
+def stage_root_late(out: Path, dry: bool) -> dict:
+    """§18.1 (b): the root on Education-Assistant's 16 renders only, with and without the pressure sentences, k = 2,
+    the base, `C_conduct` and C1 (C1 only past the standing gate). Descriptive, on one scenario. An unparsed reply
+    keeps its length and finish reason only."""
+    ok, why = P4.server_ok(out)
+    if not ok:
+        rec = {"skipped": why}
+        P4._w(out / "a6", "root_late", rec)  # noqa: SLF001
+        print(">> a6 root_late:", json.dumps(rec), flush=True)
+        return rec
+    arms = [a for a in LATE_ARMS if ARMS[a][0] == "base" or P4.gate_ok(out, ARMS[a][0])]
+    rs = [r for r in renders() if r["scenario"] == LATE_SCENARIO]
+    by = {r["render_id"]: r for r in rs}
+    letter_row = _letter_row(by)
+
+    def extra(rid: str, g: dict) -> dict:
+        return letter_row(rid, g) | {"content_chars": len(g.get("content") or "")}
+    rows = _run([(f"a8|{rid.split('|', 1)[1]}", m, msgs) for rid, m, msgs in root_items(rs, arms, K_ROOT)],
+                out / "a6" / "root_late.jsonl", dry, extra)
+    rec = {"arms": arms, "renders": len(rs), "rows": len(rows), "unparsed": sum(r.get("choice") is None for r in rows),
+           "rates": {f"{a}|{'p' if p else 'n'}": _rate([r for r in rows if r["arm"] == a and r["pressure"] == p])
+                     for a in arms for p in (True, False)}}
+    P4._w(out / "a6", "root_late", rec)  # noqa: SLF001
+    print(">> a6 root_late:", json.dumps(rec), flush=True)
+    return rec
+
+
+STAGES = {"smoke": stage_smoke, "root": stage_root, "decide": stage_decide, "free": stage_free, "judge": stage_judge,
+          "root_late": stage_root_late}
 
 
 def main() -> None:
