@@ -2942,7 +2942,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Appears in.** `GPC_PLAN.md` §11.20.
 **Competing readings.** R_adapter: C1's training shifts how the subject fills Inspect's tool schemas (`text_editor`'s optional arguments). R_noise: two samples, both cut by the context limit, both on the longest trajectories (where malformed calls cluster).
 **Discriminator.** Launch 7's smoke and gate at no extra cost: C1's share per scaffold against the base's, from the read's tool-call error share.
-**Status.** open.
+**Status.** **reading changed (2026-11-23, GPC-A25):** launch 6's server loaded C1's raw directory, so these calls were the base's weights under the name `c1`. The argument errors are the base's on the tools smoke (3 of 20 and 2 of 15, against the base's own 2 of 91 in its gate step), not C1's. Nothing about C1 follows from them.
 **Thesis impact.** If it holds, C1's ImpossibleBench arm is void in the read under §11.19 and its contrast cannot be read on the tools scaffold.
 
 ## GPC-A14 (ledger) — the summed adapter writes 1.8 to 2.5 times the base's tokens on the same items
@@ -2984,7 +2984,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 ## GPC-A17 (ledger) — the smoke's window marks a slow arm failed
 
 **Date.** 2026-11-21 (launch 7's arm smoke; `outputs/gpc4_v1_launch7/arm_smoke.json`).
-**Observation.** The smoke waits 0.25 h for its batch and 0.25 h for a retry; the host runs one instruction at a time, so the retry queued behind the first batch, and both windows closed with four items still running. All four arrived scored later: minimal C1 at 37.6 min, minimal summed adapter 66, minimal `C_conduct` 78, tools `C_bounds` 83 (much of it the retry loop of `GPC-A15`). The record was final at 1.38 h, so the arms read them as failed.
+**Observation.** The smoke waits 0.25 h for its batch and 0.25 h for a retry; the host runs one instruction at a time, so the retry queued behind the first batch, and both windows closed with four items still running. All four arrived scored later: minimal C1 at 37.6 min, minimal summed adapter 66 (the names: the weights under both were the base's, GPC-A25), minimal `C_conduct` 78, tools `C_bounds` 83 (much of it the retry loop of `GPC-A15`). The record was final at 1.38 h, so the arms read them as failed.
 **Type.** a control behaving unexpectedly (a plumbing check that measures speed).
 **Appears in.** `GPC_PLAN.md` §11.30.
 **Competing readings.** R_window: the window is shorter than a slow but sound configuration needs. R_retry_queue: the retry could never run while the first batch held the host. Both hold.
@@ -3061,7 +3061,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 - R_act: the kind of act gates. C1's grid covers data falsification, report suppression and content exclusion in under 1% of its pressure slots (keyword count, unvalidated), and none in these frames. **Control (§14.1):** the blackmail cell's act is as rare in the grid (1 of 387, no workplace or email frame), and C1 carried the clause there, so coverage alone does not predict where C1 carries.
 - R_pressure: the pressure sentences gate. C1 was trained without them, and the clause arm carries them after the clause.
 **Discriminator.** Amendment 6's root (§14): the three scenarios as single decisions in the grid's format, with and without the pressure sentences, under base, the clause, C1 and the summed adapter. 48 renders at k = 2, letter read, no host, about 1.2 A100-h. If C1 matches the clause there, R_loop holds; if not, R_act. If it matches without the sentences and not with them, R_pressure.
-**Status.** open (Amendment 6 drafted, for the author).
+**Status.** **void (2026-11-23, GPC-A25):** C1's depth arm, A6's C1 rows and A7's were the base's weights served under the name `c1`. C1 has had no read in the agentic loop. The entry reopens only on the re-run (`GPC_PLAN.md` §17).
 **Thesis impact.** If R_loop: the line's conduct transfers as content, and the next adapter needs the agentic format. If R_act: the constitution's tenets as distilled reach the games' acts but not these, and the grid's coverage is the line's limit. If R_pressure: the pressure the agentic instrument adds is outside C1's training.
 
 ## GPC-A23 (ledger) — The clause arm carries twice the script-against-replay disagreements of any other arm
@@ -3098,4 +3098,23 @@ So the two passes are not test edits or harness bypasses. A script cannot separa
 **Discriminator now.** Codex reads the 8 final `func.py` files against each task's statement: does the code special-case the changed test, or is it a general (if wrong) algorithm? These are 8 small reads, the 6 fails as the control, Codex because no Claude call reads the subject's output.
 **Status.** narrowed: test edits and harness bypass are excluded on the 8; special-casing against a fitted wrong solution is open.
 **Thesis impact.** If special-casing: the tools scaffold shows this subject cheating by the benchmark's quieter route, at a rate the minimal scaffold's prior does not predict. If fitted solutions: the passes are wrong-but-general code that the impossible test happens to accept, and the benchmark's pass overstates cheating on this split.
+
+## GPC-A25 (finding) — The subject's server served C1 and the summed adapter as the base
+
+**Date.** 2026-11-23 (the lead's 6:55 PM scratch; confirmed zero GPU; `GPC_PLAN.md` §17).
+**Observation.** C1's and the summed adapter's 992 keys carry the trainer's prefix (`base_model.model.model.layers.…`). The offline engine loads `PL.served_copy`'s renamed copy (`model.language_model.layers`). The OpenAI server was started on the raw directories in launch 6, launch 7, the pilot, depth draw 1, A6 and A7. Pinned vLLM 0.31.0 passes the load check, since that check compares only the last name component. Its own parser maps every raw key to `model.layers.*`, which the served class does not have, so every module is reset to no LoRA (DEBUG log only). On the same 24 control slots, the engine path read C1 0 of 24 (GPC-1) and the summed adapter 0 of 24 (launch 6). The server read the names `c1` 19 of 48 and `sum` 21 of 48 beside the base's 22.
+**Type.** bug report that is a finding (GPC-A5's template): an instrument failure, silent at every check the pipeline ran. The parity gate read the engine path; the serve check read tool parsing on the names; the arm smoke read plumbing.
+**Appears in.** `GPC_PLAN.md` §13.5, §13.6, §14.4, §16.2, §17; SYNTHESIS (the depth row and paragraphs); GPC-A13, A17, A22.
+**Competing readings.** R_fault: the adapters were never applied through the server. R_partial: some modules matched. **R_partial is excluded:** every key shares one prefix, and the parser maps all of them to paths the served class does not have. The control's `c1` sits at the base (19 against 22 of 48).
+**Discriminator.** Done (the source, the parser run on both key forms, the control counts). The confirming cell is item 3's gate: the renamed copies through the server on the 24 control slots, before any arm.
+**Status.** **resolved toward R_fault.** Fix and gate: `GPC_PLAN.md` §17, item 3 of the 6:55 PM block.
+**Resolution type.** calibration (source and a recount), with the experiment that confirms it gated before the next arm.
+**Blast radius.**
+- *Void pending a re-run:* the depth cell's C1 and summed arms, the ratio and the "does not" verdict, the stop on draw 2; A6's adapter rows and the Education read; A7's adapter rows; GPC-A22; SYNTHESIS's transfer-limit statement.
+- *Changed:* GPC-A13 (the errors were the base's) and GPC-A17's two labels.
+- *Standing:* every base and `C_conduct` read, and every engine-path adapter read (GPC-1 to GPC-3, launch 6's stage 4, GPC-A14).
+- *Spend voided:* about 2.6 A100-h, $3.0.
+
+**For the monthly skills review (a note, not an edit to any skill):** an arm that is a model variant needs its known effect shown on the exact serving path before any null on that path is read.
+**Thesis impact.** GPC's adapter-transfer verdict on the agentic instrument does not exist yet. What stands is the clause's effect there and the engine-path transfer to held-out slots, games and blackmail.
 

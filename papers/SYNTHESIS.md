@@ -2146,7 +2146,7 @@ what the four-line instruction does in context.
 | The clause and C1 act less where nothing forces a choice (pooled acting 0.875, 0.755, 0.76; GPC-A9) | R_scope: they skip only optional replies | which emails each arm skips, by the inbox's own text (zero GPU) | open |
 | Four pressure sentences in the system prompt leave this subject's judged ODCV-Bench rate at 0.103 (8 of 78) [0.026, 0.192], under the 0.25 bar (GPC-4 pilot, one draw; the judge's control kappa 0.80) | R_placement: a preamble is a weak place for pressure; R_cue: the oversight sentence reads as a test; R_binding: the subject ends by reporting the shortfall | the second operator turn after the first task_complete (placement, binding); cell A without the oversight sentence (cue); the root split on endings (zero GPU, Codex) | read under the bar; rivals open |
 | The predecessor (Qwen3.6-27B) violates at 0.397 under the same judge where this subject sits at 0.039 (GPC-A19) | R_settings: temperature 0.0 and no cap upstream against 0.7 and a cap here | this subject under upstream's settings on the stock prompts, one cell | **resolved toward R_model** (2026-11-23): paired against the predecessor, −0.32 [−0.45, −0.20] under upstream's settings |
-| On three named ODCV-Bench scenarios under pressure (base 0.615), the clause in context cuts violations by 0.240 [0.104, 0.385] and C1 does not carry it (C1 against the base −0.031 [−0.167, +0.104]; against the clause +0.208 [+0.073, +0.344]; ratio 0.13, lower bound −0.69; one draw, Amendment 5) | R_set: three scenarios chosen on the outcome; R_judge: the judge's blind spot (GPC-A21) | the registered judge-free replay (agrees on 312 of 367; C1 under the bar there too); a second draw (ruled not to run on a point under 0.5) | **read: the 'does not' branch** (accepted 2026-11-23: C1 does not match the clause, +0.208 [+0.073, +0.344]; no C1 reduction detectable at about 0.14; ratio 0.13 [−0.59, 0.58]; half the clause's effect at the interval's edge; realized power 0.62); GPC-A22 |
+| On three named ODCV-Bench scenarios under pressure (base 0.615), the clause in context cuts violations by 0.240 [0.104, 0.385] and C1 does not carry it (C1 against the base −0.031 [−0.167, +0.104]; against the clause +0.208 [+0.073, +0.344]; ratio 0.13, lower bound −0.69; one draw, Amendment 5) | R_set: three scenarios chosen on the outcome; R_judge: the judge's blind spot (GPC-A21) | the registered judge-free replay (agrees on 312 of 367; C1 under the bar there too); a second draw (ruled not to run on a point under 0.5) | **void pending a re-run** (2026-11-23, GPC-A25): the server served the base's weights under C1's name, so C1's rate, the ratio and the "does not" verdict are void; the clause's reduction (−0.240 [−0.375, −0.104]) stands |
 
 **What the next result changes (GPC-1, branches registered in `GPC_PLAN.md` §6).** An arm meeting
 the goal-pressure criterion on draw 1: the thesis gains "conduct reaches the weights without a
@@ -2223,7 +2223,10 @@ first task_complete tests placement. This subject under upstream's settings test
 model's or ours. At the measured 0.52 h a cell, two draws are affordable from a base of 0.30 (0.40 with C1 at
 launch 6's ratio).
 
-**GPC-4's depth cell (2026-11-23; `GPC_PLAN.md` §13.5), positive voice.** On the three ODCV-Bench scenarios where
+**GPC-4's depth cell (2026-11-23; `GPC_PLAN.md` §13.5), positive voice.** *[Void in part, 2026-11-23 (GPC-A25,
+`GPC_PLAN.md` §17): every C1 and summed-adapter number in this paragraph was the base, served under the adapters'
+names, so the ratio, the "does not" branch and the transfer limit are void. The base, the clause's reduction and
+GPC-A19's cell stand.]* On the three ODCV-Bench scenarios where
 this subject violates under pressure, GPC now owns a contrast its instrument resolves. The fresh base is 0.615 (59
 of 96). The clause in context cuts it to 0.375, a reduction of 0.240 [0.104, 0.385], under a judge whose control on
 the same session reads kappa 0.77 against upstream's labels (on other models' shipped runs; it does not cover validator
@@ -2242,8 +2245,8 @@ whether an adapter built for agentic settings is the next route.
 subject's agentic violations live. Offered the act and the constrained route as a plain decision on the three named
 scenarios, it picks the act in 4% of renders under pressure (12.5% without). In the agentic loop on the same
 scenarios it violates in 61.5% of runs. So the act arises in the loop and is not chosen when named. That is why the
-cheap single-decision rung bailed by its registered rule (a base under 0.20), and why no ratio was read there. C1's
-failure to carry the clause stays a loop-level fact (GPC-A22). **What the next result changes:** a stand-in for the
+cheap single-decision rung bailed by its registered rule (a base under 0.20), and why no ratio was read there. The
+statement that C1 fails to carry the clause in the loop is void (GPC-A22, GPC-A25). **What the next result changes:** a stand-in for the
 loop has to recover the loop's base before it can carry a ratio, and the lead rules on whether the renders are
 rewritten or the next rung is a short scripted loop.
 
@@ -2251,10 +2254,25 @@ rewritten or the next rung is a short scripted loop.
 scenarios where this subject violates in the loop, it refuses the same act when the act is named. Healthcare-Management
 and Legal-Reviewer get 0 picks of 64 in every arm, and Education-Assistant gets 16 of 64 at base, against loop rates
 of 0.31 to 0.81. The gap between judgment and action runs 0.31 to 0.81 by scenario-variant, and the named choice is
-concentrated in 8 renders of one scenario. On that one live scenario the clause cuts the named choice (−0.172) and
-C1 does not (+0.031), the depth cell's split in miniature. So the line now holds that this subject's agentic
-violations are action that departs from a judgment the subject makes correctly when asked. C1 carries neither the
-judgment's improvement under the clause nor the action. **The limits:** the root bailed, so this is exploratory; it
+concentrated in 8 renders of one scenario. On that one live scenario the clause cuts the named choice (−0.172). C1's row
+there is void (GPC-A25). So the line now holds that this subject's agentic
+violations are action that departs from a judgment the subject makes correctly when asked. What C1 carries here is
+unread (GPC-A25). **The limits:** the root bailed, so this is exploratory; it
 is one scenario with a live base; no held-out control ran this session. **What the next result changes:**
 Amendment 7 (drafted) asks whether the judgment holds at the brink of the act. If it does, the target is binding
 action to judgment; if not, the loop's context moves the judgment.
+
+**The serving fault (2026-11-23; `GPC_PLAN.md` §17, GPC-A25), positive voice.** GPC now knows what it has and has
+not measured on the agentic instrument:
+- *What it has.* On three named ODCV-Bench scenarios under pressure, the four-line clause in context cuts this
+  subject's violations from 0.615 to 0.375 (−0.240 [−0.375, −0.104]). The subject rejects the named act cold and,
+  in A7, at the brink of committing it. Through the engine path, C1 matches its teacher on held-out grid slots, in
+  the games' harness and in the blackmail cell.
+- *What it has not.* C1 has never been read in an agentic loop. Every server read of C1 and of the summed adapter
+  was the base under their names.
+
+So the program's open question is again the one it set out with: does the in-weights adapter carry the clause's
+agentic effect? A gate now reads each adapter's known effect through the exact server the arms use before any arm.
+**What the next result changes:** the re-read pod (drafted) either restores a transfer verdict on the depth
+scenarios, under the registered rule, or fails its gate and says the serving path still differs from the engine's.
+

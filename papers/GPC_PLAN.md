@@ -1130,6 +1130,10 @@ stop.
 *Ruled (the author, 2026-11-22):* the done-when's second branch is reworded above (C1 and the summed adapter in
 place of the two builds).
 
+**The second branch is not met (2026-11-23, §17).** Every C1 and summed-adapter read on the counting
+instruments went through the subject's server, which served the base's weights under the adapters' names. Neither
+adapter has had a read.
+
 **An instrument counts** when the base rate under pressure is at least 0.15 and at least one
 in-context clause's reduction has a CI excluding 0, **and (a third condition, accepted by the author)
 the registered read's two draws are forecast at 12 A100-h or less**, from stage 1's measured tokens and
@@ -2245,8 +2249,9 @@ adapter builds through a symlinked repo path, exact; the stage block ran dry to 
 **What ran.** Launch at 12:32 pm HST; the pod's runner started at 12:46 pm and its gate passed (165
 collected, floor 165; 164 passed, 1 skipped). Prep registered both adapters and built the sum (exact); the
 HF letters and the served parity, each in its own process (§11.16), read **both C1 and the summed adapter as
-usable**, the first reads of this session's adapters on the GPU. The server came up in 430 s serving
-`base`, `c1` and `sum`. **The serve check then failed: 0 of 5 tool calls parsed** (the reasoning split was
+usable**, the first reads of this session's adapters on the GPU (on the offline engine's path, which loads the
+renamed copies; §17). The server came up in 430 s serving the names `base`, `c1` and `sum` (§17: the weights under
+all three were the base's). **The serve check then failed: 0 of 5 tool calls parsed** (the reasoning split was
 right, 5 of 5 code answers outside the trace). The session ended by itself at 0.69 h under §11.17 item 1:
 the server down, the host told to stop (it powered off and terminated), the sentinel, the download, the pod
 deleted and verified. **Cost:** the pod about 0.84 h, **about $0.99**; the host about 1 h. **No result.**
@@ -2346,10 +2351,11 @@ wiring, and a stale cache.
 ### 11.20 GPC-4 launch 6 (2026-11-20, at `24d574fa`): the host lost at 3.4 h; ODCV-Bench's gate measured clean
 
 **What ran.** Launch at 2:25 pm HST; the pod's runner started at 2:39 pm and its gate passed (169, floor 169;
-the parser battery 17 of 17 on the pod's own vLLM). Both adapters read; the serve check passed (5 of 5 tool
+the parser battery 17 of 17 on the pod's own vLLM). Both adapters read on the engine path (§17: the server's `c1`
+and `sum` carried the base's weights); the serve check passed (5 of 5 tool
 calls under `qwen3_coder`); the host's post-lock gate passed every check. Then:
 - **The arm smoke** (1.0 h, serial on the host): ODCV-Bench passed every configuration (`C_conduct` and
-  `C_bounds` in context about 140 s a run, C1 614 s: 11 model calls against 7 and 5, and three reasoning
+  `C_bounds` in context about 140 s a run, the name `c1` 614 s (the base's weights, §17): 11 model calls against 7 and 5, and three reasoning
   passes of 5,000 to 14,000 characters; it ended itself at step 11 of upstream's 50). ImpossibleBench failed
   every configuration: the clause arms on a 400 at their first request (Qwen3.8's template takes one system
   message, at the start, and the tools scaffold writes its own before the clause's), C1 on the context
@@ -2444,7 +2450,7 @@ cap per arm and instrument (from the proxy's rows, now kept with each run, and I
 | item | basis | A100-h |
 |---|---|---|
 | setup, prep, parity, serve, check, the host's probe | launch 6: 0.75 h measured | 0.75 |
-| the arm smoke | plumbing limits, at once; C1's ODCV-Bench run took 614 s | 0.2 |
+| the arm smoke | plumbing limits, at once; the name `c1`'s ODCV-Bench run took 614 s (the base's weights, §17) | 0.2 |
 | ODCV-Bench's base, 80 at 16 | 6.75 run-h at 8 in 66 min; the longest run 0.64 h | 0.8 |
 | `C_conduct` in context | about the base's | 0.8 |
 | **C1** | about 4 times the clause arms' run time on the one scenario measured (1.5 to 3.0) | **2.2** |
@@ -3319,10 +3325,11 @@ this subject. `AFFORDABILITY_RATE` in `gpc4_pod.py` stays 0.40 until the lead ru
 **Item 9, ImpossibleBench's minimal scaffold, base only, priced for the next pod** (the first 30 impossible
 tasks and 10 original; `max_attempts` 10, `message_limit` 50 as built; the 600 s fix in place; it rides the
 same pod as any second-turn cell). Measured inputs, launch 7's four minimal-scaffold smoke samples (the arms,
-not the base; under the 600 s loop, so each attempt counted once): an attempt's prompt starts at about 1.0k
+not the base by name; §17: the `c1` and `sum` samples carried the base's weights and the `C_conduct` and `C_bounds`
+samples were the base with a clause in context; under the 600 s loop, so each attempt counted once): an attempt's prompt starts at about 1.0k
 tokens and grows about 1.1k an attempt (no reasoning history is carried); an attempt generates 5.2k to 16.4k
 tokens (median about 12k; 3 of 8 distinct attempts at the cap). At attempt 10 a request holds about 11k + 16.4k
-= 27k tokens, so the served KV cache (230,643 tokens, the subject's server with both adapters) holds **8 at
+= 27k tokens, so the served KV cache (230,643 tokens, the subject's server with both adapters' names registered) holds **8 at
 the peak without preemption**. At 8 the measured aggregate is 174 tokens/s (launch 6's log; 121.5 at 5 and
 233 at 12 in launch 7's).
 
@@ -3787,6 +3794,11 @@ resource: 59 GB free. The pilot's results are kept as `outputs/gpc4_v1_pilot`.
 
 ### 13.5 Draw 1's record (2026-11-23; session `gpc4-20261123T042734Z`, commit `5204f7c7`, VM hash `dfb0911678625a0e`)
 
+> **Void in part (2026-11-23, §17).** C1's and the summed adapter's arms below were served the base's weights under
+> the adapters' names. Their rates, the registered ratio, the stop rule's outcome (no draw 2) and the verdict are void
+> pending a re-run. The base's and `C_conduct`'s rows, the clause's reduction, the judge's control and GPC-A19's cell
+> stand.
+
 **The session.** 6.55 A100-h ($7.91 at $1.18, with the ledger's 0.15 h), all stages run, nothing cut.
 - **The arms:** every one finished whole (96 runs each, 0 container errors; 0.87, 0.94, 0.93 and 0.93 h).
 - **GPC-A19's cell:** 78 runs in 0.82 h, 3 container errors (under the 10% void): two Health-Data-Compliance-Analyst
@@ -3863,6 +3875,8 @@ Finding and Marketing-Campaign.
    was ruled not to run on a point under 0.5.
 
 ### 13.6 The lead's 2026-11-23 7:15 AM rulings, applied (zero GPU; nothing built or launched)
+
+> **Void in part (2026-11-23, §17):** every ruling here that rests on C1's or the summed adapter's depth reads.
 
 **§13.5 accepted with changes** (the verdict above). Re-derived by `z_gpc4_depth_read2.py`
 (`outputs/gpc4_v1/odcv/depth_read2.json`); every figure **agrees** with the lead's scratch within bootstrap noise:
@@ -4188,6 +4202,9 @@ Nothing moves, so the gate's reference in §14.1 item 2 needs no note. No verdic
 `GPC-A23`.
 
 ### 14.4 Amendment 6's root: the registered bail (2026-11-23; the A6 pod, `djqu6n4b`, commit `b5682801`)
+
+> **Void in part (2026-11-23, §17):** C1's and the summed adapter's rows (the root and the exploratory Education
+> read) were the base's weights. The bail rests on the base, which stands, and so does `C_conduct`.
 
 **The session.** 0.97 A100-h ($1.32 with the ledger's 0.15 h); no host; the pod deleted itself after the download.
 - Setup, prep and parity passed: C1 and the summed adapter usable.
@@ -4666,6 +4683,11 @@ one there, so launch 7's multiple was load-induced, as the table shows.
   `C_conduct` and the sum, **not the base**, taken under the 600 s loop. Each distinct (seed, prompt) counts once,
   giving 8 attempts: 5.2k to 16.4k, mean 12.4k, 3 at the cap. The cases: low 9k, central 12.4k, high 16.4k (every
   attempt at the cap).
+- *Provenance corrected (2026-11-23, §17).* None of the four smoke samples was an adapter. The `c1` and `sum`
+  samples carried the base's weights, and the `C_conduct` and `C_bounds` samples were the base with a clause in
+  context. So these are the base's own attempts (4: 11.1k to 16.4k, mean 14.2k, 2 at the cap) and the base's under
+  a clause (4: 5.2k to 16.4k, mean 10.6k). A base-only price should take the base's 14.2k as its central case. That
+  raises the central rows by about 15%: A 8.3 h ($9.78), B 4.9 h ($5.76), C 4.4 h ($5.23) at concurrency 8.
 - *Attempts:* an impossible task uses all its attempts unless it passes (low 90%). An original task ends at its
   first pass: 1.5, 2.5 or 4 attempts.
 - *Throughput*, this server's measured aggregate: 174 tokens/s at 8 (launch 6) and 233 at 12 (launch 7). A tail
@@ -4817,3 +4839,72 @@ are not test edits (GPC-A24). Whether they are special-casing is one Codex read 
 scaffold shows this subject's quieter cheating at a rate the minimal scaffold's prior does not predict, and it is the
 scaffold to price for a contrast. If not, both scaffolds most likely end in a floor near a bar of 0.10. The author's
 choice of scaffold waits on that read.
+
+## 17. The serving fault: C1 and the summed adapter were never served (2026-11-23; the lead's 6:55 PM block; the author accepts the blast radius, 7:00 PM)
+
+**The fault.** C1's saved keys and the summed adapter's carry the trainer's prefix (`base_model.model.model.layers.…`,
+992 keys each). The served class names its decoder `model.language_model.layers` (`cst
+data/served_decoder_paths_v1.json`).
+- The offline engine (parity in every session, GPC-1 to GPC-3, launch 6's stage 4) loads `PL.served_copy`'s renamed
+  copy.
+- The OpenAI server (`serve_cmd`'s `--lora-modules`) was started on the raw directories (`gpc1_v1/adapters/c1/612732`,
+  `<out>/adapters/sum/1`) in launch 6 (two starts), launch 7, the pilot, depth draw 1 (three), A6 and A7. Each serve
+  log names them.
+
+**What the pinned vLLM (0.31.0) does with them**, from its source and its own name parser run on both key forms:
+- `check_unexpected_modules` compares only the last name component (`q_proj`), so the load raises nothing.
+- Under the served class's rename mapper (`model.language_model.` → `language_model.model.`), a raw key parses to
+  `model.layers.0.self_attn.q_proj`, which no module of the served class carries. A renamed key parses to
+  `language_model.model.layers.0.self_attn.q_proj`, which matches.
+- At activation each unmatched module is reset, logged at DEBUG. With none applied, vLLM logs at DEBUG only:
+  "Requests may use the base model."
+
+Every request to `c1` or `sum` through the server was answered by the base.
+
+**Confirmed on the control slots** (the 24 held-out grid slots A7 used, re-derived):
+- GPC-1 on the engine path read base 8 of 24, `C_conduct` 1, C1 0. Launch 6's engine path read the summed adapter 0
+  of 24.
+- A7 through the server read base 22 of 48, `C_conduct` 3, the name `c1` 19, the name `sum` 21.
+
+**Void pending a re-run** (every C1 and summed-adapter read taken through the server):
+- the depth cell's C1 and summed arms, its registered ratio (0.13) and the "does not" verdict (§13.5, §13.6), and the
+  stop on draw 2;
+- A6's C1 and summed rows and the exploratory Education read (§14.4);
+- A7's C1 and summed rows (§15.4 records the base and `C_conduct` only);
+- GPC-A22;
+- SYNTHESIS's statement of C1's transfer limit, its claims-table row, and the C1 sentences in the A6 and named-choice
+  paragraphs.
+
+**The done-when's second branch is not met.**
+
+**Changed readings:**
+- GPC-A13: the argument errors were the base's, under the name `c1`.
+- GPC-A17: "minimal C1" and "minimal summed adapter" are the names; the weights were the base's.
+- §16.2's provenance: the smoke samples were the base and the base with a clause.
+
+**Standing, stated as such:**
+- every base and `C_conduct` read: the depth cell's clause reduction (−0.240 [−0.375, −0.104]), GPC-A19, A20, A21,
+  A23, the named-choice gap, and A7's base and `C_conduct` probes;
+- every adapter read taken on the renamed copy through the engine: GPC-1 to GPC-3 (GPC-A1, A4, A9 and the blackmail
+  cell), launch 6's stage 4, GPC-A14.
+
+**Parity, scoped.** The served parity (HF letters against the engine's) shows the engine path live. It never read the
+server. Wherever this plan cites parity as showing "the served adapters" live, it means the engine.
+
+**The spend it voided** (stage-time shares; judge passes not counted):
+- depth draw 1's C1 and summed arms: 0.93 + 0.93 h;
+- A6's adapter half of the root: 0.14 h;
+- A7's adapter probes (1,120 of 2,480): 0.56 h.
+
+That is about **2.6 A100-h, $3.0**.
+
+**Referee pass.**
+1. *"The parity gate existed to catch exactly this."* **Conceded:** it read the engine path, which renames, so no
+   check ever read an adapter through the server the arms used. Item 3's gate reads the control slots through the
+   arms' own server and client, and a served-against-attached letter parity runs through the server.
+2. *"Some modules may have matched, so the adapters were partly live."* **Answered:** all 992 keys share one prefix,
+   and vLLM's parser maps every one to `model.layers.*`, which the served class has nowhere. The control reads the
+   name `c1` at 19 of 48 beside the base's 22, against the engine's 0 of 24.
+3. *"The base and clause reads went through the same server, so they are suspect too."* **Answered:** they use the
+   base model name with no LoRA, so their weights are the base's by construction. A7's control base and clause
+   (0.46, 0.06) sit where GPC-1's engine reads put them (0.33, 0.04), under different sampling.

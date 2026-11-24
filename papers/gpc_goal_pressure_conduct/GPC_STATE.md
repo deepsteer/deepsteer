@@ -259,7 +259,7 @@ bill is its figure of record.
   final pass reads it); a stop helper (`runpod/stop_gpc4.sh`); Inspect's retries cannot be bounded from
   the pod (a known limit, bounded by the pod's own wait). Gate 165, floor 165.
 - 2026-11-20: GPC-4 launch 5 (§11.18): no result; the gate passed, both adapters read on the GPU, and the
-  server served base, C1 and the sum, but `--tool-call-parser hermes` parsed none of Qwen3.8's XML tool
+  server served the names base, C1 and the sum (the weights under all three were the base's: GPC-A25), but `--tool-call-parser hermes` parsed none of Qwen3.8's XML tool
   calls, so the serve check failed and the session ended by itself at 0.69 h (§11.17 item 1; the host
   powered off). Fixed: `qwen3_coder`, read on the template's own call with the pinned vLLM on the pod's
   gate and in the standing step. About $0.99 pod. Gate 168, floor 168.
@@ -458,3 +458,13 @@ bill is its figure of record.
     0.65], or 2 of 30 [0.008, 0.22].
   - **Tools scaffold priced** beside the minimal (30 + 10 central $8.46, 15 + 10 $5.11; preemption risk at 8).
   - **§16.5** puts the scaffold choice first, with the lead's read for design B.
+- 2026-11-23 7:00 PM: **the serving fault (GPC-A25, `GPC_PLAN.md` §17), accepted by the author as drafted.**
+  - The subject's server loaded C1's and the summed adapter's raw directories, whose trainer-prefixed keys match no
+    module of the served class, so it served the base under their names. Confirmed from the pinned vLLM's source and
+    its parser, and by the control counts.
+  - **Void:** the depth cell's C1 and summed arms, the ratio and the "does not" verdict, the stop on draw 2, A6's and
+    A7's adapter rows, GPC-A22, and SYNTHESIS's transfer-limit statement. The done-when's second branch is not met.
+  - **Standing:** every base and clause read, and every engine-path adapter read.
+  - **Spend voided:** about 2.6 A100-h, $3.0 (the depth cell's two adapter arms, A6's adapter half of the root,
+    A7's adapter probes).
+
