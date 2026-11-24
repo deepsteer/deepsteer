@@ -5163,3 +5163,11 @@ ruling. Verify's own output is kept beside it, unchanged, as `rehearsal_4f91622d
 **Held for after this session (the author's direction).** The rehearsal is to be shorter and to verify itself, with
 no separate run by the author. That is a change to `launch_gpc4.sh`, which would move the VM hash, so it is built
 after the launch, not before.
+
+### 18.4 A standing rule for later pods (the lead, 2026-11-24 12:25 PM HST; recorded during §18's launch 2, built after it)
+
+**The gate repeats after every server start that precedes an adapter arm.** In §18's launch 2 the gate ran on the
+first start only (7:40 AM HST). The server restarted at 11:35 AM HST for the C1 and summed arms, on the same renamed
+copies (both starts' `--lora-modules` name `served_adapters/c1` and `served_adapters/sum`), without a new gate.
+Nothing in the running session is changed. The rule is built into the runner and the stage gating after this
+session.
