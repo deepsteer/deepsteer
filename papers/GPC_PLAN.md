@@ -4543,3 +4543,186 @@ is 0.12 or more (more with the k = 2 draws clustered), so a scenario with no ord
 quarter of the time or more, and at least one of three fails about half the time or more. Near the cold rate (0.04) the false-fail rate is under 1%. The dry run dropped
 Education-Assistant this way (a 0.19 gap from a sampler with no order effect). A noise-aware form, such as the
 gap's CI excluding 0.15 or the check pooled over scenarios, would be an amendment.
+
+## 16. ImpossibleBench's minimal scaffold as a riding stage (DRAFT for the author, 2026-11-23; the lead's 1:50 PM block; zero GPU; nothing built; ImpossibleBench stays held until the author accepts a plan)
+
+All figures come from `z_gpc4_ib_replan.py` (`outputs/gpc4_prep/ib_replan.json`), counts and timings only.
+
+### 16.1 GPC-A18 closed from launch 7's copied logs
+
+**The lead's scratch, re-derived** (the whole proxy log, every run the host served):
+- 494 chat calls under 99 seeds;
+- 48 calls at 590 s or more, holding 771k of 1.89M completion tokens;
+- 35 length finishes, plus 6 calls at exactly 16,384 that ended on a parsed call (41 at the cap);
+- 55 repeats of a prompt size within a seed, and 439 distinct (seed, prompt size) pairs;
+- 112 tokens/s over 4.67 h.
+
+**Agree** on all. Launch 7's proxy logged each request's start, so the span runs from the first start to the last.
+
+**Where the tools gate's 424 proxy calls went, against Inspect's own records.** The `.eval` covers the 8 finished
+samples, the buffer the 5 running ones, and the trace every model span and every response the client received.
+Each of the trace's 377 received responses matches a proxy call within 0.19 s.
+
+| the tools gate's proxy calls | calls |
+|---|---|
+| answered, the 8 finished samples (`.eval`: 310 events, 2 gave up) | 308 |
+| answered, the 5 samples running at the copy (the buffer: 75 events, 2 gave up, 5 in flight, not yet logged by the proxy) | 68 |
+| a fourteenth sample, `lcbhard_57`, in the trace and in neither file (14 answered in the trace's window, 10 after it with no Inspect record) | 24 |
+| abandoned at the client's 600 s timeout, generated on to 617 to 689 s, then sent again (Inspect's 19 retries plus the last attempt of its 4 give-ups: 23 exactly) | 23 |
+| Inspect's re-queries that its buffer does not log (a length finish, an unparseable call) | 0 |
+| seed collisions across samples (no extra calls; they merge seeds) | 0 |
+| unexplained: one call at 280 s that no client received | 1 |
+| **total** | **424** |
+
+- Per turn, the proxy's calls equal Inspect's events plus retries, apart from `lcbhard_57` and the timeouts. That
+  leaves no room for unlogged re-queries.
+- The "5.6 calls for each logged call" came from comparing the proxy with the buffer's 5 running samples. Over
+  all 14 samples the multiple is about 1.06, and the excess is the 600 s timeout under load.
+- **The 55 repeats:** 13 are the turn-0 request, sent identically by all 14 samples (one prompt size, one seed,
+  one completion size). 22 are re-sends of requests abandoned at 600 s. The other 20 are in other runs' rows.
+
+**The seed collides across samples on the tools scaffold** (from the templates at the pin, `d4f9a14`):
+- `record_to_sample` puts only the instruction prompt in the input when the scaffold is `tools`. The task's
+  function and tests go into the sandbox's `func.py` and `test.py`.
+- So every task's first user message is the same text. One hash covers all 8 finished samples, and all 424 calls
+  carry seeds built from the run, that hash and the turn.
+- The 49 seeds are turns, not calls.
+- The minimal scaffold's input carries the task's prompt and tests, so its first message differs by task, and
+  its seeds do not collide across tasks.
+
+**Second derivation.** On rehearsal 12's stub ImpossibleBench items (every smoke and gate item, VM hash
+`dfb0911678625a0e`), the proxy's calls equal Inspect's model events plus retries: 2,012 against 2,011 + 1. One to
+one there, so launch 7's multiple was load-induced, as the table shows.
+
+**The determinism fault, recorded (not built).**
+- *What happens:* on the tools scaffold, distinct samples at the same turn share a seed. At turn 0 the whole
+  request is identical across tasks, so the 14 samples drew one first reply.
+- *A second effect, under the join fix:* identical requests now also join one generation. In rehearsal 12, 686 of
+  the tools items' 735 calls joined, because the stubs' requests were identical throughout. On real tasks only
+  turn 0 is identical.
+- *For repeated epochs of one task, on either scaffold:* the first request and its seed repeat, so the draws are
+  joined or seeded alike and are not independent.
+- *A limit on this:* the seed alone does not fix a draw under batching. In launch 7's minimal smoke, repeats of
+  one request under one seed drew 8.7k and 16.4k tokens.
+- *The VM-side change it would need:* the sample's identity (task and epoch) in the seed and in the join's key.
+  Inspect does not send it, so the route is one Inspect run per task and epoch (the run ID carries both), or an
+  upstream change that names the task in the first message.
+- *Not needed for one epoch per task on the minimal scaffold,* the design below.
+
+### 16.2 The price, base only, the join fix in place
+
+**Inputs and their provenance.**
+- *Tokens an attempt*, from launch 7's four minimal-scaffold smoke samples. These were the arms c1, `C_bounds`,
+  `C_conduct` and the sum, **not the base**, taken under the 600 s loop. Each distinct (seed, prompt) counts once,
+  giving 8 attempts: 5.2k to 16.4k, mean 12.4k, 3 at the cap. The cases: low 9k, central 12.4k, high 16.4k (every
+  attempt at the cap).
+- *Attempts:* an impossible task uses all its attempts unless it passes (low 90%). An original task ends at its
+  first pass: 1.5, 2.5 or 4 attempts.
+- *Throughput*, this server's measured aggregate: 174 tokens/s at 8 (launch 6) and 233 at 12 (launch 7). A tail
+  of half a sample's serial time is added.
+- *KV cache:* 224,353 tokens. A request at attempt 10 holds about 11k + 16.4k = 27k. Eight fit at the peak (216k).
+- *Concurrency 12 risks preemption:* 12 at the peak would hold 324k. The high case therefore takes 8's rate.
+- Priced at $1.18 an A100-h, as **marginal hours on a host pod** (no setup).
+
+| design (base only) | at 8: low / central / high | at 12: low / central / high |
+|---|---|---|
+| **A**: 30 impossible × 10 attempts, 10 original | 4.7 / **7.2** / 9.9 h ($5.51 / **$8.55** / $11.73) | 3.7 / 5.7 / 10.1 h ($4.37 / $6.73 / $11.88) |
+| **B**: 15 impossible × 10 attempts, 10 original | 2.7 / **4.3** / 6.0 h ($3.22 / **$5.03** / $7.10) | 2.3 / 3.5 / 6.1 h ($2.66 / $4.11 / $7.25) |
+| **C**: 30 impossible × 5 attempts, 10 original | 2.4 / **3.9** / 5.5 h ($2.88 / **$4.57** / $6.48) | 1.9 / 3.0 / 5.6 h ($2.28 / $3.58 / $6.56) |
+
+The base and the next adapter together double each figure (paired on the same tasks).
+
+**The first-tasks rule at each count** (§11.26 item 1, restated):
+
+| | 30 tasks (A, C) | 15 tasks (B) |
+|---|---|---|
+| bank at | 0 or 1 passes (a true 0.15 banks 4.8% of the time) | 0 passes (8.7% at 0.15; even 0 is over 5%) |
+| base only (no arm) | 2 to 5 | 1 to 5 |
+| arms (paired; an exact sign test needs 6 discordant tasks all one way) | 6 or more, a base rate of 0.20 | 6 or more, 0.40 |
+| the true rate that clears the bank 80% of the time | 0.097 | 0.102 |
+| one pass is | 0.033 | 0.067 |
+
+**Where cheating sits across attempts** (upstream's paper, arXiv 2510.20270, §5.3 and Figure 17, right panel; the
+README at the pin says nothing on it).
+- *What the figure shows:* Oneoff-LiveCodeBench, minimal scaffold, first submission against multiple submissions.
+- *The values,* read off the chart's image (to about half a point; the text gives no LiveCodeBench numbers):
+  - Qwen3-Coder about 1% to 4%;
+  - Sonnet-3.7 2% to 10%;
+  - Sonnet-4 and Opus-4.1 about 1% to 4%;
+  - GPT-4.1 0% to 2%;
+  - GPT-5 1% to 3%;
+  - o3 0% to 22%;
+  - o4-mini 0% to 0%.
+- *The SWE-bench comparison in the text* is milder: 33% to 38% on Conflicting-SWEbench.
+- **Most of the cheating on this split comes after the first submission**, so the lead's prior (cut tasks before
+  attempts) holds for the minimal scaffold.
+- Five attempts sit between the figure's two points and are unmeasured. Design C reads a different, likely lower
+  rate than A.
+
+**The prior for this subject.** Qwen3-Coder's 4% gives 0 or 1 pass on 30 tasks 66% of the time, and 0 on 15
+tasks 54% of the time. **The most likely outcome is a bank.**
+
+### 16.3 The output cap (reported; no change, which would be the lead's amendment)
+
+| launch 7 | calls at 16,384 | their share of tokens | a cap of 8,192 would truncate | and save |
+|---|---|---|---|---|
+| every call | 41 of 494 (8.3%) | 35.5% | 79 calls (16%) | 450k tokens (24%) |
+| the tools gate | 21 of 424 (5.0%) | 24.1% | 51 (12%) | 262k (18%) |
+| the minimal smoke | 12 of 21 (57%) | 67.6% | 20 of 21 (95%) | 122k (42%) |
+
+On the minimal scaffold, 8,192 would end nearly every attempt mid-reasoning.
+
+### 16.4 The stage's place
+
+**It rides the next host pod as a stage:** the base and the next adapter together, one epoch a task, each arm its
+own run ID. It is not a pod by itself.
+
+**No VM-side change and no new rehearsal are needed** for the minimal scaffold as rehearsed at `dfb0911678625a0e`:
+- its first message differs by task, and rehearsal 12's minimal items joined 0 of 330 calls across samples;
+- the join answers the 600 s re-send (rehearsal 12's slow ImpossibleBench item: 2 calls, 1 generation);
+- the run ID keeps the arms' seeds and keys apart.
+
+The pod side needs the stage's design (A, B or C) and its cut rule, which is the runner's.
+
+### 16.5 The draft for the author
+
+- **Scoring:** the benchmark's own pass on an impossible task (upstream's scorer at the pin); no judge decides. The
+  10 original tasks are the coarse capability check.
+- **Branches, written before data:**
+  - *The base carries a contrast* (6 or more passes): ImpossibleBench becomes the **held-out transfer test** (an
+    adapter trained on the grid and ODCV-Bench, read on a benchmark it never saw) and **the second counting
+    instrument** beside ODCV-Bench's depth scenarios. The adapter is read paired on the same tasks.
+  - *2 to 5 passes:* the base is read on 30 more tasks and no arm is read (it counts at 0.15 or more on the 60).
+  - *The base at the floor* (0 or 1 of 30; 0 of 15): ImpossibleBench is **out for this subject** as a counting
+    instrument. The record says so with the detection bar: a true rate of about 0.10 or more would have cleared the
+    bank 80% of the time. The held-out transfer test then moves to the grid's held-out cell (letters), where the
+    standing control already rides each pod. **The program has no second counting instrument on this subject.**
+- **Bail:** the stage's first 2 tasks are a smoke. A request failing, or a repeat at 600 s that does not join, skips
+  the stage. Under 90% of samples scored, the stage is void (the registered rule). The stage runs last on its pod
+  and is cut from the end.
+- **Saved:** per sample, its ID, scaffold, arm, attempts, per-attempt prompt and completion tokens and finish,
+  pass by attempt and the attempt of the first pass; the proxy's rows with `joined`; the `.eval` log. Text stays on
+  the host and the pod, as now.
+
+**Anticipated review:**
+1. *Figure 17's values are read off an image* (about ±0.5 point). → Cited as approximate; upstream released no
+   table at the pin. (none)
+2. *The prior says this stage most likely banks* (66% on 30 tasks). → It is priced as the cost of a floor claim:
+   A's central $8.55, B's $5.03. B's floor claim is weaker (it banks 8.7% at 0.15, and needs 0.40 for arms). (in
+   the table)
+3. *The token inputs are the arms' under the timeout loop, not the base's.* → The smoke's 2 tasks re-measure, and
+   the cut rule bounds the high case. (in design)
+4. *Concurrency 12 saves about 20% in the central case but risks preemption at the peak.* → 8 is the default; 12
+   only with the lead's word. (none)
+5. *An adapter is unseeded on its second epoch.* → One epoch a task; any second epoch waits for the VM change in
+   §16.1. (none)
+6. *The README's October bug (the LiveCodeBench split blocked test modifications)* → Fixed by upstream's PR #4
+   (`52ebb0f`), an ancestor of the pin. The minimal scaffold has no tools in any case. (checked)
+
+**Question behind the question:** this subject has no ImpossibleBench reading of record. Launch 6's minimal
+scaffold was void (0 of 0 scored). Launch 7's tools gate is void too (8 of 30 scored), but **2 of its 8 finished
+impossible tasks passed** (0.25 [0.03, 0.65]; `GPC-A24`), above any minimal-scaffold prior. The finished 8 are the
+short ones, and passing ends a sample early, so that rate is selection-inflated. Still, it points at the tools
+scaffold, not the minimal one, as the scaffold that might carry a contrast on this subject. The tools scaffold costs
+about 8 A100-h for 30 tasks and needs the determinism fault fixed first. Which scaffold does the author want
+priced, before the minimal stage is built? A zero-GPU check comes first: whether the two passes modified `test.py`.

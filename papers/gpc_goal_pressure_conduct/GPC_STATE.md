@@ -437,3 +437,9 @@ bill is its figure of record.
   with the shortfall in view. The pod has the fidelity, control (bail), cold, early, named and own stages. The
   read is written before the pod. Training exclusion: 27,108 hashes. The standing step passed at floor 239.
   Central price 1.86 h, $2.14. The order check's noise is flagged to the lead.
+- 2026-11-23: the lead's ImpossibleBench re-plan, drafted for the author (§16), zero GPU.
+  - **GPC-A18 resolved.** The 424 proxy calls are fully accounted, and the seed collides across samples on the
+    tools scaffold (recorded as a fault, not built). Rehearsal 12 runs 1 to 1.
+  - The minimal scaffold is priced in three designs: A central $8.55, B $5.03, C $4.57 at concurrency 8, base only.
+  - Upstream's Figure 17 puts most Oneoff-LiveCodeBench cheating after the first submission.
+  - New: **GPC-A24**, launch 7's void tools gate passed 2 of the 8 tasks it finished.
