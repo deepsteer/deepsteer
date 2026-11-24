@@ -5118,3 +5118,24 @@ ends by about 9.2, and (b) follows. The late block runs only if the depth read e
 **Built:** `stage_own_late` (A7), `stage_root_late` (A6), the late read, the runner's late block, and 1 new pod-gate
 test (floor 244) plus the late read's test in CI.
 
+
+### 18.2 Thunder's availability check, fixed (2026-11-23 evening; VM side, so a rehearsal before the launch)
+
+**What happened.** The first launch of §18 bailed before any resource existed: "Thunder lists no A100 80GB x1 now
+({"a100xl":null,"a100xl_x1":"available"})". Thunder's public status endpoint (`/v2/status`) now returns an empty
+`gpu_type` object and lists the A100 only under `specs.a100xl_x1`. The launcher's `thunder_capacity` required both
+keys to read "available", so it read "no A100" with one listed. Nothing was created: no AWS resource, no pod, and no
+session directory.
+
+**The fix** (`launch_gpc4.sh`). `specs.a100xl_x1` decides. The older `gpu_type.a100xl."1"` must agree when present,
+and its absence no longer blocks. A disagreement, or `specs` saying no, still creates nothing. Tested (host side, in
+CI):
+- capacity is read from `specs` when the old key is gone;
+- nothing is created when either key says no.
+
+The live endpoint passes the new check.
+
+**Its consequence.** `launch_gpc4.sh` is a VM file, so the VM hash moves from `dfb0911678625a0e` to
+`4f91622dfc7d0508`, and rehearsal 12 no longer vouches for the launch. **Rehearsal 13** (rehearsal 12's plan,
+unchanged, zero GPU; rehearsal 12 took 1.9 host-hours, $1.24 upper) and its verify come before §18's launch.
+Nothing pod side changes, and §18 and §18.1 stand as registered.

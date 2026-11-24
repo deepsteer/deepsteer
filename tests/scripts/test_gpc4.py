@@ -938,9 +938,11 @@ exit 0
 """
 
 
-def _dry_launch(tmp_path, a100xl: str, card: str = BAIL_CARD):
+def _dry_launch(tmp_path, a100xl: str, card: str = BAIL_CARD, gpu_type: str | None = "same"):
     """`launch` with every outside call stubbed (aws, ssh, scp, curl, git) and the pod card forced
-    to bail; returns (the completed process, the stub's aws log, seconds taken)."""
+    to bail; returns (the completed process, the stub's aws log, seconds taken). ``gpu_type`` is the
+    endpoint's older key: "same" as ``specs``, another status, or None for the empty object Thunder
+    has returned since 2026-11-23."""
     import hashlib
     import os
     import shutil
@@ -962,8 +964,14 @@ def _dry_launch(tmp_path, a100xl: str, card: str = BAIL_CARD):
         (stub / name).write_text(body)
         (stub / name).chmod(0o755)
     (tmp_path / "card.sh").write_text(card)
+    old = a100xl if gpu_type == "same" else gpu_type
     (tmp_path / "capacity.json").write_text(
-        json.dumps({"gpu_type": {"a100xl": {"1": a100xl}}, "specs": {"a100xl_x1": a100xl}})
+        json.dumps(
+            {
+                "gpu_type": {} if old is None else {"a100xl": {"1": old}},
+                "specs": {"a100xl_x1": a100xl},
+            }
+        )
     )
     vm_files = re.search(r"VM_FILES=\((.*?)\)", LAUNCHER, re.S).group(1)
     files = [
@@ -1062,6 +1070,25 @@ def test_launch_creates_nothing_when_thunder_lists_no_a100(tmp_path):
     assert r.returncode != 0 and "Thunder lists no A100 80GB x1" in r.stderr, r.stderr[-1500:]
     for call in ("create-security-group", "create-key-pair", "run-instances"):
         assert call not in log, log
+
+
+@pytest.mark.host_side
+def test_launch_reads_capacity_from_specs_when_the_old_key_is_gone(tmp_path):
+    # most probable failure: Thunder's endpoint returns an empty gpu_type (since 2026-11-23) and the
+    # check reads "no A100" with one listed available, so no launch can start (§18.2)
+    r, log, _ = _dry_launch(tmp_path, "available", gpu_type=None)
+    assert "Thunder lists an A100 80GB x1 as available" in r.stdout + r.stderr, r.stderr[-1500:]
+    assert "Thunder lists no A100 80GB x1" not in r.stderr
+
+
+@pytest.mark.host_side
+@pytest.mark.parametrize(("specs", "old"), [("unavailable", None), ("available", "unavailable")])
+def test_launch_creates_nothing_when_either_key_says_no(tmp_path, specs, old):
+    # most probable failure: the fix reads only one key, so a listing whose keys disagree (or whose
+    # specs say no) builds the host anyway
+    r, log, _ = _dry_launch(tmp_path, specs, gpu_type=old)
+    assert r.returncode != 0 and "Thunder lists no A100 80GB x1" in r.stderr, r.stderr[-1500:]
+    assert "run-instances" not in log, log
 
 
 @pytest.mark.host_side

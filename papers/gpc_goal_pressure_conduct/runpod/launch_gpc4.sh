@@ -386,9 +386,11 @@ cmd_teardown() {
   say "after teardown:"; list_tagged
 }
 
-thunder_capacity() {  # one A100 80GB (a100xl x1), by both of the endpoint's keys, which can disagree
+thunder_capacity() {  # one A100 80GB (a100xl x1): the endpoint's `specs` key decides; its older `gpu_type` key, which
+  # can disagree, must agree when present (on 2026-11-23 Thunder began returning an empty `gpu_type`, so a check
+  # that needed both read "no A100" with one listed available; GPC_PLAN.md §18.2)
   local j; j=$(curl -s -m 20 "$TNR_STATUS_URL") || die "Thunder's availability endpoint did not answer; nothing was created"
-  jq -e '.gpu_type.a100xl."1" == "available" and .specs.a100xl_x1 == "available"' <<<"$j" >/dev/null 2>&1 \
+  jq -e '.specs.a100xl_x1 == "available" and ((.gpu_type.a100xl."1" // "available") == "available")' <<<"$j" >/dev/null 2>&1 \
     || die "Thunder lists no A100 80GB x1 now ($(jq -c '{a100xl: .gpu_type.a100xl."1", a100xl_x1: .specs.a100xl_x1}' <<<"$j" 2>/dev/null || echo unreadable)); nothing was created"
   say "Thunder lists an A100 80GB x1 as available (read before the host is created)"
 }

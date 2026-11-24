@@ -486,3 +486,7 @@ bill is its figure of record.
 
   The forecast is 0.36 h, and the total 9.38 h ($11.07), with nothing cut at the central price.
 
+- 2026-11-23 evening: §18's first launch bailed before creating anything. Thunder's status endpoint dropped its
+  `gpu_type` key, and the capacity check needed it. Fixed so that `specs` decides (§18.2). The VM hash is now
+  `4f91622dfc7d0508`, so rehearsal 13 runs before the launch. Disk freed to 85 GB at the author's word (the two
+  zephyr-7b models, the A7 pull, session scratch).
