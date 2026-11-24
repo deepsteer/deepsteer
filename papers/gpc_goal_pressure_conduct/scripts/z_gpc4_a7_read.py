@@ -3,9 +3,11 @@
 
 In order:
 1. The control's bail (`a7/decision.json`): failed, nothing below is read.
-2. The probe-artifact checks, per scenario (§15 riders): the named probe at each run's earliest state against the
-   cold renders (base, within 0.15); the two letter orders at the brink (base, within 0.15); the unparsed share
-   (every stage and arm, under 10%). A scenario failing any is reported and left out of the pooled root.
+2. The probe-artifact checks, per scenario (§15 riders as amended by §15.3): the two letter orders at the brink
+   (the base, paired by state) and the earliest-state probe against the cold renders (the base) are each an
+   artifact only at a difference of 0.15 or more whose bootstrap interval excludes 0, reported with the interval
+   and the minimum detectable size; the unparsed share (every stage and arm) under 10%. A scenario with an artifact
+   is reported and left out of the pooled root.
 3. The root, a shift (§15.1 item 2): per scenario-variant, the base's acceptance of the named act at act states
    (a state's mean over its 4 probes, then the cell's mean over its states) minus the base's cold rate on that
    cell's 8 renders (both orders, k = 2); pooled over cells by their act states. **Δ.**
@@ -13,7 +15,9 @@ In order:
    pooled the same way. **D_own.**
 5. The branch from the point estimates at the registered edges (0.15, 0.40), CIs beside (a stratified bootstrap:
    states within cells, renders within cells, 4,000 draws, percentile 95%).
-6. Descriptive beside: absolute rates per scenario-variant and arm; the arms at the brink against their cold
+6. The sensitivity line (§15.3 item 5): the root and probe B on the act states whose located write produces the
+   scored content (23), beside all 32.
+7. Descriptive beside: absolute rates per scenario-variant and arm; the arms at the brink against their cold
    rates, paired; non-act states (selection-conditioned); the named rate by depth (turn_index, at the median);
    the demand check; the fidelity check under the server.
 
@@ -61,29 +65,76 @@ def _cell(r: dict) -> str:
     return f"{r['scenario']}|{r['variant']}"
 
 
-def artifact_checks(cold: list[dict], early: list[dict], named: list[dict], stages: dict[str, list[dict]]) -> dict:
+def _boot_ci_se(xs_fn, units: list, B: int, seed: str) -> tuple[list, float]:
+    rng = random.Random(seed)
+    bs = [xs_fn([rng.choice(units) for _ in units]) for _ in range(B)]
+    bs = [b for b in bs if b is not None]
+    m = sum(bs) / len(bs)
+    return _ci(bs), (sum((b - m) ** 2 for b in bs) / (len(bs) - 1)) ** 0.5
+
+
+def _verdict(d: float | None, ci: list, se: float | None) -> dict:
+    """§15.3: an artifact only if the point difference is 0.15 or more in size and its 95% interval excludes 0."""
+    art = d is not None and abs(d) >= ARTIFACT_TOL and ci[0] is not None and (ci[0] > 0 or ci[1] < 0)
+    return {"diff": d, "ci": ci, "mde": None if se is None else 2.8 * se, "artifact": art}
+
+
+def order_check(named: list[dict], sc: str, B: int = B, seed: str = SEED) -> dict:
+    """§15.3 item 1: the base's acceptance under the act-as-A order minus the act-as-B order, paired by state, a
+    bootstrap over states."""
+    per: dict[str, dict[str, list[float]]] = defaultdict(lambda: {"act_A": [], "act_B": []})
+    for r in named:
+        if r["arm"] == "base" and r["scenario"] == sc and r.get("accepts") is not None:
+            per[r["state_id"]][r["order"]].append(float(r["accepts"]))
+    units = [s for s, v in per.items() if v["act_A"] and v["act_B"]]
+    if not units:
+        return _verdict(None, [None, None], None) | {"states": 0}
+    dd = {s: _mean(per[s]["act_A"]) - _mean(per[s]["act_B"]) for s in units}
+    f = lambda us: _mean([dd[u] for u in us])  # noqa: E731
+    ci, se = _boot_ci_se(f, units, B, f"{seed}|order|{sc}")
+    return _verdict(f(units), ci, se) | {"states": len(units)}
+
+
+def early_check(early: list[dict], cold: list[dict], sc: str, B: int = B, seed: str = SEED) -> dict:
+    """§15.3 item 2: the earliest-state probe's rate minus the same session's cold rate for the scenario (base), a
+    bootstrap over states and over renders, independently."""
+    e = _by([r for r in early if r["scenario"] == sc], "state_id")
+    c = _by([r for r in cold if r["scenario"] == sc], "render_id")
+    if not e or not c:
+        return _verdict(None, [None, None], None) | {"states": len(e), "renders": len(c)}
+    ek, ck = sorted(e), sorted(c)
+    f = lambda es, cs: _mean([_mean(e[u]) for u in es]) - _mean([_mean(c[u]) for u in cs])  # noqa: E731
+    rng = random.Random(f"{seed}|early|{sc}")
+    bs = [f([rng.choice(ek) for _ in ek], [rng.choice(ck) for _ in ck]) for _ in range(B)]
+    m = sum(bs) / len(bs)
+    se = (sum((b - m) ** 2 for b in bs) / (len(bs) - 1)) ** 0.5
+    return _verdict(f(ek, ck), _ci(bs), se) | {"states": len(ek), "renders": len(ck),
+                                               "early_base": _mean([_mean(e[u]) for u in ek]),
+                                               "cold_base": _mean([_mean(c[u]) for u in ck])}
+
+
+def artifact_checks(cold: list[dict], early: list[dict], named: list[dict], stages: dict[str, list[dict]],
+                    own: list[dict] | None = None) -> dict:
+    """§15.3 (amending §15's riders): the order check and the earliest-state check as above, the unparsed share
+    under 10% on every stage and arm (unchanged). Probe B's order difference is reported beside, not a check."""
     out = {}
     for sc in sorted({r["scenario"] for r in named}):
-        c = [r["accepts"] for r in cold if r["arm"] == "base" and r["scenario"] == sc and r["accepts"] is not None]
-        e = [r["accepts"] for r in early if r["arm"] == "base" and r["scenario"] == sc and r["accepts"] is not None]
-        nb = [r for r in named if r["arm"] == "base" and r["scenario"] == sc and r["accepts"] is not None]
-        oa = _mean([float(r["accepts"]) for r in nb if r["order"] == "act_A"])
-        ob = _mean([float(r["accepts"]) for r in nb if r["order"] == "act_B"])
         unp = {f"{n}|{a}": _mean([float(r["letter"] is None) for r in rs if r["scenario"] == sc and r["arm"] == a])
                for n, rs in stages.items() if rs and "scenario" in rs[0] for a in sorted({r["arm"] for r in rs})}
-        early_gap = None if not c or not e else abs(_mean(e) - _mean(c))
-        order_gap = None if oa is None or ob is None else abs(oa - ob)
         worst = max((v for v in unp.values() if v is not None), default=None)
-        out[sc] = {"cold_base": _mean(c), "early_base": _mean(e), "early_gap": early_gap, "order_gap": order_gap,
-                   "unparsed_max": worst,
-                   "holds": all(x is not None for x in (early_gap, order_gap, worst))
-                   and early_gap <= ARTIFACT_TOL and order_gap <= ARTIFACT_TOL and worst < UNPARSED_MAX}
+        oc, ec = order_check(named, sc), early_check(early, cold, sc)
+        out[sc] = {"order": oc, "early": ec, "unparsed_max": worst,
+                   "own_order": order_check(own, sc) if own else None,
+                   "holds": not oc["artifact"] and not ec["artifact"] and worst is not None and worst < UNPARSED_MAX}
     return out
 
 
-def root(cold: list[dict], named: list[dict], own: list[dict], keep: set[str], arm: str = "base") -> dict:
-    """Δ and D_own, pooled over the kept scenarios' cells by their act states, with a stratified bootstrap."""
-    act = [r for r in named if r.get("act_state") and r["scenario"] in keep]
+def root(cold: list[dict], named: list[dict], own: list[dict], keep: set[str], arm: str = "base",
+         only: set[str] | None = None) -> dict:
+    """Δ and D_own, pooled over the kept scenarios' cells by their act states, with a stratified bootstrap;
+    ``only`` restricts the act states (§15.3 item 5's sensitivity line)."""
+    act = [r for r in named if r.get("act_state") and r["scenario"] in keep and (only is None or r["state_id"] in only)]
+    own = [r for r in own if only is None or r["state_id"] in only]
     st_named = _by(act, "state_id", arm)
     st_own = _by([r for r in own if r["scenario"] in keep], "state_id", arm)
     rd_cold = _by([r for r in cold if r["scenario"] in keep], "render_id", arm)
@@ -151,11 +202,18 @@ def main() -> None:
     if not dec.get("control_ok"):
         rec["branch"] = "no read: the control failed (the instrument failed this session)"
     else:
-        chk = artifact_checks(rows["cold"], rows["early"], rows["named"], rows)
+        chk = artifact_checks(rows["cold"], rows["early"], rows["named"], rows, rows["own"])
         keep = {s for s, v in chk.items() if v["holds"]}
         rt = root(rows["cold"], rows["named"], rows["own"], keep)
         rec |= {"artifact_checks": chk, "kept_scenarios": sorted(keep), "root": rt,
                 "branch": branch(rt["delta"], rt["d_own"])}
+        scored = {r["state_id"] for r in rows["named"] if r.get("act_state") and r.get("produces_scored_content")}
+        rs = root(rows["cold"], rows["named"], rows["own"], keep, only=scored)
+        rec["sensitivity_scored_content"] = {"act_states": len(scored), "delta": rs["delta"],
+                                             "delta_ci": rs["delta_ci"], "d_own": rs["d_own"],
+                                             "d_own_ci": rs["d_own_ci"],
+                                             "branch": branch(rs["delta"], rs["d_own"]),
+                                             "rule": "§15.3 item 5: beside all 32, not instead"}
         rec["arms"] = {arm: root(rows["cold"], rows["named"], rows["own"], keep, arm)
                        for arm in ("cctx", "c1", "sum")}
         rec["demand_check"] = {"p_own": rt["p_own"], "p_named_act": rt["p_named_act"],

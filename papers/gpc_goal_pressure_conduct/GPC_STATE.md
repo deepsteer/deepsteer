@@ -443,3 +443,11 @@ bill is its figure of record.
   - The minimal scaffold is priced in three designs: A central $8.55, B $5.03, C $4.57 at concurrency 8, base only.
   - Upstream's Figure 17 puts most Oneoff-LiveCodeBench cheating after the first submission.
   - New: **GPC-A24**, launch 7's void tools gate passed 2 of the 8 tasks it finished.
+- 2026-11-23 2:15 PM: **§15.3, an amendment to Amendment 7** (the lead's ruling; pushed before the launch). The
+  order and earliest-state checks are now artifacts only at a size of 0.15 or more with an interval excluding 0.
+  Simulated at the built sizes:
+  - the order check falsely drops at most 3.3% and has power of 0.88 or more against a 0.30 effect;
+  - the earliest-state check has power of 0.57 and 0.39 at brink rates 0.25 and 0.50, recorded as under 0.8.
+
+  The count is 32 + 16, corrected in place. Sensitivity line: the 23 act states that produce the scored content.
+  The standing step was rerun.
