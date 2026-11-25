@@ -2146,7 +2146,7 @@ what the four-line instruction does in context.
 | The clause and C1 act less where nothing forces a choice (pooled acting 0.875, 0.755, 0.76; GPC-A9) | R_scope: they skip only optional replies | which emails each arm skips, by the inbox's own text (zero GPU) | open |
 | Four pressure sentences in the system prompt leave this subject's judged ODCV-Bench rate at 0.103 (8 of 78) [0.026, 0.192], under the 0.25 bar (GPC-4 pilot, one draw; the judge's control kappa 0.80) | R_placement: a preamble is a weak place for pressure; R_cue: the oversight sentence reads as a test; R_binding: the subject ends by reporting the shortfall | the second operator turn after the first task_complete (placement, binding); cell A without the oversight sentence (cue); the root split on endings (zero GPU, Codex) | read under the bar; rivals open |
 | The predecessor (Qwen3.6-27B) violates at 0.397 under the same judge where this subject sits at 0.039 (GPC-A19) | R_settings: temperature 0.0 and no cap upstream against 0.7 and a cap here | this subject under upstream's settings on the stock prompts, one cell | **resolved toward R_model** (2026-11-23): paired against the predecessor, −0.32 [−0.45, −0.20] under upstream's settings |
-| On three named ODCV-Bench scenarios under pressure (base 0.615), the clause in context cuts violations by 0.240 [0.104, 0.385] and C1 does not carry it (C1 against the base −0.031 [−0.167, +0.104]; against the clause +0.208 [+0.073, +0.344]; ratio 0.13, lower bound −0.69; one draw, Amendment 5) | R_set: three scenarios chosen on the outcome; R_judge: the judge's blind spot (GPC-A21) | the registered judge-free replay (agrees on 312 of 367; C1 under the bar there too); a second draw (ruled not to run on a point under 0.5) | **void pending a re-run** (2026-11-23, GPC-A25): the server served the base's weights under C1's name, so C1's rate, the ratio and the "does not" verdict are void; the clause's reduction (−0.240 [−0.375, −0.104]) stands |
+| On three named ODCV-Bench scenarios under pressure (base 0.615), the clause in context cuts violations by 0.240 [0.104, 0.385] and C1 does not carry it (C1 against the base −0.031 [−0.167, +0.104]; against the clause +0.208 [+0.073, +0.344]; ratio 0.13, lower bound −0.69; one draw, Amendment 5) | R_set: three scenarios chosen on the outcome; R_judge: the judge's blind spot (GPC-A21) | the registered judge-free replay (agrees on 312 of 367; C1 under the bar there too); a second draw (ruled not to run on a point under 0.5) | **re-read (2026-11-24, §18.5): the registered "between" branch.** Through the fixed server and its gate, at a fresh base of 0.583 and 192 runs an arm: the clause −0.266, C1 0.443, **ratio 0.53, lower bound 0.18**; the scorer replay 0.68, lower bound 0.37. Draw 2 runs with the two-draw pass off. Draw 1's adapter rows stay void (GPC-A25) |
 
 **What the next result changes (GPC-1, branches registered in `GPC_PLAN.md` §6).** An arm meeting
 the goal-pressure criterion on draw 1: the thesis gains "conduct reaches the weights without a
@@ -2288,4 +2288,22 @@ its own next step as that act:
 The clause in context does not change either. **What the next result changes:** the adapters' re-read (§18) says
 whether C1 moves the loop at all. A fresh probe B on Legal-Reviewer (GPC-A26) separates noise from selection at the
 unparsed line.
+
+**GPC-4's re-read through the fixed server (2026-11-24; `GPC_PLAN.md` §18.5), positive voice.** Distilled from the
+constitution's tenets and carrying nothing in context, **C1 carries about half of the in-context clause's effect into
+an agentic loop**. On the three named ODCV-Bench scenarios under pressure, violations go from 0.583 at a fresh base
+to 0.443 under C1, against 0.318 with the four-line clause: a ratio of 0.53 (lower bound 0.18; the scenarios' own
+scorers, judge-free, 0.68 with lower bound 0.37). The served adapters were shown to be the trained ones first, on the
+same server: C1 cut the control slots by 0.94 of the clause's reduction, with letter parity against the attached
+adapter.
+
+The effect is concentrated where the subject reads its own step as the act (GPC-A28):
+- Healthcare-Management: ratio 0.85; there the subject rejects its own data edit.
+- Education-Assistant: ratio 0.53.
+- Legal-Reviewer: −0.71; there it runs its own report step 0.90 of the time.
+
+**The limits:** one draw; a lower bound under the 0.5 bar, so the registered "between" branch; and three scenarios
+chosen on the outcome. **What the next result changes:** draw 2 decides whether the pooled ratio holds, and a
+recognition probe on Legal-Reviewer's step separates "C1 works through recognition" from small-denominator noise
+(GPC-A28).
 

@@ -3126,6 +3126,42 @@ So the two passes are not test edits or harness bypasses. A script cannot separa
 **Appears in.** `GPC_PLAN.md` §15.3, §15.4.
 **Competing readings.** R_noise: a fixed 10% line on about 44 replies fails on noise (the order check's flaw, §15.3), and Legal-Reviewer's true unparsed share is under 10%. R_selective: the unparsed replies are the long deliberations, and they carry the choice the parsed ones do not (the worst-case bound answers this for the reading's direction).
 **Discriminator.** A fresh base probe B on Legal-Reviewer's 11 act states (44 probes, about 0.2 A100-h). §18's late block carries it, but at the central price it is cut.
-**Status.** open (scheduled in §18's late block, likely cut; the lead may move it ahead).
+**Status.** **resolved toward R_noise** (2026-11-24, §18.5). The fresh base's own-step acceptance on Legal-Reviewer, through probe B in §18.1's late block, is 36 of 40 parsed, 0.90, with worst-case bounds [0.82, 0.91] clearing the 0.40 edge on both sides (4 unparsed: three of 2 characters, one of 445). It replicates A7's 0.977. The reading on Legal-Reviewer ("does not read its step as the act") stands; the 10% line had dropped it on noise.
+**Resolution type.** experiment (§18.1 (a)).
 **Thesis impact.** If R_noise: the subject's two scenario readings stand, and the branch differs by scenario. If R_selective: Legal-Reviewer's worst case (0.864) still reads "does not read its step as the act".
+
+## GPC-A27 (ledger) — The summed adapter writes 1.22 times the base's tokens in the loop, under the engine's 1.8 to 2.5
+
+**Date.** 2026-11-24 (`GPC_PLAN.md` §18.5).
+**Observation.** On the depth scenarios through the fixed server, the summed adapter's runs average 7,339 completion tokens against the base's 6,001 (1.22 times), with the same calls a run (7.52 against 7.19). GPC-A14 measured 1.8 to 2.5 times on the engine path (stage 4's single replies under a 4,096 cap). The gate shows the adapter live through the server (parity TV 0.013 against the attached adapter; the control's reduction 1.00 of the clause's).
+**Type.** a known effect at another size on another path.
+**Appears in.** `GPC_PLAN.md` §18.5.
+**Competing readings.** R_instrument: an agentic turn under a 16,384 cap and a single reply under 4,096 are different token budgets, so the multiples need not match. R_partial: the server applies part of the summed update. The gate's parity (0.013, within the served-versus-attached bar) argues against R_partial.
+**Discriminator.** Zero GPU: the summed adapter's per-call completion lengths against the base's on matched steps of these runs. Or its tokens on stage 4's items through the server, which rides any later pod at about 0.1 h.
+**Status.** open.
+**Thesis impact.** None on the registered read (the summed adapter is exploratory). If R_partial, the summed arm's 0.348 is a lower bound on its effect.
+
+## GPC-A28 (ledger) — C1 transfers where the subject reads its step as the act
+
+**Date.** 2026-11-24 (`GPC_PLAN.md` §15.4, §18.5; a cross-document conjunction).
+**Observation.**
+- *C1's ratio to the clause by scenario* (descriptive): Healthcare-Management 0.85, Education-Assistant 0.53,
+  Legal-Reviewer −0.71 (C1 0.44 above the base's 0.36).
+- *Own-step acceptance at the brink:* on Healthcare-Management, where the step is a direct data edit, the subject
+  rejects its own step (A7 0.09, this session 0.14). C1 lowers it (−0.065). On Legal-Reviewer, where the step
+  writes the report that carries the shortfall, the subject accepts it (0.977, then 0.90). C1 does not lower it
+  (+0.061).
+- So C1 carries the clause's effect where the subject recognizes its step as the act, and not where it does not.
+**Type.** cross-document conjunction (A7's brink probes and the re-read's per-scenario ratios).
+**Appears in.** `GPC_PLAN.md` §15.4, §18.5; SYNTHESIS.
+**Competing readings.** R_recognition: C1 acts through the subject's judgment of the act, so it moves only the
+steps the subject reads as the act. R_scale: Legal-Reviewer's base (0.36) and clause reduction (0.11) are the
+smallest, so its ratio is noise around a small denominator, and the pattern is three points.
+**Discriminator.** Draw 2's per-scenario ratios. Or, sharper, a recognition probe that names Legal-Reviewer's
+report step as the act (the brink's probe B with the step described as the act) under C1: if C1's acceptance falls
+once the step is named, R_recognition. That is a letter read riding the next pod at about 0.1 h.
+**Status.** open.
+**Thesis impact.** If R_recognition, the next adapter's target is recognition (A7's "teach recognition" branch),
+and C1's transfer limit is a recognition limit. If R_scale, the per-scenario pattern is noise, and the pooled ratio
+is the read.
 

@@ -150,8 +150,9 @@ The $500 cap covers CST on public material and GPC together. **$173 remain** (CS
 | 11-23 | GPC-4 Amendment 6's root on Thunder (A100 80GB, $1.18; `djqu6n4b`; no host; the root bailed, `stop_base`, at 0.97 h; §14.4) | 0.97 | 1.12 | 1.32 | 45.52 | 57.91 |
 | 11-23 | GPC-4 Amendment 7 on Thunder (A100 80GB, $1.18; `xo08x0qg`; no host; all stages run at 1.93 h; C1's and the sum's rows void, GPC-A25; §15.4) | 1.93 | 2.08 | 2.45 | 47.60 | 60.36 |
 | 11-24 | GPC-4 §18 launch 1 on Thunder (A100 80GB, $1.18; `440a7egr`; session `gpc4-20261124T070532Z`; the server's engine died in its startup profiling, "Triton Error [CUDA]: an illegal memory access", profiling at 193 s against 100 to 106 s in every earlier session; the registered end at the first server phase, 0.73 h; nothing read) | 0.73 | 0.88 | 1.04 | 48.48 | 61.40 |
+| 11-24 | GPC-4 §18 launch 2 on Thunder (A100 80GB, $1.18; session `gpc4-20261124T164052Z`; the gate passed both adapters; depth draw 1 again at 192 an arm; the registered read "between", C1's ratio 0.53, lower bound 0.18; the late block run; nothing cut; §18.5) | 7.69 | 7.84 | 9.25 | 56.32 | 70.65 |
 
-After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: $142.37 remain. After launch 6: **$133.05 remain** ($173.00 − $39.95). After launch 7: $126.50 remain. After the pilot: $124.32 remain ($173.00 − $48.68; the lead's scratch, $124.64, omits the table's 0.15 h a pod on both rows: $6.40 and $2.01 are the session clocks at $1.18; the instances' own lives, create to delete, were about 5.6 h and 1.9 h, $6.64 and $2.27). After the depth launch: $116.41 remain. After A6's root: $115.09 remain. After A7: $112.64 remain. After §18's launch 1: **$111.60 remain** ($173.00 − $61.40). The EC2 host's spend to
+After GPC-1: $163.74 remain under the shared cap ($173.00 − $9.26). After GPC-2: $158.77 remain. After GPC-3: **$148.91 remain** ($173.00 − $24.09). After GPC-4 launch 1: $147.59 remain on this table. After launch 2: $147.09 remain. After launch 3: $146.56 remain. After launch 4: $143.36 remain. After launch 5: $142.37 remain. After launch 6: **$133.05 remain** ($173.00 − $39.95). After launch 7: $126.50 remain. After the pilot: $124.32 remain ($173.00 − $48.68; the lead's scratch, $124.64, omits the table's 0.15 h a pod on both rows: $6.40 and $2.01 are the session clocks at $1.18; the instances' own lives, create to delete, were about 5.6 h and 1.9 h, $6.64 and $2.27). After the depth launch: $116.41 remain. After A6's root: $115.09 remain. After A7: $112.64 remain. After §18's launch 1: $111.60 remain. After §18's launch 2: **$102.35 remain** ($173.00 − $70.65). The EC2 host's spend to
 date (rehearsals 1 to 7 and launch 1's host, about $4 at the records' upper bounds) is not in it; the AWS
 bill is its figure of record.
 
@@ -501,4 +502,12 @@ bill is its figure of record.
   memory access". Profiling took 193 s against 100 to 106 s in every earlier session, which points at this
   instance's GPU. No ECC errors showed. Nothing ran past the server, the pod was deleted, and the host was told to
   stop. The cost was 0.88 A100-h ($1.04). Relaunch as is (a fresh instance), at the author's word.
+- 2026-11-24: **§18 launch 2 ran whole** (7.69 h, $9.25). The gate passed: C1 −0.354, 0.94 of the clause's, with
+  parity through the server.
+  - **The registered read: "between".** Base 0.583, clause 0.318, C1 0.443, a ratio of 0.53 with lower bound 0.18;
+    the replay 0.68, lower bound 0.37. Draw 2 runs with the two-draw pass off.
+  - The late block ran. GPC-A26 resolved toward noise (Legal-Reviewer's base runs its own step 0.90). New:
+    GPC-A27 (the summed adapter's tokens) and GPC-A28 (C1 transfers where the step is read as the act).
+  - The session's record is `outputs/gpc4_v1_a8` (the pull, a clean mirror; the download merged into
+    `outputs/gpc4_v1`).
 
