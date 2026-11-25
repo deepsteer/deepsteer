@@ -562,3 +562,10 @@ bill is its figure of record.
     with two framings (generalizes: 2 of 4 items with room). The composition arm needs an N-way sum at rank 48.
   - Tier 1 repriced: 7.15 h on the server path, 8.02 with S-hi, 9.2 with the composition arm. About 3 full cycles,
     or 7 screens, after draw 3.
+- 2026-11-25 (draw 3 running, its results unopened): **§18.9, the graded work read registered** (the lead's 9:45 AM
+  items 2 and 3).
+  - Honest runs (the replay's "not the act") scored judge-free on their work product. On draws 1b and 2
+    (exploratory), every arm's honest work is as good as the base's within about 0.03 (the summed adapter +0.011
+    [−0.021, +0.045] in draw 2), with the selection on honest runs stated. A planted-run positive control.
+  - **GPC-A29 resolved toward R_explore:** the executor reads rise in the opening survey, not after the scorer's
+    first run (the summed adapter +0.130 before, +0.010 after).
