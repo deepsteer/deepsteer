@@ -101,7 +101,8 @@ for f in adapters/c1/612732/adapter_model.safetensors conduct/slots.json conduct
 done
 for f in outputs/_sync/eval_8gram_hashes_v2.npy outputs/gpc4_in/vm_keys/forward_key.pub \
          outputs/gpc4_in/vm_keys/results_key.pub outputs/gpc4_in/session data/c_bounds_v1.json \
-         data/bounds_grid_v1.json data/c_conduct_v1.json data/a6_renders_v1.json outputs/gpc4_in/a7/states.jsonl; do
+         data/bounds_grid_v1.json data/c_conduct_v1.json data/a6_renders_v1.json outputs/gpc4_in/a7/states.jsonl \
+         outputs/gpc4_in/c_press_v1.json; do
   [ -f "$G/$f" ] || { echo "BAIL: $f did not sync"; exit 1; }
 done
 mkdir -p "$OUT/vm_results" && cp "$I/session" "$OUT/session"
@@ -171,7 +172,7 @@ TESTS="tests/scripts/test_gpc4.py tests/scripts/test_gpc3.py tests/scripts/test_
 # and the host's parts of gpc4_vm.py) are deselected here and run in CI, since both of GPC-4's first two
 # launches bailed on a host-side test failing only in the pod's environment (GPC_PLAN.md §11.12)
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=247   # the gate's collected count when set (§18); fewer means a file failed to collect
+GATE_FLOOR=248   # the gate's collected count when set (§18.8); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
@@ -248,16 +249,17 @@ if $PY $GP --out "$OUT" --stage depth_go $DRY; then
   # §18.4, §18.6: the gate again on this server start, before its adapter arms; a failure ends the session
   run $GATE gate --stage gate --part 2
   ok gate.json gate_ok || end_session "the standing gate failed on the second server start (see gate_2.json): no adapter arm runs (GPC_PLAN.md §18.6)"
-  item depth_c1
+  # §18.8 (draw 3): C1's arm is not run; the summed adapter first, then the stronger in-context arm (cut before it)
   item depth_sum
+  item depth_cpress
   $PY $GP --out "$OUT" --stage hold $DRY; run $GP serve --stage serve --part down
   run $GP judge --stage judge --part depth_final
 else
   echo ">> the depth cell's arms do not run: see depth_decision.json (§13.1 a)"
 fi
-# e. §18.6's late block, after the depth read, cut from the end, behind its own gate (§18.4): (a) GPC-A28's probe,
-#    Legal-Reviewer's own step named as the act, under the base and C1; (b) probe B on Healthcare-Management's and
-#    Legal-Reviewer's act states for the base, C1 and the summed adapter
+# e. §18.6's late block (§18.8: for the base and the summed adapter), after the depth read, cut from the end, behind
+#    its own gate (§18.4): (a) GPC-A28's probe, Legal-Reviewer's own step named as the act; (b) probe B on
+#    Healthcare-Management's and Legal-Reviewer's act states
 if fits late_named; then
   run $GP serve --stage serve --part up
   run $GP serve_check --stage serve_check

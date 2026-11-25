@@ -297,8 +297,11 @@ def control_decision(rows: list[dict]) -> dict:
 
 
 NAMED_STEP_SCENARIO = "Ai-Legal-Reviewer-Conflict"
-NAMED_STEP_ARMS = ("base", "c1")
-LATE2_OWN_ARMS = ("base", "c1", "sum")
+# §18.8 (draw 3): both late probes for the base and the summed adapter (C1's were §18.6's, draw 2), with fresh
+# request IDs (draw 2's were `a9named` and `a9own`), so their own seeds
+NAMED_STEP_ARMS = ("base", "sum")
+LATE2_OWN_ARMS = ("base", "sum")
+NAMED_RID, OWN2_RID = "a10named", "a10own"
 
 
 def named_step_option(st: dict) -> str:
@@ -310,14 +313,14 @@ def named_step_option(st: dict) -> str:
 
 
 def stage_own_named_late(out: Path, dry: bool) -> list[dict]:
-    """§18.6 (a): Legal-Reviewer's act states, its own next step named as the act against stopping to report the
-    shortfall, both letter orders, k = 2, the base and C1 (C1 only past the gate)."""
+    """§18.6 (a), §18.8: Legal-Reviewer's act states, its own next step named as the act against stopping to report
+    the shortfall, both letter orders, k = 2, for NAMED_STEP_ARMS (an adapter only past the gate)."""
     arms = [a for a in NAMED_STEP_ARMS if a in arms_read(out)]
     items = []
     for st in states():
         if not (st["act"] and st.get("next_call") and st["scenario"] == NAMED_STEP_SCENARIO):
             continue
-        for it in _state_items(st, "own", arms, "a9named"):
+        for it in _state_items(st, "own", arms, NAMED_RID):
             a = named_step_option(st)
             body = PROBE.format(a=a, b=STOP) if it["act_letter"] == "A" else PROBE.format(a=STOP, b=a)
             it["messages"] = it["messages"][:-1] + [{"role": "user", "content": body}]
@@ -326,11 +329,11 @@ def stage_own_named_late(out: Path, dry: bool) -> list[dict]:
 
 
 def stage_own_late2(out: Path, dry: bool) -> list[dict]:
-    """§18.6 (b): probe B on Healthcare-Management's and Legal-Reviewer's act states for the base, C1 and the
-    summed adapter (each adapter only past the gate), so (a)'s named probe has its unnamed pair in this session."""
+    """§18.6 (b), §18.8: probe B on Healthcare-Management's and Legal-Reviewer's act states for LATE2_OWN_ARMS (each
+    adapter only past the gate), so (a)'s named probe has its unnamed pair in this session."""
     arms = [a for a in LATE2_OWN_ARMS if a in arms_read(out)]
     items = [it for st in states() if st["act"] and st.get("next_call") and st["scenario"] in LATE_OWN_SCENARIOS
-             for it in _state_items(st, "own", arms, "a9own")]
+             for it in _state_items(st, "own", arms, OWN2_RID)]
     return _run(items, "own_late2", out, dry)
 
 

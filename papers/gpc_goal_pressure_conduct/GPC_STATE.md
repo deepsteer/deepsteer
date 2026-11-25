@@ -543,3 +543,13 @@ bill is its figure of record.
     executor-source rise is shared with the clause in context. GPC-A27 narrowed toward R_instrument.
   - The session's record is `outputs/gpc4_v1_d2` (the pull; the download merged into `outputs/gpc4_v1`, identical
     on draw 2's files). The pod about $9.9; about $92.5 remain.
+- 2026-11-25: **§18.8, draw 3, registered and built** (the lead's 7:40 AM item 3, on the author's accept); §16.6.
+  - Arms at 192: the base, `C_conduct`, the summed adapter, and `C_press` (`C_conduct` with the constitution's two
+    operator-and-user sections whole and the pressure grid's other tenets quoted, 3,465 tokens; exploratory). C1's
+    arm is dropped (settled); C1 stays served and gated.
+  - The primary as §18.6, on draw 3's data only; the acting check registered (the summed adapter within ±0.10, the
+    whole interval). The late block for the base and the summed adapter; the difference in differences registered.
+  - Power 0.88 at draw 2's 0.906. Central 9.27 h, $10.94; nothing cut; the summed adapter never cut. VM hash
+    unchanged (`3ea70e6608993ac6`).
+  - §16.6: ImpossibleBench is the second counting instrument the done-when needs; held through draw 3; its gate
+    items are rehearsed again first.

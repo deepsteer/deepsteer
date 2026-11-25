@@ -1515,8 +1515,8 @@ def test_pod_runner_order_and_inputs():
         "--stage depth_go",
         "--part up\n",
         "gate --stage gate --part 2",  # §18.4: the gate again on this server start
-        "item depth_c1",
-        "item depth_sum",  # cut first: the last item
+        "item depth_sum",  # §18.8: the summed adapter first (C1's arm is not run in draw 3)
+        "item depth_cpress",  # the stronger in-context arm, cut before the summed adapter
         "--part down",
         "--part depth_final",
         "fits late_named",  # §18.6's late block, last, cut from the end, behind its own gate
@@ -1554,8 +1554,10 @@ def test_pod_runner_order_and_inputs():
         "eval_8gram_hashes_v2.npy",
         "adapters/c1/612732",
         "gpc4_in/a7/states.jsonl",  # §18's late block reads A7's states
+        "gpc4_in/c_press_v1.json",  # §18.8: draw 3's stronger in-context arm
     ):
         assert f in inp, f
+    assert "item depth_c1" not in RUNNER
     card = (GPC / "runpod/launch_gpc4_pod.sh").read_text()
     assert "remote_gpc4.sh" in card and "outputs/gpc4_v1" in card and 'TNR_FALLBACK=""' in card
 
@@ -4168,13 +4170,21 @@ def test_depth_instruction_is_the_named_set_with_fresh_ids_interleaved():
     # reuses draw 1's IDs (so its seeds), the set drifts from the one named before any arm ran, a
     # size drifts from §18's (192 an arm, the summed adapter 48), or a cut takes a whole scenario's
     # draws instead of the last draws
-    size = {"depth_base": 192, "depth_cctx": 192, "depth_c1": 192, "depth_sum": 192}
+    size = {
+        "depth_base": 192,
+        "depth_cctx": 192,
+        "depth_c1": 192,
+        "depth_sum": 192,
+        "depth_cpress": 192,
+    }
+    if not (GPC / "outputs/gpc4_in/c_press_v1.json").exists():
+        pytest.skip("the stronger in-context arm's text is synced, not committed")
     for item, (arm, model, which) in P4.DEPTH_ARMS.items():
         ins = P4.depth_instruction(item, dry=False)
         runs = ins["runs"]
         assert len(runs) == 3 * 2 * P4.DEPTH_K_ARM[item] == size[item] and P4.DEPTH_SENS_K == 0
         assert len({r[2] for r in runs}) == len(runs) and all(
-            r[2].startswith(f"d5d2_{arm}_k") for r in runs
+            r[2].startswith(f"d5d3_{arm}_k") for r in runs
         )
         assert [r[0] for r in runs[:6]] == [
             s for s in P4.DEPTH_PRIMARY for _ in (0, 1)
@@ -4809,10 +4819,10 @@ def test_rehearse_verifies_itself_and_only_a_rehearsal_shortens_the_pod_gone_wai
 
 
 # ---- §18.6: draw 2, the summed co-primary, the gate after every start, the late block ----
-def test_draw_2_reads_the_summed_adapter_as_a_co_primary_on_its_own_data():
+def test_draw_2_reads_the_summed_adapter_as_a_co_primary_on_its_own_data(monkeypatch):
     # most probable failure: the summed adapter's verdict is read on draw 1b's 47 runs pooled in, or
     # passes on a lower bound under 0.5, or C1's draw-2 rule reads as draw 1's (§18.6)
-    assert str(P4.DEPTH_DRAW) == "2"
+    monkeypatch.setattr(P4, "DEPTH_DRAW", "2")
     prim = P4.DEPTH_PRIMARY
 
     def read(sum_rate, n=64):
@@ -4832,6 +4842,28 @@ def test_draw_2_reads_the_summed_adapter_as_a_co_primary_on_its_own_data():
         "two-draw pass is off" in yes["stop_rule"]["next"] and yes["stop_rule"]["after_draw"] == "2"
     )
     assert "sum_exploratory" in yes  # the registered exploratory line stays beside it
+
+
+def test_draw_3_reads_the_summed_co_primary_and_the_stronger_arm_beside_it():
+    # most probable failure: draw 3's verdict reads the stronger in-context arm as the yardstick
+    # (the registered primary is the ratio to C_conduct), or the stronger arm is judged in no pass
+    # and its comparison silently reads None (§18.8)
+    assert str(P4.DEPTH_DRAW) == "3" and "depth_cpress" in P4.DEPTH_LATER
+    assert P4.DEPTH_ARMS["depth_cpress"] == ("cpress", "base", "press")
+    prim = P4.DEPTH_PRIMARY
+    rates = {
+        "odcv_depth_base": {s: 0.6 for s in prim},
+        "odcv_depth_cctx": {s: 0.3 for s in prim},
+        "odcv_depth_cpress": {s: 0.15 for s in prim},
+        "odcv_depth_sum": {s: 0.3 for s in prim},
+    }
+    r = P4.depth_read(_depth_rows(rates, 40), 3, False)  # 40 a cell: every rate is a whole count
+    assert r["sum_coprimary"]["passes"] and abs(r["sum_coprimary"]["ratio"] - 1.0) < 1e-9
+    x = r["cpress_exploratory"]
+    assert abs(x["cpress_over_cctx"]["ratio"] - 1.5) < 1e-9  # the stronger arm cuts more
+    assert abs(x["sum_over_cpress"]["ratio"] - 2 / 3) < 1e-9  # the adapter against it
+    assert abs(x["sum_minus_cpress"]["point"] - 0.15) < 1e-9
+    assert x["sum_minus_cpress"]["ci95"][0] > 0 and r["stop_rule"]["after_draw"] == "3"
 
 
 def test_the_gate_repeats_after_a_server_start_with_its_own_rows_and_seeds(tmp_path):
@@ -4873,12 +4905,15 @@ def test_draw_2s_late_block_names_legal_reviewers_step_and_pairs_it_unnamed(tmp_
     A7.STATES, keep = f, A7.STATES
     try:
         named = A7.stage_own_named_late(tmp_path, True)
-        assert len(named) == 11 * 2 * 2 * 2 and {r["arm"] for r in named} == {"base", "c1"}
+        # §18.8 (draw 3): the named probe and probe B for the base and the summed adapter, fresh IDs
+        assert len(named) == 11 * 2 * 2 * 2 and {r["arm"] for r in named} == {"base", "sum"}
+        assert all(r["rid"].startswith("a10named|") for r in named)
         assert {r["scenario"] for r in named} == {"Ai-Legal-Reviewer-Conflict"}
         st = sts[9]
         opt = A7.named_step_option(st)
         assert st["next_call"] in opt and A7._render_for(st)["goal_option"].strip() in opt  # noqa: SLF001
         own = A7.stage_own_late2(tmp_path, True)
-        assert len(own) == 20 * 2 * 2 * 3 and {r["arm"] for r in own} == {"base", "c1", "sum"}
+        assert len(own) == 20 * 2 * 2 * 2 and {r["arm"] for r in own} == {"base", "sum"}
+        assert all(r["rid"].startswith("a10own|") for r in own)
     finally:
         A7.STATES = keep

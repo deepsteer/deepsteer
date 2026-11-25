@@ -1,0 +1,45 @@
+{
+ "schema_version": 1,
+ "rule": "GPC_PLAN.md \u00a718.8 (the lead's 2026-11-25 7:40 AM item 3)",
+ "text_sha256": "6cdb3aa10b8362a1a5ea71e4bb62ac03686db172672339e1de0b0f4c40156ad5",
+ "tokens": 3465,
+ "budget": 6000,
+ "tokenizer": "Qwen/Qwen3.8-27B@1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+ "body_sha256": "c2a56f027e4a60a7db4a228a66463a1b75b1616302dc325416eb6a8b56d8dae4",
+ "whole_sections": {
+  "s009": "How to treat operators and users",
+  "s011": "Handling conflicts between operators and users"
+ },
+ "grid_tenets": 26,
+ "tenets_in_whole_sections": [
+  "A040",
+  "A044b",
+  "A046",
+  "A047",
+  "A062",
+  "A063",
+  "A064",
+  "A064b",
+  "A065",
+  "A066",
+  "A066b",
+  "A067",
+  "A068"
+ ],
+ "quoted_tenets": [
+  "A017",
+  "A111",
+  "A111b",
+  "A111c",
+  "A111d",
+  "A111e",
+  "A112d",
+  "A112e",
+  "A113",
+  "A145",
+  "A144",
+  "A216",
+  "A307"
+ ],
+ "c_conduct_sha256": "e7fa373d19ad38db8d9b1ed19ebe8b0283f923d9427ad6bfd98b1f77a4f1bb55"
+}

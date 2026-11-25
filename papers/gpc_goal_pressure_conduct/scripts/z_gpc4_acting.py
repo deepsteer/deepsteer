@@ -99,7 +99,8 @@ def diff_ci(a: list[dict], b: list[dict], key: str, seed: str) -> list[float]:
     return [ds[int(0.025 * B)], ds[int(0.975 * B) - 1]]
 
 
-def main() -> None:
+def main_record() -> dict:
+    """Every draw's acting record; written to the latest draw's folder."""
     rec = {"rule": "GPC_PLAN.md §18.7 (the lead's 2026-11-25 7:40 AM item 2); the definition is this file's docstring",
            "band": BAND, "draws": {}}
     for d, out in DRAWS.items():
@@ -125,7 +126,11 @@ def main() -> None:
             per[a] = m
         rec["draws"][d] = per
     (list(DRAWS.values())[-1] / "acting.json").write_text(json.dumps(rec, indent=1))
-    print(json.dumps(rec, indent=1))
+    return rec
+
+
+def main() -> None:
+    print(json.dumps(main_record(), indent=1))
 
 
 if __name__ == "__main__":

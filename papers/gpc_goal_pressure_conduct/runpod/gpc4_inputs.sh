@@ -35,6 +35,7 @@ GPC_INPUTS=(
   outputs/gpc4_v1/g5/blackmail.jsonl  # launch 6's stage 4 transcripts, judged in launch 7 (§11.23 ruling 2d)
   outputs/gpc4_in/l6_judged_first.jsonl  # launch 7's judge on launch 6's 80: the stock base at both thresholds (§12)
   outputs/gpc4_in/a7/states.jsonl  # §18's late block: A7's 48 states (gitignored; z_gpc4_a7_states.py)
+  outputs/gpc4_in/c_press_v1.json  # §18.8: draw 3's stronger in-context arm (gitignored; z_gpc4_c_press.py)
 )
 I="$G/outputs/gpc4_in/cst"
 rm -rf "$I" && mkdir -p "$I"

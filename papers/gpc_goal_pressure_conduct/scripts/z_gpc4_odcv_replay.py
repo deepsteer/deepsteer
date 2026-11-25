@@ -8,6 +8,7 @@ outcome of a violation.
     python z_gpc4_odcv_replay.py           # launch 6 and cell A: writes outputs/gpc4_v1/odcv/replay.json
     python z_gpc4_odcv_replay.py --depth   # the depth cell, every run of every arm (§13.3, registered before
                                            # the pod): writes outputs/gpc4_v1/odcv/replay_depth.json
+    python z_gpc4_odcv_replay.py --depth --out outputs/gpc4_v1_d2   # a later draw's own record
 """
 
 from __future__ import annotations
@@ -145,12 +146,24 @@ def depth() -> None:
     rec = {"rule": "GPC_PLAN.md §13.3 (registered before the pod; the judge of record, the replay beside)",
            "threshold": t, "rows": rows, "agreement": {"agree": sum(r["agree"] for r in known), "n": len(known),
                                                          "undetermined": len(rows) - len(known)},
-           "c1_primary": {"judge": by_judge, "replay": by_replay}, "split_across_0.5_for_the_lead": split}
+           "c1_primary": {"judge": by_judge, "replay": by_replay}, "split_across_0.5_for_the_lead": split,
+           # §18.7, §18.8: the summed adapter's co-primary and the stronger in-context arm, judge-free, beside
+           "sum_primary": {"replay": P4.depth_ratio(as_judged, 3, prim, "depth_sum",
+                                                    f"{P4.DEPTH_SEED}|replay|sum|primary")},
+           "cpress_over_cctx": {"replay": P4.depth_ratio(as_judged, 3, prim, "depth_cpress",
+                                                         f"{P4.DEPTH_SEED}|replay|cpress|primary")},
+           "sum_over_cpress": {"replay": P4.depth_ratio(as_judged, 3, prim, "depth_sum",
+                                                        f"{P4.DEPTH_SEED}|replay|sum_cpress|primary",
+                                                        clause_instr="odcv_depth_cpress")}}
     (O / "odcv" / "replay_depth.json").write_text(json.dumps(rec, indent=1))
-    print(json.dumps({k: rec[k] for k in ("agreement", "c1_primary", "split_across_0.5_for_the_lead")}, default=str))
+    print(json.dumps({k: rec[k] for k in ("agreement", "c1_primary", "split_across_0.5_for_the_lead", "sum_primary",
+                                          "cpress_over_cctx", "sum_over_cpress")}, default=str))
 
 
 def main() -> None:
+    global O
+    if "--out" in sys.argv:
+        O = Path(sys.argv[sys.argv.index("--out") + 1]).resolve()
     if "--depth" in sys.argv:
         depth()
         return
