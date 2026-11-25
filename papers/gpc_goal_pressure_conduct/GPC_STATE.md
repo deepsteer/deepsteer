@@ -575,3 +575,6 @@ bill is its figure of record.
   than 0.10; the gate). KDG to tier 2. "Generalizes": 2 of the 3 tier-1b items (null about 0.002). The held-out area
   needs 14 families to detect 0.20 (6 detect 0.30). A cycle stopping at 1a 7.24 h ($8.54); 1a and 1b 10.06 h
   ($11.87); both tiers 19.97 h ($23.56). After draw 3, ImpossibleBench set aside: about 8, 6 or 3 cycles.
+- 2026-11-25: **§19.5, the named-choice renders built** (the lead's 9:45 AM item 6): the 75 held-out pressure slots
+  in B1's judge frame by script, and 8 blackmail leverage renders written from the scenario's files; the script
+  check passes. The blind Codex gate is built and not run: the local Codex model is no longer served on the plan.

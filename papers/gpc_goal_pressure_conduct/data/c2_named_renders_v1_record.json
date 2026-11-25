@@ -1,0 +1,17 @@
+{
+ "rule": "GPC_PLAN.md \u00a719.5",
+ "check": {
+  "slots": 75,
+  "blackmail": 8,
+  "failures": {},
+  "eval_index_checked": true,
+  "waived": {
+   "blackmail": "gpc_conduct.check's 'not scored' (the leverage decision carries no score); its 'eval 8-gram', narrowed to 8-grams outside the cell's own templates"
+  },
+  "blackmail_eval_8grams_outside_own_templates": 0,
+  "passes": true
+ },
+ "slots_file": "outputs/gpc4_in/c2_named_slots_v1.json",
+ "slots_sha256": "a6b7b0147b142fedd0ec25d98b2c6ecc414898ce9f344707497c1b5c0b12d708",
+ "blackmail_sha256": "f777ab88057ce50950c6d07dcf991bb9a45eb61a29f4e4480ff1907415131f01"
+}
