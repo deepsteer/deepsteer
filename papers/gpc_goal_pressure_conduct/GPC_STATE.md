@@ -531,3 +531,15 @@ bill is its figure of record.
   - **Built:** the scripted environment and its tests, the hold-out index (30,667 hashes), the A2 check on planted
     failures, and format parity (passed: token-identical prompts, the target an exact continuation).
   - Rehearsal 14 is running.
+- 2026-11-25: **§18.7, draw 2's record** (session `gpc4-20261125T045139Z`, 8.23 h, nothing cut; the lead's 7:40 AM
+  wording).
+  - **The summed adapter passes its registered co-primary:** base 0.607, clause 0.289, summed 0.319, a ratio of
+    0.906 with lower bound 0.648 (the replay 1.13, lower bound 0.80). Its rate minus the clause's is +0.030 [−0.059,
+    +0.119]. The done-when is not met: it needs a second fresh draw and a second counting instrument.
+  - **C1 is about half the clause, on two draws** (0.53, 0.49; pooled 0.51 [0.30, 0.71]). Not a pass.
+  - The gate passed after all three server starts. The acting rate is 1.00 for every arm on both draws
+    (`z_gpc4_acting.py`; its definition was written after a path survey, disclosed).
+  - GPC-A28 updated toward recognition (naming the step lowers acceptance in both arms). GPC-A29 narrowed: the
+    executor-source rise is shared with the clause in context. GPC-A27 narrowed toward R_instrument.
+  - The session's record is `outputs/gpc4_v1_d2` (the pull; the download merged into `outputs/gpc4_v1`, identical
+    on draw 2's files). The pod about $9.9; about $92.5 remain.

@@ -3138,8 +3138,8 @@ So the two passes are not test edits or harness bypasses. A script cannot separa
 **Appears in.** `GPC_PLAN.md` §18.5.
 **Competing readings.** R_instrument: an agentic turn under a 16,384 cap and a single reply under 4,096 are different token budgets, so the multiples need not match. R_partial: the server applies part of the summed update. The gate's parity (0.013, within the served-versus-attached bar) argues against R_partial.
 **Discriminator.** Zero GPU: the summed adapter's per-call completion lengths against the base's on matched steps of these runs. Or its tokens on stage 4's items through the server, which rides any later pod at about 0.1 h.
-**Status.** open.
-**Thesis impact.** None on the registered read (the summed adapter is exploratory). If R_partial, the summed arm's 0.348 is a lower bound on its effect.
+**Status.** open, **narrowed toward R_instrument** (draw 2, `GPC_PLAN.md` §18.7). At 192 runs, without container-error runs, the summed adapter writes 7,654 completion tokens a run against the base's 5,682 (1.35 times; the clause in context 1.39 times), with 7.56 calls against 6.98. Its whole liveness profile matches the clause's, and its gate parity held after all three server starts, which leaves R_partial little room. (§18.5's 1.22 counted the container-error run; the same runs without it read 1.08.)
+**Thesis impact.** None on the registered read. If R_partial, the summed adapter's passing ratio (0.906, §18.7) is a lower bound on its effect.
 
 ## GPC-A28 (ledger) — C1 transfers where the subject reads its step as the act
 
@@ -3166,6 +3166,15 @@ once the step is named, R_recognition. That is a letter read riding the next pod
 - *R_recognition's evidence so far:* probe B already shows that C1 does not raise own-step rejection on
   Legal-Reviewer (acceptance 0.95 against the base's 0.90).
 - The two separate on draw 2's per-scenario contrasts and on the recognition probe (§18.6's late block).
+- **Updated toward R_recognition (draw 2, `GPC_PLAN.md` §18.7; the lead, 2026-11-25 7:40 AM).** What supports it:
+  - the pooled clause reduction on Legal-Reviewer excludes 0 (0.164 [0.047, 0.281] over draws 1b and 2), so the
+    scenario carries a contrast, against R_scale;
+  - C1's pooled ratio there has an upper bound under 0.5 (−0.36 [−2.66, 0.30]), while Healthcare-Management reads
+    0.76 [0.52, 1.02];
+  - naming the run's own step as the act lowers its acceptance in both arms: the base −0.371 [−0.530, −0.189], C1
+    −0.492 [−0.614, −0.356], so the subject's unnamed acceptance (0.976) is a failure to read the step as the act.
+  - *Computed after data:* C1's fall minus the base's, −0.121 [−0.280, +0.008] over 11 states. That C1 sharpens
+    recognition more than the base does is not separable at this n.
 **Thesis impact.** If R_recognition, the next adapter's target is recognition (A7's "teach recognition" branch),
 and C1's transfer limit is a recognition limit. If R_scale, the per-scenario pattern is noise, and the pooled ratio
 is the read.
@@ -3178,6 +3187,6 @@ is the read.
 **Appears in.** `GPC_PLAN.md` §18.5.
 **Competing readings.** R_probe: P-ctx's update raises probing of the environment's machinery, an out-of-bounds behavior the program treats as an outcome. R_length: its runs are longer (7.5 calls, 7,339 tokens), so it reads more files of every kind. R_noise: 47 runs.
 **Discriminator.** Draw 2's summed arm at full size (192, §18.6), with the reads per file type (the executor's source against the scenario's own files) by script, counts only.
-**Status.** open (draw 2 reads it).
+**Status.** **narrowed: not specific to P-ctx** (draw 2, `GPC_PLAN.md` §18.7). At 192 runs: base 0.234, the clause in context 0.396, C1 0.286, the summed adapter 0.375. The summed adapter minus the base +0.141 [+0.047, +0.229]; the clause minus the base +0.161 [+0.068, +0.250]; the summed adapter minus the clause −0.021 [−0.115, +0.073]. The rise is real and shared with the four-line clause in context, so it is not P-ctx's update alone. Draw 1b's 0.47 on 47 runs was high. A new rival for the shared rise: R_checking, a constrained agent reads the machinery to see what the check counts before it reports. It is separable by script on draw 3 (the executor reads before against after the scorer's first run), counts only.
 **Thesis impact.** If R_probe, the summed adapter trades fewer violations for more probing of the harness, which the read reports beside its ratio. If R_length or R_noise, it is not a finding.
 

@@ -2146,7 +2146,7 @@ what the four-line instruction does in context.
 | The clause and C1 act less where nothing forces a choice (pooled acting 0.875, 0.755, 0.76; GPC-A9) | R_scope: they skip only optional replies | which emails each arm skips, by the inbox's own text (zero GPU) | open |
 | Four pressure sentences in the system prompt leave this subject's judged ODCV-Bench rate at 0.103 (8 of 78) [0.026, 0.192], under the 0.25 bar (GPC-4 pilot, one draw; the judge's control kappa 0.80) | R_placement: a preamble is a weak place for pressure; R_cue: the oversight sentence reads as a test; R_binding: the subject ends by reporting the shortfall | the second operator turn after the first task_complete (placement, binding); cell A without the oversight sentence (cue); the root split on endings (zero GPU, Codex) | read under the bar; rivals open |
 | The predecessor (Qwen3.6-27B) violates at 0.397 under the same judge where this subject sits at 0.039 (GPC-A19) | R_settings: temperature 0.0 and no cap upstream against 0.7 and a cap here | this subject under upstream's settings on the stock prompts, one cell | **resolved toward R_model** (2026-11-23): paired against the predecessor, −0.32 [−0.45, −0.20] under upstream's settings |
-| On three named ODCV-Bench scenarios under pressure (base 0.615), the clause in context cuts violations by 0.240 [0.104, 0.385] and C1 does not carry it (C1 against the base −0.031 [−0.167, +0.104]; against the clause +0.208 [+0.073, +0.344]; ratio 0.13, lower bound −0.69; one draw, Amendment 5) | R_set: three scenarios chosen on the outcome; R_judge: the judge's blind spot (GPC-A21) | the registered judge-free replay (agrees on 312 of 367; C1 under the bar there too); a second draw (ruled not to run on a point under 0.5) | **re-read (2026-11-24, §18.5): the registered "between" branch.** Through the fixed server and its gate, at a fresh base of 0.583 and 192 runs an arm: the clause −0.266, C1 0.443, **ratio 0.53, lower bound 0.18**; the scorer replay 0.68, lower bound 0.37. Draw 2 runs with the two-draw pass off. Draw 1's adapter rows stay void (GPC-A25) |
+| On three named ODCV-Bench scenarios under pressure (base 0.615), the clause in context cuts violations by 0.240 [0.104, 0.385] and C1 does not carry it (C1 against the base −0.031 [−0.167, +0.104]; against the clause +0.208 [+0.073, +0.344]; ratio 0.13, lower bound −0.69; one draw, Amendment 5) | R_set: three scenarios chosen on the outcome; R_judge: the judge's blind spot (GPC-A21) | the registered judge-free replay (agrees on 312 of 367; C1 under the bar there too); a second draw (ruled not to run on a point under 0.5) | **re-read (2026-11-24, §18.5): the registered "between" branch.** Through the fixed server and its gate, at a fresh base of 0.583 and 192 runs an arm: the clause −0.266, C1 0.443, **ratio 0.53, lower bound 0.18**; the scorer replay 0.68, lower bound 0.37. Draw 2 runs with the two-draw pass off. Draw 1's adapter rows stay void (GPC-A25). **Draw 2 (2026-11-25, §18.7): the summed adapter passes its co-primary**, base 0.607, clause 0.289, summed 0.319, ratio 0.906, lower bound 0.648 (the replay 1.13, lower bound 0.80); C1 0.49 again, pooled 0.51 [0.30, 0.71], not a pass; every arm acts in every run (1.00) |
 
 **What the next result changes (GPC-1, branches registered in `GPC_PLAN.md` §6).** An arm meeting
 the goal-pressure criterion on draw 1: the thesis gains "conduct reaches the weights without a
@@ -2307,3 +2307,19 @@ chosen on the outcome. **What the next result changes:** draw 2 decides whether 
 recognition probe on Legal-Reviewer's step separates "C1 works through recognition" from small-denominator noise
 (GPC-A28).
 
+**GPC-4's draw 2 (2026-11-25; `GPC_PLAN.md` §18.7), positive voice.** The program now owns an adapter that
+carries the in-context clause's agentic effect on a registered draw. CST's in-weights constitution with C1's
+distilled conduct added, the summed adapter, takes the three named ODCV-Bench scenarios under pressure from 0.607
+violations at a fresh base to 0.319, against 0.289 with the four-line clause in context and nothing in the
+adapter's context: **a ratio of 0.906, lower bound 0.648**, over the registered 0.5. The scenarios' own scorers,
+judge-free, read 1.13 (lower bound 0.80). It does not buy that by acting less: every run of every arm finishes the
+task with its work product (1.00 of 1,151), and the summed adapter makes more calls and writes 1.35 times the base's
+tokens, as the clause does (1.39). C1 alone carries about half of the clause's effect on two draws (0.53, 0.49;
+pooled 0.51 [0.30, 0.71]), and its shortfall sits on Legal-Reviewer, where the subject does not read its own report
+step as the act until the act is named (acceptance 0.98 unnamed, 0.62 named for the base), the recognition reading
+of GPC-A28. **The limits:** one fresh draw; three scenarios chosen where the base violates; the yardstick is the
+four-line clause, and the summed adapter matches it (rate minus the clause's +0.030 [−0.059, +0.119]) without
+beating it. **What the next result changes:** draw 3 (§18.8) is the second fresh draw on this instrument. A pass
+there, plus a second counting instrument (ImpossibleBench, held), meets the done-when for the summed adapter. Draw
+3's stronger in-context arm says whether the adapter reaches the content it was distilled from, or only the
+four-line clause.
