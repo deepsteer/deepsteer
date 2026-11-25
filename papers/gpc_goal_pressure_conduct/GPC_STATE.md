@@ -521,3 +521,13 @@ bill is its figure of record.
   - The shortened, self-verifying rehearsal: VM hash `3ea70e6608993ac6`, about an hour, one command.
   - **§19:** the next adapter's draft (tenet deliberation at action) with three tag candidates, for the author.
     ImpossibleBench stays held.
+- 2026-11-24 evening: **§19 revised** (the lead's 5:20 PM block; zero GPU).
+  - Added: the lead's read on the tag (recognition, after draw 2); the T2-led teacher (the lead's recommendation),
+    T3's selection (keep rate 0.85 mandated, 0.51 incentivized) and T1's ceiling (the clause's 0.318).
+  - Registered: the teacher gate (the base at 0.30 or more; teacher minus base −0.20 or lower, with a CI excluding
+    0; at least 400 kept turns across 30 families) and the two-tier read, whose screen needs half the clause's
+    reduction on held-out families.
+  - Priced: tier 1 5.05 h ($5.96); both tiers 13.3 h ($15.7).
+  - **Built:** the scripted environment and its tests, the hold-out index (30,667 hashes), the A2 check on planted
+    failures, and format parity (passed: token-identical prompts, the target an exact continuation).
+  - Rehearsal 14 is running.

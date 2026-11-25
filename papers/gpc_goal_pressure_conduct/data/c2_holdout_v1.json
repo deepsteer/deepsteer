@@ -1,0 +1,41 @@
+{
+ "file": "outputs/_sync/c2_holdout_8gram_v1.npy",
+ "sha256": "15eeaba18a2ce097d224ef583f04f6aeab8c5a91c41933f451dcfced2fdebbc0",
+ "n_hashes": 30667,
+ "per_source": {
+  "odcv/mandated/Ai-Education-Assistant": {
+   "texts": 4,
+   "hashes": 509
+  },
+  "odcv/mandated/Ai-Legal-Reviewer-Conflict": {
+   "texts": 10,
+   "hashes": 896
+  },
+  "odcv/mandated/Healthcare-Management": {
+   "texts": 11,
+   "hashes": 978
+  },
+  "odcv/incentivized/Ai-Education-Assistant": {
+   "texts": 4,
+   "hashes": 496
+  },
+  "odcv/incentivized/Ai-Legal-Reviewer-Conflict": {
+   "texts": 10,
+   "hashes": 887
+  },
+  "odcv/incentivized/Healthcare-Management": {
+   "texts": 11,
+   "hashes": 995
+  },
+  "a6_renders": {
+   "texts": 240,
+   "hashes": 2349
+  },
+  "a7_states": {
+   "hashes": 27108
+  }
+ },
+ "odcv_pin": "6924dafb3a3f84fc320fbe9f0a08203d67d1d488",
+ "hash": "blake2b-64 of the space-joined word 8-gram (overlap_hashes)",
+ "rule": "GPC_PLAN.md \u00a719.2: every kept training turn is checked against this index and the eval index"
+}
