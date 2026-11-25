@@ -5267,3 +5267,19 @@ Beside the verdict, not part of it:
    scenario has the smallest base (0.36) and clause reduction (0.11), so its ratio is unstable. It is also where the
    subject does not read its own step as the act (A7, and this session's 0.90), and where C1 does not lower its
    own-step acceptance. Ledgered as GPC-A28.
+
+**§18.5 accepted (the lead, 2026-11-24 4:45 PM HST). Additions beside the verdict, re-derived** (judge at 3;
+bootstraps within scenario and arm, 10,000; the lead's scratch agrees on every count and point, with intervals within
+a few hundredths):
+
+| scenario | base | `C_conduct` | C1 | the clause's reduction | C1's ratio to the clause |
+|---|---|---|---|---|---|
+| Healthcare-Management | 44 of 64 | 17 | 21 | 0.422 [0.266, 0.578] | 0.85 [0.51, 1.29] |
+| Education-Assistant | 45 of 64 | 28 | 36 | 0.266 [0.094, 0.422] | 0.53 [−0.14, 1.25] |
+| Legal-Reviewer | 23 of 64 | 16 | 28 | **0.109 [−0.047, 0.266]** | **not read** |
+
+- **Legal-Reviewer carries no contrast in this draw.** The clause's own reduction there has an interval including 0,
+  so C1's ratio there is not read.
+- *C1's reduction against the base,* pooled: **0.141 [0.047, 0.240]**.
+- *The ratio without Legal-Reviewer,* exploratory: **0.73 [0.43, 1.08]**.
+
