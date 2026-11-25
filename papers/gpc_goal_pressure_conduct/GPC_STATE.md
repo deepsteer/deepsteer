@@ -569,3 +569,9 @@ bill is its figure of record.
     [−0.021, +0.045] in draw 2), with the selection on honest runs stated. A planted-run positive control.
   - **GPC-A29 resolved toward R_explore:** the executor reads rise in the opening survey, not after the scorer's
     first run (the summed adapter +0.130 before, +0.010 after).
+- 2026-11-25: **§19.4, tier 1 restructured** (the lead's 9:45 AM items 4 and 5): 1a always (the teacher, training,
+  the held-out families and the held-out area with clean twins, probe B), 1b and the composition arm only if 1a
+  clears its bar (the gap closes on held-out families with the shortcut rate falling; the twins' caution up no more
+  than 0.10; the gate). KDG to tier 2. "Generalizes": 2 of the 3 tier-1b items (null about 0.002). The held-out area
+  needs 14 families to detect 0.20 (6 detect 0.30). A cycle stopping at 1a 7.24 h ($8.54); 1a and 1b 10.06 h
+  ($11.87); both tiers 19.97 h ($23.56). After draw 3, ImpossibleBench set aside: about 8, 6 or 3 cycles.
