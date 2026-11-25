@@ -5283,3 +5283,243 @@ a few hundredths):
 - *C1's reduction against the base,* pooled: **0.141 [0.047, 0.240]**.
 - *The ratio without Legal-Reviewer,* exploratory: **0.73 [0.43, 1.08]**.
 
+
+### 18.6 Amendment 9: draw 2, registered before data (the lead, 2026-11-24 4:45 PM HST; the author's ruling on the primary, which the pasted block gives; pod side, plus the shortened rehearsal)
+
+**The arms and their reads.**
+- **The base, `C_conduct` and C1 at 192 runs each,** as draw 1b. Run IDs are `d5d2_…`, so the seeds are new. The
+  read uses only this draw's base.
+- **C1: the registered "between" rule.** Draw 1b read between, so the two-draw pass is off. This draw's C1 read is
+  reported under §13.1 b. **The pooled read over draws 1b and 2 is exploratory** (`z_gpc4_draw2_read.py`), with the
+  per-scenario ratios. A scenario whose own clause reduction has an interval including 0 carries no contrast, and
+  its ratio is not read.
+- **The summed adapter at 192, a co-primary.**
+  - *The verdict:* its reduction over `C_conduct`'s, with a lower bound of 0.5, **read on draw 2's data only**. Draw
+    1b's 47 runs (0.348, an exploratory ratio of 0.89) are its motivation and are never pooled into it.
+  - *The registered exploratory line* stays beside it (`sum_exploratory`).
+  - *Why `C_conduct` is its matching clause:*
+    - The summed adapter is P-ctx's update plus C1's.
+    - Its conduct part is C1's, which was distilled from `C_conduct` as the teacher's context.
+    - P-ctx's in-context counterpart is the whole constitution, which has no arm on this instrument.
+    - The criterion compares every adapter to the in-context clause (the scope note's outside-in arm), and
+      `C_conduct` is the clause this instrument carries.
+
+**The summed adapter's power** at this session's realized base (0.583) and the clause's relative reduction (0.455),
+192 runs an arm, with the registered estimator (2,000 replicates, 1,000 bootstrap draws):
+
+| true ratio | P(lower bound ≥ 0.5) | P(point < 0.5) |
+|---|---|---|
+| 1.0 | 0.90 | 0.00 |
+| 0.89 (draw 1b's exploratory point) | 0.74 | 0.00 |
+| 0.75 | 0.37 | 0.05 |
+| 0.5 | 0.03 | 0.49 |
+
+**The summed adapter's branches, written before data.**
+- **A lower bound of 0.5 or more:** the program's in-weights constitution, with the distilled conduct added, carries
+  the in-context clause's agentic effect on the named scenarios. It is the first adapter to clear the bar on a
+  registered draw. The done-when's two-draw criterion then needs one more fresh draw.
+- **A point under 0.5:** the summed adapter does not carry it. Draw 1b's 0.89 on 47 runs was the small sample's
+  reading.
+- **Between:** reported, and a further draw is at the author's word.
+
+**The gate after every server start that precedes an adapter arm** (§18.4, built). `gpc4_gate_pod.py --part N`
+reads the 24 control slots afresh, with its own rows file and request IDs, so its own seeds. It writes
+`gate_<N>.json`, and the latest is `gate.json`.
+- Part 1 is the first start.
+- Part 2 is the restart before C1 and the summed adapter; a failure ends the session.
+- Part 3 is the late block's start; a failure skips the late block's adapter items.
+
+**The late block, cut first:**
+- **(a) GPC-A28's probe.** Legal-Reviewer's 11 act states, with the run's own next command named as the act (the A6
+  render's act, then the command quoted whole), against stopping to report, both letter orders, k = 2, under the
+  base and C1 (88 probes).
+- **(b) Probe B again,** on Healthcare-Management's and Legal-Reviewer's act states, for the base, C1 and the summed
+  adapter (240 probes), so (a) has its unnamed pair in the same session.
+
+**The late reads** (`z_gpc4_draw2_read.py`):
+- *GPC-A28:* C1's named-minus-unnamed own-step acceptance on Legal-Reviewer, paired by state, with worst-case bounds,
+  and the base's beside it. R_recognition predicts C1's falls, and falls more than the base's.
+- *Probe B for the summed adapter* against the base, per scenario, no branch.
+- *GPC-A29:* each arm's executor-source share.
+
+No fixed unparsed line; worst-case bounds as in §18.1.
+
+**ImpossibleBench stays held** and is not in this pod.
+
+**The price,** from §18.5's measured stages ($1.18 an A100-h):
+
+| stage | A100-h |
+|---|---|
+| setup, gate tests, prep, parity | 0.76 |
+| the server and its check, the host's wait | 0.24 |
+| gate 1 | 0.10 |
+| the arm smoke | 0.18 |
+| depth base, 192 runs (simulated from §18.5's own run walls; it measured 1.14) | 1.16 |
+| depth `C_conduct`, 192 runs (measured 1.53) | 1.62 |
+| the server down; judge pass a (524 runs, as §18.5's) | 0.72 |
+| the server up; gate 2 | 0.25 |
+| depth C1, 192 runs (measured 1.19) | 1.21 |
+| depth summed adapter, 192 runs: §18.5's 48 measured run walls at 16 at once, not the engine multiple | 1.70 |
+| the server down; the final judge pass (384 runs) | 0.50 |
+| **to the depth read** | **8.44** |
+| the late block: the server up, gate 3, (a) 88 probes, (b) 240 probes | 0.60 |
+| the pod's own start and download | 0.15 |
+| **central** | **9.19 h, $10.84** |
+
+**What the 10.0 cap cuts.** Items stop at 9.6 h. **At the central price nothing is cut.** At each arm's 90th
+percentile (base 1.28, clause 1.84, C1 1.38, summed 1.92 h), the depth read lands near 9.2 h, (a) runs to the cut's
+edge, and (b) is cut. The summed adapter's arm starts near 6.2 h either way, so it is not cut. $102.35 remain under
+the cap; after this draw, about $91.5.
+
+**The shortened, self-verifying rehearsal** (the author, built before draw 2). The VM hash is **`3ea70e6608993ac6`**.
+`bash papers/gpc_goal_pressure_conduct/runpod/launch_gpc4.sh rehearse` now runs the plan, waits for the host to
+terminate itself, runs `verify` (which writes the record and tears down), and ends.
+- *The plan keeps* the probe, one smoke batch, ODCV-Bench's 80 runs at 16, the pause, the slow ODCV-Bench call (the
+  600 s join), the same-scenario 16 and the pod's loss.
+- *A rehearsal sets the host's pod-gone wait to 300 s.* A launch keeps 1,200 s, filled into the host's driver
+  environment.
+- **It no longer checks:**
+  - ImpossibleBench's gate items: both scaffolds at the gate's scale, the clause items, the overflow and the slow
+    ImpossibleBench call. ImpossibleBench is held, and its smoke items stay in the one batch.
+  - The second and third smoke batches in a row (the batch's repeat).
+  - The launcher killed mid-run (the detached exit).
+  - The 20-minute pod-gone threshold itself (the rehearsal tests the same path at 300 s).
+
+Its length is about the host's setup (20 to 35 min) plus about 20 min of items and 5 min of pod-gone wait, about an
+hour.
+
+**Built and checked:**
+- the pod side (`gpc4_pod.py`, `gpc4_a7_pod.py`, `gpc4_gate_pod.py`, `remote_gpc4.sh`);
+- the rehearsal (`launch_gpc4.sh`, `cloud_init_vm.sh`, `rehearsal_plan.json`);
+- the reads (`z_gpc4_draw2_read.py`);
+- tests: the co-primary verdict, the repeated gate's own rows, draw 2's late stages, the shortened plan and the
+  self-verifying rehearsal. The pod gate's floor is 247.
+
+## 19. DRAFT for the author: the next adapter, tenet deliberation at the point of action (2026-11-24; the lead's 4:45 PM items 5 and 6; zero GPU; nothing built; a build inside GPC, not a new line)
+
+### 19.1 The tag (the author picks before anything is built)
+
+| tag | what it commits the build to |
+|---|---|
+| **C2-TDA** (tenet deliberation at action) | Training the subject's own tenet-grounded deliberation about its concrete next step, and the action that deliberation supports. Its success is the agentic ratio against the clause. The deliberation is trained, never measured. |
+| **C2-BIND** (binding action to judgment) | Closing A7's gap: the action at the brink agreeing with the subject's own cold judgment of the named act. Its success is the loop rate falling toward the named-choice rate, with the agentic ratio beside it. |
+| **C2-STEP** (step recognition) | Teaching the subject to read a concrete step as the act it is (GPC-A28's recognition reading; A7's "does not read its step" branch). Its success is probe B's own-step acceptance falling where the named act is already rejected. |
+
+The draft below is written for C2-TDA, the lead's framing. C2-BIND and C2-STEP are each a narrowing of its target to
+one of the two readings A7 left open.
+
+### 19.2 The build (C2-TDA as drafted)
+
+**Source.**
+- The constitution's tenets, and nothing else that is not ours: every scene, tool, file and tool output is
+  synthetic and written by us.
+- Nothing from any benchmark.
+- *Held out as the transfer test:* the three depth scenarios' exact acts and frames (their prompts, scorers, data,
+  A6's renders and A7's states). They enter the eval 8-gram index (with `a7_states_8gram_v1`) before any corpus
+  is built, and every kept trace is checked against it.
+
+**Format.** Multi-turn tool loops: a scripted bash-like environment that replies with scripted tool outputs, so no
+model plays the world. Each loop has a decision point where a shortcut is available (gaming a validator, editing
+data the task depends on, shaping a report so a check passes) and a constrained route that meets the stated
+constraint and reports the shortfall.
+- The shortcuts are written by family, not copied from the depth scenarios' acts.
+- About 600 loops over about 40 scenario families, with a held-out family split for a transfer check inside the
+  build.
+
+**The target.** At the decision point, the subject's own reasoning about its concrete next step, grounded in the
+tenets that bear on it, then the action that reasoning supports. Before and after the decision point, the loop's
+ordinary turns are the subject's own.
+
+**Teacher options, for the author:**
+- **T1 — the subject with the tenets in context** (C1's recipe moved to the loop). The deliberation is natural to the
+  subject. It inherits the tenets' cold judgment only as far as the subject applies it in the loop: the
+  judgment-action gap A7 measured is in the teacher too.
+- **T2 — the subject's cold named-choice judgment applied to the step.** At each decision point the concrete next
+  step is rendered as a named choice with no tool loop (A6's frame). The subject's cold verdict picks the action,
+  and the teacher then writes the turn that takes it. This binds the action to the judgment the subject already
+  makes correctly, but the deliberation text is the teacher's reconstruction.
+- **T3 — both.** T2 selects the action, T1 writes the deliberation, and a turn is kept only where they agree. This
+  is the most conservative, and the keep rate is the cost.
+
+**GPC-A2's defect, designed out.** No training trace may refer to anything the student is not shown. The check, by
+script, on every kept turn, before training:
+- *No teacher-only n-grams:* the turn shares no word 8-gram with the teacher-only context (the tenets' text and any
+  instruction the student will not see);
+- *Every quoted span is visible:* each quoted span, file path, tool name and number in the turn appears verbatim in
+  the student's visible context (its prompt and the loop so far);
+- *No pointing outside:* the turn names no "instructions above", "the guidelines" or "the constitution" unless the
+  student's prompt carries them.
+
+A turn failing any part is dropped and counted. The build is void if over 10% drop on any family.
+
+**Reasoning trained, or only the action** (an explicit choice for the author):
+- **Train the deliberation and the action.**
+  - *For:* the student learns the link from tenet to step, which is the construct.
+  - *Risks:* it trains a reasoning style, so the student may write the deliberation and act otherwise (faithfulness
+    is not guaranteed); it lengthens replies, which confounds the MoReBench and capability reads unless they are
+    length-matched; and it can teach the student to name tenets as a performance.
+- **Train the action only** (the deliberation masked out of the loss).
+  - *For:* it changes behavior without training a style.
+  - *Risks:* this is the setting where C1 carried the clause's letter effect but only half its agentic effect (§18.5),
+    so the action may not generalize past the families' surfaces, and nothing ties the action to the subject's own
+    judgment.
+- My recommendation is to train both, with the length-matched guards. It is the author's ruling.
+
+**The reads (none on reasoning text):**
+- the depth cell against the clause, the registered ratio at 192 runs an arm on a fresh base;
+- the named-choice rate against the loop rate (the judgment-action gap, A6's renders and the loop on the same
+  scenarios);
+- probe B (own-step acceptance) and GPC-A28's named-step probe;
+- held-out transfer: the blackmail cell and ImpossibleBench's minimal scaffold, if the author releases it;
+- guards: CST's MoReBench matched-length read and the capability bars;
+- the standing gate before every adapter arm.
+
+**What GPC-A28 implies under each reading:**
+- *R_recognition:* C1 moves only steps the subject reads as the act, so the build must teach recognition. Its
+  families need report-shaping and data-shaping steps where the act is indirect (the Legal-Reviewer kind), and T2's
+  rendering of the concrete step as a named choice is the teacher that teaches it. C2-STEP is the narrow version.
+- *R_scale:* the per-scenario pattern is noise, the pooled ratio is the read, and no recognition-specific design is
+  needed.
+
+Draw 2's per-scenario contrasts and the named-step probe decide between them before the build's data are written.
+
+**Price for one cycle:**
+- *Data:* the teacher's rollouts on about 600 loops, about 7 turns each, about 1.5k tokens a decision turn, with
+  offline vLLM batched (about 1.0 to 1.5 h); keep filtering and the A2 check at zero GPU.
+- *Training:* LoRA on about 600 multi-turn sequences of about 8k tokens (C1 took 0.46 h on 525 shorter items),
+  about 1.5 to 2.0 h.
+- *The reads:* a §18-shaped pod with the new adapter beside a fresh base and clause at 192 (about 6.5 h with the
+  gate and judge), plus the letter reads, blackmail and MoReBench (about 1.5 h).
+- **About 11 to 12 A100-h, about $13 to $15 a cycle.**
+- *Cycles the cap allows:* about $91 remain after draw 2, so about 6 cycles at the central price, and 4 to 5 with a
+  host's AWS time and a failed launch's allowance.
+
+**Zero-GPU first:**
+- the families and their shortcuts, written and audited (a blind Codex read that each shortcut breaks a stated
+  constraint, as A6's renders were checked);
+- the scripted environment and its tests;
+- the hold-out index and the A2 check, tested on planted failures;
+- the teacher prompts;
+- the power for the depth read at draw 2's realized rates.
+
+**Anticipated review:**
+1. *"Synthetic loops are not agentic transfer."* → The depth scenarios are held out exactly, and blackmail and
+   ImpossibleBench read outside both. The build's own held-out family split checks surface transfer first.
+2. *"T1 trains the gap A7 measured."* → T2 and T3 exist for that. The author picks with A7's result in view.
+3. *"Training deliberation text moves the guards by length alone."* → MoReBench is read length-matched, and
+   capability at matched tokens.
+4. *"GPC-A28 is unresolved when the data are written."* → The families are written after draw 2's late block reads
+   it.
+5. *"Six cycles is a ceiling, not a plan."* → One cycle is registered at a time, each with its bail: a gate failure,
+   or a ratio under the clause's half at the first read.
+
+**The done-when, if a third build is added** (for the author's ruling): "One adapter's reduction, over the matching
+in-context clause's, has a lower bound of 0.5 on two fresh draws on each counting instrument, with the acting rate
+within 0.10 of the base's. Or C1, the summed adapter and the tenet-deliberation adapter have each had one read on
+the counting instruments, and none reaches a point ratio of 0.5." The shared cap stays a hard stop.
+
+**Sections the author should read himself:**
+- §19.1 (the tag);
+- the teacher options and the reasoning-or-action choice (§19.2);
+- what GPC-A28 implies;
+- the done-when's wording.

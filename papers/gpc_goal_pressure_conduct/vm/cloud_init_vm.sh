@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # GPC-4's EC2 host, first boot (cloud-init user-data; GPC_PLAN.md §11.3c, ODCV_HOST_BRIEF.md §2).
-# The launcher fills __COMMIT__, __SESSION__ and __HARD_LIMIT_MIN__; no credential is in this file.
+# The launcher fills __COMMIT__, __SESSION__, __HARD_LIMIT_MIN__ and __POD_GONE_S__ (1,200 s for a launch, 300 s for a
+# rehearsal, §18.6); no credential is in this file.
 # Setup runs with egress open; the launcher locks egress (the security group) only after
 # /var/lib/gpc4/setup_done.json exists and the pod's address is known, before any container runs.
 set -euo pipefail
@@ -114,7 +115,7 @@ cat > /etc/systemd/system/gpc4-driver.service <<EOF
 Description=gpc4 stage driver (detached from the launcher)
 After=gpc4-proxy.service gpc4-forward.service
 [Service]
-Environment=GPC4_ODCV=/opt/gpc4/odcv GPC4_IB_PY=/opt/gpc4/ib-venv/bin/python GPC4_IB_SRC=/opt/gpc4/impossiblebench/src/impossiblebench GPC4_IB_DATA=/opt/gpc4/ib_data
+Environment=GPC4_ODCV=/opt/gpc4/odcv GPC4_IB_PY=/opt/gpc4/ib-venv/bin/python GPC4_IB_SRC=/opt/gpc4/impossiblebench/src/impossiblebench GPC4_IB_DATA=/opt/gpc4/ib_data GPC4_POD_GONE_S=__POD_GONE_S__
 ExecStart=/usr/bin/python3 $VM driver
 Restart=on-failure
 RestartSec=30

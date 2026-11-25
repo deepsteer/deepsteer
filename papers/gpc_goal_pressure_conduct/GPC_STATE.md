@@ -511,3 +511,13 @@ bill is its figure of record.
   - The session's record is `outputs/gpc4_v1_a8` (the pull, a clean mirror; the download merged into
     `outputs/gpc4_v1`).
 
+- 2026-11-24 evening: **§18.6, draw 2, registered and built** (the lead's 4:45 PM block, the author's ruling on the
+  primary).
+  - The arms: the base, the clause and C1 at 192 (C1 under the "between" rule, pooled exploratory), and the summed
+    adapter at 192 as a co-primary on draw 2's data only.
+  - The gate after every server start.
+  - The late block: GPC-A28's named-step probe, then probe B for three arms.
+  - Central price 9.19 h, $10.84, with nothing cut.
+  - The shortened, self-verifying rehearsal: VM hash `3ea70e6608993ac6`, about an hour, one command.
+  - **§19:** the next adapter's draft (tenet deliberation at action) with three tag candidates, for the author.
+    ImpossibleBench stays held.

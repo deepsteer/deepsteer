@@ -22,6 +22,8 @@ DISK_GB=160
 VCPUS_NEEDED=16
 HARD_LIMIT_MIN=${GPC4_HARD_LIMIT_MIN:-840}   # 14 h, the runner's ceiling
 STANDIN_LIMIT_MIN=720   # the rehearsal's stand-in: 12 h, long enough for a `verify` the next morning
+REHEARSE_WAIT_MIN=${GPC4_REHEARSE_WAIT_MIN:-120}   # §18.6: rehearse waits this long for the host's own end, then verifies
+REHEARSE_POD_GONE_S=300   # §18.6: the host's pod-gone wait in a rehearsal (a launch keeps 1,200 s)
 SETUP_WAIT_MIN=${GPC4_SETUP_WAIT_MIN:-90}
 AMI_PARAM=/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id
 ROOT=${GPC4_ROOT:-~/.gpc4}
@@ -131,7 +133,7 @@ wait_ssh() {  # <ip>
 
 vm_setup() {
   sed -e "s/__COMMIT__/$COMMIT/" -e "s/__SESSION__/$S/" -e "s/__HARD_LIMIT_MIN__/$HARD_LIMIT_MIN/" \
-    "$G/vm/cloud_init_vm.sh" > "$D/user_data_vm.sh"
+    -e "s/__POD_GONE_S__/${POD_GONE_S:-1200}/" "$G/vm/cloud_init_vm.sh" > "$D/user_data_vm.sh"
   ! grep -qiE 'aws_secret|aws_access|hf_[a-z0-9]{10}|BEGIN OPENSSH PRIVATE' "$D/user_data_vm.sh" \
     || die "user-data would carry a credential"
   VM=$(run_instance "$TYPE" "$D/user_data_vm.sh" "$S-host"); echo "$VM" > "$D/vm"
@@ -197,6 +199,7 @@ cmd_rehearse() {
     "$G/vm/cloud_init_standin.sh" > "$D/user_data_standin.sh"
   # what the host runs, saved now: `verify` keys the record to these, never to the tree it runs in
   echo "$VM_HASH" > "$D/vm_hash"; echo "$COMMIT" > "$D/commit"
+  POD_GONE_S=$REHEARSE_POD_GONE_S   # vm_setup fills the host's pod-gone wait with it
   SI=$(run_instance "$STANDIN_TYPE" "$D/user_data_standin.sh" "$S-standin"); echo "$SI" > "$D/standin"
   trap 'say "the launcher stopped; resources stay for verify or teardown"' EXIT
   vm_setup
@@ -206,9 +209,17 @@ cmd_rehearse() {
   until ssh "${SSHO[@]}" -i "$D/admin_key" "ubuntu@$SI_PUB" test -f /var/lib/gpc4_standin_ready 2>/dev/null; do sleep 15; done
   echo "$SI_PUB" > "$D/standin_ip"
   handoff "$SI_PRIV" 22 gpc4pod || die "the host failed its post-lock gate tests"
-  # the detached test: the launcher now exits mid-run, as if killed; `verify` checks the rest
-  say "rehearsal running detached; this launcher exits now (the kill). Run \`$0 verify\` in about 30 min."
+  # §18.6 (the author): the rehearsal verifies itself. It waits for the host to finish the plan, lose the stand-in
+  # (the vanish) and terminate itself, then runs `verify`, which writes the record and tears down. The old
+  # detached exit (the launcher killed mid-run) is no longer rehearsed.
+  say "rehearsal running; waiting for the host to terminate itself (up to $REHEARSE_WAIT_MIN min), then verify"
+  local deadline=$(( $(date +%s) + REHEARSE_WAIT_MIN * 60 ))
+  until [ "$(ip_of "$VM" State.Name 2>/dev/null || echo gone)" != running ]; do
+    [ "$(date +%s)" -lt "$deadline" ] || { say "the host is still running after $REHEARSE_WAIT_MIN min; verifying as it stands"; break; }
+    sleep 60
+  done
   trap - EXIT
+  cmd_verify
 }
 
 cmd_verify() {

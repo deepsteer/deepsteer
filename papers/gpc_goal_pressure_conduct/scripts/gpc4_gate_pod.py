@@ -108,15 +108,23 @@ def server_parity(out: Path, tags: list[str], dry: bool) -> dict[str, dict]:
     return res
 
 
-def stage_gate(out: Path, dry: bool) -> dict:
+def stage_gate(out: Path, dry: bool, part: int = 1) -> dict:
+    """The gate on this server start. Part 1 reads A7's control rows (`a7/control.jsonl`, `a7/decision.json`); a
+    later part (§18.4, §18.6: after every server start that precedes an adapter arm) reads its own rows afresh,
+    `a7/control_g<part>.jsonl`, under request IDs of its own. Each part writes `gate_<part>.json`, and the latest
+    is `gate.json`, which `gpc4_pod.gate_ok` reads."""
     ok, why = P4.server_ok(out)
     if not ok:
         rec = {"gate_ok": False, "why": why, "adapters": {}}
         P4._w(out, "gate", rec)  # noqa: SLF001
         print(">> gate:", json.dumps(rec), flush=True)
         return rec
-    rows = A7.stage_control(out, dry)
-    dec = A7.stage_decide(out, dry)
+    if part == 1:
+        rows = A7.stage_control(out, dry)
+        dec = A7.stage_decide(out, dry)
+    else:
+        rows = A7.stage_control(out, dry, name=f"control_g{part}", tag=f"a7c{part}")
+        dec = A7.control_decision(rows)
     served = [t for t in ADAPTERS if P4.adapter_ok(out, t)]
     par = server_parity(out, served, dry) if served else {}
     ad = {}
@@ -136,8 +144,10 @@ def stage_gate(out: Path, dry: bool) -> dict:
            "rule": "GPC_PLAN.md §18: the control holds and C1 passes (its reduction's CI excludes 0 and is at "
                    "least half the clause's; its served-against-attached parity through the server passes); the "
                    "summed adapter is read only if it passes"}
+    rec["part"] = part
+    P4._w(out, f"gate_{part}", rec)  # noqa: SLF001
     P4._w(out, "gate", rec)  # noqa: SLF001
-    print(">> gate:", json.dumps({"gate_ok": rec["gate_ok"], "dry_pass_through": dry_through,
+    print(">> gate:", json.dumps({"part": part, "gate_ok": rec["gate_ok"], "dry_pass_through": dry_through,
                                   "control_ok": dec.get("control_ok"),
                                   "passes": {t: v.get("passes") for t, v in ad.items()},
                                   "reductions": {t: (v.get("control_rule") or {}).get("reduction")
@@ -151,9 +161,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--stage", default="gate", choices=["gate"])
+    ap.add_argument("--part", type=int, default=1)
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
-    stage_gate(a.out, a.dry_run)
+    stage_gate(a.out, a.dry_run, a.part)
 
 
 if __name__ == "__main__":

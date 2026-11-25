@@ -418,62 +418,29 @@ def test_cloud_init_carries_no_credential_and_arms_the_hard_limit_first():
 
 @pytest.mark.host_side
 def test_rehearsal_plan_is_the_gates_own_scale():
-    # most probable failure: the rehearsal runs a toy load, so the gate's 80 runs at 8 at once and
-    # its 30 tasks a scaffold at 10 sandboxes run for the first time on GPU time (the lead's item 2)
+    # most probable failure: the rehearsal runs a toy load, so the gate's 80 runs at 16 at once run
+    # for the first time on GPU time (the lead's item 2); or the shortened plan (§18.6) drops the
+    # pod's loss, the slow call or the same-scenario item that past launches needed
     plan = json.loads((GPC / "vm/rehearsal_plan.json").read_text())["instructions"]
     assert len({i["id"] for i in plan}) == len(plan)
-    slow = [
-        i for i in plan if i.get("slow")
-    ]  # rehearsal 11's slow calls (§12 item 9) have their own test
-    rep = [i for i in plan if i.get("same_scenario")]  # rehearsal 12's item (§13.1) too
-    plan = [i for i in plan if not i.get("slow") and not i.get("same_scenario")]
-    assert len(slow) == 2 and len(rep) == 1
-    odcv = [i for i in plan if i["kind"] == "odcv"]
+    slow = [i for i in plan if i.get("slow")]  # rehearsal 11's slow call (§12 item 9)
+    rep = [i for i in plan if i.get("same_scenario")]  # rehearsal 12's item (§13.1)
+    assert len(slow) == 1 and slow[0]["kind"] == "odcv" and len(rep) == 1
+    assert any(i["kind"] == "vanish" for i in plan)  # the pod's loss (rehearsal 8)
+    main = [i for i in plan if not i.get("slow") and not i.get("same_scenario")]
+    odcv = [i for i in main if i["kind"] == "odcv"]
     assert len(odcv) == 1 and len(odcv[0]["runs"]) == 80 and odcv[0]["concurrency"] == 16
-    # §11.21: the smoke's own batch; a 60 s stop between the plan's batches; an overflow that scores
-    kinds = [i["kind"] for i in plan]
-    assert kinds.index("batch") < kinds.index("odcv") < kinds.index("pause") < kinds.index("ib")
-    assert next(i for i in plan if i["kind"] == "pause")["seconds"] == 60
-    assert len(next(i for i in plan if i["kind"] == "batch")["items"]) == 9
-    # §11.24: the concurrent smoke batch three times in a row, each its own ids
-    batches = [i for i in plan if i["kind"] == "batch"]
-    assert [b["id"] for b in batches] == ["r0s_smoke", "r0t_smoke", "r0u_smoke"]
-    assert len({x["id"] for b in batches for x in b["items"]}) == 27
-    ov = [i for i in plan if i.get("model") == "overflow_stub"]
-    assert len(ov) == 1 and ov[0]["scaffold"] == "tools" and "overflow_stub" in V.Stub.models
     assert len({r[2] for r in odcv[0]["runs"]}) == 80
     assert {v for _, v, _ in odcv[0]["runs"]} == {"mandated", "incentivized"}
-    ib = [
-        i
-        for i in plan
-        if i["kind"] == "ib" and not i.get("clause_text") and i.get("model") != "overflow_stub"
-    ]
-    # §11.20: a clause arm on each scaffold, 3 tasks each with the gate's own settings, so
-    # the stub (which refuses a second system message, as the subject's template does) reads them
-    cl = [
-        i for i in plan if i["kind"] == "ib" and i.get("clause_text")
-    ]  # the slow calls are set apart
-    assert sorted(i["scaffold"] for i in cl) == ["minimal", "tools"]
-    for i in cl:
-        assert len(i["task_ids"]) == 3 and i["arm"] == "cctx"
-        want = P4.ib_instruction(i["scaffold"], i["split"], [], "base", "base", "x")["task_kwargs"]
-        assert i["task_kwargs"] == want
-    assert [i["scaffold"] for i in ib] == [
-        "tools",
-        "tools",
-        "minimal",
-        "minimal",
-    ]  # the gate's order
-    for i in ib:
-        assert len(i["task_ids"]) == 15 and i["concurrency"] == P4.IB_CONCURRENCY == 5
-        # the gate's own settings (ib_instruction), not the old rehearsal's 2 attempts, 10 messages
-        want = P4.ib_instruction(i["scaffold"], i["split"], [], "base", "base", "x")["task_kwargs"]
-        assert i["task_kwargs"] == want
-        assert len(set(i["task_ids"])) == 15 and all(
-            t.startswith("lcbhard_") for t in i["task_ids"]
-        )
-        if list(P4.IB_PARQUET.glob(f"{i['split']}-*.parquet")):  # the pinned data, when present
-            assert i["task_ids"] == P4.ib_sample(i["split"], 15, f"first|{i['scaffold']}", False)
+    # §11.21: the smoke's own batch, then the gate's load, then a 60 s stop
+    kinds = [i["kind"] for i in main]
+    assert kinds.index("batch") < kinds.index("odcv") < kinds.index("pause")
+    assert next(i for i in main if i["kind"] == "pause")["seconds"] == 60
+    batches = [i for i in main if i["kind"] == "batch"]
+    assert [b["id"] for b in batches] == ["r0s_smoke"] and len(batches[0]["items"]) == 9
+    # §18.6: ImpossibleBench is held, so no top-level ImpossibleBench item runs (its smoke items
+    # stay in the batch, which the pod's arm smoke also sends)
+    assert not [i for i in plan if i["kind"] == "ib"]
 
 
 @pytest.mark.host_side
@@ -829,13 +796,13 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_pa
     # §12 item 9 (rehearsal 11): a slow call generated twice fails it
     assert good["instruments"]["stages"]["r5f_slow_odcv"]["slow_call"]["ok"]
     regen = session(slow_regen=True)
-    assert not regen["passed"] and not regen["instruments"]["checks"]["r5g_slow_ib"]
-    assert regen["instruments"]["stages"]["r5g_slow_ib"]["slow_call"]["stub_counts"] == [1, 2]
+    assert not regen["passed"] and not regen["instruments"]["checks"]["r5f_slow_odcv"]
+    assert regen["instruments"]["stages"]["r5f_slow_odcv"]["slow_call"]["stub_counts"] == [1, 2]
     assert not session(push_failed=1)["passed"]  # a lost push fails it (rehearsal 6's fault)
     # the pod's loss, rehearsed: no record of the host terminating itself fails it (rehearsal 8)
     assert any(i["kind"] == "vanish" for i in plan)
     assert not session(selfterm=False)["passed"]
-    assert not session(undelivered="r3_ib_tools_conflicting")["passed"]  # every result delivered
+    assert not session(undelivered="r1_odcv")["passed"]  # every result delivered
     # §13.1 (rehearsal 12): the same scenario 16 times at once, at its own temperature; a container
     # error there, or any item's calls at a temperature its instruction did not name, fails the
     # record
@@ -845,7 +812,7 @@ def test_verify_keys_the_record_to_the_rehearsed_code_and_the_instruments(tmp_pa
     assert good["instruments"]["stages"]["r1_odcv"]["sampling"]["temperatures"] == [0.7]
     assert not session(rep_errors=1)["passed"]
     assert not session(wrong_temp="r5h_same_scenario_16")["passed"]
-    assert not session(wrong_temp="r2_ib_tools_oneoff")["passed"]  # the record's 0.7 is checked too
+    assert not session(wrong_temp="r1_odcv")["passed"]  # the record's 0.7 is checked too
 
 
 @pytest.mark.host_side
@@ -1547,14 +1514,16 @@ def test_pod_runner_order_and_inputs():
         "--part depth_a",  # the one decision point (§13.1 a)
         "--stage depth_go",
         "--part up\n",
+        "gate --stage gate --part 2",  # §18.4: the gate again on this server start
         "item depth_c1",
         "item depth_sum",  # cut first: the last item
         "--part down",
         "--part depth_final",
-        "fits late_own",  # §18.1's late block, last, cut from the end
-        "own_late --stage own_late",
-        "fits late_root",
-        "root_late --stage root_late",
+        "fits late_named",  # §18.6's late block, last, cut from the end, behind its own gate
+        "gate --stage gate --part 3",
+        "own_named_late --stage own_named_late",
+        "fits late_own2",
+        "own_late2 --stage own_late2",
         "--stage stop",
     ]
     assert "item a19_cell" not in RUNNER and "up_nocap" not in RUNNER  # GPC-A19's cell is done
@@ -2409,7 +2378,7 @@ def test_a_failed_standing_gate_ends_the_session_before_any_arm(tmp_path):
     at = next(n for n, c in enumerate(calls) if "--stage gate" in c)
     after = calls[at + 1 :]
     assert any("--stage stop --part now" in c for c in after)
-    for stage in ("arm_smoke", "depth", "judge", "--stage root_late", "--stage own_late"):
+    for stage in ("arm_smoke", "depth", "judge", "--stage own_named_late", "--stage own_late2"):
         assert not any(stage in c for c in after if "serve" not in c), stage
 
 
@@ -4199,13 +4168,13 @@ def test_depth_instruction_is_the_named_set_with_fresh_ids_interleaved():
     # reuses draw 1's IDs (so its seeds), the set drifts from the one named before any arm ran, a
     # size drifts from §18's (192 an arm, the summed adapter 48), or a cut takes a whole scenario's
     # draws instead of the last draws
-    size = {"depth_base": 192, "depth_cctx": 192, "depth_c1": 192, "depth_sum": 48}
+    size = {"depth_base": 192, "depth_cctx": 192, "depth_c1": 192, "depth_sum": 192}
     for item, (arm, model, which) in P4.DEPTH_ARMS.items():
         ins = P4.depth_instruction(item, dry=False)
         runs = ins["runs"]
         assert len(runs) == 3 * 2 * P4.DEPTH_K_ARM[item] == size[item] and P4.DEPTH_SENS_K == 0
         assert len({r[2] for r in runs}) == len(runs) and all(
-            r[2].startswith(f"d5d1b_{arm}_k") for r in runs
+            r[2].startswith(f"d5d2_{arm}_k") for r in runs
         )
         assert [r[0] for r in runs[:6]] == [
             s for s in P4.DEPTH_PRIMARY for _ in (0, 1)
@@ -4262,9 +4231,10 @@ def test_the_depth_decision_point_stops_on_a_low_base_or_a_null_clause():
     assert void["decision"] == "stop_void"
 
 
-def test_draw_1s_stop_rule_has_three_branches():
+def test_draw_1s_stop_rule_has_three_branches(monkeypatch):
     # most probable failure: a point ratio under 0.5 runs draw 2, or a lower bound under 0.5 counts
     # toward a two-draw pass (§13.1 b)
+    monkeypatch.setattr(P4, "DEPTH_DRAW", 1)
     prim = P4.DEPTH_PRIMARY
     sens = {s: 0.5 for s in P4.DEPTH_SENS}
 
@@ -4819,5 +4789,96 @@ def test_the_late_block_reads_its_registered_items_and_c1_only_past_the_gate(tmp
         (tmp_path / "gate.json").unlink()
         (tmp_path / "a7" / "own_late.jsonl").unlink()
         assert {r["arm"] for r in A7.stage_own_late(tmp_path, True)} == {"base"}
+    finally:
+        A7.STATES = keep
+
+
+@pytest.mark.host_side
+def test_rehearse_verifies_itself_and_only_a_rehearsal_shortens_the_pod_gone_wait():
+    # most probable failure: the rehearsal still detaches and needs a separate verify (the author's
+    # 2026-11-24 ask), or a launch's host inherits the rehearsal's 300 s pod-gone wait and powers
+    # off on a pod's brief silence (§18.6)
+    reh = LAUNCHER[LAUNCHER.index("cmd_rehearse() {") : LAUNCHER.index("cmd_verify() {")]
+    assert reh.rstrip().endswith("cmd_verify\n}") and "exits now (the kill)" not in reh
+    assert "POD_GONE_S=$REHEARSE_POD_GONE_S" in reh and "REHEARSE_POD_GONE_S=300" in LAUNCHER
+    assert "s/__POD_GONE_S__/${POD_GONE_S:-1200}/" in LAUNCHER
+    launch = LAUNCHER[LAUNCHER.index("cmd_launch() {") :]
+    assert "POD_GONE_S=" not in launch.split("\n}\n", 1)[0]
+    assert "GPC4_POD_GONE_S=__POD_GONE_S__" in VM_INIT
+    assert V.POD_GONE_S == 1200.0 or "GPC4_POD_GONE_S" in os.environ
+
+
+# ---- §18.6: draw 2, the summed co-primary, the gate after every start, the late block ----
+def test_draw_2_reads_the_summed_adapter_as_a_co_primary_on_its_own_data():
+    # most probable failure: the summed adapter's verdict is read on draw 1b's 47 runs pooled in, or
+    # passes on a lower bound under 0.5, or C1's draw-2 rule reads as draw 1's (§18.6)
+    assert str(P4.DEPTH_DRAW) == "2"
+    prim = P4.DEPTH_PRIMARY
+
+    def read(sum_rate, n=64):
+        rates = {
+            "odcv_depth_base": {s: 0.6 for s in prim},
+            "odcv_depth_cctx": {s: 0.3 for s in prim},
+            "odcv_depth_c1": {s: 0.45 for s in prim},
+            "odcv_depth_sum": {s: sum_rate for s in prim},
+        }
+        return P4.depth_read(_depth_rows(rates, n), 3, False)
+
+    yes, no = read(0.3), read(0.55)
+    assert yes["sum_coprimary"]["passes"] and yes["sum_coprimary"]["lb"] >= 0.5
+    assert not no["sum_coprimary"]["passes"]
+    assert yes["sum_coprimary"]["n"]["adapter"] == 3 * 64  # this draw's runs only
+    assert (
+        "two-draw pass is off" in yes["stop_rule"]["next"] and yes["stop_rule"]["after_draw"] == "2"
+    )
+    assert "sum_exploratory" in yes  # the registered exploratory line stays beside it
+
+
+def test_the_gate_repeats_after_a_server_start_with_its_own_rows_and_seeds(tmp_path):
+    # most probable failure: a repeated gate reuses the first gate's cached rows (same file, same
+    # request IDs), so a later server start is never actually checked (§18.4, §18.6)
+    import gpc4_a7_pod as A7
+    import gpc4_gate_pod as G
+
+    if not (GPC / "outputs/gpc1_v1/conduct/slots.json").exists():
+        pytest.skip("the control slots are synced, not committed")
+    for t_ in ("c1", "sum"):
+        P4._w(tmp_path, f"train_{t_}", {"trained": True, "adapters": {"1": str(tmp_path)}})  # noqa: SLF001
+        P4._w(tmp_path / "parity", t_, {"passes": True, "read": True})  # noqa: SLF001
+    (tmp_path / "parity" / "hf_base.json").write_text(json.dumps({"base": [[0.0] * 5] * 32}))
+    for t_ in ("c1", "sum"):
+        (tmp_path / "parity" / f"hf_{t_}.json").write_text(
+            json.dumps({"attached": [[-5.0, 0.0, -5.0, -5.0, -5.0]] * 32})
+        )
+    g1 = G.stage_gate(tmp_path, dry=True, part=1)
+    g2 = G.stage_gate(tmp_path, dry=True, part=2)
+    assert g1["gate_ok"] and g2["gate_ok"] and g2["part"] == 2
+    assert (tmp_path / "gate_1.json").exists() and (tmp_path / "gate_2.json").exists()
+    r1 = [json.loads(x) for x in (tmp_path / "a7" / "control.jsonl").read_text().splitlines()]
+    r2 = [json.loads(x) for x in (tmp_path / "a7" / "control_g2.jsonl").read_text().splitlines()]
+    assert len(r1) == len(r2) == 192 and not {r["rid"] for r in r1} & {r["rid"] for r in r2}
+    assert json.loads((tmp_path / "gate.json").read_text())["part"] == 2  # the latest decides
+    assert A7.arms_read(tmp_path) == list(A7.ARMS)
+
+
+def test_draw_2s_late_block_names_legal_reviewers_step_and_pairs_it_unnamed(tmp_path):
+    # most probable failure: GPC-A28's probe does not quote the run's own command, names a step the
+    # run did not take, or has no unnamed pair in the same session (§18.6 (a), (b))
+    import gpc4_a7_pod as A7
+
+    sts = [_a7_state(i, True, "Healthcare-Management") for i in range(9)]
+    sts += [_a7_state(9 + i, True, "Ai-Legal-Reviewer-Conflict") for i in range(11)]
+    f = tmp_path / "states.jsonl"
+    f.write_text("".join(json.dumps(s) + "\n" for s in sts))
+    A7.STATES, keep = f, A7.STATES
+    try:
+        named = A7.stage_own_named_late(tmp_path, True)
+        assert len(named) == 11 * 2 * 2 * 2 and {r["arm"] for r in named} == {"base", "c1"}
+        assert {r["scenario"] for r in named} == {"Ai-Legal-Reviewer-Conflict"}
+        st = sts[9]
+        opt = A7.named_step_option(st)
+        assert st["next_call"] in opt and A7._render_for(st)["goal_option"].strip() in opt  # noqa: SLF001
+        own = A7.stage_own_late2(tmp_path, True)
+        assert len(own) == 20 * 2 * 2 * 3 and {r["arm"] for r in own} == {"base", "c1", "sum"}
     finally:
         A7.STATES = keep
