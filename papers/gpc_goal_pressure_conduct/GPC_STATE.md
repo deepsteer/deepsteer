@@ -553,3 +553,12 @@ bill is its figure of record.
     unchanged (`3ea70e6608993ac6`).
   - §16.6: ImpossibleBench is the second counting instrument the done-when needs; held through draw 3; its gate
     items are rehearsed again first.
+- 2026-11-25: **§19.3, the next build revised** (the author's rulings; the lead's 7:40 AM item 5 and 7:50 AM block;
+  zero GPU; nothing trains before draw 3 reads).
+  - The aim: moral deliberation trained at tool steps, generalization outside tool use registered first. The tag
+    open (C2-BIND, or C2-TDA with the gap as its closing number). T2-led; reasoning and action both trained.
+  - Primary measures: the judgment-action gap and discrimination against clean twins. Probe B secondary.
+  - Proposed held-out area: manipulation and coercion (6 of about 46 families). The battery tabled from saved data,
+    with two framings (generalizes: 2 of 4 items with room). The composition arm needs an N-way sum at rank 48.
+  - Tier 1 repriced: 7.15 h on the server path, 8.02 with S-hi, 9.2 with the composition arm. About 3 full cycles,
+    or 7 screens, after draw 3.
