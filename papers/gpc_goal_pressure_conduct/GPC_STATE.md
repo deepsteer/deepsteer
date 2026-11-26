@@ -578,3 +578,6 @@ bill is its figure of record.
 - 2026-11-25: **§19.5, the named-choice renders built** (the lead's 9:45 AM item 6): the 75 held-out pressure slots
   in B1's judge frame by script, and 8 blackmail leverage renders written from the scenario's files; the script
   check passes. The blind Codex gate is built and not run: the local Codex model is no longer served on the plan.
+- 2026-11-25 afternoon: **§19.5's blind gate passes** on the fixed reader (`gpt-6.2-sol`, high, codex-cli 0.172.0):
+  the blackmail renders 16 of 16 (both letter orders), the conduct slots 75 of 75 (bar 71). 92 calls, one error
+  before the CLI update, no quota stop, no disagreeing render.
