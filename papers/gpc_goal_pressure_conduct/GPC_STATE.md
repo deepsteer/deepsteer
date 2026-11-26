@@ -581,3 +581,13 @@ bill is its figure of record.
 - 2026-11-25 afternoon: **§19.5's blind gate passes** on the fixed reader (`gpt-6.2-sol`, high, codex-cli 0.172.0):
   the blackmail renders 16 of 16 (both letter orders), the conduct slots 75 of 75 (bar 71). 92 calls, one error
   before the CLI update, no quota stop, no disagreeing render.
+- 2026-11-25 evening: **§18.10, draw 3's record** (session `gpc4-20261125T192350Z`, 9.56 h, nothing cut).
+  - **The summed adapter passes its co-primary again:** base 0.573, clause 0.319, summed 0.339, ratio 0.924, lower
+    bound 0.597 (the replay 1.36, lower bound 0.88). Acting 1.00; honest work +0.027 [−0.007, +0.061]. Two fresh
+    passing draws on this instrument; the second counting instrument (ImpossibleBench) remains for the done-when.
+  - **`C_press` cuts more** (0.167, 1.60 times the clause), and the adapter falls short of it by 0.172 [0.088, 0.256].
+    New: GPC-A30 (content, length or cue; a length-matched arm separates them, about 1.6 A100-h).
+  - GPC-A28 replicates (the base's named fall −0.364; the summed adapter's difference in differences not separable).
+    GPC-A29's R_explore replicates.
+  - The record is `outputs/gpc4_v1_d3` (identical to the download on its files). The pod about $11.5; about $81.0
+    remain.

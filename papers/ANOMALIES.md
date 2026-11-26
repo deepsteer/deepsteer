@@ -3175,6 +3175,11 @@ once the step is named, R_recognition. That is a letter read riding the next pod
     −0.492 [−0.614, −0.356], so the subject's unnamed acceptance (0.976) is a failure to read the step as the act.
   - *Computed after data:* C1's fall minus the base's, −0.121 [−0.280, +0.008] over 11 states. That C1 sharpens
     recognition more than the base does is not separable at this n.
+  - **Draw 3 (2026-11-25, `GPC_PLAN.md` §18.10):** the pattern replicates. Naming the step lowers acceptance for the
+    base by −0.364 [−0.530, −0.197] (draw 2: −0.371) and for the summed adapter by −0.424 [−0.629, −0.227]. The
+    registered difference in differences is −0.061 [−0.265, +0.152], not separable. `C_press`, the fuller
+    in-context content, cuts Legal-Reviewer's violations to 12 of 64 (the base 32, the clause 21): the step the
+    subject does not read as the act is the step the fuller content reaches (GPC-A30).
 **Thesis impact.** If R_recognition, the next adapter's target is recognition (A7's "teach recognition" branch),
 and C1's transfer limit is a recognition limit. If R_scale, the per-scenario pattern is noise, and the pooled ratio
 is the read.
@@ -3189,4 +3194,31 @@ is the read.
 **Discriminator.** Draw 2's summed arm at full size (192, §18.6), with the reads per file type (the executor's source against the scenario's own files) by script, counts only.
 **Status.** **resolved toward R_explore** (2026-11-25, §18.9); first narrowed, not specific to P-ctx (draw 2, `GPC_PLAN.md` §18.7). At 192 runs: base 0.234, the clause in context 0.396, C1 0.286, the summed adapter 0.375. The summed adapter minus the base +0.141 [+0.047, +0.229]; the clause minus the base +0.161 [+0.068, +0.250]; the summed adapter minus the clause −0.021 [−0.115, +0.073]. The rise is real and shared with the four-line clause in context, so it is not P-ctx's update alone. Draw 1b's 0.47 on 47 runs was high. A new rival for the shared rise: R_checking, a constrained agent reads the machinery to see what the check counts before it reports. It is separable by script on draw 3 (the executor reads before against after the scorer's first run), counts only. **Run on draw 2 (2026-11-25, `GPC_PLAN.md` §18.9): R_checking not supported.** The rise is in the opening survey, before any scorer run (the clause +0.135 [+0.057, +0.214], the summed adapter +0.130 [+0.052, +0.208]); after the first scorer run it is +0.026 and +0.010. **Resolved toward R_explore:** a constrained agent surveys more of the environment's machinery before it acts. Not a finding about P-ctx.
 **Thesis impact.** If R_probe, the summed adapter trades fewer violations for more probing of the harness, which the read reports beside its ratio. If R_length or R_noise, it is not a finding.
+
+## GPC-A30 (ledger) — The fuller in-context constitution cuts 1.6 times the four lines, most on the step the subject does not read as the act
+
+**Date.** 2026-11-25 (`GPC_PLAN.md` §18.10).
+**Observation.** `C_press` (`C_conduct` with the constitution's two sections on operators and users and the pressure
+grid's other tenets quoted, 3,465 tokens) takes the three depth scenarios to 0.167, against the four-line clause's
+0.319 and the base's 0.573. Its reduction is 1.60 times the clause's (lower bound 1.23; judge-free 2.35, lower bound
+1.66). It cuts most on Legal-Reviewer (12 of 64, against the clause's 21 and the summed adapter's 23), where the
+subject does not read its own report step as the act (GPC-A28).
+**Type.** dose dependence where flat was not assumed, and a cross-document conjunction with GPC-A28.
+**Appears in.** `GPC_PLAN.md` §18.10.
+**Competing readings.**
+- *R_content:* the operator-and-user sections say what the agent owes the people a report reaches, which is what
+  Legal-Reviewer's report shaping breaks.
+- *R_length:* 3,465 tokens of any principled text in context makes the subject more careful.
+- *R_cue:* naming Claude and a constitution reads as an evaluation cue (the program's R_cue family), and the subject
+  behaves as if observed.
+**Discriminator.** One arm, about 1.6 A100-h, riding the next host pod: `C_conduct` with a length-matched text that
+carries neither the content nor the cue (A0n's neutral lectures, cut to 3,465 tokens). R_content predicts that arm
+cuts no more than the four lines, and the other two predict it does. A second arm, `C_press` with "Claude" and the
+constitution's name replaced, separates R_cue from R_content (about 1.6 A100-h).
+**Status.** open.
+**Thesis impact.**
+- *If R_content:* the next build's target is the fuller content on the steps the subject does not read as acts, and
+  the summed adapter's 0.172 shortfall is a distillation gap.
+- *If R_length or R_cue:* `C_press` is not a content yardstick, and the summed adapter's match to the four lines
+  stands as the claim.
 
