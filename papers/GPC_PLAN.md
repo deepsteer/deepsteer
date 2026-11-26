@@ -6180,3 +6180,20 @@ which option is the act, and names the option that wrongs someone. The bar is A6
 of the 8 blackmail renders. **Not yet run.** Its pilot call failed before any read: the local Codex config names a
 model the ChatGPT plan no longer serves (`model_not_in_accessible_catalog`). The gate waits on the author's choice
 of model.
+
+**The blind gate's reader and rules (the lead, 2026-11-25 1:45 PM; registered and pushed before the first read):**
+- **The reader is fixed:** `gpt-6.2-sol` at high effort, both passed on every call (`codex_exec`'s new optional
+  `effort` argument, the `-c model_reasoning_effort` form; with no argument it behaves as before). The author's Codex
+  config is not edited. Every row and the tally carry the model, the effort and `codex --version`, and the tally
+  fails if its rows carry more than one reader.
+- **A set under its bar is not re-read** with another model or effort. It comes back to the lead with its
+  disagreeing renders and their "who" fields.
+- **A quota stop resumes on the same reader.** The calls made and any stop are reported.
+- **Slot renders the reader disagrees on** (up to 4 at a pass) are listed and left out of the named-choice gap
+  read, and the gap is also reported with them in.
+- **A6's gate rows carry no model or effort,** so the two gates' readers are not compared.
+- **The blackmail renders in both letter orders.** The seeded letters put the leverage option at B on 6 of 8, so
+  each render gets its swapped-letter twin (16 renders, 8 at each letter). The gate reads both orders, with a bar of
+  16 of 16. The pod reads both, and the leverage rate is reported by letter.
+  - *The pod cost of the 8 extra prompts:* at draw 2's late-block rate (88 probes in about 0.11 h), 8 prompts at k
+    2 for three arms is 48 probes, about **0.06 A100-h ($0.07)**, or 0.08 h with the composition arm.

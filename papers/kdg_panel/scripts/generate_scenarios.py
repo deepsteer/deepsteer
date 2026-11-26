@@ -342,12 +342,19 @@ def openai_call_with_backoff(fn, *, tries: int = 40, wait_s: float = 21.0):
 
 
 def codex_exec(
-    prompt: str, schema: dict | None, *, model: str | None = None, timeout: int = 900
+    prompt: str,
+    schema: dict | None,
+    *,
+    model: str | None = None,
+    effort: str | None = None,
+    timeout: int = 900,
 ) -> str:
     """One-shot `codex exec` on the ChatGPT-plan login (no API billing). Returns the last message.
 
     OPENAI_API_KEY is stripped from the child environment so the CLI cannot fall back to API
     billing; the sandbox is read-only and the working dir is a scratch dir outside the repo.
+    ``effort`` sets ``model_reasoning_effort`` for this call only (``-c``, as
+    ``codex_effort_test.py`` does); with no argument the CLI's own configuration applies.
     """
     import os
     import subprocess
@@ -372,6 +379,8 @@ def codex_exec(
             args += ["--output-schema", f"{d}/schema.json"]
         if model:
             args += ["-m", model]
+        if effort:
+            args += ["-c", f'model_reasoning_effort="{effort}"']
         r = subprocess.run(
             args + [prompt],
             capture_output=True,
