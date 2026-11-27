@@ -586,7 +586,9 @@ bill is its figure of record.
     bound 0.597 (the replay 1.36, lower bound 0.88). Acting 1.00; honest work +0.027 [−0.007, +0.061]. Two fresh
     passing draws on this instrument; the second counting instrument (ImpossibleBench) remains for the done-when.
   - **`C_press` cuts more** (0.167, 1.60 times the clause), and the adapter falls short of it by 0.172 [0.088, 0.256].
-    New: GPC-A30 (content, length or cue; a length-matched arm separates them, about 1.6 A100-h).
+    New: GPC-A30 (content, length or cue; a length-matched arm separates them, about 1.6 A100-h). *Reworded
+    2026-11-27:* `C_press`'s extra cut is the same in every scenario (0.146 to 0.156; interaction p 0.99); the
+    Legal-Reviewer line and its conjunction with GPC-A28 are withdrawn.
   - GPC-A28 replicates (the base's named fall −0.364; the summed adapter's difference in differences not separable).
     GPC-A29's R_explore replicates.
   - The record is `outputs/gpc4_v1_d3` (identical to the download on its files). The pod about $11.5; about $81.0
