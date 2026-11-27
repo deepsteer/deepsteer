@@ -593,3 +593,16 @@ bill is its figure of record.
     GPC-A29's R_explore replicates.
   - The record is `outputs/gpc4_v1_d3` (identical to the download on its files). The pod about $11.5; about $81.0
     remain.
+- 2026-11-27: **The author's rulings recorded (§19.6): C2-JAB** (judgment-action binding). Scope: tenet deliberation
+  trained at tool-step decision points, nothing in context; done when the gap closes against the base's on the
+  held-out families and 2 of 3 out-of-format items with discrimination holding, or two cycles fail 1a. Cycle 1 is
+  the next pod; the yardstick stays `C_conduct`; a thinking-disabled read is held.
+  - **§19.7, readiness:** the environment, the hold-out index, the A2 check, format parity, the positions and the
+    renders are done. **Not yet written: the 54 families with clean twins and the teacher prompts. Not built: the
+    pod side.** The power table is provisional until the teacher gate's base loops measure the variance.
+  - **§19.8, the activation read registered** (before and after the thinking block; recognition, deliberation,
+    binding; the thinking swap with a self-swap control): about 1.95 A100-h, cut first, after 1a.
+  - **§18.11, GPC-A30's cell registered:** `C_len` and `C_press_dn` with same-session anchors, 8.74 h ($10.31).
+  - **§16.7, ImpossibleBench's staged plan:** GPC-A24's Codex read not done (reader named: `gpt-6.2-sol`, high);
+    stage 1 base-only design B about $5.03, adapter arms only on a contrast. It does not fit with GPC-A30's cell
+    in one pod.

@@ -3217,7 +3217,9 @@ the interaction does not support it.)
 **Discriminator.** One arm, about 1.6 A100-h, riding the next host pod: `C_conduct` with a length-matched text that
 carries neither the content nor the cue (A0n's neutral lectures, cut to 3,465 tokens). R_content predicts that arm
 cuts no more than the four lines, and the other two predict it does. A second arm, `C_press` with "Claude" and the
-constitution's name replaced, separates R_cue from R_content (about 1.6 A100-h).
+constitution's name replaced, separates R_cue from R_content (about 1.6 A100-h). **Registered as `GPC_PLAN.md`
+§18.11 (2026-11-27):** `C_len` and `C_press_dn` beside same-session `C_conduct` and `C_press` at 192 an arm (a
+rate difference's MDE 0.121 against the 0.152 gap; a cross-draw anchor would read only 0.163), about 8.7 A100-h.
 **Status.** open.
 **Thesis impact.**
 - *If R_content:* the excerpt's content is a yardstick beyond the four lines, and the summed adapter's 0.172
