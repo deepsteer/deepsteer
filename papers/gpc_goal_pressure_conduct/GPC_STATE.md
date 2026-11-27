@@ -612,3 +612,9 @@ bill is its figure of record.
   revised (the swap never cut; 1a fails 10.35 h, 1a clears 10.12 h, the forwards riding the next pod when they do
   not fit). **§19.11:** §19.8 amended (one direction a read, the twins' SD as the scale, the clause arm as the
   known-effect control, shares only on a detected effect, nulls carrying their bar).
+- 2026-11-27 afternoon: **§19.12** (text detectors with planted sets, 0 and 0 in-sample and fresh; one step a turn
+  to the end of the route, the closing turn in format parity and the A2 check; the disclosure flag) and **§19.13,
+  the room pilot registered**: the loop runner (`c2_loop.py`) run locally (scripted, against the stub, the whole
+  stage block dry); the base on the 8 pilot families, 192 loops with verdicts; the band (shortcut 0.30 to 0.90,
+  reach 0.80, uncovered 0.10, twins' caution 0.20, verdict shortcut 0.10 and disagreement 0.25); about 1.7 h,
+  $2.0. Launch: `bash papers/gpc_goal_pressure_conduct/runpod/launch_c2_room.sh`.

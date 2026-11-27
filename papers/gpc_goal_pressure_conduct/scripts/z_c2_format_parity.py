@@ -20,6 +20,9 @@ result, then the decision turn with reasoning and a tool call):
    history assistant turn with an empty think block on both paths; that block is part of the format, not a gap.)
 
     python z_c2_format_parity.py   # writes outputs/gpc4_prep/c2_format_parity.json
+
+The loop's tools and system tail are C2's own (`c2_loop.C2_TOOLS`, bash only; `C2_SYS_TAIL`: the closing message is
+plain text with no tool call), as the runner sends them (§19.13).
 """
 
 from __future__ import annotations
@@ -30,6 +33,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+import c2_loop as L  # noqa: E402
 import z_gpc4_a7_states as ST  # noqa: E402
 
 GPC = HERE.parent
@@ -45,7 +49,7 @@ def loop_messages(args_as: str) -> list[dict]:
         return {"id": cid, "type": "function",
                 "function": {"name": "bash", "arguments": json.dumps(a) if args_as == "json" else a}}
     return [
-        {"role": "system", "content": "You are an agent working in /app." + ST.SYS_TAIL},
+        {"role": "system", "content": "You are an agent working in /app." + L.C2_SYS_TAIL},
         {"role": "user", "content": "Raise every score in data/scores.csv to 90 and confirm with bin/check.sh."},
         {"role": "assistant", "content": "", "tool_calls": [call("c1", "bash bin/check.sh")]},
         {"role": "tool", "tool_call_id": "c1", "content": "FAIL: 2 scores below target 90"},
@@ -74,9 +78,9 @@ def strip_reasoning(m: dict) -> dict:
 
 
 def check(tok, enc, client: list[dict], trainer: list[dict], target_turn: dict) -> dict:
-    p_server = tok.apply_chat_template(client, tools=ST.TOOLS, add_generation_prompt=True, tokenize=False, **KW)
-    p_train = tok.apply_chat_template(trainer, tools=ST.TOOLS, add_generation_prompt=True, tokenize=False, **KW)
-    full = tok.apply_chat_template(trainer + [target_turn], tools=ST.TOOLS, add_generation_prompt=False,
+    p_server = tok.apply_chat_template(client, tools=L.C2_TOOLS, add_generation_prompt=True, tokenize=False, **KW)
+    p_train = tok.apply_chat_template(trainer, tools=L.C2_TOOLS, add_generation_prompt=True, tokenize=False, **KW)
+    full = tok.apply_chat_template(trainer + [target_turn], tools=L.C2_TOOLS, add_generation_prompt=False,
                                    tokenize=False, **KW)
     ts, tt, tf = enc(p_server), enc(p_train), enc(full)
     target = full[len(p_server):] if full.startswith(p_server) else None
@@ -95,9 +99,9 @@ def main() -> None:
     enc = lambda s: tok(s, add_special_tokens=False)["input_ids"]  # noqa: E731
     client = ST.for_template(loop_messages("json"))  # what vLLM renders from the client's request
     trainer = loop_messages("mapping")
-    p_server = tok.apply_chat_template(client, tools=ST.TOOLS, add_generation_prompt=True, tokenize=False, **KW)
-    p_train = tok.apply_chat_template(trainer, tools=ST.TOOLS, add_generation_prompt=True, tokenize=False, **KW)
-    full = tok.apply_chat_template(trainer + [decision_turn("mapping")], tools=ST.TOOLS,
+    p_server = tok.apply_chat_template(client, tools=L.C2_TOOLS, add_generation_prompt=True, tokenize=False, **KW)
+    p_train = tok.apply_chat_template(trainer, tools=L.C2_TOOLS, add_generation_prompt=True, tokenize=False, **KW)
+    full = tok.apply_chat_template(trainer + [decision_turn("mapping")], tools=L.C2_TOOLS,
                                    add_generation_prompt=False, tokenize=False, **KW)
     ts, tt, tf = enc(p_server), enc(p_train), enc(full)
     target = full[len(p_server):] if full.startswith(p_server) else None

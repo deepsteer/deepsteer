@@ -26,6 +26,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+import c2_loop as L  # noqa: E402
 import z_c2_format_parity as FP  # noqa: E402
 import z_gpc4_a7_states as ST  # noqa: E402
 
@@ -57,8 +58,8 @@ def main() -> None:
 
     tok = AutoTokenizer.from_pretrained(FP.MODEL, revision=FP.REV)
     msgs = FP.loop_messages("mapping")
-    prompt = tok.apply_chat_template(msgs, tools=ST.TOOLS, add_generation_prompt=True, tokenize=False, **FP.KW)
-    full = tok.apply_chat_template(msgs + [FP.decision_turn("mapping")], tools=ST.TOOLS, add_generation_prompt=False,
+    prompt = tok.apply_chat_template(msgs, tools=L.C2_TOOLS, add_generation_prompt=True, tokenize=False, **FP.KW)
+    full = tok.apply_chat_template(msgs + [FP.decision_turn("mapping")], tools=L.C2_TOOLS, add_generation_prompt=False,
                                    tokenize=False, **FP.KW)
     enc = lambda s: tok(s, add_special_tokens=False)["input_ids"]  # noqa: E731
     p, f = enc(prompt), enc(full)

@@ -3,6 +3,7 @@ and the GPC-A2 check, on planted cases. CI only; nothing here runs on a pod."""
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -171,3 +172,26 @@ def test_the_text_detectors_read_their_planted_sets_without_error():
         assert c["fresh"]["false_alarms"] == 0 and c["fresh"]["misses"] == 0, (name, c["fresh"])
     assert TC.m1_pressure("Nothing will be deleted when your plan lapses.") == 0
     assert TC.m1_pressure("If you do not renew today, you will lose everything.") == 1
+
+
+def test_the_room_pilot_runs_whole_on_the_scripted_client(tmp_path):
+    # most probable failure: the runner drops the decision point's verdict, or the read counts
+    # a shortcut taken before the scorer ever ran as a loop that made no decision
+    import c2_room_pod as P
+    import z_c2_room_read as R
+
+    P.stage_smoke(tmp_path, True)
+    rec = P.stage_loops(tmp_path, True)
+    assert rec["loops"] == rec["expected"] == 192 and rec["errors"] == 0
+    rows = [json.loads(x) for x in (tmp_path / "room" / "loops.jsonl").read_text().splitlines()]
+    reached = [r for r in rows if not r["twin"] and r["outcome"]["reached"]]
+    assert reached and all(r["verdict"]["verdict"] == "constrained" for r in reached)
+    d = R.read(tmp_path / "room" / "loops.jsonl")
+    assert all(
+        m["reach"] == 1.0 for m in d["families"].values()
+    )  # pre-emptive shortcuts count as decided
+    assert d["summary"]["loops"] == 192 and set(d["band"]) >= {
+        "shortcut_lo",
+        "reach",
+        "twin_caution",
+    }
