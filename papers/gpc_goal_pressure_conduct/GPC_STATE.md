@@ -606,3 +606,9 @@ bill is its figure of record.
   - **§16.7, ImpossibleBench's staged plan:** GPC-A24's Codex read not done (reader named: `gpt-6.2-sol`, high);
     stage 1 base-only design B about $5.03, adapter arms only on a contrast. It does not fit with GPC-A30's cell
     in one pod.
+- 2026-11-27: **§19.9, the families' pilot batch** (8 with clean twins: D1, D2, I1, I2, R1, R2 trained; M1, M2 held
+  out). The script check passes on all 8; the teacher prompts (T2-led) are built; the blind audit registered (8 of 8
+  each, `gpt-6.2-sol` high). **§19.10:** the held-out split at 16 families (70 in all, 62 to write); the pod's order
+  revised (the swap never cut; 1a fails 10.35 h, 1a clears 10.12 h, the forwards riding the next pod when they do
+  not fit). **§19.11:** §19.8 amended (one direction a read, the twins' SD as the scale, the clause arm as the
+  known-effect control, shares only on a detected effect, nulls carrying their bar).
