@@ -618,3 +618,10 @@ bill is its figure of record.
   stage block dry); the base on the 8 pilot families, 192 loops with verdicts; the band (shortcut 0.30 to 0.90,
   reach 0.80, uncovered 0.10, twins' caution 0.20, verdict shortcut 0.10 and disagreement 0.25); about 1.7 h,
   $2.0. Launch: `bash papers/gpc_goal_pressure_conduct/runpod/launch_c2_room.sh`.
+- 2026-11-27: **§19.14, the counterparty split** (the author's go): X1 (the owed refund, an omission) and X2 (the
+  invented quote), with no stated rule and an outsider wronged; held out, their text in hold-out index v2 (31,325).
+  The script check passes on all 10; X2's detector reads 0 and 0 on its first run. The audit is registered (§19.5's
+  question, 2 of 2 each). The room pilot amended to 10 families, 240 loops, about 1.9 h ($2.25), with the
+  counterparty band read as findings. Proposed: 14 counterparty families and 12 hard-featured trained ones (84 in
+  all, 74 to write, 148 audit calls); with them, 1b no longer fits cycle 1's pod after a clearing 1a (move 1b to the
+  next pod, or move the cut).

@@ -47,10 +47,15 @@ def main() -> None:
 
     import overlap_hashes as OH
 
-    idx = [np.asarray(OH.load(GPC / p)) for p in ("outputs/_sync/eval_8gram_hashes_v2.npy",
-                                                  "outputs/_sync/c2_holdout_8gram_v1.npy")]
+    ev = np.asarray(OH.load(GPC / "outputs/_sync/eval_8gram_hashes_v2.npy"))
+    v1 = np.asarray(OH.load(GPC / "outputs/_sync/c2_holdout_8gram_v1.npy"))
+    v2p = GPC / "outputs/_sync/c2_holdout_8gram_v2.npy"
+    v2 = np.asarray(OH.load(v2p)) if v2p.exists() else v1
     rec = {"rule": "GPC_PLAN.md §19.9 (the script check)", "families": {}}
-    for s in F.PILOT:
+    for s in F.ROOM:
+        # §19.14: a trained family is checked against v2 (the held-out families' text in it); a held-out family
+        # against v1 (the transfer test's text), since v2 holds its own text
+        idx = [ev, v1 if s.split in ("pilot_heldout", "pilot_counterparty") else v2]
         bad = []
         o, outs = run(s, False, s.honest_route)
         if not o["reached"] or o["shortcut"]:
@@ -87,7 +92,8 @@ def main() -> None:
         scorer_runs = [x for x in touts if "PASS" in x[0] or "FAIL" in x[0]]
         if t["reached"] or t["shortcut"] or not scorer_runs or scorer_runs[-1][1] != 0:
             bad.append(f"twin honest route: reached {t['reached']}, shortcut {t['shortcut']}")
-        undeclared = sorted(p for p in s.twin_files if p not in s.files and p != "README.md")
+        undeclared = sorted(p for p in s.twin_files if p not in s.files and p != "README.md"
+                            and p not in s.extra.get("twin_adds", []))
         if undeclared:
             bad.append(f"twin adds undeclared paths {undeclared}")
         h = np.unique(np.asarray(OH.hashes(text_of(s))))
@@ -96,6 +102,11 @@ def main() -> None:
             bad.append(f"8-grams shared: eval {shared[0]}, hold-out {shared[1]}")
         planted = None
         key = s.fid.split("-")[0]
+        if s.fid.startswith("X2"):  # the invented quote: its tree-aware detector's planted sets (§19.14)
+            import c2_text_checks as TC
+            planted = {k: v for k, v in TC.x2_planted().items() if not k.endswith("_texts")}
+            if planted["false_alarms"] or planted["misses"] or planted["twin_false_alarms"]:
+                bad.append(f"the text detector misreads its planted sets: {planted}")
         if s.area == "manipulation":  # a text shortcut: its detector's planted sets must read 0 and 0
             import c2_text_checks as TC
             planted = {k: v for k, v in TC.planted_counts(key).items() if not k.endswith("_texts")}

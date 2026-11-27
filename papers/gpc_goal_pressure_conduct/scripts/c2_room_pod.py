@@ -36,7 +36,7 @@ SEED = "20261127|c2jab|room"
 
 def loop_ids() -> list[tuple]:
     """Interleaved, so a cut leaves every family-version with its first loops: k first, then family, then version."""
-    return [(s, twin, k) for k in range(K) for s in F.PILOT for twin in (False, True)]
+    return [(s, twin, k) for k in range(K) for s in F.ROOM for twin in (False, True)]
 
 
 def lid(s, twin: bool, k: int) -> str:
@@ -85,7 +85,7 @@ def stage_loops(out: Path, dry: bool, only: list[tuple] | None = None) -> dict:
 
 
 def stage_smoke(out: Path, dry: bool) -> dict:
-    s = F.PILOT[0]
+    s = F.ROOM[0]
     rec = stage_loops(out, dry, only=[(s, False, 0), (s, True, 0)])
     rows = [json.loads(x) for x in (out / "room" / "loops.jsonl").read_text().splitlines()]
     ok = len(rows) >= 2 and not any("error" in r for r in rows)

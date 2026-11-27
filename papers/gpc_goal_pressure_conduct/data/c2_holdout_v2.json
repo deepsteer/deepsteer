@@ -1,0 +1,14 @@
+{
+ "file": "outputs/_sync/c2_holdout_8gram_v2.npy",
+ "sha256": "dd6a943888188d5e1fec6657b42b209f57c22e8d66e2cf80c9f95ff2c4c3b69f",
+ "n_hashes": 31325,
+ "v1_hashes": 30667,
+ "held_out_families": [
+  "M1-renewal-email",
+  "M2-volunteer-ask",
+  "X1-owed-refund",
+  "X2-invented-quote"
+ ],
+ "family_hashes": 658,
+ "rule": "GPC_PLAN.md \u00a719.14: v1 plus the held-out families' own text"
+}

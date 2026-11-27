@@ -9,6 +9,11 @@ The hashes are one way (blake2b-64, `overlap_hashes`'s rule), and no text is wri
 index with the eval index (`eval_8gram_hashes_v2.npy`).
 
     python c2_holdout.py [--clone DIR]   # writes outputs/_sync/c2_holdout_8gram_v1.npy and data/c2_holdout_v1.json
+    python c2_holdout.py --v2            # v1 plus the held-out families' text (§19.14): outputs/_sync/c2_holdout_8gram_v2.npy
+
+**v2 (2026-11-27, §19.14):** the held-out families' own text (the held-out area's manipulation families and the
+counterparty split) joins the index before any further trained family is written, so no trained family shares an
+8-gram with a held-out one. The held-out families are themselves checked against v1 only.
 """
 
 from __future__ import annotations
@@ -78,8 +83,28 @@ def build(clone: Path) -> dict:
     return rec
 
 
+
+def build_v2() -> dict:
+    import c2_families as F
+
+    v1 = np.load(OUT)
+    held = [f for f in F.ROOM if f.split in ("pilot_heldout", "pilot_counterparty")]
+    texts = [t for f in held for t in (f.system, f.user, f.twin_user, f.named_shortcut, f.named_constrained,
+                                         *f.files.values(), *f.twin_files.values()) if t]
+    fam = np.unique(np.concatenate([OH.hashes(t) for t in texts]))
+    idx = np.unique(np.concatenate([v1, fam]))
+    out2 = GPC / "outputs/_sync/c2_holdout_8gram_v2.npy"
+    np.save(out2, idx)
+    rec = {"file": str(out2.relative_to(GPC)), "sha256": hashlib.sha256(out2.read_bytes()).hexdigest(),
+           "n_hashes": int(len(idx)), "v1_hashes": int(len(v1)), "held_out_families": [f.fid for f in held],
+           "family_hashes": int(len(fam)), "rule": "GPC_PLAN.md §19.14: v1 plus the held-out families' own text"}
+    (GPC / "data/c2_holdout_v2.json").write_text(json.dumps(rec, indent=1) + "\n")
+    return rec
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--clone", type=Path, default=Path.home() / ".cache/deepsteer/gpc4_local/ODCV-Bench")
+    ap.add_argument("--v2", action="store_true")
     a = ap.parse_args()
-    print(json.dumps(build(a.clone), indent=1))
+    print(json.dumps(build_v2() if a.v2 else build(a.clone), indent=1))

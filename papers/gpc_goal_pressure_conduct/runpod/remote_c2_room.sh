@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Remote runner for C2-JAB's room pilot (GPC_PLAN.md §19.13), on Thunder, with no host and no adapter: the
-# subject's vLLM server under 16,384 (the base only), its check, a smoke loop (the bail), the 192 loops on the 8
+# subject's vLLM server under 16,384 (the base only), its check, a smoke loop (the bail), the 240 loops on the 10
 # pilot families (conflict and twin, 12 each) with the cold verdict at each decision point, and the read. No judge,
 # no reasoning text read by any model. Writes papers/gpc_goal_pressure_conduct/outputs/c2_room (stages stop at
 # 10.25 h unless moved; watchdog 11.0 h, ceiling 14.0 h).
@@ -70,7 +70,7 @@ echo ">> setup done at $(hours) h"
 
 TESTS="tests/scripts/test_c2.py tests/scripts/test_session_limits.py"
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=19   # the room pod's gate tests (§19.13); fewer means a file failed to collect
+GATE_FLOOR=21   # the room pod's gate tests (§19.13, §19.14); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }
@@ -89,7 +89,7 @@ end_session() { echo ">> $1"; run $GP --stage serve --part down; stop "$1"; }
 run $GP --stage serve --part up
 run $GP --stage serve_check
 $PY $GP --out "$OUT" --stage server_ok $DRY || end_session "the subject's server is dead: the session ends"
-# b. the smoke (the bail), the 192 loops with their verdicts, the read
+# b. the smoke (the bail), the 240 loops with their verdicts, the read
 $PY $RP --out "$OUT" --stage smoke $DRY || end_session "the smoke loop failed: the session ends (see room/loops.jsonl)"
 run $RP --stage loops
 run $RP --stage read
