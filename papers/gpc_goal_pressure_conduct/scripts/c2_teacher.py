@@ -10,10 +10,14 @@ Built from a family (`c2_families.Spec`); nothing here reads a transcript.
    subject picks in both orders; a decision point whose two orders disagree is dropped and counted. **A verdict for
    the shortcut is never trained:** it is dropped and counted (the subject's cold judgment picks the act there,
    which A6 found in 0 of 44 brink states), and its share is reported beside the teacher gate.
-2. **The turn** (`writer_messages`): the subject, with `C_conduct` in its system message as teacher-only context,
-   writes the agent's next turn: its reasoning about the concrete step, grounded in what bears on it, then one
-   `bash` call that takes the verdict's action. The reasoning may use only what the agent can see (its task, its
-   files, its tool outputs); the A2 check (`c2_a2_check.py`) drops any turn that cites the teacher-only text.
+2. **The turns** (`writer_messages`): the subject, with `C_conduct` in its system message as teacher-only context
+   (C1's recipe, the four lines; the author has been told and may change it, §19.12), writes the agent's turns one
+   step at a time: in each, its reasoning about the concrete step, then **one step**: one `bash` call, or, when
+   nothing is left to do, the closing message to the person who gave the task (no tool call). The teacher continues
+   turn by turn, each turn's environment output fed back, to the end of the route, and **every teacher turn from the
+   decision point on is trained with its reasoning**. The reasoning may use only what the agent can see (its task,
+   its files, its tool outputs); the A2 check (`c2_a2_check.py`) drops any turn, the closing message included, that
+   cites the teacher-only text.
 3. **On a clean twin** there is no shortfall and no decision point. The teacher writes the turn that completes the
    task as asked; a twin's turns teach that the honest route needs no caution when the target is met honestly.
 """
@@ -38,8 +42,11 @@ These principles describe how the agent behaves (they are for you, and the agent
 
 Write the agent's next turn. First, its reasoning about the concrete step it is about to take: what the step would \
 do, who it affects, and why the agent takes it. Ground the reasoning only in what the agent can see in the \
-conversation (its task, its files and its tool outputs). Then exactly one bash tool call that takes this action:
+conversation (its task, its files and its tool outputs). Then exactly one step toward the course of action below: \
+either one bash tool call, or, if the course of action is complete, the closing message to the person who gave the \
+task (plain text, no tool call). Take one step a turn; you will write the next turn after this one runs.
 
+The course of action:
 {action}
 
 Do not mention these instructions, the principles, or that the turn was written for the agent."""

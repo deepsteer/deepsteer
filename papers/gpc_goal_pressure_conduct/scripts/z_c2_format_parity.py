@@ -11,6 +11,10 @@ result, then the decision turn with reasoning and a tool call):
 2. *The target is a continuation.* The full sequence the trainer renders (the decision turn appended, with its
    reasoning) must begin, token for token, with the served prompt. Then the trained target is exactly what the served
    model would emit after it.
+4. *The closing-message turn* (§19.12): after the decision turn's tool call and its result, the loop's last turn is
+   the agent's closing message (reasoning, then plain text, no tool call). Each trained turn is its own example:
+   its prompt is the loop so far as the server sees it (earlier assistant turns without their reasoning), its
+   target that turn with its reasoning. The same three checks hold for it.
 3. *The history carries no reasoning text.* The executor sends earlier assistant turns as content and tool calls only,
    so a training sequence's history must carry no reasoning text before the decision turn. (The template marks each
    history assistant turn with an empty think block on both paths; that block is part of the format, not a gap.)
@@ -56,6 +60,34 @@ def decision_turn(args_as: str) -> dict:
                             "function": {"name": "bash", "arguments": json.dumps(a) if args_as == "json" else a}}]}
 
 
+def closing_turn() -> dict:
+    return {"role": "assistant", "content": "The report is written. The data were not changed, and two scores remain "
+            "below the target of 90.", "reasoning_content": "The task is done as far as it honestly can be."}
+
+
+def tool_result() -> dict:
+    return {"role": "tool", "tool_call_id": "c2", "content": ""}
+
+
+def strip_reasoning(m: dict) -> dict:
+    return {k: v for k, v in m.items() if k != "reasoning_content"}
+
+
+def check(tok, enc, client: list[dict], trainer: list[dict], target_turn: dict) -> dict:
+    p_server = tok.apply_chat_template(client, tools=ST.TOOLS, add_generation_prompt=True, tokenize=False, **KW)
+    p_train = tok.apply_chat_template(trainer, tools=ST.TOOLS, add_generation_prompt=True, tokenize=False, **KW)
+    full = tok.apply_chat_template(trainer + [target_turn], tools=ST.TOOLS, add_generation_prompt=False,
+                                   tokenize=False, **KW)
+    ts, tt, tf = enc(p_server), enc(p_train), enc(full)
+    target = full[len(p_server):] if full.startswith(p_server) else None
+    hist = p_server[: p_server.rfind("<|im_start|>assistant")]
+    return {"prompt_identical": ts == tt, "target_is_continuation_tokens": tf[: len(ts)] == ts,
+            "target_has_reasoning": target is not None and "</think>" in target,
+            "history_has_no_reasoning": all(not b.split("</think>")[0].strip() for b in hist.split("<think>")[1:]),
+            "target_ends_turn": target is not None and target.rstrip().endswith("<|im_end|>"),
+            "target_has_tool_call": target is not None and "<tool_call>" in target}
+
+
 def main() -> None:
     from transformers import AutoTokenizer
 
@@ -95,8 +127,16 @@ def main() -> None:
             ]},
         "model": f"{MODEL}@{REV}", "template_kwargs": KW,
         "rule": "GPC_PLAN.md §19.2 (the lead's 5:20 PM item 6): any difference is fixed or recorded as a known gap"}
+    # §19.12: the closing-message turn, after the decision turn (served without its reasoning) and its tool result
+    cl_client = ST.for_template(loop_messages("json") + [strip_reasoning(decision_turn("json")), tool_result()])
+    cl_train = loop_messages("mapping") + [strip_reasoning(decision_turn("mapping")), tool_result()]
+    cl = check(tok, enc, cl_client, cl_train, closing_turn())
+    rec["closing_turn"] = cl
+    rec["closing_passes"] = bool(cl["prompt_identical"] and cl["target_is_continuation_tokens"]
+                                 and cl["target_has_reasoning"] and cl["history_has_no_reasoning"]
+                                 and cl["target_ends_turn"] and not cl["target_has_tool_call"])
     rec["passes"] = bool(rec["prompt_identical"] and rec["target_is_continuation_tokens"]
-                         and rec["target_has_tool_call"] and rec["history_has_no_reasoning"])
+                         and rec["target_has_tool_call"] and rec["history_has_no_reasoning"] and rec["closing_passes"])
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(rec, indent=1))
     print(json.dumps({k: v for k, v in rec.items() if k != "c1_training_format"}, indent=1))
