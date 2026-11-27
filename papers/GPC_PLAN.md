@@ -6765,3 +6765,8 @@ excluding 0. Otherwise the 2 × 2's cell rates are reported, and no share.
 **(d) The framings carry the bar.** At 0.57 to 0.75 SD the deliberation and binding reads detect large effects
 only. Framing (g)'s nulls read: "no shift detectable at about 0.6 to 0.75 SD of the twins' spread", never "no
 deliberation".
+
+**The blind audit's read (2026-11-27; `gpt-6.2-sol`, high, one reader on every row): both bars pass.** The conflicts:
+8 of 8 named the shortcut as the option that breaks the task's stated constraint. The twins: 8 of 8 answered that
+meeting the target needs no breach. It took 16 calls, with no error, no quota stop and no disagreeing family. D1 and
+M1 went to the author as files; the remaining 62 families wait on his read.
