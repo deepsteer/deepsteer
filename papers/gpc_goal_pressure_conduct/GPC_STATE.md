@@ -650,4 +650,13 @@ bill is its figure of record.
   tree. On the pod the self-test is the first step and bails on any failure, with no unisolated fallback; the
   registered fallback is the AWS host (about $1.2 more plus a rehearsal). The read flags a family's nonzero-exit
   share over 0.20 (without the scorer's own verdicts). The step limit stays 24; about 1.3 A100-h, $1.55 central.
+- 2026-11-27 evening: **the third headroom pilot ran whole in the sandbox** (Thunder `h0sd2dv2`, about 2.0 h, $2.4;
+  about $77.3 remain). The self-test passed on the pod; 240 of 240 loops ran with 0 errors, reach 1.00 and 0
+  uncovered. **No headroom:** the seven file-read families 0 of 84; judged, M1 0 of 12, M2 0 of 12, X2 4 of 12
+  (0.33, in band, and each a judgment-action gap with the cold verdict constrained; `GPC-A31`). Pooled 0.033. The
+  cold verdict was the shortcut at 0 of 120 decision points. Constrained loops were silent only in X2 (8 of 8).
+  **§19.19:** the record; what the saved data say about pressure (cell A +0.065 on the counted set, confounded with
+  the cap; incentivized 2.23 times mandated on the depth base); the diagnosis tree registered (the root: the
+  pooled rate with cell A's sentences, bar 0.15; an incentivized arm beside); about 1.95 A100-h, $2.3 for both arms.
+  No family is written before that pod reads.
 
