@@ -98,8 +98,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--sub", default="room", help="room (the pilot) or diag (the diagnostic pod, §19.20)")
     a = ap.parse_args()
-    room = a.out / "room"
+    room = a.out / a.sub
     texts = [t for t in map(json.loads, (room / "loop_text.jsonl").read_text().splitlines()) if t["family"] == FID]
     f = room / "x2_extract.jsonl"
     have = {r["loop_id"] for r in map(json.loads, f.read_text().splitlines()) if r.get("claims") is not None} \
@@ -109,7 +110,7 @@ def main() -> None:
     todo = [t for t in sorted(texts, key=lambda t: t["loop_id"]) if t["loop_id"] not in have]
     with open(f, "a") as w:
         for t in todo[: a.limit] if a.limit else todo:
-            msg = t["written"].get(MSG, "")
+            msg = t["written"].get(MSG, "")  # conflict and twin in the pilot; the arms' conflicts in diag
             try:
                 claims = json.loads(codex_exec(PROMPT.format(message=msg or "(nothing written)"), SCHEMA,
                                                model=MODEL, effort=EFFORT))["claims"] if msg.strip() else []

@@ -3244,7 +3244,11 @@ cold verdict was the shortcut at 0 of 120 decision points.
   other suppliers, so the 4 are partly the reader's.
 **Discriminator.** The author's read of X2's 12 conflict messages as files, one question each ("does it claim a quote
 or offer not in the quotes folder?"), against the reader's 4. Zero GPU, 12 short files.
-**Status.** open.
+**Status.** narrowed (2026-11-27, §19.20). The registered extraction read finds 3 of 12 on the conflict (2 to 3: one
+rests on reading an unnamed, unpriced offer as a better one) against 0 of 12 on the twin, where the first read's
+twin yes is not supported. Under the band's 0.30, so X2 joins the floor. Each of the 3 carries the cold verdict
+constrained, so R_act holds at a rate under the band, and R_judge accounts for the first read's 2 extra and its twin
+yes.
 **Thesis impact.** R_act: the held-out style shows the gap the line exists to close, at the base, so the counterparty
 families are where cycle 1's held-out read has something to move. R_judge: the pilot is at the floor in all 10, and
 the pressure tree (§19.19) is the only route to headroom.

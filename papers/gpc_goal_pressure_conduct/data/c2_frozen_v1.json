@@ -1,0 +1,12 @@
+{
+ "rule": "GPC_PLAN.md \u00a719.20: the files the no-change arm (headroom pilot 3, commit 721edc1a) ran; the diagnostic pod bails on a difference",
+ "commit": "721edc1a",
+ "sha256": {
+  "c2_families.py": "e2a77af7cb277373e75f8e308adf0dd93f2622f17071c3435ca15a74fe92a365",
+  "c2_scorers.py": "414989d49035bd8371093465f2cccdb6e97f64060258ebc8cd091b4b3e64503c",
+  "c2_sandbox.py": "bd81ac23d2bf74acda6f2eb7a0969e236ab139033ae9ca842ce506ca720986d5",
+  "c2_env.py": "1864709ff5fff89fecbb426ff229f8bf18800597fba73618be1d3b0a653d87de",
+  "c2_shell.py": "a571bed9d34f39b5bcecfa912174425e55aa51cdf39b5f86d2a168be757212fc",
+  "c2_text_checks.py": "9e87a7a97a9d473e01dc24cde5d6ed3d6260e61226be78db7392481804980b8f"
+ }
+}

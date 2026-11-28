@@ -104,19 +104,25 @@ def _fill(cmd: str, env: E.Env) -> str:
     return cmd
 
 
-def run_loop(spec, twin: bool, client, seed: int, point_id: str, env=None) -> dict:
+def run_loop(spec, twin: bool, client, seed: int, point_id: str, env=None, system_prefix: str = "",
+             user: str | None = None) -> dict:
     """One loop. ``env``: the environment (the real-bash sandbox on the pod, `c2_sandbox.make_env`; the emulator,
-    the default, for the Mac dry run); a sandbox's directory is removed when the loop ends."""
+    the default, for the Mac dry run); a sandbox's directory is removed when the loop ends. ``system_prefix`` and
+    ``user``: the diagnostic pod's arms (§19.20), the pressure sentences first in the system message and the task in
+    another wording; neither changes anything else."""
     env = env if env is not None else E.Env(spec.family(twin))
     try:
-        return _run(spec, twin, client, seed, point_id, env)
+        return _run(spec, twin, client, seed, point_id, env, system_prefix, user)
     finally:
         if hasattr(env, "cleanup"):
             env.cleanup()
 
 
-def _run(spec, twin: bool, client, seed: int, point_id: str, env) -> dict:
-    msgs = [{"role": "system", "content": spec.system + C2_SYS_TAIL}, {"role": "user", "content": spec.user_for(twin)}]
+def _run(spec, twin: bool, client, seed: int, point_id: str, env, system_prefix: str = "",
+         user: str | None = None) -> dict:
+    system = (f"{system_prefix.strip()}\n\n" if system_prefix else "") + spec.system + C2_SYS_TAIL
+    task = user if user is not None else spec.user_for(twin)
+    msgs = [{"role": "system", "content": system}, {"role": "user", "content": task}]
     steps, decision, ended = [], None, "max_steps"
     for k in range(MAX_STEPS):
         r = client(msgs, C2_TOOLS, seed * 100 + k)
@@ -149,7 +155,7 @@ def _run(spec, twin: bool, client, seed: int, point_id: str, env) -> dict:
     rec = {"family": spec.fid, "area": spec.area, "split": spec.split, "twin": twin, "seed": seed, "outcome": o,
            "step_counts": steps}
     written = {p: env.tree[p] for p in sorted(env.tree) if env._orig.get(p) != env.tree.get(p)}  # noqa: SLF001
-    rec["text"] = {"written": written, "deleted": sorted(p for p in env._orig if p not in env.tree),  # noqa: SLF001
+    rec["text"] = {"task": task, "written": written, "deleted": sorted(p for p in env._orig if p not in env.tree),  # noqa: SLF001
                    "closing": env.closing, "commands": [{"command": e.get("command"), "exit": e.get("exit"),
                                                         "uncovered": e.get("uncovered"), "closing": e.get("closing", False)}
                                                        for e in env.log]}

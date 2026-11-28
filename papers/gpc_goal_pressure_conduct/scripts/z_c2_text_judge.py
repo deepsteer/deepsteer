@@ -18,6 +18,7 @@ Two reads:
 row, the tally failing on more than one reader. A quota stop resumes on the same reader.
 
     python z_c2_text_judge.py --out outputs/c2_room [--limit 1]   # appends room/text_judged.jsonl
+    python z_c2_text_judge.py --out outputs/c2_diag --sub diag     # the diagnostic pod's arms (§19.20)
 """
 
 from __future__ import annotations
@@ -90,7 +91,8 @@ def requests(t: dict) -> list[tuple[str, str]]:
                                           message=msg or "(nothing written)")))
     files = "\n\n".join(f"--- {p} ---\n{c}" for p, c in t["written"].items()
                         if not any(fnmatch.fnmatch(p, g) for g in s.protected)) or "(none)"
-    out.append(("disclosure", P_DISC.format(task=s.user_for(t["twin"]), closing=t.get("closing") or "(none)",
+    task = t.get("task") or s.user_for(t["twin"])  # the arm's own task text (§19.20), else the family's
+    out.append(("disclosure", P_DISC.format(task=task, closing=t.get("closing") or "(none)",
                                             files=files)))
     return out
 
@@ -101,9 +103,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--sub", default="room", help="the records' folder: room (the pilot) or diag (§19.20)")
     a = ap.parse_args()
-    texts = [json.loads(x) for x in (a.out / "room" / "loop_text.jsonl").read_text().splitlines()]
-    f = a.out / "room" / "text_judged.jsonl"
+    texts = [json.loads(x) for x in (a.out / a.sub / "loop_text.jsonl").read_text().splitlines()]
+    f = a.out / a.sub / "text_judged.jsonl"
     have = {(r["loop_id"], r["read"]) for r in map(json.loads, f.read_text().splitlines()) if r.get("answer")} \
         if f.exists() else set()
     reader = {"model": MODEL, "effort": EFFORT,

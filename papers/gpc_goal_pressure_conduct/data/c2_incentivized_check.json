@@ -1,0 +1,127 @@
+{
+ "rule": "GPC_PLAN.md \u00a719.20 (the incentivized wordings' checks)",
+ "odcv_prompts": 160,
+ "families": {
+  "D1-uptime-report": {
+   "shared_eval": 0,
+   "shared_holdout": 0,
+   "holdout_index": "v2",
+   "shared_odcv": 0,
+   "order_left": false,
+   "order_in_original": true,
+   "objective_stated": true,
+   "odcv_phrase": false,
+   "facts_lost": [],
+   "passes": true
+  },
+  "D2-grant-summary": {
+   "shared_eval": 0,
+   "shared_holdout": 0,
+   "holdout_index": "v2",
+   "shared_odcv": 0,
+   "order_left": false,
+   "order_in_original": false,
+   "objective_stated": true,
+   "odcv_phrase": false,
+   "facts_lost": [],
+   "passes": true
+  },
+  "I1-assay-qc": {
+   "shared_eval": 0,
+   "shared_holdout": 0,
+   "holdout_index": "v2",
+   "shared_odcv": 0,
+   "order_left": false,
+   "order_in_original": true,
+   "objective_stated": true,
+   "odcv_phrase": false,
+   "facts_lost": [],
+   "passes": true
+  },
+  "I2-fridge-log": {
+   "shared_eval": 0,
+   "shared_holdout": 0,
+   "holdout_index": "v2",
+   "shared_odcv": 0,
+   "order_left": false,
+   "order_in_original": true,
+   "objective_stated": true,
+   "odcv_phrase": false,
+   "facts_lost": [],
+   "passes": true
+  },
+  "R1-deploy-role": {
+   "shared_eval": 0,
+   "shared_holdout": 0,
+   "holdout_index": "v2",
+   "shared_odcv": 0,
+   "order_left": false,
+   "order_in_original": true,
+   "objective_stated": true,
+   "odcv_phrase": false,
+   "facts_lost": [],
+   "passes": true
+  },
+  "R2-compute-quota": {
+   "shared_eval": 0,
+   "shared_holdout": 0,
+   "holdout_index": "v2",
+   "shared_odcv": 0,
+   "order_left": false,
+   "order_in_original": true,
+   "objective_stated": true,
+   "odcv_phrase": false,
+   "facts_lost": [],
+   "passes": true
+  },
+  "M1-renewal-email": {
+   "shared_eval": 0,
+   "shared_holdout": 0,
+   "holdout_index": "v1",
+   "shared_odcv": 0,
+   "order_left": false,
+   "order_in_original": true,
+   "objective_stated": true,
+   "odcv_phrase": false,
+   "facts_lost": [],
+   "passes": true
+  },
+  "M2-volunteer-ask": {
+   "shared_eval": 0,
+   "shared_holdout": 0,
+   "holdout_index": "v1",
+   "shared_odcv": 0,
+   "order_left": false,
+   "order_in_original": true,
+   "objective_stated": true,
+   "odcv_phrase": false,
+   "facts_lost": [],
+   "passes": true
+  },
+  "X1-owed-refund": {
+   "shared_eval": 0,
+   "shared_holdout": 0,
+   "holdout_index": "v1",
+   "shared_odcv": 0,
+   "order_left": false,
+   "order_in_original": false,
+   "objective_stated": true,
+   "odcv_phrase": false,
+   "facts_lost": [],
+   "passes": true
+  },
+  "X2-invented-quote": {
+   "shared_eval": 0,
+   "shared_holdout": 0,
+   "holdout_index": "v1",
+   "shared_odcv": 0,
+   "order_left": false,
+   "order_in_original": true,
+   "objective_stated": true,
+   "odcv_phrase": false,
+   "facts_lost": [],
+   "passes": true
+  }
+ },
+ "passes": true
+}

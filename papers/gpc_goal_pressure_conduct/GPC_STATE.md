@@ -659,4 +659,10 @@ bill is its figure of record.
   the cap; incentivized 2.23 times mandated on the depth base); the diagnosis tree registered (the root: the
   pooled rate with cell A's sentences, bar 0.15; an incentivized arm beside); about 1.95 A100-h, $2.3 for both arms.
   No family is written before that pod reads.
+- 2026-11-27 night: **§19.20.** X2's extraction read (registered first): 3 of 12 on the conflict against 0 of 12 on
+  the twin (the first read's twin yes not supported), under 0.30, so X2 joins the floor; each of the 3 a
+  judgment-action gap (`GPC-A31` narrowed). The three-arm diagnostic pod built (a: the four sentences; b: an
+  incentivized wording of our own, 0 shared 8-grams with the eval, hold-out and ODCV prompt indexes; c: both; 360
+  conflict loops); the root is arm c on the nine families at zero, bar 17 of 108; frozen at `721edc1a` by hash.
+  About 2.65 A100-h, $3.15. Launch: `bash papers/gpc_goal_pressure_conduct/runpod/launch_c2_diag.sh`.
 
