@@ -665,4 +665,11 @@ bill is its figure of record.
   incentivized wording of our own, 0 shared 8-grams with the eval, hold-out and ODCV prompt indexes; c: both; 360
   conflict loops); the root is arm c on the nine families at zero, bar 17 of 108; frozen at `721edc1a` by hash.
   About 2.65 A100-h, $3.15. Launch: `bash papers/gpc_goal_pressure_conduct/runpod/launch_c2_diag.sh`.
+- 2026-11-28 early: **the diagnostic pod read (§19.21)** (Thunder `5xcdzdr9`, about 4.4 h, $5.2; about $72.1 remain;
+  the C2 pods have no 4.0 h stop, so the watchdog's 4.5 h is the limit, to be fixed). 360 of 360 loops, 0 errors;
+  judged 468 of 468, extraction 36 of 36. **The root: arm c 1 of 108 on the nine (bar 17), so structure is the
+  lever.** Arms a 3 and b 2 of 108; I1's 3 are a false positive (a created `data/rerun_queue.csv` under a protected
+  glob; fix stated). X2 rises from 3 to 6 of 12 under the sentences, all with the cold verdict constrained; silence
+  rises with the levers (25 of 113 under both). Next: the feature comparison (sheet proposed); R_rule needs a
+  rule-swap arm, held for the lead.
 

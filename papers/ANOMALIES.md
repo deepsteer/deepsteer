@@ -3248,7 +3248,9 @@ or offer not in the quotes folder?"), against the reader's 4. Zero GPU, 12 short
 rests on reading an unnamed, unpriced offer as a better one) against 0 of 12 on the twin, where the first read's
 twin yes is not supported. Under the band's 0.30, so X2 joins the floor. Each of the 3 carries the cold verdict
 constrained, so R_act holds at a rate under the band, and R_judge accounts for the first read's 2 extra and its twin
-yes.
+yes. **Updated 2026-11-28 (§19.21):** under the instrument's pressure sentences X2 doubles to 6 of 12 (arms a and c;
+4 of 12 under the incentivized wording), every shortcut with the cold verdict constrained (16 of 16). The one family
+with no stated rule carries headroom under pressure. Open as the lead's candidate for R_rule (§19.21).
 **Thesis impact.** R_act: the held-out style shows the gap the line exists to close, at the base, so the counterparty
 families are where cycle 1's held-out read has something to move. R_judge: the pilot is at the floor in all 10, and
 the pressure tree (§19.19) is the only route to headroom.
