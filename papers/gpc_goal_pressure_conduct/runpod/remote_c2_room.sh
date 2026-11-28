@@ -3,14 +3,14 @@
 # subject's vLLM server under 16,384 (the base only), its check, a smoke loop (the bail), the 240 loops on the 10
 # pilot families (conflict and twin, 12 each) with the cold verdict at each decision point, and the read. No judge,
 # no reasoning text read by any model. Writes papers/gpc_goal_pressure_conduct/outputs/c2_room (stages stop at
-# 10.25 h unless moved; watchdog 11.0 h, ceiling 14.0 h).
+# 4.0 h, the watchdog at 4.5 h (§19.15), both movable with set_limits.sh; ceiling 14.0 h).
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 cd "$REPO_DIR"
 G="$REPO_DIR/papers/gpc_goal_pressure_conduct"
 SESSION="${CST_SESSION:-}"
-PRICE_H=10.5; WATCH_H=11.0
+PRICE_H=4.25; WATCH_H=4.5   # §19.15 item 3: stages stop at 4.0 h, the watchdog at 4.5 h
 OUT="$G/outputs/c2_room"
 mkdir -p "$OUT/logs"
 START=$(date +%s)
@@ -70,7 +70,7 @@ echo ">> setup done at $(hours) h"
 
 TESTS="tests/scripts/test_c2.py tests/scripts/test_session_limits.py"
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=21   # the room pod's gate tests (§19.13, §19.14); fewer means a file failed to collect
+GATE_FLOOR=24   # the room pod's gate tests (§19.13, §19.14); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }

@@ -6,7 +6,8 @@ each decision point. No adapter, no judge, no host.
 Stages (`--stage`):
 - `smoke`: the first family's first conflict loop and first twin loop; the session's bail is a runner error or a
   server error there.
-- `loops`: the 192 loops at 16 at once, each written as it ends (`room/loops.jsonl`), resumable by loop ID.
+- `loops`: the 240 loops at 16 at once, each written as it ends (`room/loops.jsonl`, and what the agent wrote to
+  `room/loop_text.jsonl`, §19.15), resumable by loop ID.
 - `read`: `z_c2_room_read.py` on the rows (`room/read.json`).
 
 `--dry-run` drives the same code through `c2_loop.ScriptedClient` (a seeded mix of the families' honest, shortcut
@@ -58,6 +59,7 @@ def client_for(s, twin: bool, i: str, dry: bool):
 
 def stage_loops(out: Path, dry: bool, only: list[tuple] | None = None) -> dict:
     f = out / "room" / "loops.jsonl"
+    ft = out / "room" / "loop_text.jsonl"
     f.parent.mkdir(parents=True, exist_ok=True)
     have = {json.loads(x)["loop_id"] for x in f.read_text().splitlines()} if f.exists() else set()
     todo = [t for t in (only or loop_ids()) if lid(*t) not in have]
@@ -67,13 +69,19 @@ def stage_loops(out: Path, dry: bool, only: list[tuple] | None = None) -> dict:
     def one(t):
         s, twin, k = t
         i = lid(s, twin, k)
+        text = None
         try:
             rec = L.run_loop(s, twin, client_for(s, twin, i, dry), seed_of(i), i) | {"loop_id": i, "k": k}
+            text = {"loop_id": i, "family": s.fid, "twin": twin, "k": k} | rec.pop("text")
         except Exception as e:  # noqa: BLE001  (counted; the read reports it)
             rec = {"loop_id": i, "family": s.fid, "twin": twin, "k": k, "error": repr(e)[:300]}
             errors.append(i)
-        with lock, open(f, "a") as w:
-            w.write(json.dumps(rec) + "\n")
+        with lock:
+            if text is not None:
+                with open(ft, "a") as w:
+                    w.write(json.dumps(text) + "\n")
+            with open(f, "a") as w:  # the loop record last, so a resumed run never has a record without its text
+                w.write(json.dumps(rec) + "\n")
         return rec
 
     with cf.ThreadPoolExecutor(max_workers=1 if dry else CONCURRENCY) as ex:
@@ -88,8 +96,13 @@ def stage_smoke(out: Path, dry: bool) -> dict:
     s = F.ROOM[0]
     rec = stage_loops(out, dry, only=[(s, False, 0), (s, True, 0)])
     rows = [json.loads(x) for x in (out / "room" / "loops.jsonl").read_text().splitlines()]
-    ok = len(rows) >= 2 and not any("error" in r for r in rows)
-    res = {"smoke_ok": ok, "rows": len(rows)}
+    texts = {json.loads(x)["loop_id"]: json.loads(x) for x in (out / "room" / "loop_text.jsonl").read_text().splitlines()}
+    first = texts.get(lid(s, False, 0)) or {}
+    # §19.15 item 4: the first conflict loop ran at least one bash step the environment answered with an exit code
+    # other than 127; a loop that closes at step 1 with no tool call fails the smoke
+    bash_ok = any(c["command"] is not None and c["exit"] not in (None, 127) for c in first.get("commands", []))
+    ok = len(rows) >= 2 and not any("error" in r for r in rows) and bash_ok
+    res = {"smoke_ok": ok, "rows": len(rows), "first_conflict_ran_a_bash_step": bash_ok}
     (out / "room" / "smoke.json").write_text(json.dumps(res))
     print(">> c2 room smoke:", json.dumps(res), flush=True)
     if not ok:

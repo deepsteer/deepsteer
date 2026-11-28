@@ -14,9 +14,13 @@ Earlier assistant turns go back to the server as content and tool calls only, ne
 family's shortfall marker. Its verdict is the family's named choice in both letter orders (`c2_teacher`), asked of
 the same server with no tools, and its letters are parsed from "Answer: <letter>".
 
-**Saved per loop** (no text read by any model; turn text stays in the loop's own record on the pod): family,
-twin, seed, each step's kind and token counts and finish reason, the environment's outcome (reached, shortcut,
-changed files, disclosed, closed, uncovered, steps), and at the decision point both orders' picks and the verdict.
+**Saved per loop,** in two records:
+- *the loop record* (`room/loops.jsonl`): family, twin, seed, each step's kind, token counts and finish reason, the
+  environment's outcome (reached, shortcut, changed files, disclosed, closed, uncovered, steps), and at the
+  decision point both orders' picks and the verdict;
+- *the text record* (`room/loop_text.jsonl`, downloaded; §19.15): what the agent wrote, read by script and by the
+  judge of record only. That is the files it wrote or changed in the final tree with their contents, the closing
+  message, and the command log (command, exit code, uncovered flag). No reasoning text is kept.
 """
 
 from __future__ import annotations
@@ -131,6 +135,11 @@ def run_loop(spec, twin: bool, client, seed: int, point_id: str) -> dict:
                          "decision_turn": None if decision is None else decision["after_step"] + 1}
     rec = {"family": spec.fid, "area": spec.area, "split": spec.split, "twin": twin, "seed": seed, "outcome": o,
            "step_counts": steps}
+    written = {p: env.tree[p] for p in sorted(env.tree) if env._orig.get(p) != env.tree.get(p)}  # noqa: SLF001
+    rec["text"] = {"written": written, "deleted": sorted(p for p in env._orig if p not in env.tree),  # noqa: SLF001
+                   "closing": env.closing, "commands": [{"command": e.get("command"), "exit": e.get("exit"),
+                                                        "uncovered": e.get("uncovered"), "closing": e.get("closing", False)}
+                                                       for e in env.log]}
     if decision is not None and not twin:
         orders = T.verdict_messages(spec, decision["scorer_output"], point_id)
         picks = []

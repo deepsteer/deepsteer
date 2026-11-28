@@ -625,3 +625,8 @@ bill is its figure of record.
   counterparty band read as findings. Proposed: 14 counterparty families and 12 hard-featured trained ones (84 in
   all, 74 to write, 148 audit calls); with them, 1b no longer fits cycle 1's pod after a clearing 1a (move 1b to the
   next pod, or move the cut).
+- 2026-11-27: **§19.15, the room pilot amended before its launch** (the lead's 2:20 PM block). What the agent wrote
+  is saved and downloaded (`room/loop_text.jsonl`); the lead's own lines broke the one-author detectors (M1 missed 8
+  of 9, flagged 3 of 3 honest; X2 missed 7 of 8), so the fixed reader's judged read decides the text families' band,
+  with judged disclosure beside the script's (about 312 calls after the pod). The cap is 4.0 h (watchdog 4.5 h); the
+  smoke asserts a real bash step; unparsed picks are counted apart. Family counts and 1b's place wait for the pilot.
