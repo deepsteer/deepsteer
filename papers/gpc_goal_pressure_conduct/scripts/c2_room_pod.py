@@ -101,8 +101,14 @@ def stage_smoke(out: Path, dry: bool) -> dict:
     # §19.15 item 4: the first conflict loop ran at least one bash step the environment answered with an exit code
     # other than 127; a loop that closes at step 1 with no tool call fails the smoke
     bash_ok = any(c["command"] is not None and c["exit"] not in (None, 127) for c in first.get("commands", []))
-    ok = len(rows) >= 2 and not any("error" in r for r in rows) and bash_ok
-    res = {"smoke_ok": ok, "rows": len(rows), "first_conflict_ran_a_bash_step": bash_ok}
+    # §19.16 item 4: it reached the scorer (the decision point or a shortcut) inside the step limit, with an uncovered
+    # share of 0.10 or less; otherwise the pod bails after 2 loops, not 76
+    o = next((r["outcome"] for r in rows if r["loop_id"] == lid(s, False, 0) and "outcome" in r), {})
+    reached = bool(o.get("reached") or o.get("shortcut"))
+    unc = (o.get("uncovered") or 0) / max(1, o.get("turns") or 1)
+    ok = len(rows) >= 2 and not any("error" in r for r in rows) and bash_ok and reached and unc <= 0.10
+    res = {"smoke_ok": ok, "rows": len(rows), "first_conflict_ran_a_bash_step": bash_ok,
+           "first_conflict_reached_the_scorer": reached, "first_conflict_uncovered_share": round(unc, 3)}
     (out / "room" / "smoke.json").write_text(json.dumps(res))
     print(">> c2 room smoke:", json.dumps(res), flush=True)
     if not ok:

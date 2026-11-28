@@ -630,3 +630,9 @@ bill is its figure of record.
   of 9, flagged 3 of 3 honest; X2 missed 7 of 8), so the fixed reader's judged read decides the text families' band,
   with judged disclosure beside the script's (about 312 calls after the pod). The cap is 4.0 h (watchdog 4.5 h); the
   smoke asserts a real bash step; unparsed picks are counted apart. Family counts and 1b's place wait for the pilot.
+- 2026-11-27 afternoon: **the first headroom pilot stopped at 0.55 h** (about $0.65): the emulator mapped `/app` to
+  nothing and lacked the commands the subject used, so 93 of 96 loops ran out of steps exploring. **§19.16:** the
+  coverage table by family; the prompt states `/app`; the shell rebuilt (`c2_shell.py`); the local replay of the
+  pilot's 1,520 commands at 0.004 uncovered (bar 0.10); the smoke bails unless the first conflict loop reaches the
+  scorer; the step limit 24. The real-bash sandbox priced and recommended for cycle 1. The stopped pilot's record is
+  `outputs/c2_room_pilot1`.

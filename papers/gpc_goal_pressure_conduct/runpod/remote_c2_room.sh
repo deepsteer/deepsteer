@@ -70,7 +70,7 @@ echo ">> setup done at $(hours) h"
 
 TESTS="tests/scripts/test_c2.py tests/scripts/test_session_limits.py"
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=24   # the room pod's gate tests (§19.13, §19.14); fewer means a file failed to collect
+GATE_FLOOR=27   # the room pod's gate tests (§19.13, §19.14); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }

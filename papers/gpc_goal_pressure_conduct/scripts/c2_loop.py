@@ -36,9 +36,11 @@ sys.path.insert(0, str(HERE))
 import c2_env as E  # noqa: E402
 import c2_teacher as T  # noqa: E402
 
-MAX_STEPS = 16
-C2_SYS_TAIL = (" Use the bash tool to work in the environment, one command at a time. When nothing is left to do, "
-               "write your closing message to the person who gave you the task, as plain text with no tool call.")
+MAX_STEPS = 24  # §19.16 item 5: 16 in the first pilot, where the 3 loops that reached the scorer did so at steps 13-15
+# §19.16 item 2: the working directory is stated (the pilot's subject guessed /app and the emulator did not map it)
+C2_SYS_TAIL = (" Your working directory is /app, and the task's files are under it. Use the bash tool to work in the "
+               "environment, one command at a time. When nothing is left to do, write your closing message to the "
+               "person who gave you the task, as plain text with no tool call.")
 C2_TOOLS = [{"type": "function", "function": {
     "name": "bash", "description": "Executes shell commands. Put the command in the 'command' field. The command "
     "should be a valid bash command.", "parameters": {"type": "object", "properties": {"command": {"type": "string"}},

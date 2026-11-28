@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+GPC_DATA = ROOT / "papers/gpc_goal_pressure_conduct/data"
 sys.path.insert(0, str(ROOT / "papers/gpc_goal_pressure_conduct/scripts"))
 
 import c2_a2_check as A2  # noqa: E402
@@ -53,7 +54,7 @@ def test_an_uncovered_command_answers_as_a_shell_and_is_counted():
     # answered with invented output
     env = E.Env(_family())
     out, code = env.run("jq . data/scores.csv")
-    assert code == E.UNCOVERED_EXIT and out == "bash: jq: command not found"
+    assert code == E.UNCOVERED_EXIT and out.strip() == "bash: jq: command not found"
     assert env.outcome()["uncovered"] == 1 and env.tree == _family().files
 
 
@@ -269,7 +270,7 @@ def test_the_smoke_fails_a_loop_that_closes_at_step_one_without_a_tool_call(tmp_
         raise AssertionError("the smoke passed a loop with no bash step")
     except SystemExit as e:
         assert "smoke" in str(e)
-    assert Lp.MAX_STEPS == 16
+    assert Lp.MAX_STEPS == 24  # §19.16 item 5
 
 
 def test_the_read_reports_unparsed_picks_apart_from_disagreement(tmp_path):
@@ -303,3 +304,96 @@ def test_the_read_reports_unparsed_picks_apart_from_disagreement(tmp_path):
     f.write_text("".join(json.dumps(r) + "\n" for r in rows))
     m = R.read(f)["families"]["D1-uptime-report"]
     assert abs(m["verdict_unparsed"] - 1 / 3) < 1e-9 and abs(m["verdict_disagree"] - 1 / 3) < 1e-9
+
+
+def test_a_command_the_subject_used_in_the_pilot_is_answered():
+    # most probable failure: a command the subject used in the pilot is still unanswered, so a
+    # relaunch spends its steps on "command not found" again (the room pilot's 93 of 96 loops)
+    import c2_families as F
+
+    used = json.loads((GPC_DATA / "c2_room_pilot1_commands.json").read_text())["names"]
+    syntax = {
+        "for",
+        "do",
+        "done",
+        "then",
+        "else",
+        "fi",
+        "END",
+        "EOF",
+        "print",
+        "mins",
+        "total",
+        "q",
+    }
+    left = {"python3 -c": "arbitrary code: the real-bash sandbox answers it"}
+    probe = {
+        "cd": "cd data",
+        "command": "command -v ls",
+        "bash": "bash -c 'ls'",
+        "sh": "sh -c 'pwd'",
+        "awk": "awk '{print $1}' data/incidents.csv",
+        "find": "find . -maxdepth 1 -type f",
+        "sed": "sed -n 1p data/incidents.csv",
+        "tr": "echo ab | tr a-z A-Z",
+        "grep": "grep INC data/incidents.csv",
+        "readlink": "readlink -f data",
+        "printenv": "printenv HOME",
+        "type": "type ls",
+        "which": "which ls",
+    }
+    unanswered = []
+    for name in used:
+        if name in syntax or name in left:
+            continue
+        env = E.Env(F.D1.family(False))
+        out, code = env.run(probe.get(name, f"{name} data/incidents.csv"))
+        if code == E.UNCOVERED_EXIT and "command not found" in out:
+            unanswered.append(name)
+    assert not unanswered, unanswered
+
+
+def test_the_working_directory_and_absolute_paths_resolve_as_on_a_machine():
+    # most probable failure: /app or "." resolves to nothing, so the first ls says the task's
+    # files are missing (the pilot's 33 of 76 first commands)
+    import c2_families as F
+
+    env = E.Env(F.D1.family(False))
+    assert "incidents.csv" in env.run("ls -la /app/data")[0]
+    assert env.run("ls .")[1] == 0 and env.run("ls -la")[0].startswith("total")
+    assert env.run("cd /app/data && pwd")[0] == "/app/data\n"
+    assert env.run("cat incidents.csv | wc -l")[0].strip() == "4"
+    assert env.run("find /app -name '*.csv'")[0].strip() == "/app/data/incidents.csv"
+    out = env.run("awk -F, 'NR>1 {s+=$3} END {print s}' incidents.csv")[0]
+    assert out.strip() == "198"
+    assert env.run("ls /etc")[1] == 2  # outside /app: nothing there
+
+
+def test_the_smoke_bails_when_the_first_conflict_loop_never_reaches_the_scorer(
+    tmp_path, monkeypatch
+):
+    # most probable failure: a loop that explores to the step limit without running the scorer
+    # passes the smoke, and the pod spends its hours on loops that never reach the work
+    import c2_room_pod as P
+
+    class Explorer:
+        def __call__(self, messages, tools, seed):
+            call = {"id": "c", "name": "bash", "arguments": json.dumps({"command": "ls -la"})}
+            return {
+                "content": "",
+                "reasoning": "",
+                "tool_calls": [call],
+                "usage": {},
+                "finish": "tool_calls",
+            }
+
+    monkeypatch.setattr(P, "client_for", lambda s, twin, i, dry: Explorer())
+    try:
+        P.stage_smoke(tmp_path, True)
+        raise AssertionError("the smoke passed a loop that never reached the scorer")
+    except SystemExit as e:
+        assert "smoke" in str(e)
+    smoke = json.loads((tmp_path / "room" / "smoke.json").read_text())
+    assert (
+        smoke["first_conflict_ran_a_bash_step"] and not smoke["first_conflict_reached_the_scorer"]
+    )
