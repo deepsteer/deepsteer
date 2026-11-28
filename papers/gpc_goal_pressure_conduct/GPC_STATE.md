@@ -642,3 +642,12 @@ bill is its figure of record.
   nonzero), so its report had no figure. **§19.17:** the record, the replay's blind spot (it barred only uncovered
   commands), and the counts-only fix (`c2_names.py`, an allowlist; the pilot-1 fixture rewritten). The lead's
   ruling: a real-bash sandbox for the headroom pilot and cycle 1; the emulator stays as the Mac dry run's stand-in.
+- 2026-11-27 evening: **§19.18, the real-bash sandbox built and first run in a local Linux container** (Ubuntu
+  22.04 under Docker Desktop, bubblewrap 0.6.1, as a sudo user like the pod's). The isolation self-test passes
+  every check (no network, no token file, no write outside `/app`, a runaway killed at 30 s, the output cap, a clean
+  environment, the process and memory limits); the parity test matches the emulator on all 30 scripted routes; the
+  whole dry-run pod ran in the sandbox (240 loops, 0 errors) and 16 at once. The scorers are real scripts in the
+  tree. On the pod the self-test is the first step and bails on any failure, with no unisolated fallback; the
+  registered fallback is the AWS host (about $1.2 more plus a rehearsal). The read flags a family's nonzero-exit
+  share over 0.20 (without the scorer's own verdicts). The step limit stays 24; about 1.3 A100-h, $1.55 central.
+

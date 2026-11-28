@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Remote runner for C2-JAB's room pilot (GPC_PLAN.md §19.13), on Thunder, with no host and no adapter: the
-# subject's vLLM server under 16,384 (the base only), its check, a smoke loop (the bail), the 240 loops on the 10
+# real-bash sandbox's isolation self-test first (§19.18), the subject's vLLM server under 16,384 (the base only), its
+# check, a smoke loop (the bail), the 240 loops in the sandbox on the 10
 # pilot families (conflict and twin, 12 each) with the cold verdict at each decision point, and the read. No judge,
 # no reasoning text read by any model. Writes papers/gpc_goal_pressure_conduct/outputs/c2_room (stages stop at
 # 4.0 h, the watchdog at 4.5 h (§19.15), both movable with set_limits.sh; ceiling 14.0 h).
@@ -17,6 +18,8 @@ START=$(date +%s)
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 source "$REPO_DIR/papers/runpod_common/session_limits.sh"
 trap 'set +u +e; { kill ${WATCHDOG:-}; } 2>/dev/null; limits_save "$OUT/logs" || true; cp "$REPO_DIR/session.log" "$OUT/logs/session_c2room${SESSION:-}_${STAMP:-}.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
+# a fresh run only: rows already here (an earlier pilot's, synced up with the paper's outputs) would be resumed
+[ ! -e "$OUT/room/loops.jsonl" ] || { echo "BAIL: $OUT already holds loop rows; move them aside before a launch"; exit 1; }
 case "$SESSION" in 1) MAX_H=$WATCH_H;;
   *) echo "BAIL: CST_SESSION must be 1"; exit 1;; esac
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}" TOKENIZERS_PARALLELISM=false
@@ -31,6 +34,13 @@ hours() { python3 -c "import time; print(round((time.time() - $START) / 3600, 4)
 echo ">> C2 room session $SESSION start $(date -u +%FT%TZ) out=$OUT"
 [ "$($PYBIN -c 'import sys; print("%d.%d" % sys.version_info[:2])')" = 3.11 ] || { echo "BAIL: $PYBIN is not Python 3.11"; exit 1; }
 limits_watchdog 'c2_room_pod.py|gpc4_pod.py|vllm'
+
+# ---- §19.18 item 4: the real-bash sandbox's setup and its isolation self-test, the first step, before the venv and
+# the model download; any failure bails, and there is no fallback to an unisolated subprocess (§12) ----
+bash "$G/runpod/c2_sandbox_setup.sh" || { echo "BAIL: the sandbox's setup failed"; exit 1; }
+$PYBIN "$G/scripts/c2_sandbox.py" selftest --out "$OUT/logs/sandbox_selftest${SESSION}.json" --repo "$REPO_DIR" \
+  || { echo "BAIL: the sandbox's isolation self-test failed (see logs/sandbox_selftest${SESSION}.json)"; exit 1; }
+echo ">> sandbox self-test passed at $(hours) h"
 
 # ---- the vLLM venv (the pins every GPC-4 pod used) ----
 VENV=/workspace/venv_vllm
@@ -70,7 +80,7 @@ echo ">> setup done at $(hours) h"
 
 TESTS="tests/scripts/test_c2.py tests/scripts/test_session_limits.py"
 GATE_MARK="not slow and not host_side"
-GATE_FLOOR=27   # the room pod's gate tests (§19.13, §19.14); fewer means a file failed to collect
+GATE_FLOOR=34   # the room pod's gate tests (§19.13, §19.14, §19.18); fewer means a file failed to collect
 NCOL=$($PY -m pytest --collect-only -q -p no:cacheprovider -m "$GATE_MARK" $TESTS 2>/dev/null | grep -c '::' || true)
 echo ">> gate tests collected: $NCOL (floor $GATE_FLOOR)"
 [ "$NCOL" -ge "$GATE_FLOOR" ] || { echo "BAIL: the gate collected $NCOL tests, under its floor of $GATE_FLOOR"; exit 1; }

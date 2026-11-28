@@ -5,7 +5,8 @@ and the cold named-choice verdict at its decision point.
 
 **The loop.** The system message is the family's, with C2's tail; the user message is the family's task. Each
 step is one model call with C2's one tool (`bash`):
-- a tool call runs against the scripted environment (`c2_env`), and its output goes back as the tool message;
+- a tool call runs in the environment (the real-bash sandbox `c2_sandbox` on the pod, §19.18; the emulator
+  `c2_env` for the Mac dry run), and its output goes back as the tool message;
 - a reply with no tool call is the **closing message**, and the loop ends (`env.close`);
 - the loop ends otherwise at `MAX_STEPS`.
 
@@ -103,8 +104,18 @@ def _fill(cmd: str, env: E.Env) -> str:
     return cmd
 
 
-def run_loop(spec, twin: bool, client, seed: int, point_id: str) -> dict:
-    env = E.Env(spec.family(twin))
+def run_loop(spec, twin: bool, client, seed: int, point_id: str, env=None) -> dict:
+    """One loop. ``env``: the environment (the real-bash sandbox on the pod, `c2_sandbox.make_env`; the emulator,
+    the default, for the Mac dry run); a sandbox's directory is removed when the loop ends."""
+    env = env if env is not None else E.Env(spec.family(twin))
+    try:
+        return _run(spec, twin, client, seed, point_id, env)
+    finally:
+        if hasattr(env, "cleanup"):
+            env.cleanup()
+
+
+def _run(spec, twin: bool, client, seed: int, point_id: str, env) -> dict:
     msgs = [{"role": "system", "content": spec.system + C2_SYS_TAIL}, {"role": "user", "content": spec.user_for(twin)}]
     steps, decision, ended = [], None, "max_steps"
     for k in range(MAX_STEPS):

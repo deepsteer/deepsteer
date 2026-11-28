@@ -11,7 +11,8 @@ Stages (`--stage`):
 - `read`: `z_c2_room_read.py` on the rows (`room/read.json`).
 
 `--dry-run` drives the same code through `c2_loop.ScriptedClient` (a seeded mix of the families' honest, shortcut
-and twin routes), so the whole pod runs locally with no server.
+and twin routes), so the whole pod runs locally with no server. The loops run in the real-bash sandbox
+(`c2_sandbox`, §19.18) unless `--shell emulator` (the default with `--dry-run`, for the Mac).
 """
 
 from __future__ import annotations
@@ -48,6 +49,16 @@ def seed_of(i: str) -> int:
     return int(hashlib.sha256(f"{SEED}|{i}".encode()).hexdigest()[:8], 16)
 
 
+def env_for(s, twin: bool, shell: str):
+    """§19.18: the real-bash sandbox on the pod (no fallback: a host without it errors the loop, and the smoke
+    bails); the emulator only for the Mac dry run."""
+    if shell == "emulator":
+        return None
+    import c2_sandbox as SB
+
+    return SB.make_env(s, twin)
+
+
 def client_for(s, twin: bool, i: str, dry: bool):
     if not dry:
         return L.ServerClient()
@@ -57,7 +68,8 @@ def client_for(s, twin: bool, i: str, dry: bool):
     return L.ScriptedClient(s, "shortcut") if rng.random() < 0.4 else L.ScriptedClient(s, "honest", s.closing_honest)
 
 
-def stage_loops(out: Path, dry: bool, only: list[tuple] | None = None) -> dict:
+def stage_loops(out: Path, dry: bool, only: list[tuple] | None = None, shell: str | None = None) -> dict:
+    shell = shell or ("emulator" if dry else "sandbox")
     f = out / "room" / "loops.jsonl"
     ft = out / "room" / "loop_text.jsonl"
     f.parent.mkdir(parents=True, exist_ok=True)
@@ -71,7 +83,8 @@ def stage_loops(out: Path, dry: bool, only: list[tuple] | None = None) -> dict:
         i = lid(s, twin, k)
         text = None
         try:
-            rec = L.run_loop(s, twin, client_for(s, twin, i, dry), seed_of(i), i) | {"loop_id": i, "k": k}
+            rec = L.run_loop(s, twin, client_for(s, twin, i, dry), seed_of(i), i,
+                             env=env_for(s, twin, shell)) | {"loop_id": i, "k": k}
             text = {"loop_id": i, "family": s.fid, "twin": twin, "k": k} | rec.pop("text")
         except Exception as e:  # noqa: BLE001  (counted; the read reports it)
             rec = {"loop_id": i, "family": s.fid, "twin": twin, "k": k, "error": repr(e)[:300]}
@@ -92,9 +105,10 @@ def stage_loops(out: Path, dry: bool, only: list[tuple] | None = None) -> dict:
     return rec
 
 
-def stage_smoke(out: Path, dry: bool) -> dict:
+def stage_smoke(out: Path, dry: bool, shell: str | None = None) -> dict:
+    shell = shell or ("emulator" if dry else "sandbox")
     s = F.ROOM[0]
-    rec = stage_loops(out, dry, only=[(s, False, 0), (s, True, 0)])
+    rec = stage_loops(out, dry, only=[(s, False, 0), (s, True, 0)], shell=shell)
     rows = [json.loads(x) for x in (out / "room" / "loops.jsonl").read_text().splitlines()]
     texts = {json.loads(x)["loop_id"]: json.loads(x) for x in (out / "room" / "loop_text.jsonl").read_text().splitlines()}
     first = texts.get(lid(s, False, 0)) or {}
@@ -108,7 +122,11 @@ def stage_smoke(out: Path, dry: bool) -> dict:
     unc = (o.get("uncovered") or 0) / max(1, o.get("turns") or 1)
     ok = len(rows) >= 2 and not any("error" in r for r in rows) and bash_ok and reached and unc <= 0.10
     res = {"smoke_ok": ok, "rows": len(rows), "first_conflict_ran_a_bash_step": bash_ok,
-           "first_conflict_reached_the_scorer": reached, "first_conflict_uncovered_share": round(unc, 3)}
+           "first_conflict_reached_the_scorer": reached, "first_conflict_uncovered_share": round(unc, 3),
+           "shell": shell,  # §19.18 item 5, reported beside the bail: each loop's share of nonzero exits
+           "nonzero_exit_share": {r["loop_id"]: [round(r["outcome"].get(k, 0) / max(1, r["outcome"].get(
+               "commands", 0)), 3) for k in ("nonzero_exit", "nonzero_exit_not_scorer")]
+                                  for r in rows if "outcome" in r}}  # [all, without the scorer's verdicts]
     (out / "room" / "smoke.json").write_text(json.dumps(res))
     print(">> c2 room smoke:", json.dumps(res), flush=True)
     if not ok:
@@ -121,11 +139,14 @@ def main() -> None:
     ap.add_argument("--stage", required=True, choices=["smoke", "loops", "read"])
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--shell", choices=["sandbox", "emulator"], default=None,
+                    help="the sandbox on the pod (the default); the emulator only for the Mac dry run")
     a = ap.parse_args()
+    shell = a.shell or ("emulator" if a.dry_run else "sandbox")
     if a.stage == "smoke":
-        stage_smoke(a.out, a.dry_run)
+        stage_smoke(a.out, a.dry_run, shell)
     elif a.stage == "loops":
-        stage_loops(a.out, a.dry_run)
+        stage_loops(a.out, a.dry_run, shell=shell)
     else:
         import z_c2_room_read as R
 
