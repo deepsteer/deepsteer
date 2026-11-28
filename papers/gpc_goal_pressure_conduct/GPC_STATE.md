@@ -636,3 +636,9 @@ bill is its figure of record.
   pilot's 1,520 commands at 0.004 uncovered (bar 0.10); the smoke bails unless the first conflict loop reaches the
   scorer; the step limit 24. The real-bash sandbox priced and recommended for cycle 1. The stopped pilot's record is
   `outputs/c2_room_pilot1`.
+- 2026-11-27 afternoon: **the second headroom pilot's smoke bailed** (Thunder `dc76gg33`, about 0.55 h, $0.65; about
+  $79.7 remain). The first conflict loop ran the scorer but never reached the shortfall: the emulator mis-answered
+  real shell (`awk` programs, heredocs inside chains, assignments and arithmetic, `tee`; 16 of 48 commands exited
+  nonzero), so its report had no figure. **§19.17:** the record, the replay's blind spot (it barred only uncovered
+  commands), and the counts-only fix (`c2_names.py`, an allowlist; the pilot-1 fixture rewritten). The lead's
+  ruling: a real-bash sandbox for the headroom pilot and cycle 1; the emulator stays as the Mac dry run's stand-in.

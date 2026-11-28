@@ -1,5 +1,5 @@
 {
- "rule": "GPC_PLAN.md \u00a719.16: the command names the room pilot's subject used (names and counts by script; no command text)",
+ "rule": "GPC_PLAN.md \u00a719.16: the command names the room pilot's subject used (names and counts by script; no command text). \u00a719.17: names from the allowlist in scripts/c2_names.py only, any other word as (other)",
  "names": {
   "ls": 1060,
   "echo": 769,
@@ -21,6 +21,7 @@
   "stat": 12,
   "xxd": 11,
   "command": 11,
+  "(other)": 11,
   "sort": 10,
   "python3 -c": 7,
   "mkdir": 7,
@@ -29,7 +30,6 @@
   "done": 7,
   "whoami": 7,
   "sed": 5,
-  "print": 4,
   "readlink": 3,
   "tail": 3,
   "true": 3,
@@ -37,8 +37,6 @@
   "chmod": 2,
   "printenv": 2,
   "export": 2,
-  "END": 2,
-  "EOF": 2,
   "grep": 2,
   "id": 2,
   "sh": 1,
@@ -46,11 +44,8 @@
   "then": 1,
   "else": 1,
   "fi": 1,
-  "mins": 1,
-  "total": 1,
   "alias": 1,
   "uname": 1,
-  "q": 1,
   "md5sum": 1
  }
 }

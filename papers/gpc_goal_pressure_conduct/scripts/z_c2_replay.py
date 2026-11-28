@@ -5,7 +5,8 @@ item 3), zero GPU, by script; counts and command names only, no command text pri
 Each of the pilot's loops is replayed in a fresh environment of its own family and version (conflict or twin), its
 saved commands run in order. The bar: an uncovered share of 0.10 or less over all commands. Beside it, per family:
 the uncovered share, the share answered with an error exit (a path or argument the subject got wrong, or one the
-environment still mis-answers), and the commands still unanswered by name, with the reason each is left.
+environment still mis-answers), and the commands still unanswered by name, with the reason each is left. Names are
+printed from the allowlist in `c2_names.py` only, any other word as `(other)` (§19.17).
 
     python z_c2_replay.py [--loops outputs/c2_room_pilot1/room/loop_text.jsonl]   # writes <dir>/replay.json
 """
@@ -23,6 +24,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import c2_env as E  # noqa: E402
 import c2_families as F  # noqa: E402
+from c2_names import name_of  # noqa: E402
 from c2_shell import split_top  # noqa: E402
 
 BAR = 0.10
@@ -36,7 +38,7 @@ def head_of(cmd: str) -> str:
         except ValueError:
             w = piece.split()
         if w:
-            return w[0] + (" -c" if w[0] in ("python3", "python") and w[1:2] == ["-c"] else "")
+            return name_of(w[0] + (" -c" if w[0] in ("python3", "python") and w[1:2] == ["-c"] else ""))
     return "(empty)"
 
 
@@ -55,7 +57,7 @@ def replay(path: Path) -> dict:
             f["commands"] += 1
             if code == E.UNCOVERED_EXIT and "command not found" in out:
                 f["uncovered"] += 1
-                missing = out.split(":")[1].strip() if out.startswith("bash:") else head_of(c["command"])
+                missing = name_of(out.split(":")[1].strip()) if out.startswith("bash:") else head_of(c["command"])
                 f["unanswered"][missing] += 1
             elif code != 0:
                 f["error_exit"] += 1

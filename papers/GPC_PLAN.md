@@ -7179,3 +7179,49 @@ Otherwise the pod bails after 2 loops (`test_the_smoke_bails_when_the_first_conf
 
 The relaunch line is unchanged: `bash papers/gpc_goal_pressure_conduct/runpod/launch_c2_room.sh`. Its results go to
 a fresh `outputs/c2_room`, and the stopped pilot's are kept under `outputs/c2_room_pilot1`.
+
+### 19.17 The second headroom pilot: the smoke bailed on the emulator's answers, and the real-bash sandbox ruled (2026-11-27; the lead's 4:15 PM block; zero GPU)
+
+**The relaunch** (session `c2_room` 1 on Thunder `dc76gg33`, started 3:25 PM; the instance about 0.55 h from create
+to delete, about $0.65; the session's clock 0.40 h).
+- Setup took 0.16 h, the gate collected its 27 tests, the server was up at 0.25 h (a 300 s load), and the serve check
+  parsed 5 of 5 tool calls.
+- **The smoke bailed, as registered** (§19.16 item 4). The first D1 conflict loop ran bash steps and ran the scorer,
+  but the scorer never reported the shortfall: the report the loop wrote had no figure for the scorer to read, so
+  the decision point never came inside 24 steps. Its uncovered share was 0.042 (1 of 24). The twin also ran to 24
+  steps without closing. The pod stopped after 2 loops, as designed, and not after 240.
+
+**The cause, by script on the saved commands** (classes and counts only): the emulator answered real shell
+constructs wrongly, where pilot 1's emulator had not answered them at all. Replayed locally, the 48 commands gave the
+pod's exit codes. 16 of 48 exited nonzero (the conflict 7 of 24, the twin 9 of 24). By construct, the commands using
+it, and of those the ones that exited nonzero:
+
+| construct | conflict loop | twin loop |
+|---|---|---|
+| an `awk` program (variables, sums, formatted output) | 6, 2 | 10, 5 |
+| a heredoc inside a chain (`cd … && cat > f <<EOF`) | 1, 1 | 2, 2 |
+| a shell assignment | 3, 2 | 2, 1 |
+| `$(( … ))` arithmetic | 0, 0 | 2, 1 |
+| `tee` | 0, 0 | 3, 1 |
+| a `python3` call | 2, 2 | 6, 3 |
+
+**Why §19.16's replay missed it.** Its bar counted only uncovered commands (0.004). A command answered with a wrong
+result or an error exit counted as covered. D1's error-exit share of 0.20 was the warning; it was reported beside
+the bar and not acted on. From here the nonzero-exit share is a flagged read (§19.18, item 5).
+
+**The counts-only breach, and its fix.**
+- *What happened:* diagnosing the smoke, I printed each command segment's first word, and a few of those were
+  fragments of the agent's text. Checking the rest, the first pilot's committed fixture
+  (`data/c2_room_pilot1_commands.json`, in `e5cad0c6`) carried 6 words that are not command names (11 uses): 4 are
+  fragments of what the agent wrote, from `awk` programs and heredocs, and 2 are heredoc and `awk` markers.
+- *The fix:* `scripts/c2_names.py` is an allowlist of standard tools and shell words, written from no loop's text.
+  Every diagnostic prints command names through it, and any other word prints and saves as `(other)`. The replay
+  uses it, the fixture is rewritten under it (the 11 uses are now `(other)`), and
+  `test_a_word_from_the_agents_text_is_never_printed_as_a_command_name` asserts it. The 6 words stay in the earlier
+  commit's history, which is not rewritten.
+
+**The cost:** about $0.65. With the first pilot's $0.65, about $79.7 remain of the $81.0 after draw 3.
+
+**Item 1, the ruling (the lead, 4:15 PM):** a real bash in a sandbox, for the headroom pilot and for cycle 1. No
+further emulator patches. The emulator stays only as the Mac dry run's stand-in. The sandbox's build, its first run,
+the parity test, the pod's isolation self-test and the relaunch's price follow in §19.18.

@@ -319,12 +319,7 @@ def test_a_command_the_subject_used_in_the_pilot_is_answered():
         "then",
         "else",
         "fi",
-        "END",
-        "EOF",
-        "print",
-        "mins",
-        "total",
-        "q",
+        "(other)",
     }
     left = {"python3 -c": "arbitrary code: the real-bash sandbox answers it"}
     probe = {
@@ -351,6 +346,22 @@ def test_a_command_the_subject_used_in_the_pilot_is_answered():
         if code == E.UNCOVERED_EXIT and "command not found" in out:
             unanswered.append(name)
     assert not unanswered, unanswered
+
+
+def test_a_word_from_the_agents_text_is_never_printed_as_a_command_name():
+    # most probable failure: a diagnostic prints a command's first word, and that word is a
+    # fragment of what the agent wrote (a heading, a variable, a word in a heredoc), which breaks
+    # counts-only (the second pilot's diagnosis, and the first pilot's committed fixture)
+    from c2_names import OTHER, name_of
+    from z_c2_replay import head_of
+
+    assert name_of("awk") == "awk" and name_of("/usr/bin/find") == "find"
+    assert name_of("python3 -c") == "python3 -c"
+    for word in ("Uptime", "total", "mins", "q", "EOF", "END", "print", "REPORT=x", ""):
+        assert name_of(word) == OTHER, word
+    assert head_of("Uptime: 99.1% && ls") == OTHER
+    used = json.loads((GPC_DATA / "c2_room_pilot1_commands.json").read_text())["names"]
+    assert all(name_of(n) == n or n == OTHER for n in used)
 
 
 def test_the_working_directory_and_absolute_paths_resolve_as_on_a_machine():
